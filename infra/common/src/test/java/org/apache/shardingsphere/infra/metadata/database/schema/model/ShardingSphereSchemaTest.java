@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,13 +30,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereSchemaTest {
-    
-    @Test
-    void assertGetAllTableNames() {
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.getName()).thenReturn("tbl");
-        assertThat(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singleton(table), Collections.emptyList()).getAllTableNames(), is(new HashSet<>(Collections.singleton("tbl"))));
-    }
     
     @Test
     void assertGetTable() {

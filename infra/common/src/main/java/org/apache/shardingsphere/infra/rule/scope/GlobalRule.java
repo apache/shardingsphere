@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.scope;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Global rule.
@@ -33,7 +33,7 @@ public interface GlobalRule extends ShardingSphereRule {
      * @param databases changed databases
      * @param changedType changed type
      */
-    default void refresh(final Map<String, ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
+    default void refresh(final Collection<ShardingSphereDatabase> databases, GlobalRuleChangedType changedType) {
     }
     
     /**

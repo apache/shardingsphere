@@ -38,6 +38,6 @@ class GlobalClockRuleBuilderTest {
     void assertBuild() {
         GlobalClockRuleConfiguration ruleConfig = new GlobalClockRuleConfiguration("FIXTURE", "FIXTURE", false, new Properties());
         Map<GlobalRuleConfiguration, GlobalRuleBuilder> builders = OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(ruleConfig));
-        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyMap(), null), instanceOf(GlobalClockRule.class));
+        assertThat(builders.get(ruleConfig).build(ruleConfig, Collections.emptyList(), null), instanceOf(GlobalClockRule.class));
     }
 }

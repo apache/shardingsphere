@@ -24,11 +24,12 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,8 +37,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * CDC schema table utility class.
@@ -77,34 +78,36 @@ public final class CDCSchemaTableUtils {
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllTables(final ShardingSphereDatabase database, final Collection<String> systemSchemas) {
-        Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTableNames().forEach(tableName -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(tableName));
+        Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
+        for (ShardingSphereSchema schema : database.getAllSchemas()) {
+            if (!systemSchemas.contains(schema.getName())) {
+                schema.getAllTables().forEach(each -> result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(each.getName()));
             }
-            
         }
         return result;
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllSchema(final ShardingSphereDatabase database, final Collection<String> systemSchemas, final SchemaTable table) {
-        Map<String, Set<String>> result = new HashMap<>(database.getSchemas().size(), 1F);
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (!systemSchemas.contains(entry.getKey())) {
-                entry.getValue().getAllTableNames().stream().filter(tableName -> tableName.equals(table.getTable())).findFirst()
-                        .ifPresent(optional -> result.computeIfAbsent(entry.getKey(), ignored -> new HashSet<>()).add(optional));
+        Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
+        for (ShardingSphereSchema schema : database.getAllSchemas()) {
+            if (!systemSchemas.contains(schema.getName())) {
+                schema.getAllTables().stream().filter(each -> each.getName().equals(table.getTable())).findFirst()
+                        .ifPresent(optional -> result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(optional.getName()));
             }
         }
         return result;
     }
     
-    private static Map<String, Set<String>> parseTableExpressionWithAllTable(final ShardingSphereDatabase database, final SchemaTable each) {
+    private static Map<String, Set<String>> parseTableExpressionWithAllTable(final ShardingSphereDatabase database, final SchemaTable schemaTable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        String schemaName = each.getSchema().isEmpty() ? dialectDatabaseMetaData.getDefaultSchema().orElseThrow(() -> new IllegalStateException("Default schema should exist.")) : each.getSchema();
+        String schemaName = schemaTable.getSchema().isEmpty()
+                ? dialectDatabaseMetaData.getDefaultSchema().orElseThrow(() -> new IllegalStateException("Default schema should exist."))
+                : schemaTable.getSchema();
         ShardingSphereSchema schema = database.getSchema(schemaName);
-        ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(each.getSchema()));
-        Map<String, Set<String>> result = new HashMap<>(schema.getAllTableNames().size(), 1F);
-        schema.getAllTableNames().forEach(tableName -> result.computeIfAbsent(schemaName, ignored -> new HashSet<>()).add(tableName));
+        ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaTable.getSchema()));
+        Collection<ShardingSphereTable> tables = schema.getAllTables();
+        Map<String, Set<String>> result = new HashMap<>(tables.size(), 1F);
+        tables.forEach(each -> result.computeIfAbsent(schemaName, ignored -> new HashSet<>()).add(each.getName()));
         return result;
     }
     
@@ -117,7 +120,7 @@ public final class CDCSchemaTableUtils {
      */
     public static Collection<String> parseTableExpressionWithoutSchema(final ShardingSphereDatabase database, final List<String> tableNames) {
         ShardingSphereSchema schema = database.getSchema(database.getName());
-        Set<String> allTableNames = null == schema ? Collections.emptySet() : new HashSet<>(schema.getAllTableNames());
+        Set<String> allTableNames = null == schema ? Collections.emptySet() : new HashSet<>(schema.getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet()));
         return tableNames.stream().anyMatch("*"::equals) ? allTableNames : new HashSet<>(tableNames);
     }
 }

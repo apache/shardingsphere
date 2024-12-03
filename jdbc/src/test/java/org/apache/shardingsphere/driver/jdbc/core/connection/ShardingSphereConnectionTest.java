@@ -210,6 +210,6 @@ class ShardingSphereConnectionTest {
     }
     
     private TransactionRule mockTransactionRule() {
-        return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyMap());
+        return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyList());
     }
 }

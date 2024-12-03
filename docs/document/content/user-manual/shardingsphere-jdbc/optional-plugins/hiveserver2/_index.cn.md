@@ -40,6 +40,17 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
         <artifactId>hive-service</artifactId>
         <version>4.0.1</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+        <version>3.3.6</version>
+        <exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
 </dependencies>
 ```
 
@@ -78,6 +89,17 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
             <exclusion>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+        <version>3.3.6</version>
+        <exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
             </exclusion>
         </exclusions>
     </dependency>
@@ -427,8 +449,31 @@ ShardingSphere 仅针对 HiveServer2 `4.0.1` 进行集成测试。
 ### Hadoop 限制
 
 用户仅可使用 Hadoop `3.3.6` 来作为 HiveServer2 JDBC Driver `4.0.1` 的底层 Hadoop 依赖。
-HiveServer2 JDBC Driver `4.0.1` 不支持 Hadoop `3.4.1`，
-参考 https://github.com/apache/hive/pull/5500 。
+HiveServer2 JDBC Driver `4.0.1` 不支持 Hadoop `3.4.1`， 参考 https://github.com/apache/hive/pull/5500 。
+
+对于 HiveServer2 JDBC Driver `org.apache.hive:hive-jdbc:4.0.1` 或 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.1`，
+实际上并不额外依赖 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`。
+
+但 `org.apache.shardingsphere:shardingsphere-infra-database-hive` 的
+`org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader` 会使用 `org.apache.hadoop.hive.conf.HiveConf`，
+这进一步使用了 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6` 的 `org.apache.hadoop.mapred.JobConf` 类。
+
+ShardingSphere 仅需要使用 `org.apache.hadoop.mapred.JobConf` 类，
+因此排除 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6` 的所有额外依赖是合理行为。
+
+```xml
+<dependency>
+    <groupId>org.apache.hadoop</groupId>
+    <artifactId>hadoop-mapreduce-client-core</artifactId>
+    <version>3.3.6</version>
+    <exclusions>
+        <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
 
 ### SQL 限制
 

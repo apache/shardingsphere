@@ -42,7 +42,7 @@ public final class ShardingSupportedCheckUtils {
      * @return whether schema contains index or not
      */
     public static boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
-        return schema.getAllTableNames().stream().anyMatch(each -> schema.getTable(each).containsIndex(index.getIndexName().getIdentifier().getValue()));
+        return schema.getAllTables().stream().anyMatch(each -> each.containsIndex(index.getIndexName().getIdentifier().getValue()));
     }
     
     /**

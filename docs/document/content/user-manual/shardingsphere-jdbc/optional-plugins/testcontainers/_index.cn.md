@@ -9,7 +9,7 @@ ShardingSphere 默认情况下不提供对 `org.testcontainers.jdbc.ContainerDat
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` 的 `jdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` 的 `jdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
@@ -49,15 +49,15 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_1
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_1
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_2
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_2
 ```
 
 `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers` 为 testcontainers-java 风格的 jdbcURL 提供支持，
@@ -82,13 +82,13 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
-    jdbcUrl: jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0
+    jdbcUrl: jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0
 ```
 
-testcontainers 默认情况下仅在对 `jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` 的最后一个 `java.sql.Connection` 关闭后，
-停止`jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0`创建的 Docker Container。
+testcontainers 默认情况下仅在对 `jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` 的最后一个 `java.sql.Connection` 关闭后，
+停止`jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0`创建的 Docker Container。
 但 ShardingSphere 的内部类会缓存 `java.sql.Connection`。这导致直到 JVM 关闭，
-`jdbc:tc:postgresql:17.1-bookworm://test/demo_ds_0` 创建的 Docker Container 才会被关闭。
+`jdbc:tc:postgresql:17.2-bookworm://test/demo_ds_0` 创建的 Docker Container 才会被关闭。
 若有避免 Container 被长期开启的必要，
 `org.testcontainers.jdbc.ContainerDatabaseDriver` 存在可用方法来在单元测试中快速关闭相关 Container，
 示例如下，

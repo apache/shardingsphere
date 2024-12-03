@@ -27,8 +27,6 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -102,11 +100,10 @@ public final class SchemaMetaDataPersistService {
      * Alter schema by rule dropped.
      *
      * @param databaseName database name
-     * @param schemaName schema name
      * @param schema to be altered schema
      */
-    public void alterByRuleDropped(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
+    public void alterByRuleDropped(final String databaseName, final ShardingSphereSchema schema) {
+        tableMetaDataPersistService.persist(databaseName, schema.getName(), schema.getAllTables());
     }
     
     /**
@@ -115,9 +112,8 @@ public final class SchemaMetaDataPersistService {
      * @param databaseName database name
      * @return schemas
      */
-    public Map<String, ShardingSphereSchema> load(final String databaseName) {
-        Collection<String> schemaNames = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
-        return schemaNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each),
-                viewMetaDataPersistService.load(databaseName, each)), (a, b) -> b, () -> new LinkedHashMap<>(schemaNames.size(), 1F)));
+    public Collection<ShardingSphereSchema> load(final String databaseName) {
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName)).stream()
+                .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }

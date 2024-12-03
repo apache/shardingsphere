@@ -52,9 +52,9 @@ class SingleDropTableSupportedCheckerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
         schema.putTable(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
-        when(result.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", schema));
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }
     

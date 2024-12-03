@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.aware;
+package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware;
+
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database name aware.
+ * Database aware.
  */
-public interface DatabaseNameAware {
+public interface DatabaseAware {
     
     /**
-     * Set database name.
+     * Set database.
      *
-     * @param databaseName database name
+     * @param database database
      */
-    void setDatabaseName(String databaseName);
+    void setDatabase(ShardingSphereDatabase database);
 }

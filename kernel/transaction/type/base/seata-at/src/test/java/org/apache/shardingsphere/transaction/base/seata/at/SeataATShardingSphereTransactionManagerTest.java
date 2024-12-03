@@ -163,11 +163,11 @@ class SeataATShardingSphereTransactionManagerTest {
     }
     
     private void assertResult(final Class<?> requestClass, final Class<?> responseClass) {
-        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterTMRequest));
-        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterRMRequest));
+        assertTrue(requestQueue.stream().anyMatch(RegisterTMRequest.class::isInstance));
+        assertTrue(requestQueue.stream().anyMatch(RegisterRMRequest.class::isInstance));
         assertTrue(requestQueue.stream().anyMatch(each -> requestClass.equals(each.getClass())));
-        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterTMResponse));
-        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterRMResponse));
+        assertTrue(responseQueue.stream().anyMatch(RegisterTMResponse.class::isInstance));
+        assertTrue(responseQueue.stream().anyMatch(RegisterRMResponse.class::isInstance));
         assertTrue(responseQueue.stream().anyMatch(each -> responseClass.equals(each.getClass())));
         while (!requestQueue.isEmpty()) {
             Object requestPackage = requestQueue.poll();

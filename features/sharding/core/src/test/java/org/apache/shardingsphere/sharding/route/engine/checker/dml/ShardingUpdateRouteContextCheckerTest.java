@@ -86,13 +86,6 @@ class ShardingUpdateRouteContextCheckerTest {
     }
     
     @Test
-    void assertCheckWhenTableNameIsBroadcastTable() {
-        mockShardingRuleForUpdateShardingColumn();
-        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
-        assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
-    }
-    
-    @Test
     void assertCheckWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));

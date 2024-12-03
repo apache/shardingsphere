@@ -45,12 +45,12 @@ public final class ProxyMetaDataInfoExporter implements MetricsExporter {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        result.addMetric(Collections.singletonList("database_count"), metaDataContexts.getMetaData().getDatabases().size());
+        result.addMetric(Collections.singletonList("database_count"), metaDataContexts.getMetaData().getAllDatabases().size());
         result.addMetric(Collections.singletonList("storage_unit_count"), getStorageUnitCount(metaDataContexts));
         return Optional.of(result);
     }
     
     private int getStorageUnitCount(final MetaDataContexts metaDataContexts) {
-        return metaDataContexts.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
+        return metaDataContexts.getMetaData().getAllDatabases().stream().map(each -> each.getResourceMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
     }
 }

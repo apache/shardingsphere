@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 
 import java.util.Collections;
-import java.util.Map.Entry;
 
 /**
  * ShardingSphere statistics builder for MySQL.
@@ -37,7 +36,7 @@ import java.util.Map.Entry;
 
 public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
-    private static final String SHARDING_SPHERE = "shardingsphere";
+    private static final String SHARDINGSPHERE = "shardingsphere";
     
     private static final String CLUSTER_INFORMATION = "cluster_information";
     
@@ -46,23 +45,23 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
-        for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
+        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-            initSchemas(entry.getValue(), databaseData);
+            initSchemas(each, databaseData);
             if (!databaseData.getSchemaData().isEmpty()) {
-                result.putDatabase(entry.getKey(), databaseData);
+                result.putDatabase(each.getName(), databaseData);
             }
         }
         return result;
     }
     
     private void initSchemas(final ShardingSphereDatabase database, final ShardingSphereDatabaseData databaseData) {
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            if (SHARDING_SPHERE.equals(entry.getKey())) {
+        for (ShardingSphereSchema each : database.getAllSchemas()) {
+            if (SHARDINGSPHERE.equals(each.getName())) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
                 initClusterInformationTable(schemaData);
                 initShardingTableStatisticsTable(schemaData);
-                databaseData.putSchema(SHARDING_SPHERE, schemaData);
+                databaseData.putSchema(SHARDINGSPHERE, schemaData);
             }
         }
     }

@@ -96,7 +96,7 @@
         <narayana.version>5.12.7.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <seata.version>2.1.0</seata.version>
+        <seata.version>2.2.0</seata.version>
         
         <netty.version>4.1.112.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
@@ -129,6 +129,7 @@
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive.version>4.0.1</hive.version>
         <hive-server2-jdbc-driver-thin.version>1.5.0</hive-server2-jdbc-driver-thin.version>
+        <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.288.1</presto.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
@@ -196,6 +197,7 @@
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <dependency-check-maven.version>10.0.3</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>
@@ -694,6 +696,7 @@
                         <target>${java.version}</target>
                         <testSource>${java.version}</testSource>
                         <testTarget>${java.version}</testTarget>
+                        <compilerArgs>-Xlint:-options</compilerArgs>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>org.projectlombok</groupId>
@@ -842,6 +845,11 @@
                     <configuration>
                         <aggregate>true</aggregate>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-maven.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -38,13 +38,13 @@ public final class SQLFederationRule implements GlobalRule {
     
     private final AtomicReference<OptimizerContext> optimizerContext;
     
-    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+    public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         optimizerContext = new AtomicReference<>(OptimizerContextFactory.create(databases));
     }
     
     @Override
-    public void refresh(final Map<String, ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
+    public void refresh(final Collection<ShardingSphereDatabase> databases, final GlobalRuleChangedType changedType) {
         optimizerContext.set(OptimizerContextFactory.create(databases));
     }
     

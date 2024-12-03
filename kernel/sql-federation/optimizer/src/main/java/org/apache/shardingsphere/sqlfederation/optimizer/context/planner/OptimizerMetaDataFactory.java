@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Optimizer meta data factory.
@@ -44,10 +44,10 @@ public final class OptimizerMetaDataFactory {
      * @param databases databases
      * @return created optimizer planner context map
      */
-    public static Map<String, OptimizerMetaData> create(final Map<String, ShardingSphereDatabase> databases) {
+    public static Map<String, OptimizerMetaData> create(final Collection<ShardingSphereDatabase> databases) {
         Map<String, OptimizerMetaData> result = new CaseInsensitiveMap<>(databases.size(), 1F);
-        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            result.put(entry.getKey(), create(entry.getValue()));
+        for (ShardingSphereDatabase each : databases) {
+            result.put(each.getName(), create(each));
         }
         return result;
     }
@@ -60,9 +60,8 @@ public final class OptimizerMetaDataFactory {
      */
     public static OptimizerMetaData create(final ShardingSphereDatabase database) {
         Map<String, Schema> schemas = new CaseInsensitiveMap<>();
-        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            Schema sqlFederationSchema = new SQLFederationSchema(entry.getKey(), entry.getValue(), database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY);
-            schemas.put(entry.getKey(), sqlFederationSchema);
+        for (ShardingSphereSchema each : database.getAllSchemas()) {
+            schemas.put(each.getName(), new SQLFederationSchema(each.getName(), each, database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY));
         }
         return new OptimizerMetaData(schemas);
     }

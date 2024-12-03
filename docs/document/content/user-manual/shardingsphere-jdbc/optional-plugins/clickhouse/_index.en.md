@@ -43,7 +43,7 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.10.2.80
+    image: clickhouse/clickhouse-server:24.11.1.2557
     ports:
       - "8123:8123"
 ```
@@ -227,11 +227,11 @@ Introduce the discussion of writing a Docker Compose file to start ClickHouse an
 ```yaml
 services:
   clickhouse-keeper-01:
-    image: clickhouse/clickhouse-keeper:24.10.2.80
+    image: clickhouse/clickhouse-keeper:24.11.1.2557
     volumes:
       - ./keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.10.2.80
+    image: clickhouse/clickhouse-server:24.11.1.2557
     depends_on:
       - clickhouse-keeper-01
     ports:

@@ -15,10 +15,6 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
 authority:
   users:
     - user: root@%
@@ -26,5 +22,4 @@ authority:
   privilege:
     type: ALL_PERMITTED
 props:
-  sql-show: false
   proxy-frontend-database-protocol-type: MySQL

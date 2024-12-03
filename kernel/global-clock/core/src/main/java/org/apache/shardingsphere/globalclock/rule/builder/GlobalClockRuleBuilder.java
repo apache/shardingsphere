@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Global clock rule builder.
@@ -32,7 +32,7 @@ import java.util.Map;
 public final class GlobalClockRuleBuilder implements GlobalRuleBuilder<GlobalClockRuleConfiguration> {
     
     @Override
-    public GlobalClockRule build(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    public GlobalClockRule build(final GlobalClockRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return new GlobalClockRule(ruleConfig);
     }
     

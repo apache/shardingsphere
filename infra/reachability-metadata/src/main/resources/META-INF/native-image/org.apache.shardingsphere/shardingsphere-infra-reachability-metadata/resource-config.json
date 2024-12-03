@@ -21,6 +21,6 @@
     "locales":["en"]
   }, {
     "name":"org.opengauss.translation.messages",
-    "locales":["zh"]
+    "locales":["en", "zh"]
   }]
 }

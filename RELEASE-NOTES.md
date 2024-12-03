@@ -14,6 +14,7 @@
 1. SQL Parser: Support parsing Doris BITXOR - [#33258](https://github.com/apache/shardingsphere/pull/33258)
 1. SQL Parser: Support parsing Doris INSTR - [#33289](https://github.com/apache/shardingsphere/pull/33289)
 1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
+1. SQL Parser: Support parsing MySQL by adding non-reserved keywords in BaseRule.g4 file according to MySQL 8.4 doc - [#33846](https://github.com/apache/shardingsphere/pull/33846)
 1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
 1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)
@@ -30,6 +31,7 @@
 1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
 1. Doc: Adds documentation for ClickHouse support - [#33779](https://github.com/apache/shardingsphere/pull/33779)
 1. Doc: Removes use of `iceberg.mr.schema.auto.conversion` from documentation due to HIVE-26507 - [#33828](https://github.com/apache/shardingsphere/pull/33828)
+1. Kernel: Bump the minimum Seata Client version for Seata AT integration to 2.2.0 - [#33872](https://github.com/apache/shardingsphere/pull/33872)
 
 ### Bug Fixes
 
@@ -46,6 +48,8 @@
 1. Encrypt: Fix merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
 1. SQL Parser: Fix mysql parse zone unreserved keyword error - [#33720](https://github.com/apache/shardingsphere/pull/33720)
 1. Proxy: Fix BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
+1. Infra: Fix the issue that ShardingSphere cannot connect to HiveServer2 using remote Hive Metastore Server - [#33837](https://github.com/apache/shardingsphere/pull/33837)
+1. SQL Parser: Fix mysql range parse error when use table owner - [#33874](https://github.com/apache/shardingsphere/pull/33874)
 
 ### Change Logs
 

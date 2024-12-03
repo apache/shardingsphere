@@ -10,7 +10,7 @@ All references to Seata integration in this article refer to Seata AT mode.
 
 ## Prerequisites
 
-ShardingSphere's Seata integration is only available in `apache/incubator-seata:v2.1.0` or higher.
+ShardingSphere's Seata integration is only available in `apache/incubator-seata:v2.2.0` or higher.
 For Seata Client corresponding to the `org.apache.seata:seata-all` Maven module, this limitation applies to both HotSpot VM and GraalVM Native Image.
 Introduce Maven dependencies and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `org.apache.seata:seata-all`.
 
@@ -28,88 +28,63 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
          <version>${shardingsphere.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.seata</groupId>
-        <artifactId>seata-all</artifactId>
-        <version>2.1.0</version>
-        <exclusions>
+         <groupId>org.apache.seata</groupId>
+         <artifactId>seata-all</artifactId>
+         <version>2.2.0</version>
+         <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>
                <artifactId>antlr4-runtime</artifactId>
             </exclusion>
-        </exclusions>
+         </exclusions>
       </dependency>
     </dependencies>
 </project>
 ```
 
-Affected by Calcite, 
-`commons-lang:commons-lang` and `org.apache.commons:commons-pool2` used by ShardingSphere JDBC have dependency conflicts with Seata Client.
-Users need to consider whether to resolve dependency conflicts based on actual scenarios.
+Affected by Calcite, `commons-lang:commons-lang` and `org.apache.commons:commons-pool2` used by ShardingSphere JDBC have dependency conflicts with Seata Client.
+Users need to consider whether to resolve dependency conflicts based on actual scenarios. 
+If dependency conflicts are not resolved, 
+build tools such as Maven will randomly use a version of the conflicting dependency in the classpath.
 
 When using ShardingSphere's Seata integration module, 
-the database instance connected to ShardingSphere should implement both ShardingSphere's dialect parsing support and Seata AT mode's dialect parsing support. 
-Such databases include but are not limited to `mysql`, `gvenzl/oracle-free`, `gvenzl/oracle-xe`, `postgres`, `mcr.microsoft.com/mssql/server` and other Docker Images.
+the database instance connected to ShardingSphere should implement both ShardingSphere's dialect parsing support and Seata AT mode's dialect parsing support.
+This type of database includes but is not limited to `mysql`, `gvenzl/oracle-free`, `gvenzl/oracle-xe`, `postgres`, 
+`mcr.microsoft.com/mssql/server` and other Docker Images.
 
-## Procedure
+### `undo_log` table restrictions
 
-1. Start Seata Server
-2. Create the log table
-3. Add the Seata configuration
+In each real database instance involved in ShardingSphere, an `undo_log` table needs to be created.
+The SQL content of each database is based on the corresponding database in https://github.com/apache/incubator-seata/tree/v2.2.0/script/client/at/db .
 
-## Sample
-
-### Start Seata Server
-
-Follow the steps in one of the links below to download and start Seata Server.
-
-The proper way to start Seata Server is to instantiate it through the Docker Image of `apache/seata-server` in Docker Hub.
-
-- https://hub.docker.com/r/apache/seata-server
-
-### Create undo_log table
-
-Create the `undo_log` table in each real database instance involved in ShardingSphere.
-The SQL content is based on the corresponding database in https://github.com/apache/incubator-seata/tree/v2.1.0/script/client/at/db .
-The following content takes MySQL as an example.
-```sql
-CREATE TABLE IF NOT EXISTS `undo_log`
-(
-    `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
-    `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
-    `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
-    `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
-    `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
-    `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
-    `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
-    UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
-ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
-```
-
-### Modify configuration
+### Related configuration
 
 Write the following content in the YAML configuration file of ShardingSphere of your own project, 
 refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction).
-
 If Java API is used when initializing ShardingSphere JDBC DataSource, 
 refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/java-api/rules/transaction).
 
 ```yaml
 transaction:
-  defaultType: BASE
-  providerType: Seata
+   defaultType: BASE
+   providerType: Seata
 ```
 
 Add the `seata.conf` file to the root directory of the classpath.
-The configuration file format refers to the [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.1.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java) of `org.apache.seata.config.FileConfiguration`.
+For the configuration file format, refer to the [JavaDoc](https://github.com/apache/incubator-seata/blob/v2.2.0/config/seata-config-core/src/main/java/org/apache/seata/config/FileConfiguration.java) of `org.apache.seata.config.FileConfiguration`.
 
-There are four properties in `seata.conf`,
+`seata.conf` has four properties,
 
-1. `shardingsphere.transaction.seata.at.enable`, when this value is `true`, enable ShardingSphere's Seata AT integration. The default value is `true`
+1. `shardingsphere.transaction.seata.at.enable`, when this value is `true`, enable ShardingSphere's Seata AT integration.
+The default value is `true`
+
 2. `shardingsphere.transaction.seata.tx.timeout`, global transaction timeout (seconds). The default value is `60`
-3. `client.application.id`, application unique primary key, used to set `applicationId` of Seata Transaction Manager Client and Seata Resource Manager Client
-4. `client.transaction.service.group`, transaction group, used to set `transactionServiceGroup` of Seata Transaction Manager Client and Seata Resource Manager Client.
-The default value is `default`
+
+3. `client.application.id`, application unique primary key, 
+used to set `applicationId` of Seata Transaction Manager Client and Seata Resource Manager Client
+
+4. `client.transaction.service.group`, transaction group, 
+used to set `transactionServiceGroup` of Seata Transaction Manager Client and Seata Resource Manager Client. The default value is `default`
 
 A fully configured `seata.conf` is as follows,
 
@@ -124,17 +99,212 @@ client {
 ```
 
 A minimally configured `seata.conf` is as follows.
-In `seata.conf` managed by ShardingSphere, the default value of `client.transaction.service.group` is set to `default` for historical reasons.
-Assuming that in the `registry.conf` of Seata Server and Seata Client used by the user, `registry.type` and `config.type` are both `file`,
-then for the `.conf` file configured by `config.file.name` of `registry.conf`,
-the default transaction group name is `default_tx_group` in `apache/incubator-seata:v1.5.1` and later, 
+In `seata.conf` managed by ShardingSphere, the default value of `client.transaction.service.group` is `default` for historical reasons.
+Assuming that `registry.type` and `config.type` are both `file` in `registry.conf` of Seata Server and Seata Client used by the user,
+then for `registry.file.name` of `registry.conf`, 
+the transaction group name in the `.conf` file configured by `config.file.name` is `default_tx_group` in `apache/incubator-seata:v1.5.1` and later, 
 and `my_test_tx_group` before `apache/incubator-seata:v1.5.1`.
 
 ```conf
 client.application.id = example
 ```
 
-Modify the `registry.conf` file of Seata as required.
+Modify Seata's `registry.conf` file according to the actual scenario.
+
+## Operation steps
+
+1. Start Seata Server
+2. Create `undo_log` table
+3. Add Seata configuration
+
+## Configuration Example
+
+### Start Seata Server and MySQL Server
+
+Write Docker Compose file to start Seata Server and MySQL Server.
+
+```yaml
+services:
+   apache-seata-server:
+      image: apache/seata-server:2.2.0
+      ports:
+         - "8091:8091"
+   mysql:
+      image: mysql:9.1.0
+      environment:
+         MYSQL_ROOT_PASSWORD: example
+      volumes:
+         - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      ports:
+         - "3306:3306"
+```
+
+The `./docker-entrypoint-initdb.d` folder contains the file `init.sh`, the content is as follows,
+
+```shell
+#!/bin/bash
+set -e
+
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<EOSQL
+CREATE DATABASE demo_ds_0;
+CREATE DATABASE demo_ds_1;
+CREATE DATABASE demo_ds_2;
+EOSQL
+
+for i in "demo_ds_0" "demo_ds_1" "demo_ds_2"
+do
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$i" <<'EOSQL'
+CREATE TABLE IF NOT EXISTS `undo_log`
+(
+    `branch_id`     BIGINT       NOT NULL COMMENT 'branch transaction id',
+    `xid`           VARCHAR(128) NOT NULL COMMENT 'global transaction id',
+    `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
+    `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
+    `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
+    `log_created`   DATETIME(6)  NOT NULL COMMENT 'create datetime',
+    `log_modified`  DATETIME(6)  NOT NULL COMMENT 'modify datetime',
+    UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
+ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
+
+CREATE TABLE IF NOT EXISTS t_order (
+   order_id BIGINT NOT NULL AUTO_INCREMENT,
+   order_type INT(11),
+   user_id INT NOT NULL,
+   address_id BIGINT NOT NULL,
+   status VARCHAR(50),
+   PRIMARY KEY (order_id)
+);
+EOSQL
+done
+```
+
+### Create `seata.conf` in the classpath of the business project
+
+Create `seata.conf` in the classpath of the business project, with the following content,
+
+```
+service {
+    default.grouplist = "127.0.0.1:8091"
+    vgroupMapping.default_tx_group = "default"
+}
+```
+
+### Create `file.conf` in the classpath of the business project
+
+Create `file.conf` in the classpath of the business project, with the following content,
+
+```
+client {
+    application.id = test
+    transaction.service.group = default_tx_group
+}
+```
+
+### Create `registry.conf` in the classpath of the business project
+
+Create a `registry.conf` in the classpath of the business project with the following content:
+
+```
+registry {
+  type = "file"
+  file {
+    name = "file.conf"
+  }
+}
+config {
+  type = "file"
+  file {
+    name = "file.conf"
+  }
+}
+```
+
+### Create ShardingSphere configuration file in business project
+
+After the business project introduces the dependencies involved in the prerequisites, 
+write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project,
+
+```yaml
+dataSources:
+   ds_0:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
+      username: root
+      password: example
+   ds_1:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
+      username: root
+      password: example
+   ds_2:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
+      username: root
+      password: example
+rules:
+   - !SHARDING
+      tables:
+         t_order:
+            actualDataNodes: ds_$->{0..2}.t_order
+            keyGenerateStrategy:
+               column: order_id
+               keyGeneratorName: snowflake
+      defaultDatabaseStrategy:
+         standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: inline
+      shardingAlgorithms:
+         inline:
+            type: INLINE
+            props:
+               algorithm-expression: ds_${user_id % 2}
+      keyGenerators:
+         snowflake:
+            type: SNOWFLAKE
+transaction:
+   defaultType: BASE
+   providerType: Seata
+```
+
+### Enjoy integration
+
+You can start enjoying integration on ShardingSphere’s data source.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+@SuppressWarnings({"SqlNoDataSourceInspection", "AssertWithSideEffects"})
+public class ExampleTest {
+    void test() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        try (HikariDataSource dataSource = new HikariDataSource(config)) {
+            try (Connection conn = dataSource.getConnection()) {
+                try {
+                    conn.setAutoCommit(false);
+                    conn.createStatement().executeUpdate("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (2024, 1, 2024, 'INSERT_TEST')");
+                    conn.createStatement().executeUpdate("INSERT INTO t_order_does_not_exist (test_id_does_not_exist) VALUES (2024)");
+                    conn.commit();
+                } catch (final SQLException ignored) {
+                    conn.rollback();
+                } finally {
+                    conn.setAutoCommit(true);
+                }
+            }
+            try (Connection conn = dataSource.getConnection()) {
+                assert !conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024").next();
+            }
+        }
+    }
+}
+```
 
 ## Usage restrictions
 
@@ -145,21 +315,27 @@ And `org.apache.seata.spring.annotation.GlobalTransactionScanner` uses Dynamic P
 This means that when using ShardingSphere's Seata integration, users should avoid using the Java API of `org.apache.seata:seata-all`, 
 unless the user is mixing ShardingSphere's Seata integration with the TCC mode feature of Seata Client.
 
-For ShardingSphere data source, discuss 6 situations,
+For ShardingSphere data source, 7 situations are discussed.
 
-1. Manually obtain the `java.sql.Connection` instance created from the ShardingSphere data source,
-and manually calling the `setAutoCommit()`, `commit()` and `rollback()` methods is allowed.
+1. Manually obtain the `java.sql.Connection` instance created from the ShardingSphere data source and manually call the `setAutoCommit()`, `commit()` and `rollback()` methods.
+This is allowed.
 
-2. Using the Jakarta EE 8 `javax.transaction.Transactional` annotation on the function is allowed.
+2. Use the `javax.transaction.Transactional` annotation of Jakarta EE 8 on the function. This is allowed.
 
-3. Using Jakarta EE 9/10’s `jakarta.transaction.Transactional` annotation on functions is allowed.
+3. Use the `jakarta.transaction.Transactional` annotation of Jakarta EE 9/10 on the function. This is allowed.
 
-4. Using Spring Framework’s `org.springframework.transaction.annotation.Transactional` annotation on functions is allowed.
+4. Use the `org.springframework.transaction.annotation.Transactional` annotation of Spring Framework on the function.
+This is allowed.
 
-5. Using the `org.apache.seata.spring.annotation.GlobalTransactional` annotation on the function is **not allowed**.
+5. Manually obtain an `org.springframework.transaction.support.TransactionTemplate` instance created from an `org.springframework.transaction.PlatformTransactionManager` instance,
+   and use `org.springframework.transaction.support.TransactionTemplate#execute(org.springframework.transaction.support.TransactionCallback)`,
+   which is allowed.
 
-6. Manually create `org.apache.seata.tm.api.GlobalTransaction` instance from `org.apache.seata.tm.api.GlobalTransactionContext`,
-calling the `begin()`, `commit()` and `rollback()` methods of an `org.apache.seata.tm.api.GlobalTransaction` instance is **not allowed**.
+6. Use the `org.apache.seata.spring.annotation.GlobalTransactional` annotation on a function, which is **not allowed**.
+
+7. Manually create an `org.apache.seata.tm.api.GlobalTransaction` instance from an `org.apache.seata.tm.api.GlobalTransactionContext`,
+   and call the `begin()`, `commit()`, and `rollback()` methods of the `org.apache.seata.tm.api.GlobalTransaction` instance, 
+   which is **not allowed**.
 
 In actual scenarios where Spring Boot is used, 
 `com.alibaba.cloud:spring-cloud-starter-alibaba-seata` and `org.apache.seata:seata-spring-boot-starter` are often transitively imported by other Maven dependencies.
@@ -182,7 +358,7 @@ A possible dependency relationship is as follows.
        <dependency>
           <groupId>org.apache.seata</groupId>
           <artifactId>seata-spring-boot-starter</artifactId>
-          <version>2.1.0</version>
+          <version>2.2.0</version>
           <exclusions>
              <exclusion>
                 <groupId>org.antlr</groupId>
@@ -402,7 +578,7 @@ the changes to the MySQL database instances `a-mysql` and `b-mysql` in the busin
 but the API gateway middleware used blocks all HTTP requests containing the HTTP Header of `TX_XID`.
 The user needs to consider changing the HTTP Header used to pass XID to the microservice instance `a-service` through service calls, 
 or use the RPC framework to pass XID to the microservice instance `a-service` through service calls.
-Refer to https://github.com/apache/incubator-seata/tree/v2.1.0/integration .
+Refer to https://github.com/apache/incubator-seata/tree/v2.2.0/integration .
 
 4. The microservice instances `a-service` and `b-service` are both microservices such as Quarkus, 
 Micronaut Framework and Helidon. In this case, Spring WebMVC HandlerInterceptor cannot be used.

@@ -85,7 +85,7 @@ class RouteSQLRewriteEngineTest {
         Map<String, StorageUnit> storageUnits = mockStorageUnits(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(result.getSchemas()).thenReturn(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test")));
         return result;
     }
     

@@ -10,8 +10,8 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.features.ShardingTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.features.ShardingTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true,
@@ -164,6 +164,14 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.AcidTableTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,

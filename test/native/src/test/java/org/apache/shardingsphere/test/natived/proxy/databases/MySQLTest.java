@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.proxy.features;
+package org.apache.shardingsphere.test.natived.proxy.databases;
 
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
@@ -43,7 +43,7 @@ import java.util.Properties;
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
 @EnabledInNativeImage
 @Testcontainers
-class ShardingTest {
+class MySQLTest {
     
     @Container
     public static final GenericContainer<?> MYSQL_CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
@@ -56,7 +56,7 @@ class ShardingTest {
     
     @BeforeAll
     static void beforeAll() throws SQLException {
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
             openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306))
                     .close();
             return true;
@@ -68,9 +68,9 @@ class ShardingTest {
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/features/sharding").toAbsolutePath().toString();
+        String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/mysql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
             openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
             return true;
         });
