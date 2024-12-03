@@ -111,7 +111,7 @@ class MySQLTest {
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
     private DataSource createDataSource() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException).until(() -> {
+        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
             openConnection().close();
             return true;
         });
