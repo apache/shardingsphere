@@ -58,7 +58,7 @@ class ShowTableStatusMergedResultTest {
     @BeforeEach
     void setUp() {
         rule = buildShardingRule();
-        schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME,
+        schema = new ShardingSphereSchema("foo_db",
                 Collections.singleton(new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
     }
     

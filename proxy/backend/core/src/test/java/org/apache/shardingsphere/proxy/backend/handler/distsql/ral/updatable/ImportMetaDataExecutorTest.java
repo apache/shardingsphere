@@ -129,7 +129,7 @@ class ImportMetaDataExecutorTest {
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
         if (null != feature) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTables(), Collections.emptyList()));
+            when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList()));
             Map<String, StorageUnit> storageUnits = createStorageUnits();
             when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));

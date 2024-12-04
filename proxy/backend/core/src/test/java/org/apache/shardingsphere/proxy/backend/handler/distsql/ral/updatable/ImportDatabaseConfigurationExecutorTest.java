@@ -145,7 +145,7 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(database.getSchema("foo_db")).thenReturn(schema);
         StorageUnit storageUnit = mock(StorageUnit.class);
         DataSource dataSource = new MockedDataSource();
         when(storageUnit.getDataSource()).thenReturn(dataSource);

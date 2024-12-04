@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -63,16 +62,15 @@ class DatabaseBackendHandlerFactoryTest {
         String sql = "DESC tbl";
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
-        DatabaseBackendHandler actual =
-                DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                        mock(ConnectionSession.class), false);
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
+                mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
     

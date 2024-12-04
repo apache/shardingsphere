@@ -54,7 +54,7 @@ class ShardingCopySupportedCheckerTest {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(
-                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -62,7 +62,7 @@ class ShardingCopySupportedCheckerTest {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(
-                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -77,7 +77,7 @@ class ShardingCopySupportedCheckerTest {
     
     private void assertCheckCopyTable(final CopyStatement sqlStatement) {
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, "foo_db");
         String tableName = "t_order";
         when(shardingRule.isShardingTable(tableName)).thenReturn(true);
         new ShardingCopySupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), sqlStatementContext);

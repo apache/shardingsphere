@@ -51,7 +51,7 @@ class UnsupportedOperationPreparedStatementTest {
     @BeforeEach
     void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        when(connection.getCurrentDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(connection.getCurrentDatabaseName()).thenReturn("foo_db");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyList()))));

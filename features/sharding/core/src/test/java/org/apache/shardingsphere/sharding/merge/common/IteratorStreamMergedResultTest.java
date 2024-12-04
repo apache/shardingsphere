@@ -60,12 +60,12 @@ class IteratorStreamMergedResultTest {
     void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
@@ -74,7 +74,7 @@ class IteratorStreamMergedResultTest {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
         assertFalse(actual.next());
     }
@@ -87,7 +87,7 @@ class IteratorStreamMergedResultTest {
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -102,7 +102,7 @@ class IteratorStreamMergedResultTest {
         when(queryResults.get(index).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -117,7 +117,7 @@ class IteratorStreamMergedResultTest {
         when(queryResults.get(5).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());

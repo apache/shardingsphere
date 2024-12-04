@@ -293,8 +293,8 @@ public final class ShardingRouteEngineFixtureBuilder {
      */
     public static SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, rules);
-        result.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
+        SingleRule result = new SingleRule(new SingleRuleConfiguration(), "foo_db", new H2DatabaseType(), dataSourceMap, rules);
+        result.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceMap.keySet().iterator().next(), "foo_db", "t_category");
         return result;
     }
     

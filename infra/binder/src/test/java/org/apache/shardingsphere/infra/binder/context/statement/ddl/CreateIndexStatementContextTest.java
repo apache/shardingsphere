@@ -62,14 +62,14 @@ class CreateIndexStatementContextTest {
     }
     
     private void assertNewInstance(final CreateIndexStatement createIndexStatement) {
-        CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement, DefaultDatabase.LOGIC_NAME);
+        CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createIndexStatement));
         assertTrue(actual.isGeneratedIndex());
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes(), is(Collections.emptyList()));
         when(createIndexStatement.getIndex()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_2"))));
-        CreateIndexStatementContext actual2 = new CreateIndexStatementContext(createIndexStatement, DefaultDatabase.LOGIC_NAME);
+        CreateIndexStatementContext actual2 = new CreateIndexStatementContext(createIndexStatement, "foo_db");
         assertThat(actual2.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_2")));
     }
 }

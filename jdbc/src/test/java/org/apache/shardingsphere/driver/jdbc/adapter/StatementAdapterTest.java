@@ -22,7 +22,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -251,7 +250,7 @@ class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
                 .thenReturn(Collections.singleton(ruleAttribute));
         when(connection.getCurrentDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");

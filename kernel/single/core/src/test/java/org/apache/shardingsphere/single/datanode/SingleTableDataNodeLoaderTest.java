@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.datanode;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -98,7 +97,7 @@ class SingleTableDataNodeLoaderTest {
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
-                DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.singleton("*.*"));
+                "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.singleton("*.*"));
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -112,7 +111,7 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithConflictTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("*.*.*"));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("*.*.*"));
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));
         assertTrue(actual.containsKey("student"));
@@ -133,7 +132,7 @@ class SingleTableDataNodeLoaderTest {
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.emptyList());
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.emptyList());
         assertTrue(actual.isEmpty());
     }
 }

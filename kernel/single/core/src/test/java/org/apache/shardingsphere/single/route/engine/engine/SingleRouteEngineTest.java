@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.single.route.engine.engine;
 
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -66,7 +65,7 @@ class SingleRouteEngineTest {
     @Test
     void assertRouteInSameDataSource() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock(HintValueContext.class));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -86,18 +85,18 @@ class SingleRouteEngineTest {
     
     private DataNode mockDataNode(final String tableName) {
         DataNode result = new DataNode("ds_0", tableName);
-        result.setSchemaName(DefaultDatabase.LOGIC_NAME);
+        result.setSchemaName("foo_db");
         return result;
     }
     
     private Collection<QualifiedTable> mockQualifiedTables() {
-        return Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
+        return Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
     }
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -113,7 +112,7 @@ class SingleRouteEngineTest {
     void assertRouteWithDefaultSingleRule() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
         SingleRule singleRule =
-                new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+                new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -138,14 +137,14 @@ class SingleRouteEngineTest {
     @Test
     void assertRouteDuplicateSingleTable() {
         SingleRouteEngine engine =
-                new SingleRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false), mock(HintValueContext.class));
+                new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(false), mock(HintValueContext.class));
         assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     @Test
     void assertRouteIfNotExistsDuplicateSingleTable() {
         SingleRouteEngine engine =
-                new SingleRouteEngine(Collections.singleton(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true), mock(HintValueContext.class));
+                new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(true), mock(HintValueContext.class));
         assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
@@ -159,7 +158,7 @@ class SingleRouteEngineTest {
         SingleRule result = mock(SingleRule.class);
         DataNode dataNode = mock(DataNode.class);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
+        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.of(dataNode));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }

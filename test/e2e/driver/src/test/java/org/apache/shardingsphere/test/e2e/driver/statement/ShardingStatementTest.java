@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.junit.jupiter.api.Test;
 
@@ -123,7 +122,7 @@ class ShardingStatementTest extends AbstractShardingDriverTest {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             assertTrue(resultSet.next());
-            assertThat(resultSet.getString(1), is(DefaultDatabase.LOGIC_NAME));
+            assertThat(resultSet.getString(1), is("foo_db"));
         }
     }
     

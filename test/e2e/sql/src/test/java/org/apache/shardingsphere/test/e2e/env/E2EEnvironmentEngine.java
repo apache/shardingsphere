@@ -69,7 +69,7 @@ public final class E2EEnvironmentEngine {
     
     @SneakyThrows({SQLException.class, IOException.class})
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType, final DataSource targetDataSource) {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile("foo_db", databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }

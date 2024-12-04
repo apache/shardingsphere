@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.api;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -38,7 +37,7 @@ class ShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithModeConfiguration() throws SQLException {
-        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null)), DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null)), "foo_db");
     }
     
     @Test
@@ -49,7 +48,7 @@ class ShardingSphereDataSourceFactoryTest {
     @Test
     void assertCreateDataSourceWithAllParametersForMultipleDataSourcesWithDefaultDatabaseName() throws SQLException {
         assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
-                new ModeConfiguration("Standalone", null), Collections.emptyMap(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
+                new ModeConfiguration("Standalone", null), Collections.emptyMap(), new LinkedList<>(), new Properties()), "foo_db");
     }
     
     @Test
@@ -61,7 +60,7 @@ class ShardingSphereDataSourceFactoryTest {
     @Test
     void assertCreateDataSourceWithAllParametersForSingleDataSourceWithDefaultDatabaseName() throws SQLException {
         assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
-                new ModeConfiguration("Standalone", null), new MockedDataSource(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
+                new ModeConfiguration("Standalone", null), new MockedDataSource(), new LinkedList<>(), new Properties()), "foo_db");
     }
     
     @Test
@@ -72,7 +71,7 @@ class ShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithDefaultModeConfigurationForMultipleDataSources() throws SQLException {
-        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(null), DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(null), "foo_db");
     }
     
     @Test
@@ -82,7 +81,7 @@ class ShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithDefaultModeConfigurationForSingleDataSource() throws SQLException {
-        assertDataSource(ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) null, new MockedDataSource(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) null, new MockedDataSource(), new LinkedList<>(), new Properties()), "foo_db");
     }
     
     @Test

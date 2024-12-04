@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
@@ -61,7 +60,7 @@ class ShardingUpdateSupportedCheckerTest {
     void assertCheckWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, DefaultDatabase.LOGIC_NAME);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, "foo_db");
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
@@ -75,7 +74,7 @@ class ShardingUpdateSupportedCheckerTest {
         joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTable(joinTableSegment);
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, DefaultDatabase.LOGIC_NAME);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, "foo_db");
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);

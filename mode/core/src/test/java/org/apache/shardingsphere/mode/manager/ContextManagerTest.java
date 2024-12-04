@@ -143,10 +143,10 @@ class ContextManagerTest {
     @Test
     void assertGetStorageUnits() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
-        when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
-        when(metaDataContexts.getMetaData().containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        assertThat(contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).size(), is(1));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
     }
     
     @Test

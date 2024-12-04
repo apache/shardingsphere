@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -106,14 +105,14 @@ class ShardingRouteEngineFactoryTest {
     @BeforeEach
     void setUp() {
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
     
@@ -164,7 +163,7 @@ class ShardingRouteEngineFactoryTest {
     
     private void assertNewInstanceForDCLForSingleTable(final GrantStatement grantStatement) {
         grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement, DefaultDatabase.LOGIC_NAME);
+        GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement, "foo_db");
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual =
                 ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);

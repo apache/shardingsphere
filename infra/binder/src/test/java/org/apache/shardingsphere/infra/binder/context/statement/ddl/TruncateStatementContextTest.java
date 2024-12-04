@@ -62,7 +62,7 @@ class TruncateStatementContextTest {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         truncateStatement.getTables().addAll(Arrays.asList(table1, table2));
-        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement, DefaultDatabase.LOGIC_NAME);
+        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(truncateStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

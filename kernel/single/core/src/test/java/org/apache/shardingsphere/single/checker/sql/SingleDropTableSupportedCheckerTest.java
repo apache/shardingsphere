@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.checker.sql;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -62,6 +61,6 @@ class SingleDropTableSupportedCheckerTest {
         PostgreSQLDropTableStatement dropSchemaStatement = mock(PostgreSQLDropTableStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
-        return new DropTableStatementContext(dropSchemaStatement, DefaultDatabase.LOGIC_NAME);
+        return new DropTableStatementContext(dropSchemaStatement, "foo_db");
     }
 }

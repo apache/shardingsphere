@@ -77,14 +77,14 @@ class TablelessRouteEngineFactoryTest {
     @BeforeEach
     void setUp() {
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         Collection<String> tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
     

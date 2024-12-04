@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -73,7 +72,7 @@ class ShardingUpdateRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenNotUpdateShardingColumn() {
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement(), "foo_db");
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), mock(RouteContext.class)));
     }
@@ -81,14 +80,14 @@ class ShardingUpdateRouteContextCheckerTest {
     @Test
     void assertCheckWhenUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), "foo_db"));
         assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
     void assertCheckWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement(), "foo_db"));
         assertThrows(UnsupportedUpdatingShardingValueException.class,
                 () -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createFullRouteContext()));
     }

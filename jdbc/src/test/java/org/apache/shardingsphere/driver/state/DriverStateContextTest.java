@@ -36,13 +36,13 @@ class DriverStateContextTest {
     @Test
     void assertGetConnectionWithOkState() {
         ContextManager contextManager = mockContextManager(InstanceState.OK);
-        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(ShardingSphereConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(ShardingSphereConnection.class));
     }
     
     @Test
     void assertGetConnectionWithCircuitBreakState() {
         ContextManager contextManager = mockContextManager(InstanceState.CIRCUIT_BREAK);
-        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(CircuitBreakerConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(CircuitBreakerConnection.class));
     }
     
     private ContextManager mockContextManager(final InstanceState instanceState) {

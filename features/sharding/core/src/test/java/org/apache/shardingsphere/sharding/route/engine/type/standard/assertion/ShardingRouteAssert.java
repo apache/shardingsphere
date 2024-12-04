@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -84,11 +83,11 @@ public final class ShardingRouteAssert {
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("t_product"));
         when(broadcastRule.getAttributes().findAttribute(TableMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, broadcastRule, singleRule, timestampServiceRule));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, buildSchemas());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, buildSchemas());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatementParserEngine.parse(sql, false), params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, "foo_db", new HintValueContext()).bind(sqlStatementParserEngine.parse(sql, false), params);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
-        connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
+        connectionContext.setCurrentDatabaseName("foo_db");
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(queryContext, mock(RuleMetaData.class), database);
@@ -117,6 +116,6 @@ public final class ShardingRouteAssert {
                 Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema("foo_db", tables, Collections.emptyList()));
     }
 }

@@ -21,7 +21,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -71,10 +70,10 @@ class SQLLoggerTest {
     @BeforeEach
     void setUp() {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
+        when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
         queryContext = new QueryContext(mock(SQLStatementContext.class), SQL, Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
         executionUnits = prepareExecutionUnits(Arrays.asList("db1", "db2", "db3"));
         appenderList.clear();

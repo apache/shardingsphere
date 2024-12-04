@@ -35,29 +35,29 @@ class TableMetaDataNodeTest {
     
     @Test
     void assertGetTableActiveVersionNode() {
-        assertThat(TableMetaDataNode.getTableActiveVersionNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
+        assertThat(TableMetaDataNode.getTableActiveVersionNode("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version"));
     }
     
     @Test
     void assertGetTableVersionsNode() {
-        assertThat(TableMetaDataNode.getTableVersionsNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions"));
+        assertThat(TableMetaDataNode.getTableVersionsNode("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions"));
     }
     
     @Test
     void assertGetTableVersionNode() {
-        assertThat(TableMetaDataNode.getTableVersionNode("foo_db", "foo_schema", "foo_table", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0"));
+        assertThat(TableMetaDataNode.getTableVersionNode("foo_db", "foo_schema", "foo_tbl", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0"));
     }
     
     @Test
     void assertGetTableNode() {
-        assertThat(TableMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_table"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
+        assertThat(TableMetaDataNode.getTableNode("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_table"));
     }
     
     @Test
     void assertGetTableNameByActiveVersionNode() {
         Optional<String> actual = TableMetaDataNode.getTableNameByActiveVersionNode("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+        assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
@@ -69,7 +69,7 @@ class TableMetaDataNodeTest {
     void assertGetTableName() {
         Optional<String> actual = TableMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+        assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test

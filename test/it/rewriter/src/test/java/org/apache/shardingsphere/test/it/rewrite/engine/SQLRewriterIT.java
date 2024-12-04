@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -123,7 +122,7 @@ public abstract class SQLRewriterIT {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits()).thenReturn(databaseConfig.getStorageUnits());
-        String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
+        String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : "foo_db";
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
@@ -156,7 +155,7 @@ public abstract class SQLRewriterIT {
     }
     
     private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
-        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class),
+        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build("foo_db", databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class),
                 new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
         mockRules(result, schemaName, sqlStatement);
         result.add(sqlParserRule);

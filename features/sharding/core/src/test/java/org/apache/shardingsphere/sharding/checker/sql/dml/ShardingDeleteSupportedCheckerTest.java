@@ -87,7 +87,7 @@ class ShardingDeleteSupportedCheckerTest {
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, "foo_db");
         new ShardingDeleteSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
     }
 }

@@ -27,7 +27,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -82,7 +81,7 @@ class SQLStatementCompilerIT {
         tables.add(createTProductDetailMetaData());
         tables.add(createMultiTypesFirstTableMetaData());
         tables.add(createMultiTypesSecondTableMetaData());
-        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyList())));
+        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema("foo_db", tables, Collections.emptyList())));
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
