@@ -101,7 +101,7 @@ jobs:
         run: ./mvnw test -B -ntp -fae -T1C
 
   ci-native-test:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    if: github.repository == 'apache/shardingsphere'
     name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
     needs: global-environment
     runs-on: ${{ matrix.os }}
