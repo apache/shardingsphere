@@ -518,4 +518,28 @@
             <index-item index="1" start-index="199" stop-index="199"/>
         </order-by>
     </select>
+    <select sql-case-id="select_group_concat">
+        <projections start-index="7" stop-index="51">
+            <aggregation-projection text="GROUP_CONCAT(user_id)" start-index="7" stop-index="27">
+                <parameter>
+                    <column name="user_id" start-index="20" stop-index="26" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table start-index="58" stop-index="64"/>
+        </from>
+    </select>
+    <select sql-case-id="select_group_concat_with_distinct_with_separator">
+        <projections start-index="7" stop-index="74">
+            <aggregation-projection text="GROUP_CONCAT(distinct user_id SEPARATOR ' ')" start-index="7" stop-index="50">
+                <parameter>
+                    <column name="user_id" start-index="29" stop-index="35" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table start-index="81" stop-index="87"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

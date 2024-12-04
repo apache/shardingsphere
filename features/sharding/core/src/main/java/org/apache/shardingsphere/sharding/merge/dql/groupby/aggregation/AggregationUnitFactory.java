@@ -33,18 +33,6 @@ public final class AggregationUnitFactory {
      *
      * @param type aggregation function type
      * @param isDistinct is distinct
-     * @return aggregation unit instance
-     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
-     */
-    public static AggregationUnit create(final AggregationType type, final boolean isDistinct) {
-        return create(type, isDistinct, null);
-    }
-    
-    /**
-     * Create aggregation unit instance.
-     *
-     * @param type aggregation function type
-     * @param isDistinct is distinct
      * @param separator is separator for group_concat
      * @return aggregation unit instance
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception

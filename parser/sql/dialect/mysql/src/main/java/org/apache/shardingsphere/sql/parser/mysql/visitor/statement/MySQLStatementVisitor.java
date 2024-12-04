@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SeparatorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
@@ -918,7 +918,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     @Override
-    public ASTNode visitSeparatorName(final MySQLStatementParser.SeparatorNameContext ctx) {
+    public ASTNode visitSeparatorName(final SeparatorNameContext ctx) {
         return new StringLiteralValue(ctx.string_().getText());
     }
     
