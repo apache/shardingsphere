@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.state.circuit;
 
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
