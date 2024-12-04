@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.single.decider;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,7 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenAllSingleTablesInSameComputeNode() {
-        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
+        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
@@ -69,7 +68,7 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenAllSingleTablesNotInSameComputeNode() {
-        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
+        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
@@ -80,7 +79,7 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenAllTablesInSameComputeNode() {
-        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
+        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
@@ -91,7 +90,7 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenAllTablesNotInSameComputeNode() {
-        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
+        Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
@@ -104,8 +103,8 @@ class SingleSQLFederationDeciderTest {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTables(any())).thenReturn(qualifiedTables);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
-        when(ruleAttribute.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order_item")).thenReturn(Optional.of(new DataNode("ds_0", "t_order_item")));
+        when(ruleAttribute.findTableDataNode("foo_db", "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
+        when(ruleAttribute.findTableDataNode("foo_db", "t_order_item")).thenReturn(Optional.of(new DataNode("ds_0", "t_order_item")));
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
@@ -118,8 +117,8 @@ class SingleSQLFederationDeciderTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(result.getName()).thenReturn("foo_db");
+        when(result.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         return result;
     }
 }

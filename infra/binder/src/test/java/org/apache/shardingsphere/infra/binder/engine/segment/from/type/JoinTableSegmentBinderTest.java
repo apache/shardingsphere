@@ -22,7 +22,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -69,8 +68,8 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(
+                joinTableSegment, new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
@@ -107,7 +106,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()),
                 tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
@@ -129,7 +128,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()),
                 tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
@@ -165,7 +164,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getUsing()).thenReturn(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()),
                 tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
@@ -201,7 +200,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(JoinTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getRight(), instanceOf(SimpleTableSegment.class));
@@ -235,11 +234,11 @@ class JoinTableSegmentBinderTest {
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
-        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order_item")).thenReturn(true);
         return result;
     }
 }

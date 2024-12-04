@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -95,7 +94,7 @@ class ShardingDropTableRouteContextCheckerTest {
         routeUnits.add(routeUnit);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, "foo_db"));
         assertThrows(InUsedTablesException.class, () -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -128,7 +127,7 @@ class ShardingDropTableRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, "foo_db"));
         assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
                 mock(ConfigurationProperties.class), routeContext));
     }
@@ -142,7 +141,7 @@ class ShardingDropTableRouteContextCheckerTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, "foo_db"));
         assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
                 mock(ConfigurationProperties.class), routeContext));
     }
@@ -156,7 +155,7 @@ class ShardingDropTableRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME));
+        when(queryContext.getSqlStatementContext()).thenReturn(new DropTableStatementContext(sqlStatement, "foo_db"));
         assertDoesNotThrow(() -> new ShardingDropTableRouteContextChecker().check(shardingRule, queryContext, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS),
                 mock(ConfigurationProperties.class), routeContext));
     }

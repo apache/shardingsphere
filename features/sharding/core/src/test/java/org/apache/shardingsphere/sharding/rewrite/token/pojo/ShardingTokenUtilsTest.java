@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -53,7 +52,7 @@ class ShardingTokenUtilsTest {
     }
     
     private RouteUnit getRouteUnit() {
-        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
+        return new RouteUnit(new RouteMapper("foo_db", "ds_0"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
     }
     
     private static SQLStatementContext mockSQLStatementContext() {
@@ -64,7 +63,7 @@ class ShardingTokenUtilsTest {
     
     private static ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getLogicAndActualTablesFromBindingTable(DefaultDatabase.LOGIC_NAME, "foo_tbl", "foo_tbl_0", Arrays.asList("foo_tbl", "bar_tbl")))
+        when(result.getLogicAndActualTablesFromBindingTable("foo_db", "foo_tbl", "foo_tbl_0", Arrays.asList("foo_tbl", "bar_tbl")))
                 .thenReturn(Collections.singletonMap("bar_tbl", "bar_tbl_0"));
         return result;
     }

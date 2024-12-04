@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
@@ -51,7 +50,7 @@ class ShardingLoadDataSupportedCheckerTest {
     void assertCheckWithSingleTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(
-                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -59,6 +58,6 @@ class ShardingLoadDataSupportedCheckerTest {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, "foo_db")));
     }
 }

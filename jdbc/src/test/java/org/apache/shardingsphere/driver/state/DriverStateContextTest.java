@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -36,13 +35,13 @@ class DriverStateContextTest {
     @Test
     void assertGetConnectionWithOkState() {
         ContextManager contextManager = mockContextManager(InstanceState.OK);
-        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(ShardingSphereConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(ShardingSphereConnection.class));
     }
     
     @Test
     void assertGetConnectionWithCircuitBreakState() {
         ContextManager contextManager = mockContextManager(InstanceState.CIRCUIT_BREAK);
-        assertThat(DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager), instanceOf(CircuitBreakerConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(CircuitBreakerConnection.class));
     }
     
     private ContextManager mockContextManager(final InstanceState instanceState) {

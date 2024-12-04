@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -75,9 +74,8 @@ class MySQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
-                TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource, Collections.emptyList()), is(schemaTableNames));
+        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", Collections.singletonList("tbl"));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
     @Test

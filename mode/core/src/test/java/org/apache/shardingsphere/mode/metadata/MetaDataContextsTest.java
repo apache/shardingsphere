@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.junit.jupiter.api.Test;
@@ -41,10 +38,9 @@ class MetaDataContextsTest {
     @Test
     void assertGetDefaultMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        assertThat(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        assertThat(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase("foo_db"), is(database));
     }
 }

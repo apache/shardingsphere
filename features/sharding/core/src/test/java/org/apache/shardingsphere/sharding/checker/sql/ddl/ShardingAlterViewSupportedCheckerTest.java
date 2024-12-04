@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
@@ -52,7 +51,7 @@ class ShardingAlterViewSupportedCheckerTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isShardingTable("t_order")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
@@ -66,7 +65,7 @@ class ShardingAlterViewSupportedCheckerTest {
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(EngagedViewException.class,
                 () -> new ShardingAlterViewSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
@@ -77,7 +76,7 @@ class ShardingAlterViewSupportedCheckerTest {
         OpenGaussAlterViewStatement sqlStatement = new OpenGaussAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
     }

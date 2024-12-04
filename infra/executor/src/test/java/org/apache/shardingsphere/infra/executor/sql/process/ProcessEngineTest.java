@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -62,11 +61,11 @@ class ProcessEngineTest {
     @Test
     void assertExecuteSQL() {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessEngine().executeSQL(executionGroupContext,
-                new QueryContext(new UpdateStatementContext(getSQLStatement(), DefaultDatabase.LOGIC_NAME), null, null, new HintValueContext(), connectionContext, metaData));
+                new QueryContext(new UpdateStatementContext(getSQLStatement(), "foo_db"), null, null, new HintValueContext(), connectionContext, metaData));
         verify(processRegistry).add(any());
     }
     

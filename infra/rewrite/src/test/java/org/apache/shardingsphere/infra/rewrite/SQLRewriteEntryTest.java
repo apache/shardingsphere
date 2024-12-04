@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -59,7 +58,7 @@ class SQLRewriteEntryTest {
     
     @Test
     void assertRewriteForGenericSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, h2DatabaseType, mockResourceMetaData(),
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", h2DatabaseType, mockResourceMetaData(),
                 mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))), new ConfigurationProperties(new Properties()));
@@ -83,7 +82,7 @@ class SQLRewriteEntryTest {
     @Test
     void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                DefaultDatabase.LOGIC_NAME, h2DatabaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
+                "foo_db", h2DatabaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));

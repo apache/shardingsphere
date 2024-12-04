@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
@@ -53,7 +52,7 @@ class ShardingAlterTableSupportedCheckerTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        AlterTableStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        AlterTableStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement, "foo_db");
         when(shardingRule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingAlterTableSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));

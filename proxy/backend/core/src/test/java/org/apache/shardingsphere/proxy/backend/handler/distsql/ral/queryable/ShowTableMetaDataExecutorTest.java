@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -77,7 +76,7 @@ class ShowTableMetaDataExecutorTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getName()).thenReturn("foo_db");
-        when(result.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTables(), Collections.emptyList()));
+        when(result.getSchema("foo_db")).thenReturn(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList()));
         return result;
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -54,8 +53,8 @@ class ShardingSphereConnectionTest {
     @Test
     void assertSetAutoCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection), null)) {
-            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(physicalConnection), null)) {
+            connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(true);
             assertTrue(connection.getAutoCommit());
         }
@@ -67,7 +66,7 @@ class ShardingSphereConnectionTest {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(Optional.of(DistributedTransactionOperationType.COMMIT));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             DriverDatabaseConnectionManager connectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(true);
             assertTrue(connection.getAutoCommit());
@@ -78,8 +77,8 @@ class ShardingSphereConnectionTest {
     @Test
     void assertCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection), null)) {
-            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(physicalConnection), null)) {
+            connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
             assertTrue(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
@@ -95,7 +94,7 @@ class ShardingSphereConnectionTest {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(Optional.of(DistributedTransactionOperationType.BEGIN));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
@@ -108,8 +107,8 @@ class ShardingSphereConnectionTest {
     @Test
     void assertRollbackWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection), null)) {
-            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(physicalConnection), null)) {
+            connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
             connection.rollback();
@@ -122,7 +121,7 @@ class ShardingSphereConnectionTest {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(Optional.of(DistributedTransactionOperationType.BEGIN));
         when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             final DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connection, connectionTransaction);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
@@ -143,24 +142,24 @@ class ShardingSphereConnectionTest {
     
     @Test
     void assertIsValidWhenEmptyConnection() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             assertTrue(connection.isValid(0));
         }
     }
     
     @Test
     void assertIsInvalid() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
-            connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
+            connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             assertFalse(connection.isValid(0));
         }
     }
     
     @Test
     void assertSetReadOnly() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             assertFalse(connection.isReadOnly());
-            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setReadOnly(true);
             assertTrue(connection.isReadOnly());
             verify(physicalConnection).setReadOnly(true);
@@ -169,7 +168,7 @@ class ShardingSphereConnectionTest {
     
     @Test
     void assertGetTransactionIsolationWithoutCachedConnections() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             assertThat(connection.getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
         }
         
@@ -177,8 +176,8 @@ class ShardingSphereConnectionTest {
     
     @Test
     void assertSetTransactionIsolation() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
-            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
+            Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             verify(physicalConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         }
@@ -186,7 +185,7 @@ class ShardingSphereConnectionTest {
     
     @Test
     void assertClose() throws SQLException {
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), null)) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), null)) {
             connection.close();
             assertTrue(connection.isClosed());
         }
@@ -204,7 +203,7 @@ class ShardingSphereConnectionTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(dataSource);
-        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnit));
+        when(result.getStorageUnits("foo_db")).thenReturn(Collections.singletonMap("ds", storageUnit));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mockTransactionRule())));
         return result;
     }

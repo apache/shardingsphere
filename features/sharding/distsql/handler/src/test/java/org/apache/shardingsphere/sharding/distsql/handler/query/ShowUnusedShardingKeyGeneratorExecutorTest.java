@@ -76,7 +76,7 @@ class ShowUnusedShardingKeyGeneratorExecutorTest extends DistSQLDatabaseRuleQuer
         }
         
         private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
-            ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_table", null);
+            ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl", null);
             result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "snowflake_key_generator"));
             return result;
         }

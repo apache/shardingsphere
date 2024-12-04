@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -293,8 +292,8 @@ public final class ShardingRouteEngineFixtureBuilder {
      */
     public static SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, rules);
-        result.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
+        SingleRule result = new SingleRule(new SingleRuleConfiguration(), "foo_db", new H2DatabaseType(), dataSourceMap, rules);
+        result.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceMap.keySet().iterator().next(), "foo_db", "t_category");
         return result;
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
@@ -65,23 +64,22 @@ class GenericSchemaBuilderTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        material = new GenericSchemaBuilderMaterial(databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseType),
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()),
-                Collections.singleton(rule), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        material = new GenericSchemaBuilderMaterial(databaseType, Collections.singletonMap("foo_db", databaseType),
+                Collections.singletonMap("foo_db", new MockedDataSource()), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_db");
     }
     
     @Test
     void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertFalse(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getAllTables().isEmpty());
+        assertFalse(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
     }
     
     @Test
     void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertTrue(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getAllTables().isEmpty());
+        assertTrue(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
     }
     
     @Test
@@ -90,7 +88,7 @@ class GenericSchemaBuilderTest {
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+        assertTables(new ShardingSphereSchema("foo_db", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dml;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
@@ -85,7 +84,7 @@ class DeleteStatementContextTest {
         tableSegment.setRight(table2);
         deleteStatement.setWhere(whereSegment);
         deleteStatement.setTable(tableSegment);
-        DeleteStatementContext actual = new DeleteStatementContext(deleteStatement, DefaultDatabase.LOGIC_NAME);
+        DeleteStatementContext actual = new DeleteStatementContext(deleteStatement, "foo_db");
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -92,6 +91,6 @@ class ShardingRenameTableRouteContextCheckerTest {
         renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user_order"))));
         sqlStatement.getRenameTables().add(renameTableDefinitionSegment);
-        return new RenameTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        return new RenameTableStatementContext(sqlStatement, "foo_db");
     }
 }

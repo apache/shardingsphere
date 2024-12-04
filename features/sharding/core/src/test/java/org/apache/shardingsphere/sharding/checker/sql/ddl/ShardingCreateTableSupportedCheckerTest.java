@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -106,7 +105,7 @@ class ShardingCreateTableSupportedCheckerTest {
     }
     
     private void assertCheckIfNotExists(final CreateTableStatement sqlStatement) {
-        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "foo_db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         new ShardingCreateTableSupportedChecker().check(rule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
     }

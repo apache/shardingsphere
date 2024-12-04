@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
@@ -66,7 +65,7 @@ class DropTableStatementContextTest {
     }
     
     private void assertNewInstance(final DropTableStatement dropTableStatement) {
-        DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement, DefaultDatabase.LOGIC_NAME);
+        DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement, "foo_db");
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         when(dropTableStatement.getTables()).thenReturn(Arrays.asList(table1, table2));

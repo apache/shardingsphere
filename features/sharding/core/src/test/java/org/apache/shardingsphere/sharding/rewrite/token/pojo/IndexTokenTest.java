@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -85,7 +84,7 @@ class IndexTokenTest {
     private RouteUnit mockRouteUnit() {
         RouteUnit result = mock(RouteUnit.class);
         when(result.getTableMappers()).thenReturn(Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
-        when(result.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
+        when(result.getDataSourceMapper()).thenReturn(new RouteMapper("foo_db", "ds_0"));
         return result;
     }
 }

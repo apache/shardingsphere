@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.checker.sql.ddl;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -83,10 +82,10 @@ class ShardingInsertSupportedCheckerTest {
     }
     
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
+        return new InsertStatementContext(metaData, params, insertStatement, "foo_db");
     }
     
     @Test
@@ -155,13 +154,13 @@ class ShardingInsertSupportedCheckerTest {
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), DefaultDatabase.LOGIC_NAME);
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), "foo_db");
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
-        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), DefaultDatabase.LOGIC_NAME);
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), "foo_db");
     }
 }

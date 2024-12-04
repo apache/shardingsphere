@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolP
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -129,7 +128,7 @@ class ImportMetaDataExecutorTest {
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
         if (null != feature) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, createTables(), Collections.emptyList()));
+            when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList()));
             Map<String, StorageUnit> storageUnits = createStorageUnits();
             when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
