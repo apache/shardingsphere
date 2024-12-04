@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,15 +51,14 @@ class JDBCStateExporterTest {
     @BeforeEach
     void setUp() {
         instanceId = UUID.randomUUID().toString();
-        databaseName = "sharding_db";
+        databaseName = "foo_db";
         ContextManager contextManager = mockContextManager(instanceId, databaseName);
         ShardingSphereDataSourceContextHolder.put(instanceId, new ShardingSphereDataSourceContext(databaseName, contextManager));
     }
     
     private ContextManager mockContextManager(final String instanceId, final String databaseName) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn(databaseName);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, mock(), mock(), mock(), Collections.emptyList());
         when(result.getDatabase(databaseName)).thenReturn(database);
         when(result.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn(instanceId);
         when(result.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal()).thenReturn(InstanceState.OK.ordinal());

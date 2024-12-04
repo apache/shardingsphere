@@ -38,9 +38,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -94,23 +94,14 @@ class ProxyContextTest {
     void assertGetAllDatabaseNames() {
         Collection<ShardingSphereDatabase> databases = createDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(), new ShardingSphereMetaData(databases, mock(), mock(), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         assertThat(new HashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(databases.stream().map(ShardingSphereDatabase::getName).collect(Collectors.toSet())));
     }
     
     private Collection<ShardingSphereDatabase> createDatabases() {
-        Collection<ShardingSphereDatabase> result = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            String databaseName = String.format(SCHEMA_PATTERN, i);
-            when(database.getName()).thenReturn(databaseName);
-            when(database.getProtocolType()).thenReturn(databaseType);
-            result.add(database);
-        }
-        return result;
+        return IntStream.range(0, 10).mapToObj(i -> new ShardingSphereDatabase(String.format(SCHEMA_PATTERN, i), databaseType, mock(), mock(), Collections.emptyList())).collect(Collectors.toList());
     }
     
     private ShardingSphereDatabase mockDatabase() {
