@@ -520,26 +520,27 @@
     </select>
     <select sql-case-id="select_group_concat">
         <projections start-index="7" stop-index="51">
-            <aggregation-projection text="GROUP_CONCAT(user_id)" start-index="7" stop-index="27">
+            <aggregation-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(user_id)" alias="user_id_group_concat" start-index="7" stop-index="27">
                 <parameter>
                     <column name="user_id" start-index="20" stop-index="26" />
                 </parameter>
             </aggregation-projection>
         </projections>
         <from>
-            <simple-table start-index="58" stop-index="64"/>
+            <simple-table name="t_order" start-index="58" stop-index="64"/>
         </from>
     </select>
     <select sql-case-id="select_group_concat_with_distinct_with_separator">
         <projections start-index="7" stop-index="74">
-            <aggregation-projection text="GROUP_CONCAT(distinct user_id SEPARATOR ' ')" start-index="7" stop-index="50">
+            <aggregation-distinct-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(distinct user_id SEPARATOR ' ')" separator=" "
+                                    distinct-inner-expression="user_id" alias="user_id_group_concat" start-index="7" stop-index="50">
                 <parameter>
                     <column name="user_id" start-index="29" stop-index="35" />
                 </parameter>
-            </aggregation-projection>
+            </aggregation-distinct-projection>
         </projections>
         <from>
-            <simple-table start-index="81" stop-index="87"/>
+            <simple-table name="t_order" start-index="81" stop-index="87"/>
         </from>
     </select>
 </sql-parser-test-cases>
