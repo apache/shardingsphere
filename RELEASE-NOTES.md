@@ -30,6 +30,7 @@
 1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
 1. Doc: Adds documentation for ClickHouse support - [#33779](https://github.com/apache/shardingsphere/pull/33779)
 1. Doc: Removes use of `iceberg.mr.schema.auto.conversion` from documentation due to HIVE-26507 - [#33828](https://github.com/apache/shardingsphere/pull/33828)
+1. Sharding: Support MYSQL GroupConcat function for aggregating multiple shards - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 
 ### Bug Fixes
 
