@@ -25,7 +25,7 @@ class DatabaseRuleMetaDataNodeTest {
     
     @Test
     void assertGetDatabaseRuleActiveVersionNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode("foo_db", "foo_rule", "foo_tables"), is("/metadata/foo_db/rules/foo_rule/foo_tables/active_version"));
+        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode("foo_db", "foo_rule", "foo_tbl"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/active_version"));
     }
     
     @Test
@@ -35,7 +35,7 @@ class DatabaseRuleMetaDataNodeTest {
     
     @Test
     void assertGetDatabaseRuleVersionNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode("foo_db", "foo_rule", "foo_tables", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tables/versions/1"));
+        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode("foo_db", "foo_rule", "foo_tbl", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/versions/1"));
     }
     
     @Test
