@@ -75,7 +75,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -133,10 +132,8 @@ public abstract class SQLRewriterIT {
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
-        databases.put(databaseName, database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {
@@ -183,7 +180,7 @@ public abstract class SQLRewriterIT {
     
     protected abstract YamlRootConfiguration createRootConfiguration(SQLRewriteEngineTestParameters testParams) throws IOException;
     
-    protected abstract Map<String, ShardingSphereSchema> mockSchemas(String schemaName);
+    protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
     
     protected abstract void mockRules(Collection<ShardingSphereRule> rules, String schemaName, SQLStatement sqlStatement);
     

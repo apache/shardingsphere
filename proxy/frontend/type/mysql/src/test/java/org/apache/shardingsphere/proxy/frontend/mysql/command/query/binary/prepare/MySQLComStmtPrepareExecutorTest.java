@@ -31,7 +31,6 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
@@ -84,6 +83,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLComStmtPrepareExecutorTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Mock
     private MySQLComStmtPreparePacket packet;
@@ -228,14 +229,13 @@ class MySQLComStmtPrepareExecutorTest {
         CacheOption cacheOption = new CacheOption(1024, 1024L);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption)));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getUsedDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getUsedDatabaseName()).getProtocolType()).thenReturn(databaseType);
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
-        schema.getTables().put("user", table);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"),
-                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;

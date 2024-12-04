@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -37,11 +36,11 @@ class ShowIndexStatementContextTest {
     @Test
     void assertNewInstance() {
         MySQLShowIndexStatement sqlStatement = new MySQLShowIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
-        ShowIndexStatementContext actual = new ShowIndexStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME);
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        ShowIndexStatementContext actual = new ShowIndexStatementContext(sqlStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Collections.singletonList("tbl_1")));
+                is(Collections.singletonList("foo_tbl")));
     }
 }

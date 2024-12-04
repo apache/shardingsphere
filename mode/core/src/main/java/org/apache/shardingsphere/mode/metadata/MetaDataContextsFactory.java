@@ -135,8 +135,8 @@ public final class MetaDataContextsFactory {
                                                         final ConfigurationProperties props) {
         // TODO load global data sources from persist service
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
-        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props);
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
+        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
         ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
         return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
     }
@@ -168,10 +168,10 @@ public final class MetaDataContextsFactory {
     }
     
     private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        if (metaData.getDatabases().isEmpty()) {
+        if (metaData.getAllDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
-        DatabaseType protocolType = metaData.getDatabases().values().iterator().next().getProtocolType();
+        DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
@@ -219,7 +219,7 @@ public final class MetaDataContextsFactory {
             metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType() == eachRule.getClass());
             RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
             ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
-                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
+                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
             metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
         }
     }
@@ -238,16 +238,16 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistMetaData(final MetaDataContexts metaDataContexts, final MetaDataPersistService persistService) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, schema) -> {
+        metaDataContexts.getMetaData().getAllDatabases().forEach(each -> each.getAllSchemas().forEach(schema -> {
             if (schema.isEmpty()) {
-                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schemaName);
+                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
-            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schemaName, schema.getTables());
+            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
         }));
         for (Entry<String, ShardingSphereDatabaseData> databaseDataEntry : metaDataContexts.getStatistics().getDatabaseData().entrySet()) {
             for (Entry<String, ShardingSphereSchemaData> schemaDataEntry : databaseDataEntry.getValue().getSchemaData().entrySet()) {
                 persistService.getShardingSphereDataPersistService().persist(
-                        metaDataContexts.getMetaData().getDatabases().get(databaseDataEntry.getKey().toLowerCase()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
+                        metaDataContexts.getMetaData().getDatabase(databaseDataEntry.getKey()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
             }
         }
     }
@@ -271,8 +271,8 @@ public final class MetaDataContextsFactory {
                 createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases.values(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**
@@ -294,8 +294,8 @@ public final class MetaDataContextsFactory {
                 createChangedDatabases(databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases, originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+                GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases.values(), props));
+        return create(metaDataPersistService, new ShardingSphereMetaData(changedDatabases.values(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
     }
     
     /**

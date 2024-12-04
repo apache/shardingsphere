@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -49,25 +48,27 @@ import static org.mockito.Mockito.mock;
 
 class ColumnSegmentBinderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBindWithMultiTablesJoinAndNoOwner() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
         tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
         ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
-        boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id")));
         tableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         SQLStatementBinderContext binderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", databaseType, Collections.emptySet());
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
-        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
     }
@@ -76,21 +77,21 @@ class ColumnSegmentBinderTest {
     void assertBindFromOuterTable() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        boundOrderStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order"), new IdentifierValue("status")));
         outerTableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderStatusColumn))));
         ColumnSegment boundOrderItemStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        boundOrderItemStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderItemStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status")));
         outerTableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemStatusColumn))));
         SQLStatementBinderContext binderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", databaseType, Collections.emptySet());
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), outerTableBinderContexts);
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
-        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
     }
@@ -99,15 +100,15 @@ class ColumnSegmentBinderTest {
     void assertBindWithSameTableAliasAndSameProjection() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order"), new IdentifierValue("status")));
         tableBinderContexts.put(new CaseInsensitiveString("temp"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderColumn))));
         ColumnSegment boundOrderItemColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status")));
         tableBinderContexts.put(new CaseInsensitiveString("temp"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn))));
         SQLStatementBinderContext binderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", databaseType, Collections.emptySet());
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("temp")));
         assertThrows(AmbiguousColumnException.class, () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
@@ -117,22 +118,22 @@ class ColumnSegmentBinderTest {
     void assertBindWithSameTableAliasAndDifferentProjection() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
         tableBinderContexts.put(new CaseInsensitiveString("temp"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderColumn))));
         ColumnSegment boundOrderItemColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
-        boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status")));
         tableBinderContexts.put(new CaseInsensitiveString("temp"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn))));
         SQLStatementBinderContext binderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", databaseType, Collections.emptySet());
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("temp")));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
-        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
     }
@@ -141,27 +142,27 @@ class ColumnSegmentBinderTest {
     void assertBindOwner() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
         tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
         ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
-        boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+        boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"),
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id")));
         tableBinderContexts.put(new CaseInsensitiveString("t_order_item"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));
         SQLStatementBinderContext binderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", databaseType, Collections.emptySet());
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertTrue(actual.getOwner().isPresent());
         assertTrue(actual.getOwner().get().getTableBoundInfo().isPresent());
         TableSegmentBoundInfo actualTableBoundInfo = actual.getOwner().get().getTableBoundInfo().get();
-        assertThat(actualTableBoundInfo.getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actualTableBoundInfo.getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actualTableBoundInfo.getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actualTableBoundInfo.getOriginalSchema().getValue(), is("foo_schema"));
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
-        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
     }

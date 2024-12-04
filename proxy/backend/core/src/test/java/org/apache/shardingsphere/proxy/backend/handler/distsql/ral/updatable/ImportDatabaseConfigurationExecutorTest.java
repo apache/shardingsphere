@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolP
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
@@ -145,7 +144,7 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(database.getSchema("foo_db")).thenReturn(schema);
         StorageUnit storageUnit = mock(StorageUnit.class);
         DataSource dataSource = new MockedDataSource();
         when(storageUnit.getDataSource()).thenReturn(dataSource);

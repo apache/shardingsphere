@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
@@ -66,7 +65,7 @@ class AlterViewStatementContextTest {
     }
     
     private void assertNewInstance(final AlterViewStatement alterViewStatement) {
-        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement, DefaultDatabase.LOGIC_NAME);
+        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
         assertThat(actual.getTablesContext().getSimpleTables().size(), is(2));

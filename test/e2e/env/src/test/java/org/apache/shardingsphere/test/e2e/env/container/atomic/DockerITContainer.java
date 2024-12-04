@@ -53,7 +53,7 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     }
     
     private void startDependencies() {
-        Collection<DockerITContainer> dependencies = getDependencies().stream().filter(each -> each instanceof DockerITContainer).map(each -> (DockerITContainer) each).collect(Collectors.toList());
+        Collection<DockerITContainer> dependencies = getDependencies().stream().filter(DockerITContainer.class::isInstance).map(DockerITContainer.class::cast).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

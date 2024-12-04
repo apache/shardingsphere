@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -78,7 +77,7 @@ class SQLRouteEngineTest {
         storageUnits.put("ds_0", mock(StorageUnit.class));
         storageUnits.put("ds_1", mock(StorageUnit.class));
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
-        connectionContext.setCurrentDatabaseName(DefaultDatabase.LOGIC_NAME);
+        connectionContext.setCurrentDatabaseName("foo_db");
     }
     
     @Test

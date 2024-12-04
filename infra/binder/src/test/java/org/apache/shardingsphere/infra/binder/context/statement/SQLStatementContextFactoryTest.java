@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -56,7 +55,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,7 +70,7 @@ class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(selectStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(selectStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
@@ -108,14 +106,13 @@ class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(insertStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new MySQLAlterDatabaseStatement(), Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(new MySQLAlterDatabaseStatement(), Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
@@ -128,37 +125,37 @@ class SQLStatementContextFactoryTest {
         when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
         when(cursorStatement.getCommentSegments()).thenReturn(Collections.emptyList());
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(cursorStatement, Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCloseStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussCloseStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(new OpenGaussCloseStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(CloseStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForMoveStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussMoveStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(new OpenGaussMoveStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(MoveStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForFetchStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(new OpenGaussFetchStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(new OpenGaussFetchStatement(), Collections.emptyList());
         assertThat(actual, instanceOf(FetchStatementContext.class));
     }
     
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.containsSchema("public")).thenReturn(true);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema("foo_db").containsTable("tbl")).thenReturn(true);
         when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
         when(database.containsSchema("dbo")).thenReturn(true);
         when(database.getSchema("dbo").containsTable("tbl")).thenReturn(true);
-        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
 }

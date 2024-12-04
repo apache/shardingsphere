@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -44,7 +43,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -65,44 +64,43 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
-        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
-        tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
+    protected Collection<ShardingSphereSchema> mockSchemas(final String schemaName) {
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_account", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_account_bak", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_account_detail", Arrays.asList(
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_user", Arrays.asList(
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema result = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
-        return Collections.singletonMap(schemaName, result);
+        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
-        Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
+        Optional<SingleRule> singleRule = rules.stream().filter(SingleRule.class::isInstance).map(SingleRule.class::cast).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_bak");

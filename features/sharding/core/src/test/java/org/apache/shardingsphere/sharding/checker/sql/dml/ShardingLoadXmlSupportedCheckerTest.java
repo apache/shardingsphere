@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
@@ -51,7 +50,7 @@ class ShardingLoadXmlSupportedCheckerTest {
     void assertCheckWithSingleTable() {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(
-                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -59,6 +58,6 @@ class ShardingLoadXmlSupportedCheckerTest {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, DefaultDatabase.LOGIC_NAME)));
+                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, "foo_db")));
     }
 }

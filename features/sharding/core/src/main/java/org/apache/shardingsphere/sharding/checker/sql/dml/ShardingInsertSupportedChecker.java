@@ -52,11 +52,11 @@ public final class ShardingInsertSupportedChecker implements SupportedSQLChecker
             ShardingSupportedCommonChecker.checkMultipleTable(rule, sqlStatementContext);
         }
         InsertStatement insertStatement = sqlStatementContext.getSqlStatement();
-        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         Optional<SubquerySegment> insertSelectSegment = insertStatement.getInsertSelect();
         if (!insertSelectSegment.isPresent()) {
             return;
         }
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         if (isContainsKeyGenerateStrategy(rule, tableName) && !isContainsKeyGenerateColumn(rule, insertStatement.getColumns(), tableName)) {
             throw new MissingGenerateKeyColumnWithInsertSelectException();
         }

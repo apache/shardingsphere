@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
@@ -70,7 +69,7 @@ class DropIndexStatementContextTest {
         indexes.add(index1);
         indexes.add(index2);
         when(dropIndexStatement.getIndexes()).thenReturn(indexes);
-        DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement, DefaultDatabase.LOGIC_NAME);
+        DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropIndexStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));

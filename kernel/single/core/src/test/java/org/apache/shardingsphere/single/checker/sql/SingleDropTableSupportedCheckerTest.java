@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.checker.sql;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -52,9 +51,9 @@ class SingleDropTableSupportedCheckerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
         schema.putTable(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
-        when(result.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", schema));
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }
     
@@ -62,6 +61,6 @@ class SingleDropTableSupportedCheckerTest {
         PostgreSQLDropTableStatement dropSchemaStatement = mock(PostgreSQLDropTableStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
-        return new DropTableStatementContext(dropSchemaStatement, DefaultDatabase.LOGIC_NAME);
+        return new DropTableStatementContext(dropSchemaStatement, "foo_db");
     }
 }

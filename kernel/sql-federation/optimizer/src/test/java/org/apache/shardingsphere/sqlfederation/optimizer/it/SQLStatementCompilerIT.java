@@ -27,7 +27,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -49,9 +48,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -69,20 +68,20 @@ class SQLStatementCompilerIT {
     
     @BeforeEach
     void init() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(12, 1F);
-        tables.put("t_order_federate", createOrderFederationTableMetaData());
-        tables.put("t_user_info", createUserInfoTableMetaData());
-        tables.put("t_order", createTOrderTableMetaData());
-        tables.put("t_order_item", createTOrderItemTableMetaData());
-        tables.put("t_single_table", createTSingleTableMetaData());
-        tables.put("t_order_federate_sharding", createTOrderFederateShardingMetaData());
-        tables.put("t_order_item_federate_sharding", createTOrderItemFederateShardingMetaData());
-        tables.put("t_merchant", createTMerchantMetaData());
-        tables.put("t_product", createTProductMetaData());
-        tables.put("t_product_detail", createTProductDetailMetaData());
-        tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
-        tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
-        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap())));
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(createOrderFederationTableMetaData());
+        tables.add(createUserInfoTableMetaData());
+        tables.add(createTOrderTableMetaData());
+        tables.add(createTOrderItemTableMetaData());
+        tables.add(createTSingleTableMetaData());
+        tables.add(createTOrderFederateShardingMetaData());
+        tables.add(createTOrderItemFederateShardingMetaData());
+        tables.add(createTMerchantMetaData());
+        tables.add(createTProductMetaData());
+        tables.add(createTProductDetailMetaData());
+        tables.add(createMultiTypesFirstTableMetaData());
+        tables.add(createMultiTypesSecondTableMetaData());
+        sqlStatementCompiler = new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema("foo_db", tables, Collections.emptyList())));
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {

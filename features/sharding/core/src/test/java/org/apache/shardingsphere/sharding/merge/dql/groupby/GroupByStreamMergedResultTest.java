@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -64,9 +62,11 @@ import static org.mockito.Mockito.when;
 
 class GroupByStreamMergedResultTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Test
     void assertNextForResultSetsAllEmpty() throws SQLException {
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult()),
                 createSelectStatementContext(), createDatabase(), mock(ConnectionContext.class));
         assertFalse(actual.next());
@@ -91,7 +91,7 @@ class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(4, Object.class)).thenReturn(new Date(0L));
         when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
@@ -133,7 +133,7 @@ class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
@@ -167,19 +167,16 @@ class GroupByStreamMergedResultTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(tableSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(num)"));
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
-        return new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME, Collections.emptyList());
-    }
-    
-    private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        return new SelectStatementContext(
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereDatabase createDatabase() {
@@ -187,9 +184,8 @@ class GroupByStreamMergedResultTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true, false, false);
         ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tbl", table), Collections.emptyMap());
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"),
-                mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }
     
     private QueryResult mockQueryResult() throws SQLException {

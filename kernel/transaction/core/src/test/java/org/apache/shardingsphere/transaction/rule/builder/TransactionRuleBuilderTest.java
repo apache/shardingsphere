@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -44,8 +43,8 @@ class TransactionRuleBuilderTest {
     void assertBuild() {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ResourceMetaData(createDataSourceMap()),
-                new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        try (TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ConfigurationProperties.class))) {
+                new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singleton(new ShardingSphereSchema("test")));
+        try (TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singleton(database), mock(ConfigurationProperties.class))) {
             assertNotNull(rule.getConfiguration());
         }
     }

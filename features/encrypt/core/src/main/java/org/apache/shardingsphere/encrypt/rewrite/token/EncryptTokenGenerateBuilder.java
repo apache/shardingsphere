@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment.EncryptInsertAssignmentTokenGenerator;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.select.EncryptG
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.select.EncryptIndexColumnTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 
@@ -59,7 +59,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -92,14 +92,11 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void setUpSQLTokenGenerator(final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator instanceof DatabaseAware) {
+            ((DatabaseAware) toBeAddedSQLTokenGenerator).setDatabase(database);
+        }
         if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
-        }
-        if (toBeAddedSQLTokenGenerator instanceof DatabaseNameAware) {
-            ((DatabaseNameAware) toBeAddedSQLTokenGenerator).setDatabaseName(databaseName);
-        }
-        if (toBeAddedSQLTokenGenerator instanceof DatabaseTypeAware) {
-            ((DatabaseTypeAware) toBeAddedSQLTokenGenerator).setDatabaseType(sqlStatementContext.getDatabaseType());
         }
     }
 }

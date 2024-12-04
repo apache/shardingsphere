@@ -65,15 +65,19 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.single.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,6 +86,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -186,8 +191,21 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDatabaseName(databaseName);
         result.setDataSources(yamlDataSources);
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(rules));
+        result.setRules(getYamlRuleConfigurations(rules));
         return result;
+    }
+    
+    private Collection<YamlRuleConfiguration> getYamlRuleConfigurations(final Collection<RuleConfiguration> rules) {
+        Collection<YamlRuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(rules);
+        Optional<YamlSingleRuleConfiguration> originalSingleRuleConfig =
+                ruleConfigurations.stream().filter(YamlSingleRuleConfiguration.class::isInstance).map(YamlSingleRuleConfiguration.class::cast).findFirst();
+        ruleConfigurations.removeIf(YamlSingleRuleConfiguration.class::isInstance);
+        YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
+        // todo Provide only the necessary tables.
+        singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
+        originalSingleRuleConfig.ifPresent(optional -> singleRuleConfig.setDefaultDataSource(optional.getDefaultDataSource()));
+        ruleConfigurations.add(singleRuleConfig);
+        return ruleConfigurations;
     }
     
     private Map<String, String> buildTargetTableSchemaMap(final Map<String, List<DataNode>> sourceDataNodes) {

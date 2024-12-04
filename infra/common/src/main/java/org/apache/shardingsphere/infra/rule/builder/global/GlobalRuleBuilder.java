@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Global rule builder.
@@ -42,5 +42,5 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param props props
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases, ConfigurationProperties props);
+    GlobalRule build(T ruleConfig, Collection<ShardingSphereDatabase> databases, ConfigurationProperties props);
 }

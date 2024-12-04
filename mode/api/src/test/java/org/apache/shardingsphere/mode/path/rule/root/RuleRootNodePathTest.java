@@ -35,11 +35,11 @@ class RuleRootNodePathTest {
     
     @Test
     void assertIsValidatedPath() {
-        assertTrue(nodePath.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_table"));
+        assertTrue(nodePath.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_tbl"));
     }
     
     @Test
     void assertIsNotValidatedPath() {
-        assertFalse(nodePath.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_table"));
+        assertFalse(nodePath.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_tbl"));
     }
 }

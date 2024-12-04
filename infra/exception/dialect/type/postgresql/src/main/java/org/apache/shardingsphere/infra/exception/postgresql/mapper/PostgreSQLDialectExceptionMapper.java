@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertCo
 import org.apache.shardingsphere.infra.exception.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.infra.exception.dialect.mapper.SQLDialectExceptionMapper;
@@ -55,6 +56,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
+        }
+        if (sqlDialectException instanceof NoSuchTableException) {
+            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.NO_SUCH_TABLE, ((NoSuchTableException) sqlDialectException).getTableName()));
         }
         if (sqlDialectException instanceof TableExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.DUPLICATE_TABLE, ((TableExistsException) sqlDialectException).getTableName()));

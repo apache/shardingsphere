@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -45,28 +45,26 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        Map<String, ShardingSphereDatabase> databaseMap = mockDatabaseMap();
-        when(result.getDatabases()).thenReturn(databaseMap);
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
+        when(result.getAllDatabases()).thenReturn(databases);
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+    private Collection<ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Map<String, ShardingSphereSchema> schemaMap = mockSchemaMap();
-        when(database.getSchemas()).thenReturn(schemaMap);
-        return Collections.singletonMap("logic_db", database);
+        when(database.getName()).thenReturn("logic_db");
+        ShardingSphereSchema schema = mockSchema();
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(database.getSchema("pg_catalog")).thenReturn(schema);
+        return Collections.singleton(database);
     }
     
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        Map<String, ShardingSphereTable> tableMap = mockTableMap();
-        when(schema.getTables()).thenReturn(tableMap);
-        return Collections.singletonMap("pg_catalog", schema);
-    }
-    
-    private Map<String, ShardingSphereTable> mockTableMap() {
+    private ShardingSphereSchema mockSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
+        when(result.getName()).thenReturn("pg_catalog");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("pg_class");
-        return Collections.singletonMap("pg_class", table);
+        when(result.getAllTables()).thenReturn(Collections.singleton(table));
+        return result;
     }
 }

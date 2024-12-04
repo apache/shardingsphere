@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -54,9 +53,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -102,7 +101,7 @@ class UnicastDatabaseBackendHandlerTest {
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
     }
     
@@ -121,7 +120,7 @@ class UnicastDatabaseBackendHandlerTest {
     void assertExecuteDatabaseBackendHandler() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = createDatabases().get("db_0");
+        ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
         ResponseHeader actual = unicastDatabaseBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -131,7 +130,7 @@ class UnicastDatabaseBackendHandlerTest {
     void assertDatabaseUsingStream() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = createDatabases().get("db_0");
+        ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
         unicastDatabaseBackendHandler.execute();
         while (unicastDatabaseBackendHandler.next()) {
@@ -147,13 +146,14 @@ class UnicastDatabaseBackendHandlerTest {
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabases() {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1F);
+    private Collection<ShardingSphereDatabase> createDatabases() {
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, i));
             when(database.containsDataSource()).thenReturn(true);
             when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-            result.put(String.format(DATABASE_PATTERN, i), database);
+            result.add(database);
         }
         return result;
     }

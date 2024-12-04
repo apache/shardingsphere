@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Optimizer parser context factory.
@@ -39,11 +39,11 @@ public final class OptimizerParserContextFactory {
      * @param databases databases
      * @return created optimizer parser context map
      */
-    public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
+    public static Map<String, OptimizerParserContext> create(final Collection<ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> result = new CaseInsensitiveMap<>();
-        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            DatabaseType databaseType = entry.getValue().getProtocolType();
-            result.put(entry.getKey(), new OptimizerParserContext(databaseType, new OptimizerSQLPropertiesBuilder(databaseType).build()));
+        for (ShardingSphereDatabase each : databases) {
+            DatabaseType databaseType = each.getProtocolType();
+            result.put(each.getName(), new OptimizerParserContext(databaseType, new OptimizerSQLPropertiesBuilder(databaseType).build()));
         }
         return result;
     }

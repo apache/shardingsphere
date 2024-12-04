@@ -19,7 +19,6 @@ package org.apache.shardingsphere.metadata.persist.service.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.TableMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
@@ -27,8 +26,7 @@ import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersio
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -76,12 +74,12 @@ public final class SchemaMetaDataPersistService {
      */
     public void alterByRefresh(final String databaseName, final ShardingSphereSchema schema) {
         String schemaName = schema.getName().toLowerCase();
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+        if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
-        GenericSchemaManager.getToBeDroppedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.drop(databaseName, schemaName, key));
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList());
+        tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
+        GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach(each -> tableMetaDataPersistService.drop(databaseName, schemaName, each.getName()));
     }
     
     /**
@@ -92,21 +90,20 @@ public final class SchemaMetaDataPersistService {
      */
     public void alterByRuleAltered(final String databaseName, final ShardingSphereSchema schema) {
         String schemaName = schema.getName().toLowerCase();
-        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+        if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getAllTables());
     }
     
     /**
      * Alter schema by rule dropped.
      *
      * @param databaseName database name
-     * @param schemaName schema name
      * @param schema to be altered schema
      */
-    public void alterByRuleDropped(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+    public void alterByRuleDropped(final String databaseName, final ShardingSphereSchema schema) {
+        tableMetaDataPersistService.persist(databaseName, schema.getName(), schema.getAllTables());
     }
     
     /**
@@ -115,9 +112,8 @@ public final class SchemaMetaDataPersistService {
      * @param databaseName database name
      * @return schemas
      */
-    public Map<String, ShardingSphereSchema> load(final String databaseName) {
-        Collection<String> schemaNames = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
-        return schemaNames.stream().collect(Collectors.toMap(String::toLowerCase, each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each),
-                viewMetaDataPersistService.load(databaseName, each)), (a, b) -> b, () -> new LinkedHashMap<>(schemaNames.size(), 1F)));
+    public Collection<ShardingSphereSchema> load(final String databaseName) {
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName)).stream()
+                .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }

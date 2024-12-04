@@ -132,9 +132,8 @@ class OpenGaussAuthenticationEngineTest {
     }
     
     private ContextManager mockContextManager() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), mock(ResourceMetaData.class),
-                        buildGlobalRuleMetaData(new UserConfiguration("root", "sharding", "", null, false)), mock(ConfigurationProperties.class)));
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
+                Collections.emptyList(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(new UserConfiguration("root", "sharding", "", null, false)), mock(ConfigurationProperties.class)));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
@@ -143,7 +142,7 @@ class OpenGaussAuthenticationEngineTest {
     private RuleMetaData buildGlobalRuleMetaData(final UserConfiguration userConfig) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
                 Collections.singleton(userConfig), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
-        return new RuleMetaData(Collections.singleton(new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class))));
+        return new RuleMetaData(Collections.singleton(new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyList(), mock(ConfigurationProperties.class))));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

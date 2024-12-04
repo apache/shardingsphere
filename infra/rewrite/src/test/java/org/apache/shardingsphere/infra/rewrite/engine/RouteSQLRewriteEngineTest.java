@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -84,8 +83,8 @@ class RouteSQLRewriteEngineTest {
         when(result.getProtocolType()).thenReturn(databaseType);
         Map<String, StorageUnit> storageUnits = mockStorageUnits(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(result.getSchemas()).thenReturn(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        when(result.getName()).thenReturn("foo_db");
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test")));
         return result;
     }
     

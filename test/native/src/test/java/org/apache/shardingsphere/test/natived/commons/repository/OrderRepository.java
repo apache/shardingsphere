@@ -64,7 +64,7 @@ public final class OrderRepository {
      */
     public void createTableIfNotExistsInPostgres() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order (\n"
-                + "    order_id BIGSERIAL PRIMARY KEY,\n"
+                + "    order_id BIGSERIAL NOT NULL PRIMARY KEY,\n"
                 + "    order_type INTEGER,\n"
                 + "    user_id INTEGER NOT NULL,\n"
                 + "    address_id BIGINT NOT NULL,\n"

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -72,8 +71,8 @@ class GenericSQLRewriteEngineTest {
     void assertRewriteStorageTypeIsEmpty() {
         SQLTranslatorRule rule = new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchemas()).thenReturn(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test")));
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
         DatabaseType databaseType = mock(DatabaseType.class);

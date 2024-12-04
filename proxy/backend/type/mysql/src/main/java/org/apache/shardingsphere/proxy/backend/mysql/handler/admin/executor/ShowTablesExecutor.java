@@ -99,7 +99,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         if (null == ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName)) {
             return Collections.emptyList();
         }
-        Collection<ShardingSphereTable> tables = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
+        Collection<ShardingSphereTable> tables = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getAllTables();
         Collection<ShardingSphereTable> filteredTables = filterByLike(tables);
         return filteredTables.stream().sorted(Comparator.comparing(ShardingSphereTable::getName)).collect(Collectors.toList());
     }

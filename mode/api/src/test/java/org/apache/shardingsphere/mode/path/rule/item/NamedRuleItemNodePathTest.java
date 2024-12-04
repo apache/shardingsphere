@@ -33,26 +33,26 @@ class NamedRuleItemNodePathTest {
     
     @Test
     void assertGetPath() {
-        assertThat(converter.getPath("foo_table"), is("tables/foo_table"));
+        assertThat(converter.getPath("foo_tbl"), is("tables/foo_tbl"));
     }
     
     @Test
     void assertGetName() {
-        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
+        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+        assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertGetNameWithInvalidPath() {
-        assertFalse(converter.getName("/metadata/foo_db/rules/bar/tables/foo_table/versions/0").isPresent());
+        assertFalse(converter.getName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
     }
     
     @Test
     void assertGetNameByActiveVersion() {
-        Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_table/active_version");
+        Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/active_version");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+        assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
@@ -63,8 +63,8 @@ class NamedRuleItemNodePathTest {
     
     @Test
     void assertGetNameByItemPath() {
-        Optional<String> actual = converter.getNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_table");
+        Optional<String> actual = converter.getNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_table"));
+        assertThat(actual.get(), is("foo_tbl"));
     }
 }

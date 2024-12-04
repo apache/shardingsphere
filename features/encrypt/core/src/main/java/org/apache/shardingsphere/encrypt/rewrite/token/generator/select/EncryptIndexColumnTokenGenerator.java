@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.select;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -48,11 +47,9 @@ import java.util.Optional;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, DatabaseTypeAware {
+public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
     private final EncryptRule rule;
-    
-    private DatabaseType databaseType;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -67,28 +64,28 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
             if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {
-                generateSQLToken(encryptTable, each).ifPresent(result::add);
+                generateSQLToken(encryptTable, each, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private Optional<SQLToken> generateSQLToken(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
+    private Optional<SQLToken> generateSQLToken(final EncryptTable encryptTable, final ColumnSegment columnSegment, final DatabaseType databaseType) {
         QuoteCharacter quoteCharacter = columnSegment.getIdentifier().getQuoteCharacter();
         int startIndex = columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         String columnName = columnSegment.getIdentifier().getValue();
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         String queryColumnName = encryptColumn.getAssistedQuery().isPresent() ? encryptColumn.getAssistedQuery().get().getName() : encryptColumn.getCipher().getName();
-        return getQueryColumnToken(startIndex, stopIndex, queryColumnName, quoteCharacter);
+        return getQueryColumnToken(startIndex, stopIndex, queryColumnName, quoteCharacter, databaseType);
     }
     
-    private Optional<SQLToken> getQueryColumnToken(final int startIndex, final int stopIndex, final String queryColumnName, final QuoteCharacter quoteCharacter) {
-        Collection<Projection> columnProjections = getColumnProjections(queryColumnName, quoteCharacter);
+    private Optional<SQLToken> getQueryColumnToken(final int startIndex, final int stopIndex, final String queryColumnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {
+        Collection<Projection> columnProjections = getColumnProjections(queryColumnName, quoteCharacter, databaseType);
         return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
     }
     
-    private Collection<Projection> getColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
+    private Collection<Projection> getColumnProjections(final String columnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {
         return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
     }
 }

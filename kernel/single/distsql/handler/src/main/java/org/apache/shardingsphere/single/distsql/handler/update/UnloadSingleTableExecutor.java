@@ -72,7 +72,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     
     private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
+        return database.getSchema(defaultSchemaName).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
     }
     
     private void checkTableExist(final Collection<String> allTables, final String tableName) {

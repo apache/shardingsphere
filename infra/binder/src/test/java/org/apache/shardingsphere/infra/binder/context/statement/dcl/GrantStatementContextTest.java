@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
@@ -65,12 +64,13 @@ class GrantStatementContextTest {
     }
     
     private void assertNewInstance(final GrantStatement grantStatement) {
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
         grantStatement.getTables().addAll(Arrays.asList(table1, table2));
-        GrantStatementContext actual = new GrantStatementContext(grantStatement, DefaultDatabase.LOGIC_NAME);
+        GrantStatementContext actual = new GrantStatementContext(grantStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(grantStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

@@ -49,7 +49,7 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(getProxyVersion());
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().values().forEach(ShardingSphereProxyVersion::setDatabaseVersion);
+        contextManager.getMetaDataContexts().getMetaData().getAllDatabases().forEach(ShardingSphereProxyVersion::setDatabaseVersion);
     }
     
     private static String getProxyVersion() {

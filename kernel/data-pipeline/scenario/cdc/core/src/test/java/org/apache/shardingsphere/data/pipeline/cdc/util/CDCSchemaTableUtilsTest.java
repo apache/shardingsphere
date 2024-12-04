@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -38,17 +37,16 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CDCSchemaTableUtilsTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Test
     void assertParseTableExpression() {
-        Map<String, ShardingSphereSchema> schemas = new HashMap<>(2, 1F);
-        schemas.put("public", mockedPublicSchema());
-        schemas.put("test", mockedTestSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"), null, null, schemas);
-        List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
-                SchemaTable.newBuilder().setSchema("test").setTable("*").build());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", databaseType, null, null, Arrays.asList(mockedPublicSchema(), mockedTestSchema()));
+        List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(), SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Set<String>> expected = new HashMap<>(2, 1F);
         expected.put("test", new HashSet<>(Arrays.asList("t_order_item", "t_order_item2")));
         expected.put("public", Collections.singleton("t_order"));
@@ -65,23 +63,24 @@ class CDCSchemaTableUtilsTest {
     }
     
     private ShardingSphereSchema mockedPublicSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("t_order", mock(ShardingSphereTable.class));
-        tables.put("t_order2", mock(ShardingSphereTable.class));
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+        ShardingSphereTable table1 = mock(ShardingSphereTable.class);
+        when(table1.getName()).thenReturn("t_order");
+        ShardingSphereTable table2 = mock(ShardingSphereTable.class);
+        when(table2.getName()).thenReturn("t_order2");
+        return new ShardingSphereSchema("public", Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     private ShardingSphereSchema mockedTestSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("t_order_item", mock(ShardingSphereTable.class));
-        tables.put("t_order_item2", mock(ShardingSphereTable.class));
-        return new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+        ShardingSphereTable table1 = mock(ShardingSphereTable.class);
+        when(table1.getName()).thenReturn("t_order_item");
+        ShardingSphereTable table2 = mock(ShardingSphereTable.class);
+        when(table2.getName()).thenReturn("t_order_item2");
+        return new ShardingSphereSchema("test", Arrays.asList(table1, table2), Collections.emptyList());
     }
     
     @Test
     void assertParseTableExpressionWithoutSchema() {
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("sharding_db", mockedPublicSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("public", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), null, null, Collections.singleton(mockedPublicSchema()));
         List<String> schemaTables = Collections.singletonList("*");
         Collection<String> actualWildcardTable = CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, schemaTables);
         Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order2"));

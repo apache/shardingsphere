@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -31,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -46,25 +44,22 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final Map<String, ShardingSphereDatabase> databases,
-                                                     final RuleMetaData globalRuleMetaData) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
-        long oid = 0L;
-        for (Entry<String, ShardingSphereSchema> entry : databases.get(databaseName).getSchemas().entrySet()) {
-            if (PUBLIC_SCHEMA.equalsIgnoreCase(entry.getKey())) {
-                result.getRows().addAll(collectForSchema(oid++, PUBLIC_SCHEMA_OID, entry.getValue(), table));
-            }
+        ShardingSphereSchema publicSchema = metaData.getDatabase(databaseName).getSchema(PUBLIC_SCHEMA);
+        if (null != publicSchema) {
+            result.getRows().addAll(collectForSchema(0L, PUBLIC_SCHEMA_OID, publicSchema, table));
         }
         return Optional.of(result);
     }
     
     private Collection<ShardingSphereRowData> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (Entry<String, ShardingSphereTable> entry : schema.getTables().entrySet()) {
+        for (ShardingSphereTable each : schema.getAllTables()) {
             Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);
             columnValues.put("oid", oid);
             columnValues.put("relnamespace", relNamespace);
-            columnValues.put("relname", entry.getKey());
+            columnValues.put("relname", each.getName());
             columnValues.put("relkind", "r");
             result.add(new ShardingSphereRowData(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
         }

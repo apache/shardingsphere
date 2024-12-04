@@ -45,10 +45,10 @@ class RuleNodePathTest {
     @Test
     void assertGetNamedItem() {
         NamedRuleItemNodePath namedRulePath = ruleNodePath.getNamedItem("tables");
-        assertThat(namedRulePath.getPath("foo_table"), is("tables/foo_table"));
-        Optional<String> path = namedRulePath.getName("/metadata/foo_db/rules/foo/tables/foo_table/versions/0");
+        assertThat(namedRulePath.getPath("foo_tbl"), is("tables/foo_tbl"));
+        Optional<String> path = namedRulePath.getName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
         assertTrue(path.isPresent());
-        assertThat(path.get(), is("foo_table"));
+        assertThat(path.get(), is("foo_tbl"));
     }
     
     @Test

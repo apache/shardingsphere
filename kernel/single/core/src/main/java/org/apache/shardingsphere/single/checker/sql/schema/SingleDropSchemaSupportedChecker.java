@@ -46,7 +46,7 @@ public final class SingleDropSchemaSupportedChecker implements SupportedSQLCheck
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchema(schemaName);
             ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
-            ShardingSpherePreconditions.checkState(containsCascade || schema.getAllTableNames().isEmpty(), () -> new DropNotEmptySchemaException(schemaName));
+            ShardingSpherePreconditions.checkState(containsCascade || schema.getAllTables().isEmpty(), () -> new DropNotEmptySchemaException(schemaName));
         }
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -71,7 +71,12 @@ class IndexTokenTest {
     
     private ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(result.getAllTableNames()).thenReturn(Arrays.asList("no_tbl", "foo_tbl"));
+        ShardingSphereTable table1 = mock(ShardingSphereTable.class);
+        when(table1.getName()).thenReturn("no_tbl");
+        ShardingSphereTable table2 = mock(ShardingSphereTable.class);
+        when(table2.getName()).thenReturn("foo_tbl");
+        when(table2.containsIndex("foo_idx")).thenReturn(true);
+        when(result.getAllTables()).thenReturn(Arrays.asList(table1, table2));
         when(result.getTable("foo_tbl").containsIndex("foo_idx")).thenReturn(true);
         return result;
     }
@@ -79,7 +84,7 @@ class IndexTokenTest {
     private RouteUnit mockRouteUnit() {
         RouteUnit result = mock(RouteUnit.class);
         when(result.getTableMappers()).thenReturn(Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));
-        when(result.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
+        when(result.getDataSourceMapper()).thenReturn(new RouteMapper("foo_db", "ds_0"));
         return result;
     }
 }

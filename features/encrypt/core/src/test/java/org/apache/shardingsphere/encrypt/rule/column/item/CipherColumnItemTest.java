@@ -36,35 +36,35 @@ class CipherColumnItemTest {
     
     @Test
     void assertEncryptNullValue() {
-        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).encrypt("foo-db", "foo_schema", "foo_table", "foo_col", (Object) null));
+        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).encrypt("foo-db", "foo_schema", "foo_tbl", "foo_col", (Object) null));
     }
     
     @Test
     void assertEncryptSingleValue() {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("encrypted_foo_value");
+        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("encrypted_foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
-        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_table", "foo_col", "foo_value"), is("encrypted_foo_value"));
+        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", "foo_value"), is("encrypted_foo_value"));
     }
     
     @Test
     void assertEncryptMultipleValues() {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("encrypted_foo_value");
+        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("encrypted_foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
-        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_table", "foo_col", Arrays.asList(null, "foo_value")), is(Arrays.asList(null, "encrypted_foo_value")));
+        assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", Arrays.asList(null, "foo_value")), is(Arrays.asList(null, "encrypted_foo_value")));
     }
     
     @Test
     void assertDecryptNullValue() {
-        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).decrypt("foo-db", "foo_schema", "foo_table", "foo_col", (Object) null));
+        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).decrypt("foo-db", "foo_schema", "foo_tbl", "foo_col", (Object) null));
     }
     
     @Test
     void assertDecrypt() {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class, RETURNS_DEEP_STUBS);
-        when(encryptAlgorithm.decrypt(eq("encrypted_foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_table", "foo_col")))).thenReturn("foo_value");
+        when(encryptAlgorithm.decrypt(eq("encrypted_foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
-        assertThat(cipherColumnItem.decrypt("foo_db", "foo_schema", "foo_table", "foo_col", "encrypted_foo_value"), is("foo_value"));
+        assertThat(cipherColumnItem.decrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", "encrypted_foo_value"), is("foo_value"));
     }
 }

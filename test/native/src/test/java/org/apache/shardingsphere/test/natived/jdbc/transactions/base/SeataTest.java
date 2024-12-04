@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.natived.jdbc.transactions.base;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.junit.jupiter.api.AfterAll;
@@ -46,7 +46,7 @@ class SeataTest {
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.1.0")
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
             .withExposedPorts(7091, 8091)
             .waitingFor(Wait.forHttp("/health")
                     .forPort(7091)

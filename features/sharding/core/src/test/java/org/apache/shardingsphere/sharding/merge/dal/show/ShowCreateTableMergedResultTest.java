@@ -32,9 +32,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,11 +64,10 @@ class ShowCreateTableMergedResultTest {
     }
     
     private ShardingSphereSchema createSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
-        tables.put("foo_tbl",
-                new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("foo_tbl_foreign_key", "bar_tbl"))));
-        tables.put("bar_tbl", new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema("foo_db", tables, Collections.emptyMap());
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("foo_tbl_foreign_key", "bar_tbl"))));
+        tables.add(new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema("foo_db", tables, Collections.emptyList());
     }
     
     @Test

@@ -49,7 +49,7 @@ public final class GlobalRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs,
-                                                            final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+                                                            final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
             result.add(entry.getValue().build(entry.getKey(), databases, props));
@@ -93,6 +93,6 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("unchecked")
     public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()
-                .stream().map(each -> each.getValue().build(each.getKey(), databases, props)).collect(Collectors.toList());
+                .stream().map(each -> each.getValue().build(each.getKey(), databases.values(), props)).collect(Collectors.toList());
     }
 }

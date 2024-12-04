@@ -20,14 +20,11 @@ package org.apache.shardingsphere.sharding.merge.ddl;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
@@ -76,6 +73,7 @@ class ShardingDDLResultMergerTest {
     @Test
     void assertMergeWithFetchStreamMergedResult() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
@@ -94,7 +92,7 @@ class ShardingDDLResultMergerTest {
         SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
         return result;
@@ -106,11 +104,6 @@ class ShardingDDLResultMergerTest {
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
-    }
-    
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private List<QueryResult> createQueryResults() throws SQLException {

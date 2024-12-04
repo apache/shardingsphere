@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.state.circuit;
 
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +32,7 @@ class CircuitBreakDriverStateTest {
     
     @Test
     void assertGetConnection() {
-        Connection actual = new CircuitBreakDriverState().getConnection(DefaultDatabase.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        Connection actual = new CircuitBreakDriverState().getConnection("foo_db", mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }

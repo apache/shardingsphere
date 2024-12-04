@@ -77,7 +77,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -134,18 +133,18 @@ public final class PipelineContextUtils {
     }
     
     private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1F);
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
+        tables.add(new ShardingSphereTable("t_order_item", Arrays.asList(
                 new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putTables(tables);
+        tables.forEach(each -> old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putTable(each));
         return MetaDataContextsFactory.create(persistService, old.getMetaData());
     }
     

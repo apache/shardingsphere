@@ -71,7 +71,7 @@ class ZookeeperServiceDiscoveryTest {
      */
     @SuppressWarnings("unused")
     @Container
-    private static final GenericContainer<?> HIVE_SERVER2_1_CONTAINER = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
+    private static final GenericContainer<?> HS2_1_CONTAINER = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
             .withNetwork(NETWORK)
             .withEnv("SERVICE_NAME", "hiveserver2")
             .withEnv("SERVICE_OPTS", "-Dhive.server2.support.dynamic.service.discovery=true" + " "
@@ -116,10 +116,10 @@ class ZookeeperServiceDiscoveryTest {
         DataSource dataSource = createDataSource();
         TestShardingService testShardingService = new TestShardingService(dataSource);
         testShardingService.processSuccessInHive();
-        HIVE_SERVER2_1_CONTAINER.stop();
+        HS2_1_CONTAINER.stop();
         int randomPortSecond = InstanceSpec.getRandomPort();
         try (
-                GenericContainer<?> hiveServer2SecondContainer = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
+                GenericContainer<?> hs2SecondContainer = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
                         .withNetwork(NETWORK)
                         .withEnv("SERVICE_NAME", "hiveserver2")
                         .withEnv("SERVICE_OPTS", "-Dhive.server2.support.dynamic.service.discovery=true" + " "
@@ -128,8 +128,8 @@ class ZookeeperServiceDiscoveryTest {
                                 + "-Dhive.server2.thrift.port=" + randomPortSecond)
                         .withFixedExposedPort(randomPortSecond, randomPortSecond)
                         .dependsOn(ZOOKEEPER_CONTAINER)) {
-            hiveServer2SecondContainer.start();
-            extracted(hiveServer2SecondContainer.getMappedPort(randomPortSecond));
+            hs2SecondContainer.start();
+            extracted(hs2SecondContainer.getMappedPort(randomPortSecond));
             testShardingService.processSuccessInHive();
         }
     }
@@ -140,7 +140,7 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     private DataSource createDataSource() throws SQLException {
-        extracted(HIVE_SERVER2_1_CONTAINER.getMappedPort(RANDOM_PORT_FIRST));
+        extracted(HS2_1_CONTAINER.getMappedPort(RANDOM_PORT_FIRST));
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/zsd.yaml?placeholder-type=system_props");

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.metadata.data;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -41,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,8 +67,11 @@ class ShardingStatisticsTableCollectorTest {
     @Test
     void assertCollectWithoutShardingRule() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), Collections.singletonMap("foo_db", database), mock(RuleMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
         assertFalse(actual.isPresent());
     }
     
@@ -77,8 +83,9 @@ class ShardingStatisticsTableCollectorTest {
         storageUnits.put("ds_0", mock(StorageUnit.class, RETURNS_DEEP_STUBS));
         storageUnits.put("ds_1", mock(StorageUnit.class, RETURNS_DEEP_STUBS));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), Collections.singletonMap("foo_db", database), mock(RuleMetaData.class));
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
         List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());

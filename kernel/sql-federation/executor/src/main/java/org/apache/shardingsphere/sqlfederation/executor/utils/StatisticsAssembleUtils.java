@@ -31,8 +31,6 @@ import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConst
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Statistics assemble utils.
@@ -51,10 +49,10 @@ public final class StatisticsAssembleUtils {
         // TODO move this logic to ShardingSphere statistics
         ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
         if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
-            assembleOpenGaussDatabaseData(result, metaData.getDatabases().values());
+            assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
         } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
-            for (ShardingSphereDatabase each : metaData.getDatabases().values()) {
-                assembleOpenGaussTableData(result, each.getSchemas());
+            for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
+                assembleOpenGaussTableData(result, each.getAllSchemas());
             }
         } else if (EnumerableConstants.PG_ROLES.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussRoleData(result, metaData);
@@ -71,12 +69,12 @@ public final class StatisticsAssembleUtils {
         }
     }
     
-    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Map<String, ShardingSphereSchema> schemas) {
-        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            for (String each : entry.getValue().getAllTableNames()) {
+    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Collection<ShardingSphereSchema> schemas) {
+        for (ShardingSphereSchema schema : schemas) {
+            for (ShardingSphereTable each : schema.getAllTables()) {
                 Object[] rows = new Object[10];
-                rows[0] = entry.getKey();
-                rows[1] = each;
+                rows[0] = schema.getName();
+                rows[1] = each.getName();
                 tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
             }
         }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
@@ -65,12 +64,13 @@ class RevokeStatementContextTest {
     }
     
     private void assertNewInstance(final RevokeStatement revokeStatement) {
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
         revokeStatement.getTables().addAll(Arrays.asList(table1, table2));
-        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement, DefaultDatabase.LOGIC_NAME);
+        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(revokeStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

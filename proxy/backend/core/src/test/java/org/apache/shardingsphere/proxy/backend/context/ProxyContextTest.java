@@ -35,11 +35,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,10 +81,9 @@ class ProxyContextTest {
     
     @Test
     void assertDatabaseExists() {
-        Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         assertTrue(ProxyContext.getInstance().databaseExists("db"));
@@ -92,30 +92,31 @@ class ProxyContextTest {
     
     @Test
     void assertGetAllDatabaseNames() {
-        Map<String, ShardingSphereDatabase> databases = createDatabases();
+        Collection<ShardingSphereDatabase> databases = createDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(databases.keySet()));
+        assertThat(new HashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(databases.stream().map(ShardingSphereDatabase::getName).collect(Collectors.toSet())));
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1F);
+    private Collection<ShardingSphereDatabase> createDatabases() {
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             String databaseName = String.format(SCHEMA_PATTERN, i);
             when(database.getName()).thenReturn(databaseName);
             when(database.getProtocolType()).thenReturn(databaseType);
-            result.put(databaseName, database);
+            result.add(database);
         }
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        return Collections.singletonMap("db", database);
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("db");
+        when(result.getProtocolType()).thenReturn(databaseType);
+        return result;
     }
 }

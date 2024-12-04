@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -45,7 +44,7 @@ class UnsupportedOperationConnectionTest {
     void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
-        shardingSphereConnection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager, null);
+        shardingSphereConnection = new ShardingSphereConnection("foo_db", contextManager, null);
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")

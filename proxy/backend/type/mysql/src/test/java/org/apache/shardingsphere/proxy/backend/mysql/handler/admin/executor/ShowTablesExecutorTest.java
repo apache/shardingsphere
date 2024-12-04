@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -51,9 +50,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -75,7 +74,7 @@ class ShowTablesExecutorTest {
     @Test
     void assertShowTablesExecutorWithoutFilter() throws SQLException {
         ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(), TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -96,7 +95,7 @@ class ShowTablesExecutorTest {
         MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
         when(showTablesStatement.isContainsFull()).thenReturn(true);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -110,7 +109,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
         showTablesStatement.setFilter(showFilterSegment);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -131,7 +130,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
         showTablesStatement.setFilter(showFilterSegment);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -148,7 +147,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
         showTablesStatement.setFilter(showFilterSegment);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -165,7 +164,7 @@ class ShowTablesExecutorTest {
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
         showTablesStatement.setFilter(showFilterSegment);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
@@ -180,7 +179,7 @@ class ShowTablesExecutorTest {
         MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
         showTablesStatement.setFromDatabase(new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))));
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        ContextManager contextManager = mockContextManager(getDatabases());
+        ContextManager contextManager = mockContextManager(mockDatabases());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
@@ -190,7 +189,7 @@ class ShowTablesExecutorTest {
         assertFalse(actualResult.next());
     }
     
-    private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases) {
+    private ContextManager mockContextManager(final Collection<ShardingSphereDatabase> databases) {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
@@ -199,25 +198,27 @@ class ShowTablesExecutorTest {
                 new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getDatabase("db_0")).thenReturn(databases.get("db_0"));
+        when(result.getDatabase("db_0")).thenReturn(databases.iterator().next());
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(4, 1F);
-        tables.put("t_account", new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_test", new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema schema = new ShardingSphereSchema(DefaultDatabase.LOGIC_NAME, tables, Collections.emptyMap());
+    private Collection<ShardingSphereDatabase> mockDatabases() {
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", tables, Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1F);
-        result.put(String.format(DATABASE_PATTERN, 0), database);
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
+        result.add(database);
         ShardingSphereDatabase uncompletedDatabase = mock(ShardingSphereDatabase.class);
-        result.put("uncompleted", uncompletedDatabase);
+        when(uncompletedDatabase.getName()).thenReturn("uncompleted");
+        result.add(uncompletedDatabase);
         return result;
     }
     
