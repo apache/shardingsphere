@@ -30,6 +30,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -51,8 +52,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
+@EnabledInNativeImage
 @Testcontainers
-public class SeataTest {
+class SeataTest {
     
     @Container
     public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
