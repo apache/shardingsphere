@@ -44,7 +44,8 @@ class ShowColumnsStatementContextTest {
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(sqlStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_tbl")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Collections.singletonList("foo_tbl")));
         assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromDatabase)));
     }
 }
