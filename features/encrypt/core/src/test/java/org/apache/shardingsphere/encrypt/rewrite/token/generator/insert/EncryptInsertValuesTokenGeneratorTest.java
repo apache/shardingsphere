@@ -29,7 +29,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class EncryptInsertValuesTokenGeneratorTest {
     
@@ -48,21 +47,14 @@ class EncryptInsertValuesTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("db_schema");
-        generator.setDatabase(database);
+        generator.setDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()));
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("db-001");
-        generator.setDatabase(database);
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
-        database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("db_schema");
-        generator.setDatabase(database);
+        generator.setDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()));
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
 }
