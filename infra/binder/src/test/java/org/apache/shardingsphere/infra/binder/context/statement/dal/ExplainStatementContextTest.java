@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
@@ -49,7 +48,7 @@ class ExplainStatementContextTest {
     private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = mock(SQLStatement.class);
         when(explainStatement.getSqlStatement()).thenReturn(Optional.of(statement));
-        ExplainStatementContext actual = new ExplainStatementContext(explainStatement, DefaultDatabase.LOGIC_NAME);
+        ExplainStatementContext actual = new ExplainStatementContext(explainStatement, "foo_db");
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getSqlStatement().getSqlStatement().orElse(null), is(statement));

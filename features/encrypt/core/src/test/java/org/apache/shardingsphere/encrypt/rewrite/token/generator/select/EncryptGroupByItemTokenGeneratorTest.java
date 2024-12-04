@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -50,9 +49,9 @@ import static org.mockito.Mockito.when;
 
 class EncryptGroupByItemTokenGeneratorTest {
     
-    private EncryptGroupByItemTokenGenerator generator;
-    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private EncryptGroupByItemTokenGenerator generator;
     
     @BeforeEach
     void setup() {
@@ -87,7 +86,7 @@ class EncryptGroupByItemTokenGeneratorTest {
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
         when(result.getGroupByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType, DefaultDatabase.LOGIC_NAME));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType, "foo_db"));
         return result;
     }
 }

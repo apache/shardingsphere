@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInser
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,7 @@ class EncryptParameterRewritersRegistryTest {
     
     @Test
     void assertGetParameterRewriters() {
-        List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(mock(EncryptRule.class), DefaultDatabase.LOGIC_NAME, Collections.emptyList()).getParameterRewriters());
+        List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(mock(EncryptRule.class), "foo_db", Collections.emptyList()).getParameterRewriters());
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), instanceOf(EncryptAssignmentParameterRewriter.class));
         assertThat(actual.get(1), instanceOf(EncryptPredicateParameterRewriter.class));
