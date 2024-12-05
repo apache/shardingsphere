@@ -19,7 +19,7 @@ name: Nightly - Check
 
 on:
   schedule:
-    - cron: '0 20 */1 * *'  # once a day. UTC time
+    - cron: '0 23 */1 * *' # once a day. UTC time
   workflow_dispatch:
 
 env:
