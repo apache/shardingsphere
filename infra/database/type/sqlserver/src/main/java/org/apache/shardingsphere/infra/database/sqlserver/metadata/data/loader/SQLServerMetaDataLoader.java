@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,6 +31,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,11 +84,10 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, connection.getMetaData());
+                    ColumnMetaData columnMetaData = loadColumnMetaData(resultSet, connection.getMetaData());
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -98,7 +98,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final ResultSet resultSet, final DatabaseMetaData databaseMetaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         String collationName = resultSet.getString("COLLATION_NAME");
@@ -107,7 +107,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         boolean caseSensitive = null != collationName && collationName.contains("_CS");
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
         boolean isNullable = "1".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {

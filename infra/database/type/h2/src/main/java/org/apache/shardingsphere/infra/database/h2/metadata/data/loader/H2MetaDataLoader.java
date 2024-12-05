@@ -23,12 +23,13 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,7 +82,6 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), getType());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(connection, tables);
             preparedStatement.setString(1, connection.getCatalog());
@@ -89,8 +89,8 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()),
-                            tableGenerated.getOrDefault(tableName, new HashMap<>()));
+                    ColumnMetaData columnMetaData =
+                            loadColumnMetaData(resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()), tableGenerated.getOrDefault(tableName, new HashMap<>()));
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -101,15 +101,14 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
-                                              final Map<String, Boolean> tableGenerated) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final ResultSet resultSet, final Collection<String> primaryKeys, final Map<String, Boolean> tableGenerated) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
         boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible, false, isNullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, false, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

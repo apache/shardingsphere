@@ -26,10 +26,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Database meta data of Oracle.
@@ -91,6 +91,9 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public Map<String, Integer> getExtraDataTypes() {
         Map<String, Integer> result = new HashMap<>(8);
+        result.put("SMALLINT", Types.SMALLINT);
+        result.put("TINYINT", Types.TINYINT);
+        result.put("INT", Types.INTEGER);
         result.put("TEXT", Types.LONGVARCHAR);
         result.put("CHARACTER", Types.CHAR);
         result.put("VARCHAR2", Types.VARCHAR);
