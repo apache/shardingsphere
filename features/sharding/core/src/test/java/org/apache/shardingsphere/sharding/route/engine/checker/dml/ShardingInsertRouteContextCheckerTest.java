@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -93,7 +92,6 @@ class ShardingInsertRouteContextCheckerTest {
     
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
         return new InsertStatementContext(metaData, params, insertStatement, "foo_db");
     }
@@ -118,7 +116,6 @@ class ShardingInsertRouteContextCheckerTest {
     @Test
     void assertCheckWhenInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
-        when(routeContext.isSingleRouting()).thenReturn(false);
         when(routeContext.getOriginalDataNodes()).thenReturn(getMultipleRouteDataNodes());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThrows(DuplicateInsertDataRecordException.class, () -> new ShardingInsertRouteContextChecker(shardingConditions).check(shardingRule, queryContext, database, mock(), routeContext));

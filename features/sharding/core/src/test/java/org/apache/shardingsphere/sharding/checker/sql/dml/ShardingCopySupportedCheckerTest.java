@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -30,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCop
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -43,25 +40,20 @@ import static org.mockito.Mockito.when;
 class ShardingCopySupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWhenTableSegmentForPostgreSQL() {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(
-                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
     void assertCheckWhenTableSegmentForOpenGauss() {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(
-                () -> new ShardingCopySupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new CopyStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -78,7 +70,7 @@ class ShardingCopySupportedCheckerTest {
         sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, "foo_db");
         String tableName = "t_order";
-        when(shardingRule.isShardingTable(tableName)).thenReturn(true);
-        new ShardingCopySupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), sqlStatementContext);
+        when(rule.isShardingTable(tableName)).thenReturn(true);
+        new ShardingCopySupportedChecker().check(rule, mock(), mock(), sqlStatementContext);
     }
 }

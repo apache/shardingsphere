@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -94,14 +92,12 @@ class EncryptOrderByItemSupportedCheckerTest {
     
     @Test
     void assertCheckFailed() {
-        assertThrows(UnsupportedEncryptSQLException.class,
-                () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), mockSelectStatementContext("foo_tbl")));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("foo_tbl")));
     }
     
     @Test
     void assertCheckSuccess() {
-        assertDoesNotThrow(
-                () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), mockSelectStatementContext("bar_tbl")));
+        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("bar_tbl")));
     }
     
     private EncryptRule mockEncryptRule() {

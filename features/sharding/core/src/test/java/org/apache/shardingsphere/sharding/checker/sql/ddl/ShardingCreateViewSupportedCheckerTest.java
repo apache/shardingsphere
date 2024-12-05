@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -75,14 +73,13 @@ class ShardingCreateViewSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), createViewStatementContext));
+        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
     }
     
     @Test
     void assertCheckWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
-        assertThrows(EngagedViewException.class,
-                () -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), createViewStatementContext));
+        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
     }
 }

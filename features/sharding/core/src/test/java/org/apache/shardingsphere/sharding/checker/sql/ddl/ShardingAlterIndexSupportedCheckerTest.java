@@ -70,8 +70,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class),
-                new AlterIndexStatementContext(sqlStatement, "foo_db")));
+        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexSupportedChecker().check(shardingRule, database, mock(), new AlterIndexStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStateme
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.InstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -43,14 +41,12 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -64,9 +60,6 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TablelessRouteEngineFactoryTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
-    
     @Mock(extraInterfaces = TableAvailable.class)
     private SQLStatementContext sqlStatementContext;
     
@@ -76,9 +69,7 @@ class TablelessRouteEngineFactoryTest {
     @BeforeEach
     void setUp() {
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
-        Collection<String> tableNames = new ArrayList<>();
-        when(tablesContext.getTableNames()).thenReturn(tableNames);
+        when(tablesContext.getTableNames()).thenReturn(new ArrayList<>());
     }
     
     private ConnectionContext mockConnectionContext() {

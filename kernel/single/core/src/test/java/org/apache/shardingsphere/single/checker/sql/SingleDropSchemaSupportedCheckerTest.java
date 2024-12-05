@@ -30,6 +30,10 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -38,33 +42,33 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SingleDropSchemaSupportedCheckerTest {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private SingleRule rule;
     
     @Test
     void assertCheckWithoutCascadeSchema() {
-        assertThrows(DropNotEmptySchemaException.class,
-                () -> new SingleDropSchemaSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class),
-                        createSQLStatementContext("foo_schema", false)));
+        assertThrows(DropNotEmptySchemaException.class, () -> new SingleDropSchemaSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext("foo_schema", false)));
     }
     
     @Test
     void assertCheckWithNotExistedSchema() {
         ShardingSphereDatabase database = mockDatabase();
         when(database.getSchema("not_existed_schema")).thenReturn(null);
-        assertThrows(SchemaNotFoundException.class,
-                () -> new SingleDropSchemaSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), database, mock(ShardingSphereSchema.class),
-                        createSQLStatementContext("not_existed_schema", true)));
+        assertThrows(SchemaNotFoundException.class, () -> new SingleDropSchemaSupportedChecker().check(rule, database, mock(), createSQLStatementContext("not_existed_schema", true)));
     }
     
     @Test
     void assertCheck() {
-        new SingleDropSchemaSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class), createSQLStatementContext("foo_schema", true));
+        new SingleDropSchemaSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext("foo_schema", true));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
-        schema.putTable(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }

@@ -27,6 +27,10 @@ import org.apache.shardingsphere.single.checker.sql.table.SingleDropTableSupport
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -35,24 +39,26 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SingleDropTableSupportedCheckerTest {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private SingleRule rule;
     
     @Test
     void assertCheckWithCascade() {
-        assertThrows(UnsupportedDropCascadeTableException.class,
-                () -> new SingleDropTableSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class),
-                        createSQLStatementContext(true)));
+        assertThrows(UnsupportedDropCascadeTableException.class, () -> new SingleDropTableSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext(true)));
     }
     
     @Test
     void assertCheckWithoutCascade() {
-        new SingleDropTableSupportedChecker().check(mock(SingleRule.class, RETURNS_DEEP_STUBS), mockDatabase(), mock(ShardingSphereSchema.class), createSQLStatementContext(false));
+        new SingleDropTableSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext(false));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
-        schema.putTable(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }

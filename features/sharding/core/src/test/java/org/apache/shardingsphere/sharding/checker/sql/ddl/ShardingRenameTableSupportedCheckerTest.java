@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
@@ -47,17 +45,14 @@ class ShardingRenameTableSupportedCheckerTest {
     @Test
     void assertCheckShardingTable() {
         RenameTableStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.containsShardingTable(argThat(tableNames -> tableNames.contains("t_order") || tableNames.contains("t_user_order")))).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingRenameTableSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingRenameTableSupportedChecker().check(shardingRule, mock(), mock(), sqlStatementContext));
     }
     
     @Test
     void assertCheckNormalCase() {
         RenameTableStatementContext sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        assertDoesNotThrow(() -> new ShardingRenameTableSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        assertDoesNotThrow(() -> new ShardingRenameTableSupportedChecker().check(shardingRule, mock(), mock(), sqlStatementContext));
     }
     
     private RenameTableStatementContext createRenameTableStatementContext(final String originTableName, final String newTableName) {

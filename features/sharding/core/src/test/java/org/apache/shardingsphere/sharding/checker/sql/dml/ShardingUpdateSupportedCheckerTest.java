@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -51,10 +49,7 @@ import static org.mockito.Mockito.when;
 class ShardingUpdateSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
-    
-    @Mock
-    private ShardingSphereDatabase database;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWhenUpdateSingleTable() {
@@ -62,9 +57,9 @@ class ShardingUpdateSupportedCheckerTest {
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, "foo_db");
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingUpdateSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        when(rule.isAllShardingTables(tableNames)).thenReturn(true);
+        when(rule.containsShardingTable(tableNames)).thenReturn(true);
+        assertDoesNotThrow(() -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     @Test
@@ -76,9 +71,8 @@ class ShardingUpdateSupportedCheckerTest {
         updateStatement.setTable(joinTableSegment);
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement, "foo_db");
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext));
+        when(rule.containsShardingTable(tableNames)).thenReturn(true);
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     private UpdateStatement createUpdateStatement() {
