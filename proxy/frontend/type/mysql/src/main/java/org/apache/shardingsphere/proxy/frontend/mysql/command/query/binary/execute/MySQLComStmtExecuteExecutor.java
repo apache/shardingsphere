@@ -126,6 +126,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        proxyBackendHandler.close();
+        if (null != proxyBackendHandler) {
+            proxyBackendHandler.close();
+        }
     }
 }
