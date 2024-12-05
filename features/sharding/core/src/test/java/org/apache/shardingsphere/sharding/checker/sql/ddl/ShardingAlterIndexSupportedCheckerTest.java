@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 class ShardingAlterIndexSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -60,7 +60,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(shardingRule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -70,7 +70,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexSupportedChecker().check(shardingRule, database, mock(), new AlterIndexStatementContext(sqlStatement, "foo_db")));
+        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new AlterIndexStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -84,6 +84,6 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertThrows(DuplicateIndexException.class,
-                () -> new ShardingAlterIndexSupportedChecker().check(shardingRule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
+                () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
     }
 }
