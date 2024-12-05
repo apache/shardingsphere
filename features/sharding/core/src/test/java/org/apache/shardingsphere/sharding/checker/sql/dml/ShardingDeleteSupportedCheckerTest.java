@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 class ShardingDeleteSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWhenDeleteMultiTablesForMySQL() {
@@ -81,9 +81,9 @@ class ShardingDeleteSupportedCheckerTest {
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
         sqlStatement.setTable(tableSegment);
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
+        when(rule.isAllShardingTables(tableNames)).thenReturn(false);
+        when(rule.containsShardingTable(tableNames)).thenReturn(true);
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, "foo_db");
-        new ShardingDeleteSupportedChecker().check(shardingRule, mock(), mock(), sqlStatementContext);
+        new ShardingDeleteSupportedChecker().check(rule, mock(), mock(), sqlStatementContext);
     }
 }

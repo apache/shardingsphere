@@ -51,7 +51,7 @@ class ShardingCreateViewSupportedCheckerTest {
     private RouteContext routeContext;
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Mock
     private CreateViewStatementContext createViewStatementContext;
@@ -73,13 +73,13 @@ class ShardingCreateViewSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
+        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(rule, mock(), mock(), createViewStatementContext));
     }
     
     @Test
     void assertCheckWithException() {
-        when(shardingRule.isShardingTable(any())).thenReturn(true);
-        when(shardingRule.isAllBindingTables(any())).thenReturn(false);
-        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
+        when(rule.isShardingTable(any())).thenReturn(true);
+        when(rule.isAllBindingTables(any())).thenReturn(false);
+        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewSupportedChecker().check(rule, mock(), mock(), createViewStatementContext));
     }
 }

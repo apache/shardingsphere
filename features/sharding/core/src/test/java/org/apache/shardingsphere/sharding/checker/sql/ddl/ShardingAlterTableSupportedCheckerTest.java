@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 class ShardingAlterTableSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -52,7 +52,7 @@ class ShardingAlterTableSupportedCheckerTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         AlterTableStatementContext sqlStatementContext = new AlterTableStatementContext(sqlStatement, "foo_db");
-        when(shardingRule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(shardingRule, database, mock(), sqlStatementContext));
+        when(rule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
 }
