@@ -60,15 +60,6 @@ public final class ShardingSphereMetaData {
         this(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
-    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
-                                  final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new CaseInsensitiveMap<>(databases, new ConcurrentHashMap<>());
-        this.globalResourceMetaData = globalResourceMetaData;
-        this.globalRuleMetaData = globalRuleMetaData;
-        this.props = props;
-        temporaryProps = new TemporaryConfigurationProperties(props.getProps());
-    }
-    
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this.databases = new CaseInsensitiveMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each)), new ConcurrentHashMap<>());

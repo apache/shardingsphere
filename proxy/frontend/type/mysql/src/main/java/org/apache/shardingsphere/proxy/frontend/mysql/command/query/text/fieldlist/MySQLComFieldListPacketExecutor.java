@@ -91,6 +91,8 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        databaseConnector.close();
+        if (null != databaseConnector) {
+            databaseConnector.close();
+        }
     }
 }
