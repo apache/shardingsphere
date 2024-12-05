@@ -28,8 +28,6 @@
 1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
 1. Proxy Native: Support connecting to HiveServer2 with ZooKeeper Service Discovery enabled in GraalVM Native Image - [#33768](https://github.com/apache/shardingsphere/pull/33768)
 1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
-1. Doc: Adds documentation for ClickHouse support - [#33779](https://github.com/apache/shardingsphere/pull/33779)
-1. Doc: Removes use of `iceberg.mr.schema.auto.conversion` from documentation due to HIVE-26507 - [#33828](https://github.com/apache/shardingsphere/pull/33828)
 1. Sharding: Support MYSQL GroupConcat function for aggregating multiple shards - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 1. Proxy Native: Support Seata AT integration under Proxy Native in GraalVM Native Image - [#33889](https://github.com/apache/shardingsphere/pull/33889)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)

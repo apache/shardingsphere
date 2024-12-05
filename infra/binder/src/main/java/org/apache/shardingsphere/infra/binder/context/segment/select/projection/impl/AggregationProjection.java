@@ -82,4 +82,8 @@ public class AggregationProjection implements Projection {
     public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
     }
+    
+    public Optional<String> getSeparator() {
+        return Optional.ofNullable(separator);
+    }
 }

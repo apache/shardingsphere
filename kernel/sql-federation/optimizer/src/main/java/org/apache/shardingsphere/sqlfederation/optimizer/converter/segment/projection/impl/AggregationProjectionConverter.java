@@ -80,7 +80,7 @@ public final class AggregationProjectionConverter {
         }
         SqlLiteral functionQuantifier = segment instanceof AggregationDistinctProjectionSegment ? SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO) : null;
         SqlAggFunction operator = convertOperator(segment.getType().name());
-        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator());
+        List<SqlNode> params = convertParameters(segment.getParameters(), segment.getExpression(), segment.getSeparator().orElse(null));
         SqlBasicCall sqlBasicCall = new SqlBasicCall(operator, params, SqlParserPos.ZERO, functionQuantifier);
         if (segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(sqlBasicCall,

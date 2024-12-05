@@ -94,4 +94,8 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     public String getText() {
         return expression;
     }
+    
+    public Optional<String> getSeparator() {
+        return Optional.ofNullable(separator);
+    }
 }
