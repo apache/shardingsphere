@@ -19,7 +19,7 @@ name: Nightly - E2E SQL
 
 on:
   schedule:
-    - cron: '0 18 */1 * *'# once a day. UTC time
+    - cron: '0 15 */1 * *' # once a day. UTC time
   workflow_dispatch:
 
 concurrency:
