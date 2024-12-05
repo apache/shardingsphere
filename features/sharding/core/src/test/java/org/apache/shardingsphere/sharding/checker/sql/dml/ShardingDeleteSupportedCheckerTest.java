@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
@@ -85,8 +83,7 @@ class ShardingDeleteSupportedCheckerTest {
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, "foo_db");
-        new ShardingDeleteSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
+        new ShardingDeleteSupportedChecker().check(shardingRule, mock(), mock(), sqlStatementContext);
     }
 }

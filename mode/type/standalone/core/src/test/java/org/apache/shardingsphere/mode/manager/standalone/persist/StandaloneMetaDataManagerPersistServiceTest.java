@@ -118,10 +118,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertAlterSchemaWithNotEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.isEmpty()).thenReturn(true);
-        when(database.getSchema("foo_schema")).thenReturn(schema);
-        when(database.getSchema("bar_schema")).thenReturn(schema);
+        when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema"));
+        when(database.getSchema("bar_schema")).thenReturn(new ShardingSphereSchema("bar_schema"));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().get().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);

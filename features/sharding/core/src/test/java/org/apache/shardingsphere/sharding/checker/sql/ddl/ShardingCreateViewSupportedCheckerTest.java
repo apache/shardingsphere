@@ -75,14 +75,13 @@ class ShardingCreateViewSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), createViewStatementContext));
+        assertDoesNotThrow(() -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
     }
     
     @Test
     void assertCheckWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
-        assertThrows(EngagedViewException.class,
-                () -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), createViewStatementContext));
+        assertThrows(EngagedViewException.class, () -> new ShardingCreateViewSupportedChecker().check(shardingRule, mock(), mock(), createViewStatementContext));
     }
 }
