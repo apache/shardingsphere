@@ -33,7 +33,7 @@ import java.util.Optional;
 public interface ShardingSphereStatisticsCollector extends TypedSPI {
     
     /**
-     * Collect.
+     * Collect statistics.
      *
      * @param databaseName database name
      * @param table table
