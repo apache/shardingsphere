@@ -336,6 +336,14 @@ public final class MetaDataContextsFactory {
                 metaDataPersistService, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps(), computeNodeInstanceContext);
     }
     
+    private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
+                                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
+                                                                final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+        return internalLoadMetaData
+                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, computeNodeInstanceContext)
+                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
+    }
+    
     private static ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNode, DataSource> storageNodes = getStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageUnit> storageUnits = getStorageUnits(database.getResourceMetaData().getStorageUnits(), resource);
@@ -376,13 +384,5 @@ public final class MetaDataContextsFactory {
             result.putAll(switchingResource.getNewDataSources());
         }
         return result;
-    }
-    
-    private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
-                                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
-                                                                final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return internalLoadMetaData
-                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, computeNodeInstanceContext)
-                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
     }
 }
