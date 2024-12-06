@@ -96,7 +96,7 @@ public final class SQLRouteEngine {
         }
         Collection<String> tableNames = SQLStatementContextExtractor.getTableNames(database, queryContext.getSqlStatementContext());
         result = route(queryContext, globalRuleMetaData, database, tableRouters, tableNames, result);
-        result = new TablelessSQLRouter().route(queryContext, globalRuleMetaData, database, result);
+        result = new TablelessSQLRouter().route(queryContext, globalRuleMetaData, database, tableNames, result);
         result = route(queryContext, globalRuleMetaData, database, dataSourceRouters, tableNames, result);
         if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnits().size()) {
             String singleDataSourceName = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
