@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereMetaDataIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,9 +34,9 @@ public final class ShardingSphereSchema {
     @Getter
     private final String name;
     
-    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereTable> tables;
+    private final Map<ShardingSphereIdentifier, ShardingSphereTable> tables;
     
-    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereView> views;
+    private final Map<ShardingSphereIdentifier, ShardingSphereView> views;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereSchema(final String name) {
@@ -49,8 +49,8 @@ public final class ShardingSphereSchema {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
-        tables.forEach(each -> this.tables.put(new ShardingSphereMetaDataIdentifier(each.getName()), each));
-        views.forEach(each -> this.views.put(new ShardingSphereMetaDataIdentifier(each.getName()), each));
+        tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName()), each));
+        views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName()), each));
     }
     
     /**
@@ -69,7 +69,7 @@ public final class ShardingSphereSchema {
      * @return contains table or not
      */
     public boolean containsTable(final String tableName) {
-        return tables.containsKey(new ShardingSphereMetaDataIdentifier(tableName));
+        return tables.containsKey(new ShardingSphereIdentifier(tableName));
     }
     
     /**
@@ -79,7 +79,7 @@ public final class ShardingSphereSchema {
      * @return table
      */
     public ShardingSphereTable getTable(final String tableName) {
-        return tables.get(new ShardingSphereMetaDataIdentifier(tableName));
+        return tables.get(new ShardingSphereIdentifier(tableName));
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ShardingSphereSchema {
      * @param table table
      */
     public void putTable(final ShardingSphereTable table) {
-        tables.put(new ShardingSphereMetaDataIdentifier(table.getName()), table);
+        tables.put(new ShardingSphereIdentifier(table.getName()), table);
     }
     
     /**
@@ -97,7 +97,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
-        tables.remove(new ShardingSphereMetaDataIdentifier(tableName));
+        tables.remove(new ShardingSphereIdentifier(tableName));
     }
     
     /**
@@ -116,7 +116,7 @@ public final class ShardingSphereSchema {
      * @return contains view or not
      */
     public boolean containsView(final String viewName) {
-        return views.containsKey(new ShardingSphereMetaDataIdentifier(viewName));
+        return views.containsKey(new ShardingSphereIdentifier(viewName));
     }
     
     /**
@@ -126,7 +126,7 @@ public final class ShardingSphereSchema {
      * @return view
      */
     public ShardingSphereView getView(final String viewName) {
-        return views.get(new ShardingSphereMetaDataIdentifier(viewName));
+        return views.get(new ShardingSphereIdentifier(viewName));
     }
     
     /**
@@ -135,7 +135,7 @@ public final class ShardingSphereSchema {
      * @param view view
      */
     public void putView(final ShardingSphereView view) {
-        views.put(new ShardingSphereMetaDataIdentifier(view.getName()), view);
+        views.put(new ShardingSphereIdentifier(view.getName()), view);
     }
     
     /**
@@ -144,7 +144,7 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
-        views.remove(new ShardingSphereMetaDataIdentifier(viewName));
+        views.remove(new ShardingSphereIdentifier(viewName));
     }
     
     /**

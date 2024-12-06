@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Database dialect meta data identifier handler.
+ * Database dialect identifier handler.
  */
 @SingletonSPI
-public interface DatabaseDialectMetaDataIdentifierHandler extends DatabaseTypedSPI {
+public interface DatabaseDialectIdentifierHandler extends DatabaseTypedSPI {
     
     /**
      * Whether identifier is case-sensitive.
