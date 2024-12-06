@@ -75,7 +75,6 @@ class BroadcastRouteEngineFactoryTest {
     @BeforeEach
     void setUp() {
         when(rule.getBroadcastTableNames(Collections.singleton("foo_tbl"))).thenReturn(Collections.singleton("foo_tbl"));
-        when(rule.isAllBroadcastTables(Collections.singleton("foo_tbl"))).thenReturn(true);
     }
     
     @Test
