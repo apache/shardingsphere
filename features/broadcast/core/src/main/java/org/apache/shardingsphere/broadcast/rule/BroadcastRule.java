@@ -23,6 +23,7 @@ import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -64,6 +65,7 @@ public final class BroadcastRule implements DatabaseRule {
      * @param logicTableNames all logic table names
      * @return broadcast table names
      */
+    @HighFrequencyInvocation
     public Collection<String> getBroadcastTableNames(final Collection<String> logicTableNames) {
         Collection<String> result = new CaseInsensitiveSet<>();
         for (String each : logicTableNames) {
@@ -72,16 +74,6 @@ public final class BroadcastRule implements DatabaseRule {
             }
         }
         return result;
-    }
-    
-    /**
-     * Judge whether logic tables are all broadcast tables.
-     *
-     * @param logicTableNames logic table names
-     * @return logic tables are all broadcast tables or not
-     */
-    public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);
     }
     
     @Override

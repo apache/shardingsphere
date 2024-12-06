@@ -224,9 +224,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
         SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByRegisterStorageUnit(metaDataContextManager.getMetaDataContexts().get()
                 .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
-        Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory.createChangedDatabases(databaseName, false, switchingResource, null,
+        ShardingSphereDatabase changedDatabase = MetaDataContextsFactory.createChangedDatabase(databaseName, false, switchingResource, null,
                 metaDataContextManager.getMetaDataContexts().get(), metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
-        metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases().putAll(changedDatabases);
+        metaDataContextManager.getMetaDataContexts().get().getMetaData().putDatabase(changedDatabase);
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getAllSchemas()
@@ -246,9 +246,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
         SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(metaDataContextManager.getMetaDataContexts().get().getMetaData()
                 .getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
-        Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory.createChangedDatabases(databaseName, true, switchingResource, null,
+        ShardingSphereDatabase changedDatabase = MetaDataContextsFactory.createChangedDatabase(databaseName, true, switchingResource, null,
                 metaDataContextManager.getMetaDataContexts().get(), metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
-        metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabases().putAll(changedDatabases);
+        metaDataContextManager.getMetaDataContexts().get().getMetaData().putDatabase(changedDatabase);
         metaDataContextManager.getMetaDataContexts().get().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().get().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();

@@ -140,6 +140,7 @@ class ImportDatabaseConfigurationExecutorTest {
     private ContextManager mockContextManager(final String databaseName) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(databaseName);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
@@ -150,7 +151,7 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", storageUnit)));
         when(database.getResourceMetaData().getDataSourceMap()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
+        when(result.getMetaDataContexts().getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));
         return result;

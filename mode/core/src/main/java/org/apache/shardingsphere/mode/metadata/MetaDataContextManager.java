@@ -150,13 +150,14 @@ public class MetaDataContextManager {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
-        Map<String, ShardingSphereDatabase> changedDatabases = MetaDataContextsFactory
-                .createChangedDatabases(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+        ShardingSphereDatabase changedDatabase = MetaDataContextsFactory
+                .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+        metaDataContexts.get().getMetaData().putDatabase(changedDatabase);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        RuleMetaData changedGlobalMetaData = new RuleMetaData(
-                GlobalRulesBuilder.buildRules(ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), changedDatabases.values(), props));
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(
+                ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), metaDataContexts.get().getMetaData().getAllDatabases(), props));
         MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
-                new ShardingSphereMetaData(changedDatabases.values(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+                new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
         switchingResource.closeStaleDataSources();
         return result;
     }

@@ -33,8 +33,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,21 +68,5 @@ class BroadcastRuleTest {
     void assertGetBroadcastTableNames() {
         BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.singleton("foo_tbl")), Collections.emptyMap(), Collections.emptyList());
         assertThat(rule.getBroadcastTableNames(Arrays.asList("foo_tbl", "bar_tbl")), is(Collections.singleton("foo_tbl")));
-    }
-    
-    @Test
-    void assertIsAllBroadcastTables() {
-        BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.singleton("foo_tbl")), Collections.emptyMap(), Collections.emptyList());
-        assertFalse(rule.isAllBroadcastTables(Collections.emptyList()));
-        assertTrue(rule.isAllBroadcastTables(Collections.singleton("foo_tbl")));
-        assertFalse(rule.isAllBroadcastTables(Arrays.asList("foo_tbl", "bar_tbl")));
-    }
-    
-    @Test
-    void assertIsAllBroadcastTablesWhenEmptyRule() {
-        BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.emptyList()), Collections.emptyMap(), Collections.emptyList());
-        assertFalse(rule.isAllBroadcastTables(Collections.emptyList()));
-        assertFalse(rule.isAllBroadcastTables(Collections.singleton("foo_tbl")));
-        assertFalse(rule.isAllBroadcastTables(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }
