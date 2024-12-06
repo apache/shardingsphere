@@ -112,6 +112,15 @@ public final class ShardingSphereMetaData {
     }
     
     /**
+     * Put database.
+     *
+     * @param database database
+     */
+    public void putDatabase(final ShardingSphereDatabase database) {
+        databases.put(database.getName(), database);
+    }
+    
+    /**
      * Drop database.
      *
      * @param databaseName database name
