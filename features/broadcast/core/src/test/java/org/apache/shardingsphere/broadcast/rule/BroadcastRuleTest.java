@@ -45,7 +45,7 @@ class BroadcastRuleTest {
     void assertGetDataSourceNames() {
         BroadcastRule rule = new BroadcastRule(
                 new BroadcastRuleConfiguration(Collections.emptyList()), mockDataSourceMap(), Arrays.asList(mockBuiltRule(), mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        assertThat(rule.getDataSourceNames(), is(Collections.singletonList("foo_ds")));
+        assertThat(rule.getDataSourceNames(), is(Collections.singleton("foo_ds")));
     }
     
     private static Map<String, DataSource> mockDataSourceMap() {
