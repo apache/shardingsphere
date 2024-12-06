@@ -52,8 +52,8 @@ public final class MySQLContainer extends DockerStorageContainer {
         setCommands(storageContainerConfig.getContainerCommand());
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
-        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
         super.configure();
+        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override
