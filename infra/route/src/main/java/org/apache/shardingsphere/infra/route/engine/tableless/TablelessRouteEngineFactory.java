@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.TablelessIgnoreRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.unicast.TablelessDataSourceUnicastRouteEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
@@ -80,7 +82,7 @@ public final class TablelessRouteEngineFactory {
             return getDDLRouteEngine(queryContext.getSqlStatementContext(), database);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLRouteEngine(queryContext.getSqlStatementContext());
+            return getDMLRouteEngine(queryContext.getSqlStatementContext(), queryContext.getConnectionContext());
         }
         return new TablelessIgnoreRouteEngine();
     }
@@ -133,9 +135,9 @@ public final class TablelessRouteEngineFactory {
         return new TablelessIgnoreRouteEngine();
     }
     
-    private static TablelessRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext) {
+    private static TablelessRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceUnicastRouteEngine(connectionContext);
         }
         return new TablelessIgnoreRouteEngine();
     }

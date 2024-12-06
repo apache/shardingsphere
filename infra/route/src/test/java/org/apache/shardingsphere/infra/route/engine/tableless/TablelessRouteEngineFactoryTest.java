@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessInstanceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
@@ -179,6 +180,6 @@ class TablelessRouteEngineFactoryTest {
         when(queryContext.getSqlStatementContext()).thenReturn(mock(SelectStatementContext.class));
         when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
-        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
+        assertThat(actual, instanceOf(TablelessDataSourceUnicastRouteEngine.class));
     }
 }
