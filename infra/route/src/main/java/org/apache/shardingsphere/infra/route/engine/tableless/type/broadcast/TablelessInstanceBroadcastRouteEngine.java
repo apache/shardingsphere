@@ -28,10 +28,10 @@ import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngi
 import java.util.Collections;
 
 /**
- * Instance broadcast route engine.
+ * Tableless instance broadcast route engine.
  */
 @RequiredArgsConstructor
-public final class InstanceBroadcastRouteEngine implements TablelessRouteEngine {
+public final class TablelessInstanceBroadcastRouteEngine implements TablelessRouteEngine {
     
     @Override
     public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
 /**
- * Ignore route engine.
+ * Tableless ignore route engine.
  */
-public final class IgnoreRouteEngine implements TablelessRouteEngine {
+public final class TablelessIgnoreRouteEngine implements TablelessRouteEngine {
     
     @Override
     public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {

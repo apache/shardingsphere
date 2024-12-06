@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingInstanceBroadcastRouteEngineTest {
+class ShardingTablelessInstanceBroadcastRouteEngineTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
