@@ -81,7 +81,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         aggregationMap.computeIfAbsent(groupByValue, unused -> selectStatementContext.getProjectionsContext().getAggregationProjections().stream()
-                .collect(Collectors.toMap(Function.identity(), input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection))));
+                .collect(Collectors.toMap(Function.identity(),
+                        input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)))));
     }
     
     private void aggregate(final SelectStatementContext selectStatementContext, final QueryResult queryResult,
