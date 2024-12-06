@@ -18,31 +18,29 @@
 package org.apache.shardingsphere.single.distsql.segment;
 
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 /**
  * Single table segment.
  */
-@RequiredArgsConstructor
 @EqualsAndHashCode
 public final class SingleTableSegment implements DistSQLSegment {
     
-    private final CaseInsensitiveIdentifier storageUnitName;
+    private final ShardingSphereIdentifier storageUnitName;
     
-    private final CaseInsensitiveIdentifier schemaName;
+    private final ShardingSphereIdentifier schemaName;
     
-    private final CaseInsensitiveIdentifier tableName;
+    private final ShardingSphereIdentifier tableName;
     
     public SingleTableSegment(final String storageUnitName, final String tableName) {
         this(storageUnitName, null, tableName);
     }
     
     public SingleTableSegment(final String storageUnitName, final String schemaName, final String tableName) {
-        this.storageUnitName = new CaseInsensitiveIdentifier(storageUnitName);
-        this.schemaName = null == schemaName ? null : new CaseInsensitiveIdentifier(schemaName);
-        this.tableName = new CaseInsensitiveIdentifier(tableName);
+        this.storageUnitName = new ShardingSphereIdentifier(storageUnitName);
+        this.schemaName = null == schemaName ? null : new ShardingSphereIdentifier(schemaName);
+        this.tableName = new ShardingSphereIdentifier(tableName);
     }
     
     /**
