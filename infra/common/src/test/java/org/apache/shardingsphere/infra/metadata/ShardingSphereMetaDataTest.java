@@ -87,7 +87,7 @@ class ShardingSphereMetaDataTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedList<>(Collections.singleton(mockDatabase(resourceMetaData, dataSource, databaseRule1, databaseRule2))),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
-        assertTrue(metaData.getDatabases().isEmpty());
+        assertTrue(metaData.getAllDatabases().isEmpty());
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
         verify(globalRule).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
