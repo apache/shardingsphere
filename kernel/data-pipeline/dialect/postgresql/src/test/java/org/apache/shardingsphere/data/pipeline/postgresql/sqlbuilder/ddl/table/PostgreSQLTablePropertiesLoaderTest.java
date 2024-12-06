@@ -37,10 +37,10 @@ class PostgreSQLTablePropertiesLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn("foo_db");
         ResultSet fetchDatabaseIdResultSet = mockFetchDatabaseIdResultSet();
-        when(connection.createStatement().executeQuery(System.lineSeparator() + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + System.lineSeparator()))
+        when(connection.createStatement().executeQuery("\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n"))
                 .thenReturn(fetchDatabaseIdResultSet);
         ResultSet fetchSchemaIdResultSet = mockFetchSchemaIdResultSet();
-        when(connection.createStatement().executeQuery(System.lineSeparator() + "SELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = 'foo_schema';" + System.lineSeparator()))
+        when(connection.createStatement().executeQuery("\n" + "SELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = 'foo_schema';" + "\n"))
                 .thenReturn(fetchSchemaIdResultSet);
         Map<String, Object> actual = new PostgreSQLTablePropertiesLoader(connection, "foo_tbl", "foo_schema", 12, 0).load();
         assertThat(actual.size(), is(7));
