@@ -80,7 +80,6 @@ class DropDatabaseBackendHandlerTest {
     }
     
     private ContextManager mockContextManager() {
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         ShardingSphereDatabase database1 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database1.getName()).thenReturn("foo_db");
         ShardingSphereDatabase database2 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
