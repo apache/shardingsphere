@@ -91,8 +91,8 @@ public final class GlobalRulesBuilder {
      * @return built rule
      */
     @SuppressWarnings("unchecked")
-    public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()
-                .stream().map(each -> each.getValue().build(each.getKey(), databases.values(), props)).collect(Collectors.toList());
+                .stream().map(each -> each.getValue().build(each.getKey(), databases, props)).collect(Collectors.toList());
     }
 }
