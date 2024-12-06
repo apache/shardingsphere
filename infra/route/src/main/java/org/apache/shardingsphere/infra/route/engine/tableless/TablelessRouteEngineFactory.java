@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 /**
@@ -76,6 +78,9 @@ public final class TablelessRouteEngineFactory {
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLRouteEngine(queryContext.getSqlStatementContext(), database);
+        }
+        if (sqlStatement instanceof DMLStatement) {
+            return getDMLRouteEngine(queryContext.getSqlStatementContext());
         }
         return new TablelessIgnoreRouteEngine();
     }
@@ -124,6 +129,13 @@ public final class TablelessRouteEngineFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
             return new TablelessInstanceBroadcastRouteEngine(database);
+        }
+        return new TablelessIgnoreRouteEngine();
+    }
+    
+    private static TablelessRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return new TablelessDataSourceBroadcastRouteEngine();
         }
         return new TablelessIgnoreRouteEngine();
     }

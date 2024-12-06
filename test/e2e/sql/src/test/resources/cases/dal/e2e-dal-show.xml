@@ -21,11 +21,11 @@
         <assertion expected-data-file="show_databases.xml" />
     </test-case>
 
-    <test-case sql="SHOW TABLES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting">
+    <test-case sql="SHOW TABLES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting" adapters="jdbc">
         <assertion expected-data-file="show_tables.xml" />
     </test-case>
 
-    <test-case sql="SHOW TABLE STATUS" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting">
+    <test-case sql="SHOW TABLE STATUS" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting" adapters="jdbc">
         <assertion expected-data-file="show_table_status.xml" />
     </test-case>
 
