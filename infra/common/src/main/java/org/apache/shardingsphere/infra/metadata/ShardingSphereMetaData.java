@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingSphereMetaData {
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, ShardingSphereDatabase> databases;
     
     private final ResourceMetaData globalResourceMetaData;
