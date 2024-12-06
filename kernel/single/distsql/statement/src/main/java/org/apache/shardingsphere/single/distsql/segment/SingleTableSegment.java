@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
@@ -59,6 +60,11 @@ public final class SingleTableSegment implements DistSQLSegment {
         }
         return storageUnitName.equalsIgnoreCase(((SingleTableSegment) obj).storageUnitName)
                 && schemaName.equalsIgnoreCase(((SingleTableSegment) obj).schemaName) && tableName.equalsIgnoreCase(((SingleTableSegment) obj).tableName);
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(storageUnitName).append(schemaName).append(tableName).toHashCode();
     }
     
     @Override
