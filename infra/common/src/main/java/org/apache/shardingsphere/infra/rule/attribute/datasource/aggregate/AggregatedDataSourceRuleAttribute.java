@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.tableless.type.ignore;
+package org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate;
 
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
-import java.util.Collection;
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Tableless ignore route engine.
+ * Aggregated data source rule attribute.
  */
-public final class TablelessIgnoreRouteEngine implements TablelessRouteEngine {
+@RequiredArgsConstructor
+@Getter
+public final class AggregatedDataSourceRuleAttribute implements RuleAttribute {
     
-    @Override
-    public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
-        return new RouteContext();
-    }
+    private final Map<String, DataSource> aggregatedDataSources;
 }

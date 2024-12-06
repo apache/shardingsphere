@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -101,7 +102,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
                 result.add(each);
             }
         }
-        return result;
+        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result);
     }
     
     private Collection<String> getDistributedTableNames(final ShardingSphereDatabase database) {

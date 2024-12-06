@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
@@ -27,11 +28,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Logic tables merged result.
@@ -46,32 +46,24 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     @Override
     protected final List<MemoryQueryResultRow> init(final ShardingRule rule, final ShardingSphereSchema schema,
                                                     final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> result = new LinkedList<>();
-        Set<String> tableNames = new HashSet<>();
+        Map<String, MemoryQueryResultRow> result = new CaseInsensitiveMap<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                createMemoryQueryResultRow(rule, schema, each, tableNames).ifPresent(result::add);
+                MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
+                String actualTableName = memoryResultSetRow.getCell(1).toString();
+                Optional<ShardingTable> shardingTable = rule.findShardingTableByActualTable(actualTableName);
+                if (shardingTable.isPresent()) {
+                    String logicTableName = shardingTable.get().getLogicTable();
+                    memoryResultSetRow.setCell(1, logicTableName);
+                    setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.getTable(logicTableName), rule);
+                    result.putIfAbsent(logicTableName, memoryResultSetRow);
+                } else {
+                    setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.getTable(actualTableName), rule);
+                    result.putIfAbsent(actualTableName, memoryResultSetRow);
+                }
             }
         }
-        return result;
-    }
-    
-    private Optional<MemoryQueryResultRow> createMemoryQueryResultRow(final ShardingRule rule,
-                                                                      final ShardingSphereSchema schema, final QueryResult queryResult, final Set<String> tableNames) throws SQLException {
-        MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(queryResult);
-        String actualTableName = memoryResultSetRow.getCell(1).toString();
-        Optional<ShardingTable> shardingTable = rule.findShardingTableByActualTable(actualTableName);
-        if (shardingTable.isPresent() && tableNames.add(shardingTable.get().getLogicTable())) {
-            String logicTableName = shardingTable.get().getLogicTable();
-            memoryResultSetRow.setCell(1, logicTableName);
-            setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.getTable(logicTableName), rule);
-            return Optional.of(memoryResultSetRow);
-        }
-        if (rule.getShardingTables().isEmpty() || tableNames.add(actualTableName)) {
-            setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.getTable(actualTableName), rule);
-            return Optional.of(memoryResultSetRow);
-        }
-        return Optional.empty();
+        return new LinkedList<>(result.values());
     }
     
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final ShardingSphereTable table, final ShardingRule rule) {

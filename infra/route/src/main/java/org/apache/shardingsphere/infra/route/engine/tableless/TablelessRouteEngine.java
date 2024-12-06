@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.route.engine.tableless;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+
+import java.util.Collection;
 
 /**
  * Tableless route engine.
@@ -30,8 +31,8 @@ public interface TablelessRouteEngine {
      * Route.
      *
      * @param globalRuleMetaData global rule meta data
-     * @param database database
+     * @param aggregatedDataSources aggregated data sources
      * @return route context
      */
-    RouteContext route(RuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
+    RouteContext route(RuleMetaData globalRuleMetaData, Collection<String> aggregatedDataSources);
 }
