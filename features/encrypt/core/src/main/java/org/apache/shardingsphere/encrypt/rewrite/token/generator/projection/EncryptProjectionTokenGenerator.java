@@ -35,17 +35,11 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -53,8 +47,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Projection token generator for encrypt.
@@ -105,7 +97,7 @@ public final class EncryptProjectionTokenGenerator {
         String columnName = columnProjection.getOriginalColumn().getValue();
         boolean newAddedColumn = existColumnNames.add(columnProjection.getOriginalTable().getValue() + "." + columnName);
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnProjection.getOriginalTable().getValue());
-        if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && isNeedRewrite(selectStatementContext, columnSegment)) {
+        if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName)) {
             EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
             Collection<Projection> projections = generateProjections(encryptColumn, columnProjection, selectStatementContext.getSubqueryType(), newAddedColumn);
             int startIndex = getStartIndex(columnSegment);
@@ -143,51 +135,6 @@ public final class EncryptProjectionTokenGenerator {
             return true;
         }
         return !selectStatementContext.containsTableSubquery();
-    }
-    
-    private boolean isNeedRewrite(final SelectStatementContext selectStatementContext, final ColumnProjectionSegment columnSegment) {
-        SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
-        if (sqlStatement.getWithSegment().isPresent() && !(sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment)
-                && columnSegment.getColumn().getOwner().isPresent()) {
-            WithSegment withSegment = sqlStatement.getWithSegment().get();
-            if (columnSegment.getStopIndex() < withSegment.getStartIndex() || columnSegment.getStartIndex() > withSegment.getStopIndex()) {
-                Set<String> withTableAlias = withSegment.getCommonTableExpressions().stream().map(each -> each.getAliasSegment().getIdentifier().getValue()).collect(Collectors.toSet());
-                return !withTableAlias.contains(columnSegment.getColumn().getOwner().get().getIdentifier().getValue());
-            }
-        }
-        if (sqlStatement.getFrom().isPresent() && isContainsInJoinSubquery(sqlStatement.getFrom().get(), columnSegment)) {
-            return false;
-        }
-        return !selectStatementContext.containsTableSubquery();
-    }
-    
-    private boolean isContainsInJoinSubquery(final TableSegment tableSegment, final ColumnProjectionSegment columnSegment) {
-        if (tableSegment instanceof JoinTableSegment && isContainsInJoinSubquery(((JoinTableSegment) tableSegment).getLeft(), columnSegment)) {
-            return true;
-        }
-        if (tableSegment instanceof JoinTableSegment && isContainsInJoinSubquery(((JoinTableSegment) tableSegment).getRight(), columnSegment)) {
-            return true;
-        }
-        if (tableSegment instanceof SubqueryTableSegment) {
-            SubqueryTableSegment subqueryTable = (SubqueryTableSegment) tableSegment;
-            ColumnSegment column = columnSegment.getColumn();
-            if (subqueryTable.getAliasName().isPresent() && column.getOwner().isPresent()) {
-                return subqueryTable.getAliasName().get().equalsIgnoreCase(column.getOwner().get().getIdentifier().getValue());
-            } else {
-                return isContainsInSubqueryProjections(columnSegment, subqueryTable);
-            }
-        }
-        return false;
-    }
-    
-    private boolean isContainsInSubqueryProjections(final ColumnProjectionSegment columnSegment, final SubqueryTableSegment subqueryTable) {
-        for (ProjectionSegment each : subqueryTable.getSubquery().getSelect().getProjections().getProjections()) {
-            if (each instanceof ColumnProjectionSegment
-                    && ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue().equalsIgnoreCase(columnSegment.getColumn().getIdentifier().getValue())) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private int getStartIndex(final ColumnProjectionSegment columnSegment) {

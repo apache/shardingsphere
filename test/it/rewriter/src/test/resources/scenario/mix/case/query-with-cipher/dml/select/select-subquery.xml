@@ -37,7 +37,7 @@
     
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">
         <input sql="SELECT o.password FROM (SELECT a.password FROM t_account a) o" />
-        <output sql="SELECT o.password FROM (SELECT a.cipher_password AS password, a.cipher_password, a.assisted_query_password FROM t_account_0 a) o" />
-        <output sql="SELECT o.password FROM (SELECT a.cipher_password AS password, a.cipher_password, a.assisted_query_password FROM t_account_1 a) o" />
+        <output sql="SELECT o.cipher_password AS password FROM (SELECT a.cipher_password AS password, a.cipher_password, a.assisted_query_password FROM t_account_0 a) o" />
+        <output sql="SELECT o.cipher_password AS password FROM (SELECT a.cipher_password AS password, a.cipher_password, a.assisted_query_password FROM t_account_1 a) o" />
     </rewrite-assertion>
 </rewrite-assertions>
