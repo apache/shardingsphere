@@ -39,7 +39,7 @@ class PostgreSQLIndexSQLGeneratorTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ResultSet getNodesResultSet = mockGetNodesResultSet();
         when(connection.createStatement().executeQuery(
-                contains("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name," + System.lineSeparator() + "(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END)")))
+                contains("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name," + "\n" + "(SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END)")))
                         .thenReturn(getNodesResultSet);
         ResultSet getPropertiesResultSet = mockGetPropertiesResultSet();
         when(connection.createStatement().executeQuery(contains("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered"))).thenReturn(getPropertiesResultSet);
@@ -50,8 +50,8 @@ class PostgreSQLIndexSQLGeneratorTest {
         context.put("schema", "foo_schema");
         context.put("name", "foo_tbl");
         String actual = new PostgreSQLIndexSQLGenerator(connection, 10, 0).generate(context);
-        String expected = "CREATE INDEX IF NOT EXISTS foo_tbl" + System.lineSeparator() + "ON foo_schema.foo_tbl USING foo_am_name"
-                + System.lineSeparator() + "()" + System.lineSeparator() + "WITH (FILLFACTOR=90)" + System.lineSeparator() + "TABLESPACE default" + System.lineSeparator() + "WHERE NULL;";
+        String expected = "CREATE INDEX IF NOT EXISTS foo_tbl" + "\n" + "ON foo_schema.foo_tbl USING foo_am_name"
+                + "\n" + "()" + "\n" + "WITH (FILLFACTOR=90)" + "\n" + "TABLESPACE default" + "\n" + "WHERE NULL;";
         assertThat(actual, is(expected));
     }
     
