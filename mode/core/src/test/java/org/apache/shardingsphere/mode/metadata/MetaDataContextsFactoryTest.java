@@ -110,8 +110,8 @@ class MetaDataContextsFactoryTest {
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), computeNodeInstanceContext)) {
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
-            assertTrue(actual.getMetaData().getDatabases().containsKey("foo_db"));
-            assertThat(actual.getMetaData().getDatabases().size(), is(1));
+            assertTrue(actual.getMetaData().containsDatabase("foo_db"));
+            assertThat(actual.getMetaData().getAllDatabases().size(), is(1));
         }
     }
     
@@ -122,8 +122,8 @@ class MetaDataContextsFactoryTest {
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS))) {
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
             assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
-            assertTrue(actual.getMetaData().getDatabases().containsKey("foo_db"));
-            assertThat(actual.getMetaData().getDatabases().size(), is(1));
+            assertTrue(actual.getMetaData().containsDatabase("foo_db"));
+            assertThat(actual.getMetaData().getAllDatabases().size(), is(1));
         }
     }
     

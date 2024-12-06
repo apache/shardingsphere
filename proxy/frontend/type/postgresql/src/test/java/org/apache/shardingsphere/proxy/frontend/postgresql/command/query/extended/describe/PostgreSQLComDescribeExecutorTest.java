@@ -344,8 +344,8 @@ class PostgreSQLComDescribeExecutorTest {
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
-                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
+                statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actual.iterator();
@@ -387,7 +387,6 @@ class PostgreSQLComDescribeExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
                 new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         Collection<ShardingSphereColumn> columnMetaData = Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false),
@@ -401,8 +400,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits())
-                .thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").containsTable(TABLE_NAME)).thenReturn(true);
