@@ -111,7 +111,11 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 3. 支持基于任意个分片表创建、修改和删除视图，视图必须和分片表一样配置分片规则，并且视图和分片表必须为绑定表关系；
 4. 支持基于广播表和分片表创建、修改和删除视图，分片表规则同单独使用分片表创建视图；
 5. 支持基于广播表和单表创建、修改和删除视图；
-6. 支持 MySQL `SHOW CREATE TABLE viewName` 查看视图的创建语句。 
+6. 支持 MySQL `SHOW CREATE TABLE viewName` 查看视图的创建语句。
+
+### 聚合查询
+
+支持 MySQL `MAX`, `MIN`, `SUM`, `COUNT`, `AVG`, `BIT_XOR`, `GROUP_CONCAT` 聚合语法
 
 ## 实验性支持
 
