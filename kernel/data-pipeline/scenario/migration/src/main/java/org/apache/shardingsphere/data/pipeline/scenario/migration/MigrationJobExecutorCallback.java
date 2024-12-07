@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.ingest.dumper.
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.sql.SQLException;
@@ -81,8 +81,8 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
         PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
         String sourceSchemaName = mapper.getSchemaName(jobDataNodeEntry.getLogicTableName());
         String targetSchemaName = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().isSchemaAvailable() ? sourceSchemaName : null;
-        return new CreateTableConfiguration(sourceDataSourceConfig, new CaseInsensitiveQualifiedTable(sourceSchemaName, dataNode.getTableName()),
-                jobConfig.getTarget(), new CaseInsensitiveQualifiedTable(targetSchemaName, jobDataNodeEntry.getLogicTableName()));
+        return new CreateTableConfiguration(sourceDataSourceConfig, new QualifiedTable(sourceSchemaName, dataNode.getTableName()),
+                jobConfig.getTarget(), new QualifiedTable(targetSchemaName, jobDataNodeEntry.getLogicTableName()));
     }
     
     private ImporterConfiguration buildImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
