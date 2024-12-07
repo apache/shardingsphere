@@ -22,11 +22,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -123,14 +123,14 @@ class RecordSingleTableInventoryCalculatorTest {
     
     private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSource dataSource, final Object dataCheckPosition) {
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
-        return new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
+        return new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
     }
     
     @Test
     void assertCalculateOfRangeQuery() {
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(1000);
-        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
-                Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(
+                dataSource, new QualifiedTable(null, "t_order"), Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(3, true, 7));
         Optional<SingleTableInventoryCalculatedResult> calculatedResult = calculator.calculateChunk(param);
         assertTrue(calculatedResult.isPresent());
@@ -143,8 +143,8 @@ class RecordSingleTableInventoryCalculatorTest {
     @Test
     void assertCalculateOfRangeQueryAll() {
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3);
-        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
-                Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource,
+                new QualifiedTable(null, "t_order"), Collections.emptyList(), buildUniqueKeys(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(null, false, null));
         Iterator<SingleTableInventoryCalculatedResult> resultIterator = calculator.calculate(param).iterator();
         RecordSingleTableInventoryCalculatedResult actual = (RecordSingleTableInventoryCalculatedResult) resultIterator.next();
@@ -183,8 +183,8 @@ class RecordSingleTableInventoryCalculatorTest {
     @Test
     void assertCalculateOfPointQuery() {
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3);
-        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"),
-                Collections.emptyList(), buildUniqueKeys(), QueryType.POINT_QUERY);
+        SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource,
+                new QualifiedTable(null, "t_order"), Collections.emptyList(), buildUniqueKeys(), QueryType.POINT_QUERY);
         param.setUniqueKeysValues(Arrays.asList(3, 3));
         Optional<SingleTableInventoryCalculatedResult> calculatedResult = calculator.calculateChunk(param);
         assertTrue(calculatedResult.isPresent());
