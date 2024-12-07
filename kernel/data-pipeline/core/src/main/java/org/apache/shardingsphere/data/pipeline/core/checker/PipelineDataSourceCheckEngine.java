@@ -91,7 +91,7 @@ public final class PipelineDataSourceCheckEngine {
         try {
             for (DataSource each : dataSources) {
                 for (CaseInsensitiveQualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
-                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName().toString()));
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName().getValue()));
                 }
             }
         } catch (final SQLException ex) {
@@ -108,7 +108,7 @@ public final class PipelineDataSourceCheckEngine {
      * @throws SQLException if there's database operation failure
      */
     public boolean checkEmptyTable(final DataSource dataSource, final CaseInsensitiveQualifiedTable qualifiedTable) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
+        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName().getValue(), qualifiedTable.getTableName().getValue());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

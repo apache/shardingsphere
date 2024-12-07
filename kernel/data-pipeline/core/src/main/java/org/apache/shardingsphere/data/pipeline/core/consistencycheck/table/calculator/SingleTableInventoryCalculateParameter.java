@@ -92,7 +92,7 @@ public final class SingleTableInventoryCalculateParameter {
      * @return schema name
      */
     public String getSchemaName() {
-        return table.getSchemaName().toString();
+        return table.getSchemaName().getValue();
     }
     
     /**
@@ -101,7 +101,7 @@ public final class SingleTableInventoryCalculateParameter {
      * @return logic table name
      */
     public String getLogicTableName() {
-        return table.getTableName().toString();
+        return table.getTableName().getValue();
     }
     
     /**

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.caseinsensitive;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 /**
  * Case insensitive qualified table.
@@ -28,17 +29,17 @@ import lombok.Getter;
 // TODO should merge with QualifiedTable
 public final class CaseInsensitiveQualifiedTable {
     
-    private final CaseInsensitiveIdentifier schemaName;
+    private final ShardingSphereIdentifier schemaName;
     
-    private final CaseInsensitiveIdentifier tableName;
+    private final ShardingSphereIdentifier tableName;
     
     public CaseInsensitiveQualifiedTable(final String schemaName, final String tableName) {
-        this.schemaName = new CaseInsensitiveIdentifier(schemaName);
-        this.tableName = new CaseInsensitiveIdentifier(tableName);
+        this.schemaName = new ShardingSphereIdentifier(schemaName);
+        this.tableName = new ShardingSphereIdentifier(tableName);
     }
     
     @Override
     public String toString() {
-        return null == schemaName.toString() ? tableName.toString() : String.join(".", schemaName.toString(), tableName.toString());
+        return null == schemaName.getValue() ? tableName.getValue() : String.join(".", schemaName.getValue(), tableName.getValue());
     }
 }
