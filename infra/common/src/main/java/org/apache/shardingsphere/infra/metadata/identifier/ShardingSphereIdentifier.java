@@ -38,8 +38,7 @@ public final class ShardingSphereIdentifier {
     }
     
     public ShardingSphereIdentifier(final String value, final DatabaseType databaseType) {
-        isCaseSensitive = DatabaseTypedSPILoader.findService(DatabaseDialectIdentifierHandler.class, databaseType)
-                .map(DatabaseDialectIdentifierHandler::isCaseSensitive).orElse(false);
+        isCaseSensitive = DatabaseTypedSPILoader.findService(DatabaseDialectIdentifierHandler.class, databaseType).map(DatabaseDialectIdentifierHandler::isCaseSensitive).orElse(false);
         this.value = new CaseInsensitiveString(value);
     }
     
@@ -68,12 +67,15 @@ public final class ShardingSphereIdentifier {
         if (!(obj instanceof ShardingSphereIdentifier)) {
             return false;
         }
-        return isCaseSensitive ? value.toString().equals(((ShardingSphereIdentifier) obj).value.toString()) : value.equals(((ShardingSphereIdentifier) obj).value);
+        if (null == getValue() && null == ((ShardingSphereIdentifier) obj).getValue()) {
+            return true;
+        }
+        return isCaseSensitive ? String.valueOf(getValue()).equals(((ShardingSphereIdentifier) obj).getValue()) : value.equals(((ShardingSphereIdentifier) obj).value);
     }
     
     @Override
     public int hashCode() {
-        return isCaseSensitive ? value.toString().hashCode() : value.hashCode();
+        return isCaseSensitive ? String.valueOf(getValue()).hashCode() : value.hashCode();
     }
     
     @Override
