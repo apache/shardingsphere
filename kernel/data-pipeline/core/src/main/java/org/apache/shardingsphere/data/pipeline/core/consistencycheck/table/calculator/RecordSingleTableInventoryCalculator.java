@@ -92,8 +92,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             ResultSet resultSet = calculationContext.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
-                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException(
-                        "Calculate chunk canceled, schema name: %s, table name: %s", param.getTable().getSchemaName(), param.getTable().getTableName()));
+                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
                 Map<String, Object> columnRecord = new LinkedHashMap<>();
                 for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
                     columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
@@ -155,8 +154,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:
-                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable().getSchemaName(), param.getTable().getTableName(),
-                        columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
+                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
             case POINT_QUERY:
                 return pipelineSQLBuilder.buildPointQuerySQL(
                         param.getTable().getSchemaName(), param.getTable().getTableName(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());

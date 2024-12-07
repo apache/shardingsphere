@@ -48,22 +48,21 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     /**
      * Build query range ordering SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param qualifiedTable qualified table
      * @param columnNames column names
      * @param uniqueKeys unique keys, it may be primary key, not null
      * @param queryRange query range
      * @param shardingColumnsNames sharding columns names
      * @return built SQL
      */
-    public String buildQueryRangeOrderingSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
+    public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
                                              @Nullable final List<String> shardingColumnsNames) {
-        return dialectSQLBuilder.wrapWithPageQuery(buildQueryRangeOrderingSQL0(schemaName, tableName, columnNames, uniqueKeys, queryRange, shardingColumnsNames));
+        return dialectSQLBuilder.wrapWithPageQuery(buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, queryRange, shardingColumnsNames));
     }
     
-    private String buildQueryRangeOrderingSQL0(final String schemaName, final String tableName, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
+    private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
                                                @Nullable final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
         String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
