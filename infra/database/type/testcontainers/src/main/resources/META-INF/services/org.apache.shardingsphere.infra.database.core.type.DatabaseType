@@ -22,3 +22,4 @@ org.apache.shardingsphere.infra.database.testcontainers.type.TcOracleDatabaseTyp
 org.apache.shardingsphere.infra.database.testcontainers.type.TcPostgreSQLDatabaseType
 org.apache.shardingsphere.infra.database.testcontainers.type.TcSQLServerDatabaseType
 org.apache.shardingsphere.infra.database.testcontainers.type.TcTiDBDatabaseType
+org.apache.shardingsphere.infra.database.testcontainers.type.TcFirebirdDatabaseType
