@@ -62,7 +62,7 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     
     private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
                                                @Nullable final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
         String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
@@ -93,15 +93,15 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     /**
      * Build point query SQL.
      *
-     * @param table qualified table
+     * @param qualifiedTable qualified table
      * @param columnNames column names
      * @param uniqueKeys unique keys, it may be primary key, not null
      * @param shardingColumnsNames sharding columns names, nullable
      * @return built SQL
      */
-    public String buildPointQuerySQL(final QualifiedTable table, final Collection<String> columnNames, final List<String> uniqueKeys,
+    public String buildPointQuerySQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys,
                                      @Nullable final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(table.getSchemaName(), table.getTableName());
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String equalsConditions = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + "=?").collect(Collectors.joining(" AND "));
         return String.format("SELECT %s FROM %s WHERE %s", queryColumns, qualifiedTableName, equalsConditions);
@@ -126,6 +126,6 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      */
     public Optional<String> buildCRC32SQL(final QualifiedTable qualifiedTable, final String columnName) {
         return dialectSQLBuilder.buildCRC32SQL(
-                sqlSegmentBuilder.getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName()), sqlSegmentBuilder.getEscapedIdentifier(columnName));
+                sqlSegmentBuilder.getQualifiedTableName(qualifiedTable), sqlSegmentBuilder.getEscapedIdentifier(columnName));
     }
 }
