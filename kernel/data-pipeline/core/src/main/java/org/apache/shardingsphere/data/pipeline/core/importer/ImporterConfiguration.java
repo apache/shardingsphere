@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAn
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
@@ -85,8 +85,8 @@ public final class ImporterConfiguration {
      *
      * @return qualified tables
      */
-    public Collection<CaseInsensitiveQualifiedTable> getQualifiedTables() {
+    public Collection<QualifiedTable> getQualifiedTables() {
         return shardingColumnsMap.keySet().stream()
-                .map(ShardingSphereIdentifier::getValue).map(each -> new CaseInsensitiveQualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
+                .map(ShardingSphereIdentifier::getValue).map(each -> new QualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
     }
 }

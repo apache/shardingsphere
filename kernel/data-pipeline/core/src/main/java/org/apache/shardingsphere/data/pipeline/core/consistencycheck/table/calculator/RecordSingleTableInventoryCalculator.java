@@ -92,8 +92,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             ResultSet resultSet = calculationContext.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
-                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException(
-                        "Calculate chunk canceled, schema name: %s, table name: %s", param.getSchemaName(), param.getLogicTableName()));
+                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
                 Map<String, Object> columnRecord = new LinkedHashMap<>();
                 for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
                     columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
@@ -109,7 +108,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
     }
     
@@ -125,7 +124,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             QuietlyCloser.close(result);
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
         return result;
     }
@@ -155,10 +154,10 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:
-                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getSchemaName(), param.getLogicTableName(),
-                        columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
+                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
             case POINT_QUERY:
-                return pipelineSQLBuilder.buildPointQuerySQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
+                return pipelineSQLBuilder.buildPointQuerySQL(
+                        param.getTable().getSchemaName(), param.getTable().getTableName(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
             default:
                 throw new UnsupportedOperationException("Query type: " + param.getQueryType());
         }
@@ -169,7 +168,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         if (queryType == QueryType.RANGE_QUERY) {
             QueryRange queryRange = param.getQueryRange();
             ShardingSpherePreconditions.checkNotNull(queryRange,
-                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), new RuntimeException("Unique keys values range is null.")));
+                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
             if (null != queryRange.getLower()) {
                 preparedStatement.setObject(parameterIndex++, queryRange.getLower());
@@ -181,15 +180,15 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         } else if (queryType == QueryType.POINT_QUERY) {
             Collection<Object> uniqueKeysValues = param.getUniqueKeysValues();
             ShardingSpherePreconditions.checkNotNull(uniqueKeysValues,
-                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), new RuntimeException("Unique keys values is null.")));
+                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values is null.")));
             int parameterIndex = 1;
             for (Object each : uniqueKeysValues) {
                 preparedStatement.setObject(parameterIndex++, each);
             }
             if (null != param.getShardingColumnsNames() && !param.getShardingColumnsNames().isEmpty()) {
                 List<Object> shardingColumnsValues = param.getShardingColumnsValues();
-                ShardingSpherePreconditions.checkNotNull(shardingColumnsValues, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(
-                        param.getSchemaName(), param.getLogicTableName(), new RuntimeException("Sharding columns values is null when names not empty.")));
+                ShardingSpherePreconditions.checkNotNull(shardingColumnsValues,
+                        () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Sharding columns values is null when names not empty.")));
                 for (Object each : shardingColumnsValues) {
                     preparedStatement.setObject(parameterIndex++, each);
                 }

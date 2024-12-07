@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -25,9 +26,15 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class QualifiedTable {
     
     private final String schemaName;
     
     private final String tableName;
+    
+    @Override
+    public String toString() {
+        return null == schemaName ? tableName : String.join(".", schemaName, tableName);
+    }
 }
