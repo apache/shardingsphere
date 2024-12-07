@@ -63,7 +63,6 @@ class ShardingSphereIdentifierTest {
         assertThat(new ShardingSphereIdentifier("foo").hashCode(), is(new ShardingSphereIdentifier("FOO").hashCode()));
     }
     
-    
     @Test
     void assertToString() {
         assertThat(new ShardingSphereIdentifier("foo").toString(), is("foo"));
