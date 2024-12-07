@@ -67,7 +67,7 @@ public final class ShardingSphereIdentifier {
         if (!(obj instanceof ShardingSphereIdentifier)) {
             return false;
         }
-        if (null == getValue() && (null == ((ShardingSphereIdentifier) obj).getValue())) {
+        if (null == getValue() && null == ((ShardingSphereIdentifier) obj).getValue()) {
             return true;
         }
         return isCaseSensitive ? String.valueOf(getValue()).equals(((ShardingSphereIdentifier) obj).getValue()) : value.equals(((ShardingSphereIdentifier) obj).value);
