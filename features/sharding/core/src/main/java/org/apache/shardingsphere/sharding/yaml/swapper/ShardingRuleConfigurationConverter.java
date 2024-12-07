@@ -38,7 +38,6 @@ public final class ShardingRuleConfigurationConverter {
      *
      * @param yamlRuleConfigs YAML rule configurations
      * @return sharding rule configuration
-     * @throws IllegalStateException if there is no available sharding rule
      */
     public static Optional<ShardingRuleConfiguration> findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         return findYamlShardingRuleConfiguration(yamlRuleConfigs).map(each -> new YamlShardingRuleConfigurationSwapper().swapToObject(each));
@@ -49,7 +48,6 @@ public final class ShardingRuleConfigurationConverter {
      *
      * @param yamlRuleConfigs YAML rule configurations
      * @return YAML sharding rule configuration
-     * @throws IllegalStateException if there is no available sharding rule
      */
     public static Optional<YamlShardingRuleConfiguration> findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         return yamlRuleConfigs.stream().filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
