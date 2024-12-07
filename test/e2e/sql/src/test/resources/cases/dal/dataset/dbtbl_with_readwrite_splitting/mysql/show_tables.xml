@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,11 +15,16 @@
   ~ limitations under the License.
   -->
 
-<e2e-test-cases>
-    <!-- TODO support set variable statement for proxy adapter in issue #24124 -->
-    <test-case sql="SET @order_id := 1, @item_id := 2" db-types="MySQL" scenario-types="db,tbl,readwrite_splitting,encrypt,shadow" adapters="jdbc">
-        <assertion expected-data-file="select_session_variables.xml">
-            <assertion-sql sql="/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */SELECT @order_id, @item_id" />
-        </assertion>
-    </test-case>
-</e2e-test-cases>
+<dataset>
+    <metadata>
+        <column name="Tables_in_dbtbl_with_readwrite_splitting" />
+    </metadata>
+    <row values="t_country" />
+    <row values="t_order" />
+    <row values="t_order_item" />
+    <row values="t_product" />
+    <row values="t_product_category" />
+    <row values="t_user" />
+    <row values="t_merchant" />
+    <row values="t_product_detail" />
+</dataset>

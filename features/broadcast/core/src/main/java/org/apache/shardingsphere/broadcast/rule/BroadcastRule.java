@@ -24,16 +24,16 @@ import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Broadcast rule.
@@ -51,36 +51,12 @@ public final class BroadcastRule implements DatabaseRule {
     
     public BroadcastRule(final BroadcastRuleConfiguration config, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         configuration = config;
-        dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
+        Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
+                .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
+        dataSourceNames = new CaseInsensitiveSet<>(aggregatedDataSources.keySet());
         tables = new CaseInsensitiveSet<>(config.getTables());
-        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableNamesRuleAttribute(tables));
-    }
-    
-    private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new CaseInsensitiveSet<>(dataSources.keySet());
-        for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent()) {
-                result = getAggregatedDataSourceNames(result, ruleAttribute.get());
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperRuleAttribute ruleAttribute) {
-        Collection<String> result = new CaseInsensitiveSet<>();
-        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
-            for (String each : entry.getValue()) {
-                if (dataSourceNames.contains(each)) {
-                    dataSourceNames.remove(each);
-                    if (!result.contains(entry.getKey())) {
-                        result.add(entry.getKey());
-                    }
-                }
-            }
-        }
-        result.addAll(dataSourceNames);
-        return result;
+        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables),
+                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
     }
     
     /**
