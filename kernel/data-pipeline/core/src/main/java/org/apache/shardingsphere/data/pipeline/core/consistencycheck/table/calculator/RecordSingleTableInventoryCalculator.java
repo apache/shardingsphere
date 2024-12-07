@@ -156,8 +156,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             case RANGE_QUERY:
                 return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
             case POINT_QUERY:
-                return pipelineSQLBuilder.buildPointQuerySQL(
-                        param.getTable().getSchemaName(), param.getTable().getTableName(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
+                return pipelineSQLBuilder.buildPointQuerySQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
             default:
                 throw new UnsupportedOperationException("Query type: " + param.getQueryType());
         }

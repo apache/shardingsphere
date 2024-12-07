@@ -63,11 +63,11 @@ class PipelineDataConsistencyCalculateSQLBuilderTest {
     
     @Test
     void assertBuildPointQuerySQLWithoutQueryCondition() {
-        String actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, null);
+        String actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, null);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
+        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
+        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
     }
     
