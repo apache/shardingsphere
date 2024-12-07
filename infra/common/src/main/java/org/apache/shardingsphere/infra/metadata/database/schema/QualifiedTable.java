@@ -30,4 +30,9 @@ public final class QualifiedTable {
     private final String schemaName;
     
     private final String tableName;
+    
+    @Override
+    public String toString() {
+        return null == schemaName ? tableName : String.join(".", schemaName, tableName);
+    }
 }
