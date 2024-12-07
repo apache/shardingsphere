@@ -75,4 +75,9 @@ public final class ShardingSphereIdentifier {
     public int hashCode() {
         return isCaseSensitive ? value.toString().hashCode() : value.hashCode();
     }
+    
+    @Override
+    public String toString() {
+        return getValue();
+    }
 }
