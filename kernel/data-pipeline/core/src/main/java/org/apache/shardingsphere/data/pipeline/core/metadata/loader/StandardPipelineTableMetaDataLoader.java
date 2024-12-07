@@ -118,7 +118,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     }
     
     private Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> loadUniqueIndexesOfTable(final Connection connection,
-                                                                                                           final String schemaName, final String tableName) throws SQLException {
+                                                                                                         final String schemaName, final String tableName) throws SQLException {
         Map<String, SortedMap<Short, ShardingSphereIdentifier>> orderedColumnsOfIndexes = new LinkedHashMap<>();
         // Set approximate=true to avoid Oracle driver 19 run `analyze table`
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, true)) {
