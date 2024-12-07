@@ -61,7 +61,7 @@ public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTab
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable().getSchemaName(), param.getTable().getTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
     }
     

@@ -109,7 +109,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable().getSchemaName(), param.getTable().getTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
     }
     
@@ -125,7 +125,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             QuietlyCloser.close(result);
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable().getSchemaName(), param.getTable().getTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
         return result;
     }
@@ -169,8 +169,8 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         QueryType queryType = param.getQueryType();
         if (queryType == QueryType.RANGE_QUERY) {
             QueryRange queryRange = param.getQueryRange();
-            ShardingSpherePreconditions.checkNotNull(queryRange, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(
-                    param.getTable().getSchemaName(), param.getTable().getTableName(), new RuntimeException("Unique keys values range is null.")));
+            ShardingSpherePreconditions.checkNotNull(queryRange,
+                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
             int parameterIndex = 1;
             if (null != queryRange.getLower()) {
                 preparedStatement.setObject(parameterIndex++, queryRange.getLower());
@@ -181,16 +181,16 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             preparedStatement.setObject(parameterIndex, chunkSize);
         } else if (queryType == QueryType.POINT_QUERY) {
             Collection<Object> uniqueKeysValues = param.getUniqueKeysValues();
-            ShardingSpherePreconditions.checkNotNull(uniqueKeysValues, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(
-                    param.getTable().getSchemaName(), param.getTable().getTableName(), new RuntimeException("Unique keys values is null.")));
+            ShardingSpherePreconditions.checkNotNull(uniqueKeysValues,
+                    () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values is null.")));
             int parameterIndex = 1;
             for (Object each : uniqueKeysValues) {
                 preparedStatement.setObject(parameterIndex++, each);
             }
             if (null != param.getShardingColumnsNames() && !param.getShardingColumnsNames().isEmpty()) {
                 List<Object> shardingColumnsValues = param.getShardingColumnsValues();
-                ShardingSpherePreconditions.checkNotNull(shardingColumnsValues, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(
-                        param.getTable().getSchemaName(), param.getTable().getTableName(), new RuntimeException("Sharding columns values is null when names not empty.")));
+                ShardingSpherePreconditions.checkNotNull(shardingColumnsValues,
+                        () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Sharding columns values is null when names not empty.")));
                 for (Object each : shardingColumnsValues) {
                     preparedStatement.setObject(parameterIndex++, each);
                 }

@@ -131,7 +131,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         PipelineDataSource targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dataNode.getSchemaName(), dataNode.getTableName());
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(dataNode.getSchemaName(), dataNode.getTableName()));
+        ShardingSpherePreconditions.checkNotNull(tableMetaData,
+                () -> new PipelineTableDataConsistencyCheckLoadingFailedException(new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName())));
         List<String> columnNames = tableMetaData.getColumnNames();
         List<PipelineColumnMetaData> uniqueKeys = PipelineTableMetaDataUtils.getUniqueKeyColumns(sourceTable.getSchemaName(), sourceTable.getTableName(), metaDataLoader);
         TableInventoryCheckParameter param = new TableInventoryCheckParameter(
