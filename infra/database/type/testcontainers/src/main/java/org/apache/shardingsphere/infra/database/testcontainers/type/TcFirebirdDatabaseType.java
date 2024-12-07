@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of MariaDB in testcontainers-java.
+ * Database type of Firebird in testcontainers-java.
  */
 public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
 
