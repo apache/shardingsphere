@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPi
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -121,12 +122,11 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     /**
      * Build CRC32 SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param qualifiedTable qualified table
      * @param columnName column name
      * @return built SQL
      */
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String columnName) {
-        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), sqlSegmentBuilder.getEscapedIdentifier(columnName));
+    public Optional<String> buildCRC32SQL(final QualifiedTable qualifiedTable, final String columnName) {
+        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName()), sqlSegmentBuilder.getEscapedIdentifier(columnName));
     }
 }

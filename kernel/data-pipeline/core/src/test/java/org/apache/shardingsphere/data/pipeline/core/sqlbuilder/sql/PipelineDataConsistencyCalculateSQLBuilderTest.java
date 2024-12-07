@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +73,7 @@ class PipelineDataConsistencyCalculateSQLBuilderTest {
     
     @Test
     void assertBuildCRC32SQL() {
-        Optional<String> actual = sqlBuilder.buildCRC32SQL("foo_schema", "foo_tbl", "foo_col");
+        Optional<String> actual = sqlBuilder.buildCRC32SQL(new QualifiedTable("foo_schema", "foo_tbl"), "foo_col");
         assertThat(actual, is(Optional.of("SELECT CRC32(foo_col) FROM foo_tbl")));
     }
 }
