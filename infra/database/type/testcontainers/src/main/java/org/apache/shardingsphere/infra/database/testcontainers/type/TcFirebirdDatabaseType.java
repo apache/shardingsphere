@@ -25,9 +25,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of Firebird in testcontainers-java.
+ * Database type of MariaDB in testcontainers-java.
  */
 public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
+
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:tc:firebird:");
