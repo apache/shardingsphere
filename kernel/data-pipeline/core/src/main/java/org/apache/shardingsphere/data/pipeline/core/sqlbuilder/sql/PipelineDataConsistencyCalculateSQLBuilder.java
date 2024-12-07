@@ -93,16 +93,15 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
     /**
      * Build point query SQL.
      *
-     * @param schemaName schema name
-     * @param tableName table name
+     * @param table qualified table
      * @param columnNames column names
      * @param uniqueKeys unique keys, it may be primary key, not null
      * @param shardingColumnsNames sharding columns names, nullable
      * @return built SQL
      */
-    public String buildPointQuerySQL(final String schemaName, final String tableName, final Collection<String> columnNames, final List<String> uniqueKeys,
+    public String buildPointQuerySQL(final QualifiedTable table, final Collection<String> columnNames, final List<String> uniqueKeys,
                                      @Nullable final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(table.getSchemaName(), table.getTableName());
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String equalsConditions = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + "=?").collect(Collectors.joining(" AND "));
         return String.format("SELECT %s FROM %s WHERE %s", queryColumns, qualifiedTableName, equalsConditions);
