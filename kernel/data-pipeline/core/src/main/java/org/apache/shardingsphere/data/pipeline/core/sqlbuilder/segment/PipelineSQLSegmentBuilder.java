@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 /**
  * Pipeline SQL segment builder.
@@ -56,6 +57,21 @@ public final class PipelineSQLSegmentBuilder {
             result.append(getEscapedIdentifier(schemaName)).append('.');
         }
         result.append(getEscapedIdentifier(tableName));
+        return result.toString();
+    }
+    
+    /**
+     * Get qualified table name.
+     *
+     * @param qualifiedTable qualified table
+     * @return qualified table name
+     */
+    public String getQualifiedTableName(final QualifiedTable qualifiedTable) {
+        StringBuilder result = new StringBuilder();
+        if (dialectDatabaseMetaData.isSchemaAvailable() && !Strings.isNullOrEmpty(qualifiedTable.getSchemaName())) {
+            result.append(getEscapedIdentifier(qualifiedTable.getSchemaName())).append('.');
+        }
+        result.append(getEscapedIdentifier(qualifiedTable.getTableName()));
         return result.toString();
     }
 }
