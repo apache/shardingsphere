@@ -28,17 +28,17 @@ import java.util.Optional;
  * Database type of Firebird in testcontainers-java.
  */
 public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
-
+    
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:tc:firebird:");
     }
-
+    
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "Firebird"));
     }
-
+    
     @Override
     public String getType() {
         return "TC-Firebird";
