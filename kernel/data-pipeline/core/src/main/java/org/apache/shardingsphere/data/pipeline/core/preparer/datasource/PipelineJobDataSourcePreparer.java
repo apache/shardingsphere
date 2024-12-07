@@ -73,7 +73,7 @@ public final class PipelineJobDataSourcePreparer {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            String targetSchemaName = each.getTargetName().getSchemaName().getValue();
+            String targetSchemaName = each.getTargetName().getSchemaName();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
             }
@@ -124,9 +124,9 @@ public final class PipelineJobDataSourcePreparer {
                                                  final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
-        String schemaName = createTableConfig.getSourceName().getSchemaName().getValue();
-        String sourceTableName = createTableConfig.getSourceName().getTableName().getValue();
-        String targetTableName = createTableConfig.getTargetName().getTableName().getValue();
+        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String sourceTableName = createTableConfig.getSourceName().getTableName();
+        String targetTableName = createTableConfig.getTargetName().getTableName();
         return new PipelineDDLGenerator().generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
     }
     
