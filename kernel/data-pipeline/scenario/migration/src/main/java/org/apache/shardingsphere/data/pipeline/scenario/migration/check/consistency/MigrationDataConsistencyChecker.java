@@ -44,7 +44,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import java.util.LinkedHashMap;
@@ -89,7 +88,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
-        Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        Map<QualifiedTable, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
         try (
                 PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
@@ -108,12 +107,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private boolean checkTableInventoryDataUnmatchedAndBreak(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
-                                                             final Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> checkResultMap,
+                                                             final Map<QualifiedTable, TableDataConsistencyCheckResult> checkResultMap,
                                                              final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResultMap.put(new CaseInsensitiveQualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
+                checkResultMap.put(new QualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", each.format());
                     return true;
