@@ -47,7 +47,7 @@ public final class ShardingSphereTable {
     @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereIdentifier, ShardingSphereColumn> columns;
     
-    private final List<String> columnNames = new ArrayList<>();
+    private final List<ShardingSphereIdentifier> columnNames = new ArrayList<>();
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
@@ -81,8 +81,9 @@ public final class ShardingSphereTable {
         Map<ShardingSphereIdentifier, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1F);
         int index = 0;
         for (ShardingSphereColumn each : columns) {
-            result.put(new ShardingSphereIdentifier(each.getName()), each);
-            columnNames.add(each.getName());
+            ShardingSphereIdentifier columnName = new ShardingSphereIdentifier(each.getName());
+            result.put(columnName, each);
+            columnNames.add(columnName);
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(each.getName());
             }
