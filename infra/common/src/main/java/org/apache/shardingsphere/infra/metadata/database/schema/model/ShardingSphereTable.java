@@ -27,7 +27,9 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentif
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -128,6 +130,21 @@ public final class ShardingSphereTable {
      */
     public Collection<ShardingSphereColumn> getAllColumns() {
         return columns.values();
+    }
+    
+    /**
+     * Find column names If not existed from passing by column names.
+     *
+     * @param columnNames column names
+     * @return found column names
+     */
+    public Collection<String> findColumnNamesIfNotExistedFrom(final Collection<String> columnNames) {
+        if (columnNames.size() == columns.size()) {
+            return Collections.emptyList();
+        }
+        Collection<ShardingSphereIdentifier> result = new LinkedHashSet<>(columns.keySet());
+        result.removeAll(columnNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet()));
+        return result.stream().map(ShardingSphereIdentifier::getValue).collect(Collectors.toList());
     }
     
     /**
