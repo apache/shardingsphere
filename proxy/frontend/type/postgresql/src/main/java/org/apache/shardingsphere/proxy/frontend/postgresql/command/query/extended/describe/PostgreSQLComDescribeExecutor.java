@@ -135,9 +135,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table)).orElseGet(PostgreSQLNoDataPacket::getInstance));
         int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
-            ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();
-            for (int columnIndex = listIterator.nextIndex(); listIterator.hasNext(); columnIndex = listIterator.nextIndex()) {
-                ExpressionSegment value = listIterator.next();
+            for (int i = 0; i < each.getValues().size(); i++) {
+                ExpressionSegment value = each.getValues().get(i);
                 if (!(value instanceof ParameterMarkerExpressionSegment)) {
                     continue;
                 }
@@ -145,10 +144,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     parameterMarkerIndex++;
                     continue;
                 }
-                String columnName = columnNamesOfInsert.get(columnIndex);
-                ShardingSphereColumn column = table.getColumn(columnName);
-                ShardingSpherePreconditions.checkNotNull(column, () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
+                String columnName = columnNamesOfInsert.get(i);
+                ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
             }
         }
     }
@@ -179,8 +177,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getAllColumns().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
-                        .forEach(result::add);
+                table.getAllColumns().stream()
+                        .map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), "")).forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;

@@ -106,8 +106,9 @@ class PostgreSQLComDescribeExecutorTest {
     
     private static final String TABLE_NAME = "t_order";
     
-    private static final SQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine(
-            TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private static final SQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine(DATABASE_TYPE, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Mock
     private PortalContext portalContext;
@@ -395,9 +396,9 @@ class PostgreSQLComDescribeExecutorTest {
                 new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false, false),
                 new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false, false));
         when(schema.getTable(TABLE_NAME)).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(DATABASE_TYPE);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);

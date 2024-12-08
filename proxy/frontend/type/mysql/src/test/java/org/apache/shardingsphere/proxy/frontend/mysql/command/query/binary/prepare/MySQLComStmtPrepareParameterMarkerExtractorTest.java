@@ -37,11 +37,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Test
     void assertFindColumnsOfParameterMarkersForInsertStatement() {
-        String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(0, 0L), new CacheOption(0, 0L)).parse(sql, false);
-        ShardingSphereSchema schema = prepareSchema();
+        String sql = "INSERT INTO user (id, name, age) VALUES (1, ?, ?), (?, 'bar', ?)";
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(0, 0L), new CacheOption(0, 0L)).parse(sql, false);
+        ShardingSphereSchema schema = createSchema();
         List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatement, schema);
         assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));
         assertThat(actual.get(1), is(schema.getTable("user").getColumn("age")));
@@ -49,13 +51,11 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
         assertThat(actual.get(3), is(schema.getTable("user").getColumn("age")));
     }
     
-    private ShardingSphereSchema prepareSchema() {
+    private ShardingSphereSchema createSchema() {
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(
                 new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema result = new ShardingSphereSchema("foo_db");
-        result.putTable(table);
-        return result;
+        return new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
     }
 }
