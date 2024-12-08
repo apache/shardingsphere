@@ -94,7 +94,6 @@ class InsertClauseShardingConditionEngineTest {
         when(result.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.containsTable("foo_tbl")).thenReturn(true);
-        when(schema.getTable("foo_tbl").getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_2", "foo_Col_3"));
         when(schema.getTable("foo_tbl").findColumnNamesIfNotExistedFrom(new LinkedHashSet<>(Arrays.asList("foo_col_1", "foo_col_3")))).thenReturn(Collections.singleton("foo_col_2"));
         when(result.getSchema("foo_db")).thenReturn(schema);
         return result;
