@@ -132,8 +132,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table))
-                .orElseGet(PostgreSQLNoDataPacket::getInstance));
+        preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table)).orElseGet(PostgreSQLNoDataPacket::getInstance));
         int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
             ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();

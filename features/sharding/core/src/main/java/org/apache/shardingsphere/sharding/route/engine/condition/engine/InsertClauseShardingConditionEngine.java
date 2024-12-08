@@ -96,18 +96,14 @@ public final class InsertClauseShardingConditionEngine {
         String tableName = sqlStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue())
                 .orElseGet(() -> sqlStatementContext.getTablesContext().getTableNames().iterator().next());
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName));
-        Collection<String> allColumnNames = schema.getAllColumnNames(tableName);
-        if (columnNames.size() == allColumnNames.size()) {
-            return;
-        }
-        for (String each : allColumnNames) {
-            if (!columnNames.contains(each.toLowerCase()) && !rule.isGenerateKeyColumn(each, tableName) && rule.findShardingColumn(each, tableName).isPresent()) {
-                appendMissingShardingConditions(shardingConditions, each, tableName);
+        for (String each : schema.getTable(tableName).findColumnNamesIfNotExistedFrom(columnNames)) {
+            if (!rule.isGenerateKeyColumn(each, tableName) && rule.findShardingColumn(each, tableName).isPresent()) {
+                appendMissingShardingConditions(tableName, each, shardingConditions);
             }
         }
     }
     
-    private void appendMissingShardingConditions(final List<ShardingCondition> shardingConditions, final String columnName, final String tableName) {
+    private void appendMissingShardingConditions(final String tableName, final String columnName, final List<ShardingCondition> shardingConditions) {
         for (ShardingCondition each : shardingConditions) {
             each.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(null)));
         }
