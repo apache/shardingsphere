@@ -89,7 +89,7 @@ class InsertClauseShardingConditionEngineTest {
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
     }
     
-    private static ShardingSphereDatabase mockDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
