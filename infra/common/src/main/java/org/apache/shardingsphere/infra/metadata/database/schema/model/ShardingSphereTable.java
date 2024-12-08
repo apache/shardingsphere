@@ -134,7 +134,7 @@ public final class ShardingSphereTable {
     
     /**
      * Find column names If not existed from passing by column names.
-     * 
+     *
      * @param columnNames column names
      * @return found column names
      */
