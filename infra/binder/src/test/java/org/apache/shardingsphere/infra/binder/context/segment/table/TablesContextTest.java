@@ -109,10 +109,12 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
+        when(schema.containsTable("table_1")).thenReturn(true);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.containsColumn("col")).thenReturn(true);
+        when(schema.getTable("table_1")).thenReturn(table);
         ColumnSegment columnSegment = createColumnSegment(null, "col");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), schema);
-        assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
     
