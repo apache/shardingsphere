@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -81,7 +83,9 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
         int index = 0;
         for (ExpressionSegment each : segment.getValues()) {
             if (each instanceof ParameterMarkerExpressionSegment) {
-                result.add(table.getColumn(columnNamesOfInsert.get(index)));
+                String columnName = columnNamesOfInsert.get(index);
+                ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(table.getName(), columnName));
+                result.add(table.getColumn(columnName));
             }
             index++;
         }
@@ -92,7 +96,9 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
         List<ShardingSphereColumn> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : onDuplicateKeyColumns) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment) {
-                result.add(table.getColumn(each.getColumns().iterator().next().getIdentifier().getValue()));
+                String columnName = each.getColumns().iterator().next().getIdentifier().getValue();
+                ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(table.getName(), columnName));
+                result.add(table.getColumn(columnName));
             }
         }
         return result;
