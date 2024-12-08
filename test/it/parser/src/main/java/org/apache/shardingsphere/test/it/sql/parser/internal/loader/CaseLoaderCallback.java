@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.loader;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
