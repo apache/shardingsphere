@@ -67,11 +67,6 @@ public final class PipelineSQLSegmentBuilder {
      * @return qualified table name
      */
     public String getQualifiedTableName(final QualifiedTable qualifiedTable) {
-        StringBuilder result = new StringBuilder();
-        if (dialectDatabaseMetaData.isSchemaAvailable() && !Strings.isNullOrEmpty(qualifiedTable.getSchemaName())) {
-            result.append(getEscapedIdentifier(qualifiedTable.getSchemaName())).append('.');
-        }
-        result.append(getEscapedIdentifier(qualifiedTable.getTableName()));
-        return result.toString();
+        return getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
     }
 }
