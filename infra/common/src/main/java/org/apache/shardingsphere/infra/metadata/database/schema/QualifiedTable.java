@@ -37,7 +37,7 @@ public final class QualifiedTable {
     
     /**
      * Get schema name.
-     * 
+     *
      * @return schema name
      */
     public String getSchemaName() {
@@ -46,7 +46,7 @@ public final class QualifiedTable {
     
     /**
      * Get table name.
-     * 
+     *
      * @return table name
      */
     public String getTableName() {
