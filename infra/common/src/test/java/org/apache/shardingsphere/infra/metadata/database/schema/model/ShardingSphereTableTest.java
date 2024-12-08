@@ -54,7 +54,7 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("bar_col", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
-        assertThat(table.findColumnNamesIfNotExistedFrom(Collections.singleton("FOO_COL")), is(Collections.singleton("bar_col")));
+        assertThat(table.findColumnNamesIfNotExistedFrom(Collections.singleton("FOO_COL")), is(Collections.singletonList("bar_col")));
     }
     
     @Test
