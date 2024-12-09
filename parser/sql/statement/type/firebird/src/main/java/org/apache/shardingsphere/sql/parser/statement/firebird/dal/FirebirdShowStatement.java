@@ -17,11 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.statement.firebird.dal;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.firebird.FirebirdStatement;
+
+import java.util.Optional;
 
 /**
  * Firebird show statement.
  */
+@RequiredArgsConstructor
 public final class FirebirdShowStatement extends ShowStatement implements FirebirdStatement {
+    
+    private final String name;
+    
+    @Override
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
 }

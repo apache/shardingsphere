@@ -81,7 +81,7 @@ if %int_version% == 8 (
 
 echo Starting the %SERVER_NAME% ...
 
-java -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
 
 goto exit
 

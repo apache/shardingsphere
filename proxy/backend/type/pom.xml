@@ -31,5 +31,6 @@
         <module>mysql</module>
         <module>postgresql</module>
         <module>opengauss</module>
+        <module>firebird</module>
     </modules>
 </project>
