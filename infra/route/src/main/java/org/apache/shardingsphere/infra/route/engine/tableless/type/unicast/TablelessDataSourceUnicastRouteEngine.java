@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.unicast;
+package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -42,8 +41,7 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     @Override
     public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
         RouteContext result = new RouteContext();
-        RouteMapper dataSourceMapper = getDataSourceRouteMapper(aggregatedDataSources);
-        result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(getDataSourceRouteMapper(aggregatedDataSources), Collections.emptyList()));
         return result;
     }
     
@@ -53,8 +51,7 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        Collection<String> usedDataSourceNames = connectionContext.getUsedDataSourceNames();
-        List<String> availableDataSourceNames = new ArrayList<>(usedDataSourceNames.isEmpty() ? dataSourceNames : usedDataSourceNames);
-        return availableDataSourceNames.get(ThreadLocalRandom.current().nextInt(availableDataSourceNames.size()));
+        Collection<String> usedDataSourceNames = connectionContext.getUsedDataSourceNames().isEmpty() ? dataSourceNames : connectionContext.getUsedDataSourceNames();
+        return new ArrayList<>(usedDataSourceNames).get(ThreadLocalRandom.current().nextInt(usedDataSourceNames.size()));
     }
 }
