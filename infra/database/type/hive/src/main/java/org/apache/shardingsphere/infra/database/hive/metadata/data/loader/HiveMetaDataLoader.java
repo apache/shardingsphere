@@ -68,8 +68,7 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
             HiveConf hiveConf = new HiveConf();
             hiveConf.set(HIVE_METASTORE_URIS, hiveMetastoreUris);
             storeClient = new HiveMetaStoreClient(hiveConf);
-            return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(),
-                    getTableMetaData(storeClient.getAllTables(material.getDefaultSchemaName()), storeClient, material)));
+            return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), getTableMetaData(storeClient.getAllTables(material.getDefaultSchemaName()), storeClient, material)));
         } catch (final TException ignored) {
             throw new SQLException();
         } finally {
@@ -79,7 +78,7 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
         }
     }
     
-    private Collection<TableMetaData> getTableMetaData(final Collection<String> tables, final HiveMetaStoreClient storeClient, final MetaDataLoaderMaterial material) throws TException, SQLException {
+    private Collection<TableMetaData> getTableMetaData(final Collection<String> tables, final HiveMetaStoreClient storeClient, final MetaDataLoaderMaterial material) throws TException {
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tables) {
             GetTableRequest req = new GetTableRequest(material.getDefaultSchemaName(), each);

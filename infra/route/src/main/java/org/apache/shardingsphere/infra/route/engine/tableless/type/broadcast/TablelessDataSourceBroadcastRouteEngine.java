@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Datasource broadcast route engine.
+ * Tableless datasource broadcast route engine.
  */
-public final class DataSourceBroadcastRouteEngine implements TablelessRouteEngine {
+public final class TablelessDataSourceBroadcastRouteEngine implements TablelessRouteEngine {
     
     @Override
-    public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
         RouteContext result = new RouteContext();
-        for (String each : database.getResourceMetaData().getStorageUnits().keySet()) {
+        for (String each : aggregatedDataSources) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return result;

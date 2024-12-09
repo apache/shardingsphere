@@ -106,7 +106,8 @@ public final class ProjectionsSegmentBinder {
                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(aggregationDistinctSegment.getStartIndex(), aggregationDistinctSegment.getStopIndex(),
-                aggregationDistinctSegment.getType(), aggregationDistinctSegment.getExpression(), aggregationDistinctSegment.getDistinctInnerExpression());
+                aggregationDistinctSegment.getType(), aggregationDistinctSegment.getExpression(), aggregationDistinctSegment.getDistinctInnerExpression(),
+                aggregationDistinctSegment.getSeparator().orElse(null));
         aggregationDistinctSegment.getParameters()
                 .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
         aggregationDistinctSegment.getAliasSegment().ifPresent(result::setAlias);
@@ -117,7 +118,8 @@ public final class ProjectionsSegmentBinder {
                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         AggregationProjectionSegment result =
-                new AggregationProjectionSegment(aggregationSegment.getStartIndex(), aggregationSegment.getStopIndex(), aggregationSegment.getType(), aggregationSegment.getExpression());
+                new AggregationProjectionSegment(aggregationSegment.getStartIndex(), aggregationSegment.getStopIndex(), aggregationSegment.getType(), aggregationSegment.getExpression(),
+                        aggregationSegment.getSeparator().orElse(null));
         aggregationSegment.getParameters()
                 .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
         aggregationSegment.getAliasSegment().ifPresent(result::setAlias);

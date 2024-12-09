@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -77,12 +78,13 @@ public final class ShadowRule implements DatabaseRule {
     
     private Map<String, ShadowDataSourceRule> createDataSourceRules(final Collection<ShadowDataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.stream().collect(Collectors.toMap(ShadowDataSourceConfiguration::getName,
-                each -> new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName()), (a, b) -> b, LinkedHashMap::new));
+                each -> new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName()), (a, b) -> b, CaseInsensitiveMap::new));
     }
     
     private Map<String, ShadowTableRule> createTableRules(final Map<String, ShadowTableConfiguration> tableConfigs) {
         return tableConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> new ShadowTableRule(entry.getKey(), entry.getValue().getDataSourceNames(), entry.getValue().getShadowAlgorithmNames(), shadowAlgorithms), (a, b) -> b, LinkedHashMap::new));
+                entry -> new ShadowTableRule(entry.getKey(), entry.getValue().getDataSourceNames(), entry.getValue().getShadowAlgorithmNames(), shadowAlgorithms),
+                (a, b) -> b, CaseInsensitiveMap::new));
     }
     
     /**

@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.infra.route.engine.tableless.type.ignore;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
+import java.util.Collection;
+
 /**
- * Ignore route engine.
+ * Tableless ignore route engine.
  */
-public final class IgnoreRouteEngine implements TablelessRouteEngine {
+public final class TablelessIgnoreRouteEngine implements TablelessRouteEngine {
     
     @Override
-    public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
         return new RouteContext();
     }
 }

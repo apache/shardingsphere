@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,23 +38,18 @@ import static org.mockito.Mockito.when;
 class ShardingLoadDataSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWithSingleTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(
-                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new LoadDataStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
     void assertCheckWithShardingTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadDataSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadDataStatementContext(sqlStatement, "foo_db")));
+        when(rule.isShardingTable("t_order")).thenReturn(true);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new LoadDataStatementContext(sqlStatement, "foo_db")));
     }
 }

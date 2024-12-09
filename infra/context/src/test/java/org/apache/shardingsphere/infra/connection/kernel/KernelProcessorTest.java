@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,6 +41,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -76,8 +79,18 @@ class KernelProcessorTest {
     private Collection<ShardingSphereRule> mockShardingSphereRule() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
+        when(sqlTranslatorRule.getAttributes()).thenReturn(new RuleAttributes());
         when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
         result.add(sqlTranslatorRule);
+        result.add(mockAggregatedDataSourceRule());
+        return result;
+    }
+    
+    private ShardingSphereRule mockAggregatedDataSourceRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        AggregatedDataSourceRuleAttribute ruleAttribute = mock(AggregatedDataSourceRuleAttribute.class);
+        when(ruleAttribute.getAggregatedDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(result.getAttributes().findAttribute(AggregatedDataSourceRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
         return result;
     }
 }

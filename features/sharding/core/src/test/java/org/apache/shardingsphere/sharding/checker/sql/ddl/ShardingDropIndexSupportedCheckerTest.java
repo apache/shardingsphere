@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class ShardingDropIndexSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -59,7 +59,7 @@ class ShardingDropIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, schema, new DropIndexStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new DropIndexStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
@@ -70,7 +70,6 @@ class ShardingDropIndexSupportedCheckerTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotExistedException.class,
-                () -> new ShardingDropIndexSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new DropIndexStatementContext(sqlStatement, "foo_db")));
+        assertThrows(IndexNotExistedException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new DropIndexStatementContext(sqlStatement, "foo_db")));
     }
 }

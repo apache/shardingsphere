@@ -91,6 +91,10 @@ MySQL、PostgreSQL 和 openGauss 都支持 LIMIT 分页，无需子查询：
 SELECT * FROM t_order o ORDER BY id LIMIT ? OFFSET ?
 ```
 
+### 聚合查询
+
+支持 `MAX`, `MIN`, `SUM`, `COUNT`, `AVG`, `BIT_XOR`, `GROUP_CONCAT` 聚合语法。
+
 ### 运算表达式中包含分片键
 
 当分片键处于运算表达式中时，无法通过 SQL `字面` 提取用于分片的值，将导致全路由。
@@ -111,7 +115,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 3. 支持基于任意个分片表创建、修改和删除视图，视图必须和分片表一样配置分片规则，并且视图和分片表必须为绑定表关系；
 4. 支持基于广播表和分片表创建、修改和删除视图，分片表规则同单独使用分片表创建视图；
 5. 支持基于广播表和单表创建、修改和删除视图；
-6. 支持 MySQL `SHOW CREATE TABLE viewName` 查看视图的创建语句。 
+6. 支持 MySQL `SHOW CREATE TABLE viewName` 查看视图的创建语句。
 
 ## 实验性支持
 
@@ -155,10 +159,10 @@ SELECT * FROM t_user u RIGHT JOIN t_user_role r ON u.user_id = r.user_id WHERE u
 
 ### CASE WHEN
 
-以下 CASE WHEN 语句不支持：
+以下 `CASE WHEN` 语句不支持：
 
-- CASE WHEN 中包含子查询
-- CASE WHEN 中使用逻辑表名（请使用表别名）
+- `CASE WHEN` 中包含子查询
+- `CASE WHEN` 中使用逻辑表名（请使用表别名）
 
 ### 分页查询
 
@@ -166,11 +170,11 @@ Oracle 和 SQLServer 由于分页查询较为复杂，目前有部分分页查�
 
 - Oracle
 
-目前不支持 rownum + BETWEEN 的分页方式。
+目前不支持 `rownum + BETWEEN` 的分页方式。
 
 - SQLServer
 
-目前不支持使用 WITH xxx AS (SELECT …) 的方式进行分页。由于 Hibernate 自动生成的 SQLServer 分页语句使用了 WITH 语句，因此目前并不支持基于 Hibernate 的 SQLServer 分页。 目前也不支持使用两个 TOP + 子查询的方式实现分页。
+目前不支持使用 `WITH xxx AS (SELECT …)` 的方式进行分页。由于 Hibernate 自动生成的 SQLServer 分页语句使用了 `WITH` 语句，因此目前并不支持基于 Hibernate 的 SQLServer 分页。 目前也不支持使用两个 TOP + 子查询的方式实现分页。
 
 ### LOAD DATA / LOAD XML
 

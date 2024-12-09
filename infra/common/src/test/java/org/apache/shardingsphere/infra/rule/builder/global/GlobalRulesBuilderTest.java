@@ -39,17 +39,15 @@ class GlobalRulesBuilderTest {
     
     @Test
     void assertBuildRules() {
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder.buildRules(
-                Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singleton(buildDatabase()), mock(ConfigurationProperties.class));
-        assertThat(shardingSphereRules.size(), is(1));
-        assertThat(shardingSphereRules.iterator().next(), instanceOf(FixtureGlobalRule.class));
+        Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singleton(buildDatabase()), mock());
+        assertThat(rules.size(), is(1));
+        assertThat(rules.iterator().next(), instanceOf(FixtureGlobalRule.class));
     }
     
     @Test
     void assertBuildSingleRules() {
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder.buildSingleRules(
-                new FixtureGlobalRuleConfiguration(), Collections.singletonMap("foo_db", buildDatabase()), mock(ConfigurationProperties.class));
-        assertThat(shardingSphereRules.size(), is(1));
+        Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildSingleRules(new FixtureGlobalRuleConfiguration(), Collections.singleton(buildDatabase()), mock());
+        assertThat(rules.size(), is(1));
     }
     
     private ShardingSphereDatabase buildDatabase() {

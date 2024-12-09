@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,23 +38,18 @@ import static org.mockito.Mockito.when;
 class ShardingLoadXmlSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWithSingleTable() {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(
-                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement, "foo_db")));
     }
     
     @Test
     void assertCheckWithShardingTable() {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadXmlSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), new LoadXMLStatementContext(sqlStatement, "foo_db")));
+        when(rule.isShardingTable("t_order")).thenReturn(true);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement, "foo_db")));
     }
 }

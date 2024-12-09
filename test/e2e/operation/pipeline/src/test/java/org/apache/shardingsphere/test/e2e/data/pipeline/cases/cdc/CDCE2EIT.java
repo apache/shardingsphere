@@ -32,15 +32,15 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -133,12 +133,12 @@ class CDCE2EIT {
                 containerComposer.proxyExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (%d, %d, 'OK')", tableName, orderId, i), 0);
                 containerComposer.assertOrderRecordExist(targetDataSource, tableName, orderId);
             }
-            CaseInsensitiveQualifiedTable orderSchemaTableName = dialectDatabaseMetaData.isSchemaAvailable()
-                    ? new CaseInsensitiveQualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
-                    : new CaseInsensitiveQualifiedTable(null, SOURCE_TABLE_NAME);
-            assertDataMatched(sourceDataSource, targetDataSource, orderSchemaTableName);
-            assertDataMatched(sourceDataSource, targetDataSource, new CaseInsensitiveQualifiedTable(null, "t_address"));
-            assertDataMatched(sourceDataSource, targetDataSource, new CaseInsensitiveQualifiedTable(null, "t_single"));
+            QualifiedTable orderQualifiedTable = dialectDatabaseMetaData.isSchemaAvailable()
+                    ? new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
+                    : new QualifiedTable(null, SOURCE_TABLE_NAME);
+            assertDataMatched(sourceDataSource, targetDataSource, orderQualifiedTable);
+            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
+            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
             cdcClient.close();
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS).until(() -> containerComposer.queryForListWithLog("SHOW STREAMING LIST")
                     .stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
@@ -186,12 +186,12 @@ class CDCE2EIT {
         return result;
     }
     
-    private void assertDataMatched(final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource, final CaseInsensitiveQualifiedTable schemaTableName) {
+    private void assertDataMatched(final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource, final QualifiedTable qualifiedTable) {
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaTableName.getSchemaName().toString(), schemaTableName.getTableName().toString());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0, sourceDataSource.getDatabaseType().getType());
-        TableInventoryCheckParameter param = new TableInventoryCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
+        TableInventoryCheckParameter param = new TableInventoryCheckParameter("", sourceDataSource, targetDataSource, qualifiedTable, qualifiedTable,
                 tableMetaData.getColumnNames(), uniqueKeys, null, progressContext);
         TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
         TableDataConsistencyCheckResult checkResult = tableChecker.buildTableInventoryChecker(param).checkSingleTableInventoryData();

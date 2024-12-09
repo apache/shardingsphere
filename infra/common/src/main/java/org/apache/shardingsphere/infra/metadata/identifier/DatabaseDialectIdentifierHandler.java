@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.metadata.identifier;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class CaseInsensitiveQualifiedTableTest {
+/**
+ * Database dialect identifier handler.
+ */
+@SingletonSPI
+public interface DatabaseDialectIdentifierHandler extends DatabaseTypedSPI {
     
-    @Test
-    void assertToStringWithNullSchema() {
-        assertThat(new CaseInsensitiveQualifiedTable(null, "foo_tbl").toString(), is("foo_tbl"));
-    }
-    
-    @Test
-    void assertToStringWithNotNullSchema() {
-        assertThat(new CaseInsensitiveQualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
-    }
+    /**
+     * Whether identifier is case-sensitive.
+     *
+     * @return is case-sensitive or insensitive
+     */
+    boolean isCaseSensitive();
 }

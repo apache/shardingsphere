@@ -80,8 +80,7 @@ class TablesContextTest {
     void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), databaseType, "foo_db")
-                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), mock());
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -91,8 +90,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment("table_1", "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db")
-                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), mock());
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
     }
@@ -102,8 +100,7 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db")
-                .findTableNames(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), mock());
         assertTrue(actual.isEmpty());
     }
     
@@ -112,11 +109,12 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
+        when(schema.containsTable("table_1")).thenReturn(true);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.containsColumn("col")).thenReturn(true);
+        when(schema.getTable("table_1")).thenReturn(table);
         ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), schema);
-        assertFalse(actual.isEmpty());
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), schema);
         assertThat(actual.get("col"), is("table_1"));
     }
     
@@ -128,8 +126,7 @@ class TablesContextTest {
                 Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true, false, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
-                databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), schema);
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").findTableNames(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }
@@ -177,8 +174,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class,
-                () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").getDatabaseName());
+        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").getDatabaseName());
     }
     
     @Test
@@ -187,8 +183,7 @@ class TablesContextTest {
         tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class,
-                () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").getDatabaseName());
+        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2), databaseType, "foo_db").getDatabaseName());
     }
     
     @Test

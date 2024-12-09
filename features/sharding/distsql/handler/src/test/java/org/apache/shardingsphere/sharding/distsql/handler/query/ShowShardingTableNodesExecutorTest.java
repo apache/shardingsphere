@@ -72,7 +72,7 @@ class ShowShardingTableNodesExecutorTest {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRootConfig.getRules());
         assertTrue(shardingRuleConfig.isPresent());
         return new ShardingRule(shardingRuleConfig.get(),
-                Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
+                Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private void assertOrder(final ShardingRule rule) throws SQLException {

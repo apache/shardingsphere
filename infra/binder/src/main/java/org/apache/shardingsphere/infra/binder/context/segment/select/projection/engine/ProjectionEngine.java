@@ -121,7 +121,7 @@ public final class ProjectionEngine {
                 projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment.getExpression(), alias,
-                projectionSegment.getDistinctInnerExpression(), databaseType);
+                projectionSegment.getDistinctInnerExpression(), databaseType, projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
         }
@@ -129,7 +129,9 @@ public final class ProjectionEngine {
     }
     
     private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
-        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), projectionSegment.getExpression(), projectionSegment.getAlias().orElse(null), databaseType);
+        AggregationProjection result =
+                new AggregationProjection(projectionSegment.getType(), projectionSegment.getExpression(), projectionSegment.getAlias().orElse(null), databaseType,
+                        projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg

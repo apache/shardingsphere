@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
 @ToString
 public final class PipelineIndexMetaData {
     
-    private final CaseInsensitiveIdentifier name;
+    private final ShardingSphereIdentifier name;
     
     private final List<PipelineColumnMetaData> columns;
     

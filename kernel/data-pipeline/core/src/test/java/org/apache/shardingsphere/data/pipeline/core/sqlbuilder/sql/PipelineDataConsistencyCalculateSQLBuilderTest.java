@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -43,36 +44,36 @@ class PipelineDataConsistencyCalculateSQLBuilderTest {
     
     @Test
     void assertBuildQueryRangeOrderingSQLWithoutQueryCondition() {
-        String actual = sqlBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+        String actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, true, 5), SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>=? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+        actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, false, 5), SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? AND order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+        actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(1, false, null), SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id>? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+        actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(null, false, 5), SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id<=? ORDER BY order_id ASC, status ASC, user_id ASC"));
-        actual = sqlBuilder.buildQueryRangeOrderingSQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS,
+        actual = sqlBuilder.buildQueryRangeOrderingSQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS,
                 new QueryRange(null, false, null), SHARDING_COLUMNS_NAMES);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC, status ASC, user_id ASC"));
     }
     
     @Test
     void assertBuildPointQuerySQLWithoutQueryCondition() {
-        String actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, null);
+        String actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, null);
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
+        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.emptyList());
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=?"));
-        actual = sqlBuilder.buildPointQuerySQL(null, "t_order", COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
+        actual = sqlBuilder.buildPointQuerySQL(new QualifiedTable(null, "t_order"), COLUMN_NAMES, UNIQUE_KEYS, Collections.singletonList("user_id"));
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order WHERE order_id=? AND status=? AND user_id=?"));
     }
     
     @Test
     void assertBuildCRC32SQL() {
-        Optional<String> actual = sqlBuilder.buildCRC32SQL("foo_schema", "foo_tbl", "foo_col");
+        Optional<String> actual = sqlBuilder.buildCRC32SQL(new QualifiedTable("foo_schema", "foo_tbl"), "foo_col");
         assertThat(actual, is(Optional.of("SELECT CRC32(foo_col) FROM foo_tbl")));
     }
 }
