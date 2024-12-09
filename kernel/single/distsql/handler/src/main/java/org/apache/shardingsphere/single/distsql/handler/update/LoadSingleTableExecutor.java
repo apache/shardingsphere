@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InvalidStorageUnitStatusException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalResourceAggregator;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -113,7 +113,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     private void checkShouldExistActualTables(final LoadSingleTableStatement sqlStatement, final Collection<String> storageUnitNames, final String defaultSchemaName) {
         Map<String, DataSource> dataSourceMap = database.getResourceMetaData().getStorageUnits().entrySet()
                 .stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
-        Map<String, DataSource> aggregatedDataSourceMap = PhysicalResourceAggregator.getAggregatedResources(dataSourceMap, database.getRuleMetaData().getRules());
+        Map<String, DataSource> aggregatedDataSourceMap = PhysicalDataSourceAggregator.getAggregatedDataSources(dataSourceMap, database.getRuleMetaData().getRules());
         Collection<String> invalidDataSources = storageUnitNames.stream().filter(each -> !aggregatedDataSourceMap.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidDataSources.isEmpty(), () -> new InvalidStorageUnitStatusException(String.format("`%s` is invalid, please use `%s`",
                 String.join(",", invalidDataSources), String.join(",", aggregatedDataSourceMap.keySet()))));

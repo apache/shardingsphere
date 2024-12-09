@@ -39,7 +39,7 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
     public ShardingRule build(final ShardingRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
                               final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         ShardingSpherePreconditions.checkNotEmpty(resourceMetaData.getDataSourceMap(), () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
-        return new ShardingRule(ruleConfig, resourceMetaData.getDataSourceMap(), computeNodeInstanceContext);
+        return new ShardingRule(ruleConfig, resourceMetaData.getDataSourceMap(), computeNodeInstanceContext, builtRules);
     }
     
     @Override

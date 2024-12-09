@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.database.testcontainers.type;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Case insensitive identifier.
+ * Database type of Firebird in testcontainers-java.
  */
-// TODO table name case-sensitive for some database
-@EqualsAndHashCode
-public final class CaseInsensitiveIdentifier {
+public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
     
-    private final CaseInsensitiveString original;
-    
-    public CaseInsensitiveIdentifier(final String identifier) {
-        original = null == identifier ? null : new CaseInsensitiveString(identifier);
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton("jdbc:tc:firebird:");
     }
     
     @Override
-    public String toString() {
-        return null == original ? null : original.toString();
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "Firebird"));
+    }
+    
+    @Override
+    public String getType() {
+        return "TC-Firebird";
     }
 }

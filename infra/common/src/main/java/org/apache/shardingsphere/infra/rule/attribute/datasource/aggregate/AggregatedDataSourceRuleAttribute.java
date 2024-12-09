@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.sql.DataSource;
+import java.util.Map;
 
-class CaseInsensitiveIdentifierTest {
+/**
+ * Aggregated data source rule attribute.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AggregatedDataSourceRuleAttribute implements RuleAttribute {
     
-    @Test
-    void assertEquals() {
-        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
-    }
-    
-    @Test
-    void assertToString() {
-        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
-        assertThat(actual.toString(), is("T_ORDER"));
-    }
+    private final Map<String, DataSource> aggregatedDataSources;
 }

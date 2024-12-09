@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.datanode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -75,10 +75,10 @@ public final class JobDataNodeLineConvertUtils {
      * @return actual and logic table name mapper
      */
     public static ActualAndLogicTableNameMapper buildTableNameMapper(final JobDataNodeLine dataNodeLine) {
-        Map<CaseInsensitiveIdentifier, CaseInsensitiveIdentifier> map = new LinkedHashMap<>();
+        Map<ShardingSphereIdentifier, ShardingSphereIdentifier> map = new LinkedHashMap<>();
         for (JobDataNodeEntry each : dataNodeLine.getEntries()) {
             for (DataNode dataNode : each.getDataNodes()) {
-                map.put(new CaseInsensitiveIdentifier(dataNode.getTableName()), new CaseInsensitiveIdentifier(each.getLogicTableName()));
+                map.put(new ShardingSphereIdentifier(dataNode.getTableName()), new ShardingSphereIdentifier(each.getLogicTableName()));
             }
         }
         return new ActualAndLogicTableNameMapper(map);

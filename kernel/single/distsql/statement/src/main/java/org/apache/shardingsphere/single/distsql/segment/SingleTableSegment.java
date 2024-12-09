@@ -17,50 +17,27 @@
 
 package org.apache.shardingsphere.single.distsql.segment;
 
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 /**
  * Single table segment.
  */
 @RequiredArgsConstructor
-@EqualsAndHashCode
 public final class SingleTableSegment implements DistSQLSegment {
     
-    private final CaseInsensitiveIdentifier storageUnitName;
+    @Getter
+    private final String storageUnitName;
     
-    private final CaseInsensitiveIdentifier schemaName;
+    private final String schemaName;
     
-    private final CaseInsensitiveIdentifier tableName;
+    @Getter
+    private final String tableName;
     
     public SingleTableSegment(final String storageUnitName, final String tableName) {
         this(storageUnitName, null, tableName);
-    }
-    
-    public SingleTableSegment(final String storageUnitName, final String schemaName, final String tableName) {
-        this.storageUnitName = new CaseInsensitiveIdentifier(storageUnitName);
-        this.schemaName = null == schemaName ? null : new CaseInsensitiveIdentifier(schemaName);
-        this.tableName = new CaseInsensitiveIdentifier(tableName);
-    }
-    
-    /**
-     * Get storage unit name.
-     *
-     * @return storage unit name
-     */
-    public String getStorageUnitName() {
-        return storageUnitName.toString();
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getTableName() {
-        return tableName.toString();
     }
     
     /**
@@ -73,7 +50,25 @@ public final class SingleTableSegment implements DistSQLSegment {
     }
     
     @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof SingleTableSegment)) {
+            return false;
+        }
+        if (null == schemaName) {
+            return storageUnitName.equalsIgnoreCase(((SingleTableSegment) obj).storageUnitName) && tableName.equalsIgnoreCase(((SingleTableSegment) obj).tableName)
+                    && null == ((SingleTableSegment) obj).schemaName;
+        }
+        return storageUnitName.equalsIgnoreCase(((SingleTableSegment) obj).storageUnitName)
+                && schemaName.equalsIgnoreCase(((SingleTableSegment) obj).schemaName) && tableName.equalsIgnoreCase(((SingleTableSegment) obj).tableName);
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(storageUnitName).append(schemaName).append(tableName).toHashCode();
+    }
+    
+    @Override
     public String toString() {
-        return null == schemaName ? String.join(".", getStorageUnitName(), getTableName()) : String.join(".", getStorageUnitName(), schemaName.toString(), getTableName());
+        return null == schemaName ? String.join(".", storageUnitName, tableName) : String.join(".", storageUnitName, schemaName, tableName);
     }
 }

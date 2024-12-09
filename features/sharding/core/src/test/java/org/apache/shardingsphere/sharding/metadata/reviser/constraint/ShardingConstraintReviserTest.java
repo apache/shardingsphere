@@ -56,7 +56,7 @@ class ShardingConstraintReviserTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setTables(Collections.singleton(new ShardingTableRuleConfiguration("table_name", "ds.table_name")));
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     @Test

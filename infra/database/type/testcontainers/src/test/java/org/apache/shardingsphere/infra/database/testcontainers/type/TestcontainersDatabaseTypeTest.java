@@ -37,5 +37,6 @@ class TestcontainersDatabaseTypeTest {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:postgresql:")));
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-SQLServer").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:sqlserver:")));
         assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-TiDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:tidb:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-Firebird").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:firebird:")));
     }
 }

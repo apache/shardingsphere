@@ -21,8 +21,8 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurati
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class ImporterConfigurationTest {
     @Test
     void assertGetShardingColumns() {
         ImporterConfiguration importerConfig = new ImporterConfiguration(
-                mock(PipelineDataSourceConfiguration.class), Collections.singletonMap(new CaseInsensitiveIdentifier("foo_tbl"), Collections.singleton("foo_col")),
+                mock(PipelineDataSourceConfiguration.class), Collections.singletonMap(new ShardingSphereIdentifier("foo_tbl"), Collections.singleton("foo_col")),
                 mock(TableAndSchemaNameMapper.class), 1, mock(JobRateLimitAlgorithm.class), 1, 1);
         assertThat(importerConfig.getShardingColumns("foo_tbl"), is(Collections.singleton("foo_col")));
     }
@@ -56,9 +56,8 @@ class ImporterConfigurationTest {
     void assertGetQualifiedTables() {
         TableAndSchemaNameMapper tableAndSchemaNameMapper = mock(TableAndSchemaNameMapper.class);
         when(tableAndSchemaNameMapper.getSchemaName("foo_tbl")).thenReturn("foo_schema");
-        ImporterConfiguration importerConfig = new ImporterConfiguration(
-                mock(PipelineDataSourceConfiguration.class), Collections.singletonMap(new CaseInsensitiveIdentifier("foo_tbl"), Collections.singleton("foo_col")),
-                tableAndSchemaNameMapper, 1, mock(JobRateLimitAlgorithm.class), 1, 1);
-        assertThat(importerConfig.getQualifiedTables(), is(Collections.singletonList(new CaseInsensitiveQualifiedTable("foo_schema", "foo_tbl"))));
+        ImporterConfiguration importerConfig = new ImporterConfiguration(mock(PipelineDataSourceConfiguration.class),
+                Collections.singletonMap(new ShardingSphereIdentifier("foo_tbl"), Collections.singleton("foo_col")), tableAndSchemaNameMapper, 1, mock(JobRateLimitAlgorithm.class), 1, 1);
+        assertThat(importerConfig.getQualifiedTables(), is(Collections.singletonList(new QualifiedTable("foo_schema", "foo_tbl"))));
     }
 }

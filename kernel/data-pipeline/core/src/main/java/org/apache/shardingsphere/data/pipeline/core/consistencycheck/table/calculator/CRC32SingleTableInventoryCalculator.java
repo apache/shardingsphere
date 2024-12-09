@@ -49,7 +49,7 @@ public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTab
     }
     
     private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final SingleTableInventoryCalculateParameter param, final String columnName) {
-        String sql = pipelineSQLBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName)
+        String sql = pipelineSQLBuilder.buildCRC32SQL(param.getTable(), columnName)
                 .orElseThrow(() -> new UnsupportedAlgorithmOnDatabaseTypeException("DataConsistencyCalculate", "CRC32", param.getDatabaseType()));
         try (
                 Connection connection = param.getDataSource().getConnection();
@@ -61,7 +61,7 @@ public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTab
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), ex);
         }
     }
     

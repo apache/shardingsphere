@@ -72,21 +72,6 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertGetAllColumnNamesWhenContainsKey() {
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList()).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
-    }
-    
-    @Test
-    void assertGetAllColumnNamesWhenNotContainsKey() {
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList()).getAllColumnNames("tbl2"),
-                is(Collections.<String>emptyList()));
-    }
-    
-    @Test
     void assertContainsIndex() {
         ShardingSphereTable table = new ShardingSphereTable(
                 "tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx", Collections.emptyList(), false)), Collections.emptyList());

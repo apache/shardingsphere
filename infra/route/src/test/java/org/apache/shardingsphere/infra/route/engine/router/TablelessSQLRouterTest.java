@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.router.TablelessSQLRouter;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,11 +31,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TablelessSQLRouterTest {
@@ -45,11 +49,14 @@ class TablelessSQLRouterTest {
     @Mock
     private RuleMetaData ruleMetaData;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
     void assertRouteWhenTableNameRouteUnitIsAllEmpty() {
+        AggregatedDataSourceRuleAttribute ruleAttribute = mock(AggregatedDataSourceRuleAttribute.class);
+        when(ruleAttribute.getAggregatedDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(database.getRuleMetaData().getAttributes(AggregatedDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         RouteContext actual = new TablelessSQLRouter().route(queryContext, ruleMetaData, database, Collections.emptyList(), new RouteContext());
         assertTrue(actual.getOriginalDataNodes().isEmpty());
         assertTrue(actual.getRouteUnits().isEmpty());

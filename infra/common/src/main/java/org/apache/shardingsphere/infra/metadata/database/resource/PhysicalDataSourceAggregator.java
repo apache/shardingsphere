@@ -30,30 +30,30 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Physical resource aggregator.
+ * Physical data source aggregator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PhysicalResourceAggregator {
+public final class PhysicalDataSourceAggregator {
     
     /**
-     * Get aggregated resources.
+     * Get aggregated data sources.
      *
      * @param dataSourceMap data source map
      * @param builtRules built rules
-     * @return aggregated resources
+     * @return aggregated data sources
      */
-    public static Map<String, DataSource> getAggregatedResources(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+    public static Map<String, DataSource> getAggregatedDataSources(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> result = new CaseInsensitiveMap<>(dataSourceMap);
         for (ShardingSphereRule each : builtRules) {
             Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
             if (ruleAttribute.isPresent()) {
-                result = getAggregatedResources(result, ruleAttribute.get());
+                result = getAggregatedDataSources(result, ruleAttribute.get());
             }
         }
         return result;
     }
     
-    private static Map<String, DataSource> getAggregatedResources(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRuleAttribute ruleAttribute) {
+    private static Map<String, DataSource> getAggregatedDataSources(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRuleAttribute ruleAttribute) {
         Map<String, DataSource> result = new CaseInsensitiveMap<>();
         for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {

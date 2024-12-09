@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -90,8 +90,8 @@ public final class PipelineDataSourceCheckEngine {
     private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         try {
             for (DataSource each : dataSources) {
-                for (CaseInsensitiveQualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
-                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName().toString()));
+                for (QualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
                 }
             }
         } catch (final SQLException ex) {
@@ -107,8 +107,8 @@ public final class PipelineDataSourceCheckEngine {
      * @return empty or not
      * @throws SQLException if there's database operation failure
      */
-    public boolean checkEmptyTable(final DataSource dataSource, final CaseInsensitiveQualifiedTable qualifiedTable) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
+    public boolean checkEmptyTable(final DataSource dataSource, final QualifiedTable qualifiedTable) throws SQLException {
+        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

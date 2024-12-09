@@ -60,7 +60,7 @@ class ShowCreateTableMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds.foo_tbl_${0..2}"));
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds.bar_tbl_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
+        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private ShardingSphereSchema createSchema() {

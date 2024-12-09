@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +46,8 @@ public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    private final Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap;
+    @Getter(AccessLevel.NONE)
+    private final Map<ShardingSphereIdentifier, Set<String>> shardingColumnsMap;
     
     private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
@@ -64,7 +66,7 @@ public final class ImporterConfiguration {
      * @return sharding columns
      */
     public Set<String> getShardingColumns(final String logicTableName) {
-        return shardingColumnsMap.getOrDefault(new CaseInsensitiveIdentifier(logicTableName), Collections.emptySet());
+        return shardingColumnsMap.getOrDefault(new ShardingSphereIdentifier(logicTableName), Collections.emptySet());
     }
     
     /**
@@ -83,8 +85,8 @@ public final class ImporterConfiguration {
      *
      * @return qualified tables
      */
-    public Collection<CaseInsensitiveQualifiedTable> getQualifiedTables() {
+    public Collection<QualifiedTable> getQualifiedTables() {
         return shardingColumnsMap.keySet().stream()
-                .map(CaseInsensitiveIdentifier::toString).map(each -> new CaseInsensitiveQualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
+                .map(ShardingSphereIdentifier::getValue).map(each -> new QualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
     }
 }
