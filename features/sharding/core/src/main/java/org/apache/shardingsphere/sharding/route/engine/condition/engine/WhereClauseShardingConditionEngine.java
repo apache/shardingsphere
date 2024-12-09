@@ -120,7 +120,8 @@ public final class WhereClauseShardingConditionEngine {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
-                Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.getExpression()));
+                Optional<String> tableName = Optional.ofNullable(Optional.ofNullable(columnTableNames.get(columnSegment.getExpression()))
+                        .orElse(columnSegment.getColumnBoundInfo().getOriginalTable().getValue()));
                 Optional<String> shardingColumn = tableName.flatMap(optional -> shardingRule.findShardingColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), optional));
                 if (!tableName.isPresent() || !shardingColumn.isPresent()) {
                     continue;
