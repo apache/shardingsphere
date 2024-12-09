@@ -70,6 +70,7 @@ dataSources:
 5. Maven module `org.testcontainers:mysql:1.20.3` that provides support for jdbcURL prefixes of `jdbc:tc:mysql:` 
 6. Maven modules `org.testcontainers:oracle-xe:1.20.3` and `org.testcontainers:oracle-free:1.20.3` that provide support for jdbcURL prefixes of `jdbc:tc:oracle:`
 7. Maven module `org.testcontainers:tidb:1.20.3` that provides support for jdbcURL prefixes of `jdbc:tc:tidb:`
+8. Maven module `org.firebirdsql:firebird-testcontainers-java:1.4.0` that provides support for jdbcURL prefixes of `jdbc:tc:firebird:`
 
 ## Usage restrictions
 

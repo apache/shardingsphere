@@ -70,6 +70,7 @@ dataSources:
 5. 为 `jdbc:tc:mysql:` 的 jdbcURL 前缀提供支持的 Maven 模块 `org.testcontainers:mysql:1.20.3`
 6. 为 `jdbc:tc:oracle:` 的 jdbcURL 前缀提供支持的 Maven 模块 `org.testcontainers:oracle-xe:1.20.3` 和 `org.testcontainers:oracle-free:1.20.3`
 7. 为 `jdbc:tc:tidb:` 的 jdbcURL 前缀提供支持的 Maven 模块 `org.testcontainers:tidb:1.20.3`
+8. 为 `jdbc:tc:firebird:` 的 jdbcURL 前缀提供支持的 Maven 模块 `org.firebirdsql:firebird-testcontainers-java:1.4.0`
 
 ## 使用限制
 
