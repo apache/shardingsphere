@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.Constra
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +43,7 @@ class SchemaMetaDataReviseEngineTest {
     void assertReviseWithoutMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singleton(mock(TableMetaData.class)));
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(
-                Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
+                Collections.emptyList(), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
@@ -54,7 +52,7 @@ class SchemaMetaDataReviseEngineTest {
     void assertReviseWithMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singletonList(createTableMetaData()));
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(
-                Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
+                Collections.singleton(new FixtureGlobalRule()), new ConfigurationProperties(new Properties())).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }

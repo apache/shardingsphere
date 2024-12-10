@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -31,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -52,12 +50,6 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     @Mock
     private T rule;
     
-    @Mock
-    private DatabaseType databaseType;
-    
-    @Mock
-    private DataSource dataSource;
-    
     @SuppressWarnings("rawtypes")
     @Mock
     private MetaDataReviseEntry metaDataReviseEntry;
@@ -67,7 +59,7 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     void assertGetRevisedTableName() {
         TableNameReviser tableNameReviser = mock(TableNameReviser.class);
         TableMetaData originalMetaData = new TableMetaData("originalTableName", new LinkedList<>(), null, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, databaseType, dataSource, metaDataReviseEntry);
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
         doReturn(Optional.of(tableNameReviser)).when(metaDataReviseEntry).getTableNameReviser();
         when(tableNameReviser.revise(anyString(), eq(rule))).thenReturn("revisedTableName");
         TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(originalMetaData);
@@ -82,7 +74,7 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
         Collection<IndexMetaData> indexes = new LinkedList<>();
         indexes.add(new IndexMetaData("index1"));
         TableMetaData tableMetaData = new TableMetaData("originalTableName", columns, indexes, null);
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, databaseType, dataSource, metaDataReviseEntry);
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<T>(rule, metaDataReviseEntry);
         when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.empty());
         TableMetaData revisedMetaData = tableMetaDataReviseEngine.revise(tableMetaData);
         assertThat(revisedMetaData.getName(), is("originalTableName"));
