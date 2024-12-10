@@ -20,19 +20,21 @@ package org.apache.shardingsphere.infra.route.engine.tableless;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.DataSourceBroadcastRouteEngine;
-import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.InstanceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessInstanceBroadcastRouteEngine;
+import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetResourceGroupStatement;
@@ -43,14 +45,12 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -64,21 +64,19 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TablelessRouteEngineFactoryTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
-    
     @Mock(extraInterfaces = TableAvailable.class)
     private SQLStatementContext sqlStatementContext;
     
     @Mock
     private TablesContext tablesContext;
     
+    @Mock
+    private ShardingSphereDatabase database;
+    
     @BeforeEach
     void setUp() {
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
-        Collection<String> tableNames = new ArrayList<>();
-        when(tablesContext.getTableNames()).thenReturn(tableNames);
+        when(tablesContext.getTableNames()).thenReturn(new ArrayList<>());
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -92,8 +90,8 @@ class TablelessRouteEngineFactoryTest {
         MySQLSetResourceGroupStatement resourceGroupStatement = mock(MySQLSetResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(InstanceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, mock(ShardingSphereDatabase.class));
+        assertThat(actual, instanceOf(TablelessInstanceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -101,8 +99,8 @@ class TablelessRouteEngineFactoryTest {
         DALStatement dalStatement = mock(MySQLShowDatabasesStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -115,8 +113,8 @@ class TablelessRouteEngineFactoryTest {
         TCLStatement tclStatement = mock(TCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(tclStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -127,8 +125,8 @@ class TablelessRouteEngineFactoryTest {
     private void assertNewInstanceForDALSet(final DALStatement dalStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -136,8 +134,8 @@ class TablelessRouteEngineFactoryTest {
         MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(InstanceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessInstanceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -148,31 +146,40 @@ class TablelessRouteEngineFactoryTest {
         when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);
         QueryContext queryContext = new QueryContext(closeStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
     void assertNewInstanceForCreateSchemaStatement() {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(CreateSchemaStatement.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
     void assertNewInstanceForAlterSchemaStatement() {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(AlterSchemaStatement.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
     }
     
     @Test
     void assertNewInstanceForDropSchemaStatement() {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(DropSchemaStatement.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext);
-        assertThat(actual, instanceOf(DataSourceBroadcastRouteEngine.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
+    }
+    
+    @Test
+    void assertNewInstanceForSelectStatement() {
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(mock(SelectStatementContext.class));
+        when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceUnicastRouteEngine.class));
     }
 }

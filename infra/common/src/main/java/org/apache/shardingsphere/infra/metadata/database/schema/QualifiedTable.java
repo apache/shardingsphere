@@ -17,17 +17,44 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 /**
  * Qualified table.
  */
-@RequiredArgsConstructor
-@Getter
+@EqualsAndHashCode
 public final class QualifiedTable {
     
-    private final String schemaName;
+    private final ShardingSphereIdentifier schemaName;
     
-    private final String tableName;
+    private final ShardingSphereIdentifier tableName;
+    
+    public QualifiedTable(final String schemaName, final String tableName) {
+        this.schemaName = new ShardingSphereIdentifier(schemaName);
+        this.tableName = new ShardingSphereIdentifier(tableName);
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public String getSchemaName() {
+        return schemaName.getValue();
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getTableName() {
+        return tableName.getValue();
+    }
+    
+    @Override
+    public String toString() {
+        return null == schemaName.getValue() ? tableName.getValue() : String.join(".", schemaName.getValue(), tableName.getValue());
+    }
 }

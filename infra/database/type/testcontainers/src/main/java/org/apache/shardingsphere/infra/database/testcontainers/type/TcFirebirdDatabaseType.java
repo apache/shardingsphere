@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.database.testcontainers.type;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
-class CaseInsensitiveIdentifierTest {
+/**
+ * Database type of Firebird in testcontainers-java.
+ */
+public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
     
-    @Test
-    void assertEquals() {
-        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton("jdbc:tc:firebird:");
     }
     
-    @Test
-    void assertToString() {
-        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
-        assertThat(actual.toString(), is("T_ORDER"));
+    @Override
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "Firebird"));
+    }
+    
+    @Override
+    public String getType() {
+        return "TC-Firebird";
     }
 }

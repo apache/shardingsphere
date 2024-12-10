@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.infra.metadata.identifier;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Duplicate index exception.
+ * Database dialect identifier handler.
  */
-public final class DuplicateIndexException extends ShardingSQLException {
+@SingletonSPI
+public interface DatabaseDialectIdentifierHandler extends DatabaseTypedSPI {
     
-    private static final long serialVersionUID = 2884666477007627873L;
-    
-    public DuplicateIndexException(final String indexName) {
-        super(XOpenSQLState.DUPLICATE, 7, "Index '%s' already exists.", indexName);
-    }
+    /**
+     * Whether identifier is case-sensitive.
+     *
+     * @return is case-sensitive or insensitive
+     */
+    boolean isCaseSensitive();
 }

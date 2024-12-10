@@ -142,8 +142,7 @@ public final class ContextManager implements AutoCloseable {
     private ShardingSphereSchema loadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) throws SQLException {
         database.reloadRules();
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
-                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
+                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName)),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
         persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
@@ -178,8 +177,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName, final String tableName) {
         StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                Collections.singletonMap(dataSourceName, storageUnit.getStorageType()), Collections.singletonMap(dataSourceName, storageUnit.getDataSource()),
-                database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+                Collections.singletonMap(dataSourceName, storageUnit), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {

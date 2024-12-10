@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -43,15 +44,18 @@ class PipelineSQLSegmentBuilderTest {
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
         assertThat(mySQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
+        assertThat(mySQLBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
         assertThat(postgreSQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
+        assertThat(postgreSQLBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_schema.foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchemaAndNullSchema() {
         assertThat(postgreSQLBuilder.getQualifiedTableName(null, "foo_tbl"), is("foo_tbl"));
+        assertThat(postgreSQLBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("foo_tbl"));
     }
 }

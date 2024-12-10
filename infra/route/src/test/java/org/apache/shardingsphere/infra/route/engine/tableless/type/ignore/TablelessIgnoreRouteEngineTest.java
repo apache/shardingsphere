@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.route.engine.tableless.type.ignore;
 
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
-class CaseInsensitiveQualifiedTableTest {
+@ExtendWith(MockitoExtension.class)
+class TablelessIgnoreRouteEngineTest {
     
     @Test
-    void assertToStringWithNullSchema() {
-        assertThat(new CaseInsensitiveQualifiedTable(null, "foo_tbl").toString(), is("foo_tbl"));
-    }
-    
-    @Test
-    void assertToStringWithNotNullSchema() {
-        assertThat(new CaseInsensitiveQualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
+    void assertRoute() {
+        RouteContext actual = new TablelessIgnoreRouteEngine().route(mock(RuleMetaData.class), Collections.emptyList());
+        assertThat(actual.getRouteUnits().size(), is(0));
     }
 }

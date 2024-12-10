@@ -84,7 +84,7 @@ class ShardingMetaDataReviseEntryTest {
         ShardingRuleConfiguration ruleConfig = createShardingRuleConfiguration();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), computeNodeInstanceContext);
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), computeNodeInstanceContext, Collections.emptyList());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

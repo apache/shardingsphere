@@ -20,7 +20,7 @@
     <!-- TODO support set variable statement for proxy adapter in issue #24124 -->
     <test-case sql="SET @order_id := 1, @item_id := 2" db-types="MySQL" scenario-types="db,tbl,readwrite_splitting,encrypt,shadow" adapters="jdbc">
         <assertion expected-data-file="select_session_variables.xml">
-            <assertion-sql sql="SELECT @order_id, @item_id" />
+            <assertion-sql sql="/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */SELECT @order_id, @item_id" />
         </assertion>
     </test-case>
 </e2e-test-cases>

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,7 +54,7 @@ class SchemaMetaDataUtilsTest {
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
+                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -75,7 +75,7 @@ class SchemaMetaDataUtilsTest {
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
+                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -93,7 +93,7 @@ class SchemaMetaDataUtilsTest {
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "public");
+                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -114,18 +114,16 @@ class SchemaMetaDataUtilsTest {
         return Arrays.asList(firstDataNode, secondDataNode);
     }
     
-    private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1F);
-        result.put("ds_0", new MockedDataSource());
-        result.put("ds_1", new MockedDataSource());
-        return result;
-    }
-    
-    private Map<String, DatabaseType> mockStorageTypes() {
-        Map<String, DatabaseType> result = new HashMap<>(2, 1F);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        result.put("ds_0", databaseType);
-        result.put("ds_1", databaseType);
+    private Map<String, StorageUnit> mockStorageUnits() {
+        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        StorageUnit storageUnit1 = mock(StorageUnit.class);
+        when(storageUnit1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(storageUnit1.getDataSource()).thenReturn(new MockedDataSource());
+        result.put("ds_0", storageUnit1);
+        StorageUnit storageUnit2 = mock(StorageUnit.class);
+        when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(storageUnit2.getDataSource()).thenReturn(new MockedDataSource());
+        result.put("ds_1", storageUnit2);
         return result;
     }
 }

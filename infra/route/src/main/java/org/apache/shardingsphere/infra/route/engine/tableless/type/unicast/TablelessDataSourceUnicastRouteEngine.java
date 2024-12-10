@@ -15,30 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast;
+package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Instance broadcast route engine.
+ * Tableless datasource unicast route engine.
  */
 @RequiredArgsConstructor
-public final class InstanceBroadcastRouteEngine implements TablelessRouteEngine {
+public final class TablelessDataSourceUnicastRouteEngine implements TablelessRouteEngine {
+    
+    private final ConnectionContext connectionContext;
     
     @Override
-    public RouteContext route(final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
         RouteContext result = new RouteContext();
-        for (String each : database.getResourceMetaData().getAllInstanceDataSourceNames()) {
-            result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
-        }
+        result.getRouteUnits().add(new RouteUnit(getDataSourceRouteMapper(aggregatedDataSources), Collections.emptyList()));
         return result;
+    }
+    
+    private RouteMapper getDataSourceRouteMapper(final Collection<String> dataSourceNames) {
+        String dataSourceName = getRandomDataSourceName(dataSourceNames);
+        return new RouteMapper(dataSourceName, dataSourceName);
+    }
+    
+    private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
+        Collection<String> usedDataSourceNames = connectionContext.getUsedDataSourceNames().isEmpty() ? dataSourceNames : connectionContext.getUsedDataSourceNames();
+        return new ArrayList<>(usedDataSourceNames).get(ThreadLocalRandom.current().nextInt(usedDataSourceNames.size()));
     }
 }

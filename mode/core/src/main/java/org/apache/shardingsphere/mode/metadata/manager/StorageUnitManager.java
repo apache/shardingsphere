@@ -99,8 +99,8 @@ public final class StorageUnitManager {
     public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
-                    Collections.singletonList(storageUnitName));
+            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(
+                    metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -108,16 +108,16 @@ public final class StorageUnitManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, true,
-                switchingResource, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(
+                databaseName, true, switchingResource, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         metaDataContexts.set(reloadMetaDataContexts);
-        metaDataContexts.get().getMetaData().getDatabases().putAll(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
+        metaDataContexts.get().getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();
     }
     
-    private Map<String, ShardingSphereDatabase> buildDatabase(final ShardingSphereDatabase originalDatabase) {
-        return Collections.singletonMap(originalDatabase.getName().toLowerCase(), new ShardingSphereDatabase(
-                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase)));
+    private ShardingSphereDatabase buildDatabase(final ShardingSphereDatabase originalDatabase) {
+        return new ShardingSphereDatabase(
+                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase));
     }
     
     private Collection<ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {

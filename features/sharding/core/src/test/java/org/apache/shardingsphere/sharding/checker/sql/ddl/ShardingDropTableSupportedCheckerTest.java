@@ -50,14 +50,14 @@ import static org.mockito.Mockito.when;
 class ShardingDropTableSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @BeforeEach
     void init() {
         Map<String, ShardingTable> shardingTables = new LinkedHashMap<>(2, 1F);
         shardingTables.put("t_order_item", createShardingTable("t_order_item"));
         shardingTables.put("t_order", createShardingTable("t_order"));
-        when(shardingRule.getShardingTables()).thenReturn(shardingTables);
+        when(rule.getShardingTables()).thenReturn(shardingTables);
     }
     
     @Test
@@ -69,7 +69,7 @@ class ShardingDropTableSupportedCheckerTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order_item")).thenReturn(true);
         ShardingDropTableSupportedChecker checker = new ShardingDropTableSupportedChecker();
-        assertDoesNotThrow(() -> checker.check(shardingRule, database, schema, sqlStatementContext));
+        assertDoesNotThrow(() -> checker.check(rule, database, schema, sqlStatementContext));
     }
     
     private ShardingTable createShardingTable(final String tableName) {

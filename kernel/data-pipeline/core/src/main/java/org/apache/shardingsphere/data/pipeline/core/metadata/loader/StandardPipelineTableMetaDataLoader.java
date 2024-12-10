@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndex
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -51,11 +51,11 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private final PipelineDataSource dataSource;
     
-    private final Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
+    private final Map<ShardingSphereIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     @Override
     public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
-        PipelineTableMetaData result = tableMetaDataMap.get(new CaseInsensitiveIdentifier(tableName));
+        PipelineTableMetaData result = tableMetaDataMap.get(new ShardingSphereIdentifier(tableName));
         if (null != result) {
             return result;
         }
@@ -64,38 +64,36 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         } catch (final SQLException ex) {
             throw new PipelineInternalException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
-        result = tableMetaDataMap.get(new CaseInsensitiveIdentifier(tableName));
+        result = tableMetaDataMap.get(new ShardingSphereIdentifier(tableName));
         if (null == result) {
             log.warn("Can not load meta data for table '{}'", tableName);
         }
         return result;
     }
     
-    private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
+    private void loadTableMetaData(final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData();
-            Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableNamePattern);
-            this.tableMetaDataMap.putAll(tableMetaDataMap);
+            tableMetaDataMap.putAll(loadTableMetaData(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableName));
         }
     }
     
-    private Map<CaseInsensitiveIdentifier, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
+    private Map<ShardingSphereIdentifier, PipelineTableMetaData> loadTableMetaData(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
         Collection<String> tableNames = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, tableNamePattern, null)) {
             while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                tableNames.add(tableName);
+                tableNames.add(resultSet.getString("TABLE_NAME"));
             }
         }
-        Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>(tableNames.size(), 1F);
+        Map<ShardingSphereIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>(tableNames.size(), 1F);
         for (String each : tableNames) {
-            Collection<CaseInsensitiveIdentifier> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
-            Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
-            Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
+            Collection<ShardingSphereIdentifier> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
+            Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> uniqueKeys = loadUniqueKeys(connection, schemaName, each);
+            Map<ShardingSphereIdentifier, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
             try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, each, "%")) {
                 while (resultSet.next()) {
                     int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
-                    CaseInsensitiveIdentifier columnName = new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME"));
+                    ShardingSphereIdentifier columnName = new ShardingSphereIdentifier(resultSet.getString("COLUMN_NAME"));
                     if (columnMetaDataMap.containsKey(columnName)) {
                         continue;
                     }
@@ -104,22 +102,30 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                     boolean primaryKey = primaryKeys.contains(columnName);
                     boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
                     boolean isUniqueKey = uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
-                    PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName.toString(), dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
-                    columnMetaDataMap.put(columnName, columnMetaData);
+                    columnMetaDataMap.put(columnName, new PipelineColumnMetaData(ordinalPosition, columnName.toString(), dataType, dataTypeName, isNullable, primaryKey, isUniqueKey));
                 }
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
                     .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()),
                             DataConsistencyCheckUtils.compareLists(primaryKeys, entry.getValue())))
                     .collect(Collectors.toList());
-            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
+            result.put(new ShardingSphereIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
     }
     
-    private Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> loadUniqueIndexesOfTable(final Connection connection,
-                                                                                                           final String schemaName, final String tableName) throws SQLException {
-        Map<String, SortedMap<Short, CaseInsensitiveIdentifier>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+    private Collection<ShardingSphereIdentifier> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
+        SortedMap<Short, ShardingSphereIdentifier> result = new TreeMap<>();
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), schemaName, tableName)) {
+            while (resultSet.next()) {
+                result.put(resultSet.getShort("KEY_SEQ"), new ShardingSphereIdentifier(resultSet.getString("COLUMN_NAME")));
+            }
+        }
+        return result.values();
+    }
+    
+    private Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> loadUniqueKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
+        Map<String, SortedMap<Short, ShardingSphereIdentifier>> orderedColumnsOfIndexes = new LinkedHashMap<>();
         // Set approximate=true to avoid Oracle driver 19 run `analyze table`
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, true)) {
             while (resultSet.next()) {
@@ -127,25 +133,15 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                 if (null == indexName) {
                     continue;
                 }
-                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(
-                        resultSet.getShort("ORDINAL_POSITION"), new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
+                orderedColumnsOfIndexes.computeIfAbsent(indexName,
+                        unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), new ShardingSphereIdentifier(resultSet.getString("COLUMN_NAME")));
             }
         }
-        Map<CaseInsensitiveIdentifier, Collection<CaseInsensitiveIdentifier>> result = new LinkedHashMap<>();
-        for (Entry<String, SortedMap<Short, CaseInsensitiveIdentifier>> entry : orderedColumnsOfIndexes.entrySet()) {
-            Collection<CaseInsensitiveIdentifier> columnNames = result.computeIfAbsent(new CaseInsensitiveIdentifier(entry.getKey()), unused -> new LinkedList<>());
+        Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> result = new LinkedHashMap<>();
+        for (Entry<String, SortedMap<Short, ShardingSphereIdentifier>> entry : orderedColumnsOfIndexes.entrySet()) {
+            Collection<ShardingSphereIdentifier> columnNames = result.computeIfAbsent(new ShardingSphereIdentifier(entry.getKey()), unused -> new LinkedList<>());
             columnNames.addAll(entry.getValue().values());
         }
         return result;
-    }
-    
-    private Collection<CaseInsensitiveIdentifier> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
-        SortedMap<Short, CaseInsensitiveIdentifier> result = new TreeMap<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), schemaName, tableName)) {
-            while (resultSet.next()) {
-                result.put(resultSet.getShort("KEY_SEQ"), new CaseInsensitiveIdentifier(resultSet.getString("COLUMN_NAME")));
-            }
-        }
-        return result.values();
     }
 }

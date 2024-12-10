@@ -31,6 +31,8 @@ import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -80,6 +82,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         mountConfigurationFiles();
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
+        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     private void mountConfigurationFiles() {

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -41,9 +41,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,15 +78,15 @@ class DropDatabaseBackendHandlerTest {
     }
     
     private ContextManager mockContextManager() {
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        databases.put("foo_db", database);
-        databases.put("bar_db", database);
+        ShardingSphereDatabase database1 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database1.getName()).thenReturn("foo_db");
+        ShardingSphereDatabase database2 = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database2.getName()).thenReturn("bar_db");
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
-        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Arrays.asList(database1, database2));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database1);
+        when(metaDataContexts.getMetaData().getDatabase("bar_db")).thenReturn(database2);
+        when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);

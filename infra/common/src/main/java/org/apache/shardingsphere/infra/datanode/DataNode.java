@@ -79,11 +79,15 @@ public final class DataNode {
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
-        boolean containsSchema = isValidDataNode(dataNode, 3);
-        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        boolean containsSchema = isSchemaAvailable(databaseType) && isValidDataNode(dataNode, 3);
+        List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
         schemaName = getSchemaName(databaseName, databaseType, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+    }
+    
+    private boolean isSchemaAvailable(final DatabaseType databaseType) {
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSchemaAvailable();
     }
     
     private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {

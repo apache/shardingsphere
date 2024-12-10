@@ -51,8 +51,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
     private static final String TABLE_META_DATA_NO_ORDER =
-            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE, IS_NULLABLE FROM information_schema.columns "
-                    + "WHERE TABLE_SCHEMA=?";
+            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE, IS_NULLABLE FROM information_schema.columns WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     

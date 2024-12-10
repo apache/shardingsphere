@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
@@ -47,7 +47,7 @@ public final class ShardingAlterIndexSupportedChecker implements SupportedSQLChe
         Optional<IndexSegment> index = alterIndexStatement.getIndex();
         ShardingSphereSchema schema = index.flatMap(optional -> optional.getOwner().map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElse(currentSchema);
         if (index.isPresent() && !ShardingSupportedCheckUtils.isSchemaContainsIndex(schema, index.get())) {
-            throw new IndexNotExistedException(index.get().getIndexName().getIdentifier().getValue());
+            throw new IndexNotFoundException(index.get().getIndexName().getIdentifier().getValue());
         }
         Optional<IndexSegment> renameIndex = alterIndexStatement.getRenameIndex();
         if (renameIndex.isPresent() && ShardingSupportedCheckUtils.isSchemaContainsIndex(schema, renameIndex.get())) {

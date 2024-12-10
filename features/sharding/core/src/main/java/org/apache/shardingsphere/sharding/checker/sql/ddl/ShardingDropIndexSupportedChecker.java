@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedCheckUtils;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
@@ -47,7 +47,7 @@ public final class ShardingDropIndexSupportedChecker implements SupportedSQLChec
         }
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
             ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue()).map(database::getSchema).orElse(currentSchema);
-            ShardingSpherePreconditions.checkState(ShardingSupportedCheckUtils.isSchemaContainsIndex(schema, each), () -> new IndexNotExistedException(each.getIndexName().getIdentifier().getValue()));
+            ShardingSpherePreconditions.checkState(ShardingSupportedCheckUtils.isSchemaContainsIndex(schema, each), () -> new IndexNotFoundException(each.getIndexName().getIdentifier().getValue()));
         }
     }
 }

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.identifier;
+package org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Database dialect meta data identifier handler.
+ * Aggregated data source rule attribute.
  */
-@SingletonSPI
-public interface DatabaseDialectMetaDataIdentifierHandler extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class AggregatedDataSourceRuleAttribute implements RuleAttribute {
     
-    /**
-     * Whether identifier is case-sensitive.
-     *
-     * @return is case-sensitive or insensitive
-     */
-    boolean isCaseSensitive();
+    private final Map<String, DataSource> aggregatedDataSources;
 }

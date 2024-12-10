@@ -66,7 +66,7 @@ public final class GlobalConfigurationManager {
         closeStaleTransactionRule(ruleConfig);
         Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
+        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getProps()));
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(),

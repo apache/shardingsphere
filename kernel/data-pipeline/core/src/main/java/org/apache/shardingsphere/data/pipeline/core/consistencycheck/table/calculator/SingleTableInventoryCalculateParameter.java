@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class SingleTableInventoryCalculateParameter {
      */
     private final PipelineDataSource dataSource;
     
-    private final CaseInsensitiveQualifiedTable table;
+    private final QualifiedTable table;
     
     private final List<String> columnNames;
     
@@ -67,8 +67,8 @@ public final class SingleTableInventoryCalculateParameter {
     
     private final QueryType queryType;
     
-    public SingleTableInventoryCalculateParameter(final PipelineDataSource dataSource, final CaseInsensitiveQualifiedTable table, final List<String> columnNames,
-                                                  final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
+    public SingleTableInventoryCalculateParameter(final PipelineDataSource dataSource,
+                                                  final QualifiedTable table, final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
         this.dataSource = dataSource;
         this.table = table;
         this.columnNames = columnNames;
@@ -84,24 +84,6 @@ public final class SingleTableInventoryCalculateParameter {
      */
     public DatabaseType getDatabaseType() {
         return dataSource.getDatabaseType();
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public String getSchemaName() {
-        return table.getSchemaName().toString();
-    }
-    
-    /**
-     * Get logic table name.
-     *
-     * @return logic table name
-     */
-    public String getLogicTableName() {
-        return table.getTableName().toString();
     }
     
     /**

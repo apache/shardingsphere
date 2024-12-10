@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.exception.kernel.metadata;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Case insensitive qualified table.
+ * Duplicate index exception.
  */
-@Getter
-@EqualsAndHashCode
-// TODO should merge with QualifiedTable
-public final class CaseInsensitiveQualifiedTable {
+public final class DuplicateIndexException extends MetaDataSQLException {
     
-    private final CaseInsensitiveIdentifier schemaName;
+    private static final long serialVersionUID = 1463379993377506978L;
     
-    private final CaseInsensitiveIdentifier tableName;
-    
-    public CaseInsensitiveQualifiedTable(final String schemaName, final String tableName) {
-        this.schemaName = new CaseInsensitiveIdentifier(schemaName);
-        this.tableName = new CaseInsensitiveIdentifier(tableName);
-    }
-    
-    @Override
-    public String toString() {
-        return null == schemaName.toString() ? tableName.toString() : String.join(".", schemaName.toString(), tableName.toString());
+    public DuplicateIndexException(final String indexName) {
+        super(XOpenSQLState.DUPLICATE, 5, "Index '%s' already exists.", indexName);
     }
 }

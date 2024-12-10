@@ -19,8 +19,12 @@ package org.apache.shardingsphere.mode.metadata.refresher.type.index;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
@@ -48,10 +52,14 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
+            ShardingSpherePreconditions.checkState(database.containsSchema(actualSchemaName), () -> new SchemaNotFoundException(schemaName));
+            ShardingSphereSchema schema = database.getSchema(actualSchemaName);
+            ShardingSpherePreconditions.checkState(schema.containsTable(logicTableName.get()), () -> new TableNotFoundException(logicTableName.get()));
+            ShardingSphereTable table = schema.getTable(logicTableName.get());
+            ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
+            newTable.removeIndex(each.getIndexName().getIdentifier().getValue());
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
-            ShardingSphereTable table = newShardingSphereTable(database.getSchema(actualSchemaName).getTable(logicTableName.get()));
-            table.removeIndex(each.getIndexName().getIdentifier().getValue());
-            alterSchemaMetaDataPOJO.getAlteredTables().add(table);
+            alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
             metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
     }
@@ -63,14 +71,6 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         }
         Collection<QualifiedTable> tableNames = IndexMetaDataUtils.getTableNames(database, database.getProtocolType(), indexSegments);
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
-    }
-    
-    private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
-        result.getColumnNames().addAll(table.getColumnNames());
-        result.getVisibleColumns().addAll(table.getVisibleColumns());
-        result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
-        return result;
     }
     
     @Override

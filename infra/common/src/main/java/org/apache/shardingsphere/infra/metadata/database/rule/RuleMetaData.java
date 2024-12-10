@@ -176,4 +176,20 @@ public final class RuleMetaData {
         }
         return result;
     }
+    
+    /**
+     * Get rule attributes.
+     *
+     * @param attributeClass rule attribute class
+     * @param <T> type of rule attributes
+     * @return rule attributes
+     */
+    public <T extends RuleAttribute> Optional<T> findAttribute(final Class<T> attributeClass) {
+        for (ShardingSphereRule each : rules) {
+            if (each.getAttributes().findAttribute(attributeClass).isPresent()) {
+                return each.getAttributes().findAttribute(attributeClass);
+            }
+        }
+        return Optional.empty();
+    }
 }

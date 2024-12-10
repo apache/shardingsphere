@@ -33,8 +33,12 @@ import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -115,7 +119,8 @@ public final class ShardingRule implements DatabaseRule {
     
     private final ShardingRuleChecker shardingRuleChecker = new ShardingRuleChecker(this);
     
-    public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+    public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final ComputeNodeInstanceContext computeNodeInstanceContext,
+                        final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSources.keySet());
         ruleConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, TypedSPILoader.getService(ShardingAlgorithm.class, value.getType(), value.getProps())));
@@ -137,7 +142,11 @@ public final class ShardingRule implements DatabaseRule {
             ((ComputeNodeInstanceContextAware) defaultKeyGenerateAlgorithm).setComputeNodeInstanceContext(computeNodeInstanceContext);
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
-        attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()));
+        // TODO check sharding rule configuration according to aggregated data sources
+        Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
+                .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
+        attributes = new RuleAttributes(new ShardingDataNodeRuleAttribute(shardingTables), new ShardingTableNamesRuleAttribute(shardingTables.values()),
+                new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
         shardingRuleChecker.check(ruleConfig);
     }
     

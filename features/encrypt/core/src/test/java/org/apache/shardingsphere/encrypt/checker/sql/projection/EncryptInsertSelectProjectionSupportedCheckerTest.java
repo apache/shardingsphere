@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -55,8 +52,6 @@ class EncryptInsertSelectProjectionSupportedCheckerTest {
     
     @Test
     void assertCheckSuccess() {
-        assertDoesNotThrow(
-                () -> new EncryptInsertSelectProjectionSupportedChecker().check(mock(EncryptRule.class), mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class),
-                        mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
+        assertDoesNotThrow(() -> new EncryptInsertSelectProjectionSupportedChecker().check(mock(), mock(), mock(), mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
 }

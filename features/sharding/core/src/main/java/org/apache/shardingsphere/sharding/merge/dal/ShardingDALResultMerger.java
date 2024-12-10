@@ -36,11 +36,11 @@ import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -60,20 +60,20 @@ public final class ShardingDALResultMerger implements ResultMerger {
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext,
                               final ShardingSphereDatabase database, final ConnectionContext connectionContext) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        if (dalStatement instanceof MySQLShowDatabasesStatement) {
+        if (dalStatement instanceof ShowDatabasesStatement) {
             return new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName)));
         }
         ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
-        if (dalStatement instanceof MySQLShowTablesStatement) {
+        if (dalStatement instanceof ShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
-        if (dalStatement instanceof MySQLShowTableStatusStatement) {
+        if (dalStatement instanceof ShowTableStatusStatement) {
             return new ShowTableStatusMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
-        if (dalStatement instanceof MySQLShowIndexStatement) {
+        if (dalStatement instanceof ShowIndexStatement) {
             return new ShowIndexMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
-        if (dalStatement instanceof MySQLShowCreateTableStatement) {
+        if (dalStatement instanceof ShowCreateTableStatement) {
             return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
         return new TransparentMergedResult(queryResults.get(0));

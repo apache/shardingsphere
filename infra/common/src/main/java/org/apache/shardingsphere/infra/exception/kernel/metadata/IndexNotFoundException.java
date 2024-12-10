@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.caseinsensitive;
+package org.apache.shardingsphere.infra.exception.kernel.metadata;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Case insensitive identifier.
+ * Index not found exception.
  */
-// TODO table name case-sensitive for some database
-@EqualsAndHashCode
-public final class CaseInsensitiveIdentifier {
+public final class IndexNotFoundException extends MetaDataSQLException {
     
-    private final CaseInsensitiveString original;
+    private static final long serialVersionUID = -4182388839280501305L;
     
-    public CaseInsensitiveIdentifier(final String identifier) {
-        original = null == identifier ? null : new CaseInsensitiveString(identifier);
+    public IndexNotFoundException(final String indexName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Index '%s' does not exist.", indexName);
     }
     
-    @Override
-    public String toString() {
-        return null == original ? null : original.toString();
+    public IndexNotFoundException(final String indexName, final String schemaName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Index '%s' does not exist from schema '%s'.", indexName, schemaName);
     }
 }

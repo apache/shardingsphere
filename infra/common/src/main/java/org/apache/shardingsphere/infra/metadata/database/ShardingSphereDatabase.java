@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereMetaDataIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
@@ -62,7 +62,7 @@ public final class ShardingSphereDatabase {
     private final RuleMetaData ruleMetaData;
     
     @Getter(AccessLevel.NONE)
-    private final Map<ShardingSphereMetaDataIdentifier, ShardingSphereSchema> schemas;
+    private final Map<ShardingSphereIdentifier, ShardingSphereSchema> schemas;
     
     public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas) {
@@ -70,7 +70,7 @@ public final class ShardingSphereDatabase {
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(each -> new ShardingSphereMetaDataIdentifier(each.getName()), each -> each)));
+        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each)));
     }
     
     /**
@@ -92,19 +92,18 @@ public final class ShardingSphereDatabase {
      *
      * @param name database name
      * @param protocolType database protocol type
-     * @param storageTypes storage types
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
      * @return created database
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final DatabaseConfiguration databaseConfig,
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterial(
-                protocolType, storageTypes, resourceMetaData.getDataSourceMap(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
+                protocolType, resourceMetaData.getStorageUnits(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
         SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values());
     }
@@ -142,7 +141,7 @@ public final class ShardingSphereDatabase {
      * @return contains schema from database or not
      */
     public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(new ShardingSphereMetaDataIdentifier(schemaName));
+        return schemas.containsKey(new ShardingSphereIdentifier(schemaName));
     }
     
     /**
@@ -152,7 +151,7 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     public ShardingSphereSchema getSchema(final String schemaName) {
-        return schemas.get(new ShardingSphereMetaDataIdentifier(schemaName));
+        return schemas.get(new ShardingSphereIdentifier(schemaName));
     }
     
     /**
@@ -161,7 +160,7 @@ public final class ShardingSphereDatabase {
      * @param schema schema
      */
     public void addSchema(final ShardingSphereSchema schema) {
-        schemas.put(new ShardingSphereMetaDataIdentifier(schema.getName()), schema);
+        schemas.put(new ShardingSphereIdentifier(schema.getName()), schema);
     }
     
     /**
@@ -170,7 +169,7 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      */
     public void dropSchema(final String schemaName) {
-        schemas.remove(new ShardingSphereMetaDataIdentifier(schemaName));
+        schemas.remove(new ShardingSphereIdentifier(schemaName));
     }
     
     /**

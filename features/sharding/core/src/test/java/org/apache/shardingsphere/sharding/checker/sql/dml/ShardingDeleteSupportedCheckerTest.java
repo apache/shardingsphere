@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
@@ -49,7 +47,7 @@ import static org.mockito.Mockito.when;
 class ShardingDeleteSupportedCheckerTest {
     
     @Mock
-    private ShardingRule shardingRule;
+    private ShardingRule rule;
     
     @Test
     void assertCheckWhenDeleteMultiTablesForMySQL() {
@@ -83,10 +81,9 @@ class ShardingDeleteSupportedCheckerTest {
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
         sqlStatement.setTable(tableSegment);
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
-        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
-        when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(rule.isAllShardingTables(tableNames)).thenReturn(false);
+        when(rule.containsShardingTable(tableNames)).thenReturn(true);
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement, "foo_db");
-        new ShardingDeleteSupportedChecker().check(shardingRule, database, mock(ShardingSphereSchema.class), sqlStatementContext);
+        new ShardingDeleteSupportedChecker().check(rule, mock(), mock(), sqlStatementContext);
     }
 }

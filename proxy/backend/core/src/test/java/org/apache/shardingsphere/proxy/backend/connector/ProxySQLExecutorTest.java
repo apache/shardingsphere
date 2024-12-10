@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -271,7 +270,6 @@ class ProxySQLExecutorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_db")).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, "foo_db");
     }
     
@@ -286,7 +284,6 @@ class ProxySQLExecutorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("public")).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, "foo_db");
     }
 }
