@@ -69,21 +69,21 @@ class GenericSchemaBuilderTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
         material = new GenericSchemaBuilderMaterial(
-                databaseType, Collections.singletonMap("foo_db", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_db");
+                databaseType, Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
     }
     
     @Test
     void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertFalse(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
+        assertFalse(GenericSchemaBuilder.build(tableNames, material).get("foo_schema").getAllTables().isEmpty());
     }
     
     @Test
     void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertTrue(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
+        assertTrue(GenericSchemaBuilder.build(tableNames, material).get("foo_schema").getAllTables().isEmpty());
     }
     
     @Test
@@ -92,7 +92,7 @@ class GenericSchemaBuilderTest {
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema("foo_db", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+        assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

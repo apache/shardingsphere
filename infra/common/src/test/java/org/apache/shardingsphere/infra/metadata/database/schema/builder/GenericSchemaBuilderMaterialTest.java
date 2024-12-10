@@ -31,16 +31,17 @@ import static org.mockito.Mockito.mock;
 
 class GenericSchemaBuilderMaterialTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertIsSameProtocolAndStorageTypes() {
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(databaseType, Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
         assertTrue(material.isSameProtocolAndStorageTypes());
     }
     
     @Test
     void assertIsDifferentProtocolAndStorageTypes() {
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(databaseType,
                 Collections.singletonMap("foo", mock()), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
         assertFalse(material.isSameProtocolAndStorageTypes());
     }
