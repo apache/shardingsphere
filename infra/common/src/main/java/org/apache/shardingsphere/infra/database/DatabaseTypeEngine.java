@@ -99,21 +99,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get storage types.
-     *
-     * @param databaseConfig database configuration
-     * @return storage types
-     */
-    public static Map<String, DatabaseType> getStorageTypes(final DatabaseConfiguration databaseConfig) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getStorageUnits().size(), 1F);
-        Map<String, DataSource> dataSources = getDataSources(databaseConfig);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), getStorageType(entry.getValue()));
-        }
-        return result;
-    }
-    
-    /**
      * Get storage type.
      * Similar to <a href="https://github.com/apache/hive/pull/5554">apache/hive#5554</a>,
      * apache/hive 4.0.1's `org.apache.hive.jdbc.HiveDatabaseMetaData` does not implement {@link DatabaseMetaData#getURL()}.

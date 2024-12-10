@@ -42,7 +42,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,14 +62,6 @@ class DatabaseTypeEngineTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", datasource), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
-    }
-    
-    @Test
-    void assertGetStorageTypes() throws SQLException {
-        DataSource datasource = mockDataSource(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_db", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
-        assertTrue(DatabaseTypeEngine.getStorageTypes(databaseConfig).containsKey("foo_db"));
-        assertThat(DatabaseTypeEngine.getStorageTypes(databaseConfig).get("foo_db"), instanceOf(MySQLDatabaseType.class));
     }
     
     @Test
