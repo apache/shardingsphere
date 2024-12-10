@@ -134,28 +134,14 @@ public final class GenericSchemaBuilder {
     }
     
     private static Collection<ShardingSphereColumn> convertToColumns(final Collection<ColumnMetaData> columnMetaDataList) {
-        Collection<ShardingSphereColumn> result = new LinkedList<>();
-        for (ColumnMetaData each : columnMetaDataList) {
-            result.add(new ShardingSphereColumn(each.getName(), each.getDataType(), each.isPrimaryKey(), each.isGenerated(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned(),
-                    each.isNullable()));
-        }
-        return result;
+        return columnMetaDataList.stream().map(ShardingSphereColumn::new).collect(Collectors.toList());
     }
     
     private static Collection<ShardingSphereIndex> convertToIndexes(final Collection<IndexMetaData> indexMetaDataList) {
-        Collection<ShardingSphereIndex> result = new LinkedList<>();
-        for (IndexMetaData each : indexMetaDataList) {
-            ShardingSphereIndex index = new ShardingSphereIndex(each.getName(), each.getColumns(), each.isUnique());
-            result.add(index);
-        }
-        return result;
+        return indexMetaDataList.stream().map(ShardingSphereIndex::new).collect(Collectors.toList());
     }
     
     private static Collection<ShardingSphereConstraint> convertToConstraints(final Collection<ConstraintMetaData> constraintMetaDataList) {
-        Collection<ShardingSphereConstraint> result = new LinkedList<>();
-        for (ConstraintMetaData each : constraintMetaDataList) {
-            result.add(new ShardingSphereConstraint(each.getName(), each.getReferencedTableName()));
-        }
-        return result;
+        return constraintMetaDataList.stream().map(ShardingSphereConstraint::new).collect(Collectors.toList());
     }
 }
