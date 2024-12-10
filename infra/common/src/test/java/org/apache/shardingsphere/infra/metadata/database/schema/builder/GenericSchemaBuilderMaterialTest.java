@@ -27,13 +27,13 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class GenericSchemaBuilderMaterialTest {
     
     @Test
     void assertIsSameProtocolAndStorageTypes() {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                Collections.singletonMap("foo", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")),
                 Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
         assertTrue(material.isSameProtocolAndStorageTypes());
     }
@@ -41,8 +41,7 @@ class GenericSchemaBuilderMaterialTest {
     @Test
     void assertIsDifferentProtocolAndStorageTypes() {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                Collections.singletonMap("foo", null),
-                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
+                Collections.singletonMap("foo", mock()), Collections.emptyList(), new ConfigurationProperties(new Properties()), "");
         assertFalse(material.isSameProtocolAndStorageTypes());
     }
 }
