@@ -65,9 +65,8 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         if (TableRefreshUtils.isSingleTable(tableName, database)) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), material);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
         return Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName))
                 .orElseGet(() -> new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
     }

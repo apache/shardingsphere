@@ -53,8 +53,7 @@ class SchemaMetaDataUtilsTest {
         when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -74,8 +73,7 @@ class SchemaMetaDataUtilsTest {
         when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -92,8 +90,7 @@ class SchemaMetaDataUtilsTest {
         when(rule0.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getAttributes()).thenReturn(new RuleAttributes());
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                mock(DatabaseType.class), mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "public");
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mockStorageUnits(), Arrays.asList(rule0, rule1), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
