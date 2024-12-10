@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.EngineR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExtractUrlParameterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromClauseContext;
@@ -1008,6 +1009,11 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return visit(ctx.convertFunction());
         }
         // DORIS ADDED BEGIN
+        if (null != ctx.extractUrlParameterFunction()) {
+            return visit(ctx.extractUrlParameterFunction());
+        }
+        // DORIS ADDED END
+        // DORIS ADDED BEGIN
         if (null != ctx.instrFunction()) {
             return visit(ctx.instrFunction());
         }
@@ -1059,6 +1065,16 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
         }
+        return result;
+    }
+    // DORIS ADDED END
+    
+    // DORIS ADDED BEGIN
+    @Override
+    public final ASTNode visitExtractUrlParameterFunction(final ExtractUrlParameterFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT_URL_PARAMETER().getText(), getOriginalText(ctx));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(0).getStart().getStartIndex(), ctx.expr(0).getStop().getStopIndex(), ctx.expr(0).getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(1).getStart().getStartIndex(), ctx.expr(1).getStop().getStopIndex(), ctx.expr(1).getText()));
         return result;
     }
     // DORIS ADDED END
