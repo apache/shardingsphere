@@ -43,13 +43,4 @@ public final class GenericSchemaBuilderMaterial {
     private final ConfigurationProperties props;
     
     private final String defaultSchemaName;
-    
-    /**
-     * Judge whether same protocol and storage database types.
-     *
-     * @return is same or not
-     */
-    public boolean isSameProtocolAndStorageTypes() {
-        return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
-    }
 }
