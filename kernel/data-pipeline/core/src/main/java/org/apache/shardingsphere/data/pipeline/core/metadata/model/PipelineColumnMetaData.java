@@ -28,7 +28,6 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = "name")
 @ToString
 public final class PipelineColumnMetaData implements Comparable<PipelineColumnMetaData> {
     
