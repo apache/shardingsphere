@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.infra.exception.kernel.metadata;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Duplicate index exception.
+ * Index not found exception.
  */
-public final class DuplicateIndexException extends ShardingSQLException {
+public final class IndexNotFoundException extends MetaDataSQLException {
     
-    private static final long serialVersionUID = 2884666477007627873L;
+    private static final long serialVersionUID = -4182388839280501305L;
     
-    public DuplicateIndexException(final String indexName) {
-        super(XOpenSQLState.DUPLICATE, 7, "Index '%s' already exists.", indexName);
+    public IndexNotFoundException(final String indexName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Index '%s' does not exist.", indexName);
+    }
+    
+    public IndexNotFoundException(final String indexName, final String schemaName) {
+        super(XOpenSQLState.NOT_FOUND, 4, "Index '%s' does not exist from schema '%s'.", indexName, schemaName);
     }
 }

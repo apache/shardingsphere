@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropIndexSta
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -70,6 +70,6 @@ class ShardingDropIndexSupportedCheckerTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotExistedException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new DropIndexStatementContext(sqlStatement, "foo_db")));
+        assertThrows(IndexNotFoundException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new DropIndexStatementContext(sqlStatement, "foo_db")));
     }
 }

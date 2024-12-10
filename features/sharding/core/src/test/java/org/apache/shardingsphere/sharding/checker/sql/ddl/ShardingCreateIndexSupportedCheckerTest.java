@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexS
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;

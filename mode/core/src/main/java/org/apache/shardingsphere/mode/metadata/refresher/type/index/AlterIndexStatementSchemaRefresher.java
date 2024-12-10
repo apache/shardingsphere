@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.type.index;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -54,8 +54,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         ShardingSpherePreconditions.checkState(database.containsSchema(actualSchemaName), () -> new SchemaNotFoundException(actualSchemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         Optional<String> logicTableName = findLogicTableName(schema, indexName);
-        // TODO define IndexNotFoundException
-        Preconditions.checkState(logicTableName.isPresent(), "Can not find logic table by index '%s' of schema '%s'.", indexName, schemaName);
+        ShardingSpherePreconditions.checkState(logicTableName.isPresent(), () -> new IndexNotFoundException(indexName, schemaName));
         ShardingSpherePreconditions.checkState(schema.containsTable(logicTableName.get()), () -> new TableNotFoundException(logicTableName.get()));
         ShardingSphereTable table = schema.getTable(logicTableName.get());
         ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
