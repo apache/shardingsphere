@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
