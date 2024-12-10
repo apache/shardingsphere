@@ -154,7 +154,7 @@ class ShardingSphereDatabaseTest {
     @Test
     void assertGetPostgreSQLDefaultSchema() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
+        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType,
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertNotNull(actual.getSchema("public"));
     }
@@ -162,7 +162,7 @@ class ShardingSphereDatabaseTest {
     @Test
     void assertGetMySQLDefaultSchema() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
+        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType,
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertNotNull(actual.getSchema("foo_db"));
     }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDa
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -64,8 +65,11 @@ class GenericSchemaBuilderTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        material = new GenericSchemaBuilderMaterial(databaseType, Collections.singletonMap("foo_db", databaseType),
-                Collections.singletonMap("foo_db", new MockedDataSource()), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_db");
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        material = new GenericSchemaBuilderMaterial(
+                databaseType, Collections.singletonMap("foo_db", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_db");
     }
     
     @Test
