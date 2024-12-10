@@ -28,6 +28,9 @@
                         <parameter>
                             <column name="status" start-index="20" stop-index="25" />
                         </parameter>
+                        <parameter>
+                            <column name="status" start-index="36" stop-index="41" />
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>

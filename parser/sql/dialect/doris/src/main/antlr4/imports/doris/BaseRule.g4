@@ -965,8 +965,16 @@ udfFunction
     : functionName LP_ (expr? | expr (COMMA_ expr)*) RP_
     ;
 
+separatorName
+    : SEPARATOR string_
+    ;
+
+aggregationExpression
+    : expr (COMMA_ expr)* | ASTERISK_
+    ;
+
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? separatorName? RP_ overClause?
     ;
 
 // DORIS ADDED BEGIN
