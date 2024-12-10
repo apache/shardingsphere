@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -1041,8 +1042,21 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
+        for (ExprContext each : getTargetRuleContextFromParseTree(ctx, ExprContext.class)) {
             result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
+        Collection<T> result = new LinkedList<>();
+        for (int index = 0; index < parseTree.getChildCount(); index++) {
+            ParseTree child = parseTree.getChild(index);
+            if (clazz.isInstance(child)) {
+                result.add(clazz.cast(child));
+            } else {
+                result.addAll(getTargetRuleContextFromParseTree(child, clazz));
+            }
         }
         return result;
     }
