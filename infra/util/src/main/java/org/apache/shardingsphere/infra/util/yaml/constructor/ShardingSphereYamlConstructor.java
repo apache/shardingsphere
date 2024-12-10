@@ -47,7 +47,12 @@ public class ShardingSphereYamlConstructor extends Constructor {
         this.rootClass = rootClass;
     }
     
-    private static LoaderOptions createLoaderOptions() {
+    /**
+     * Create loader options.
+     *
+     * @return loader options
+     */
+    public static LoaderOptions createLoaderOptions() {
         LoaderOptions result = new LoaderOptions();
         result.setMaxAliasesForCollections(1000);
         result.setCodePointLimit(Integer.MAX_VALUE);
