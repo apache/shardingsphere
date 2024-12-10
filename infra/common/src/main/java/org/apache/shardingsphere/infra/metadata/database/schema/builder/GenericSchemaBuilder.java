@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.Constra
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -78,7 +79,7 @@ public final class GenericSchemaBuilder {
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
-        if (!material.isSameProtocolAndStorageTypes()) {
+        if (!isSameProtocolAndStorageTypes(material.getProtocolType(), material.getStorageUnits())) {
             result = translate(result, material);
         }
         return revise(result, material);
@@ -96,6 +97,10 @@ public final class GenericSchemaBuilder {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
+    }
+    
+    private static boolean isSameProtocolAndStorageTypes(final DatabaseType protocolType, final Map<String, StorageUnit> storageUnits) {
+        return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
