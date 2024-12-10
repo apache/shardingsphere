@@ -76,9 +76,8 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         if (TableRefreshUtils.isSingleTable(viewName, database)) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         ShardingSphereSchema result = new ShardingSphereSchema(schemaName);
         actualViewMetaData.ifPresent(result::putTable);
