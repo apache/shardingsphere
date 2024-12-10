@@ -1052,7 +1052,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         return result;
     }
-
+    
     private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
         Collection<T> result = new LinkedList<>();
         for (int index = 0; index < parseTree.getChildCount(); index++) {
@@ -1065,7 +1065,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         return result;
     }
-
+    
     // DORIS ADDED BEGIN
     @Override
     public final ASTNode visitBitwiseFunction(final BitwiseFunctionContext ctx) {
