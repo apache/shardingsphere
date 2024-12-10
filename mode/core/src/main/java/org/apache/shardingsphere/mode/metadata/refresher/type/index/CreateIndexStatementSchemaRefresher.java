@@ -21,8 +21,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
@@ -44,21 +48,18 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
         String indexName = null == sqlStatement.getIndex()
                 ? IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())
                 : sqlStatement.getIndex().getIndexName().getIdentifier().getValue();
+        // TODO define IndexNotFoundException
         Preconditions.checkArgument(!Strings.isNullOrEmpty(indexName), "Index name is not exist.");
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        ShardingSphereTable table = newShardingSphereTable(database.getSchema(schemaName).getTable(tableName));
-        table.putIndex(new ShardingSphereIndex(indexName, new LinkedList<>(), false));
+        ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
+        ShardingSphereSchema schema = database.getSchema(schemaName);
+        ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+        ShardingSphereTable table = schema.getTable(tableName);
+        ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
+        newTable.putIndex(new ShardingSphereIndex(indexName, new LinkedList<>(), false));
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
-        alterSchemaMetaDataPOJO.getAlteredTables().add(table);
+        alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
-    }
-    
-    private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
-        result.getColumnNames().addAll(table.getColumnNames());
-        result.getVisibleColumns().addAll(table.getVisibleColumns());
-        result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
-        return result;
     }
     
     @Override
