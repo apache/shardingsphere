@@ -449,7 +449,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         // TODO replace aggregation segment
         String aggregationType = ctx.funcApplication().funcName().getText();
-        if (AggregationType.isAggregationType(aggregationType)) {
+        if (AggregationType.isAggregationType(aggregationType) && null == ctx.funcApplication().sortClause()) {
             return createAggregationSegment(ctx.funcApplication(), aggregationType, expressionSegments);
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
@@ -594,13 +594,17 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType, final Collection<ExpressionSegment> expressionSegments) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
+        String separator = null;
+        if (null != ctx.separatorName()) {
+            separator = new StringLiteralValue(ctx.separatorName().STRING_().getText()).getValue();
+        }
         if (null == ctx.DISTINCT()) {
-            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx));
+            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator);
             result.getParameters().addAll(expressionSegments);
             return result;
         }
         AggregationDistinctProjectionSegment result =
-                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx));
+                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx), separator);
         result.getParameters().addAll(expressionSegments);
         return result;
     }
