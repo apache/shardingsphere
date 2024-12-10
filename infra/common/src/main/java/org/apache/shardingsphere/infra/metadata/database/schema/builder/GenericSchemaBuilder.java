@@ -100,7 +100,7 @@ public final class GenericSchemaBuilder {
     }
     
     private static boolean isSameProtocolAndStorageTypes(final DatabaseType protocolType, final Map<String, StorageUnit> storageUnits) {
-         return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
+        return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
