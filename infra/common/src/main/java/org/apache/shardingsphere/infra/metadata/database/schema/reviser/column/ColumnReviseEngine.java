@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaData
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -49,7 +49,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
         Optional<? extends ColumnExistedReviser> existedReviser = reviseEntry.getColumnExistedReviser(rule, tableName);
         Optional<? extends ColumnNameReviser> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
         Optional<? extends ColumnGeneratedReviser> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
-        Collection<ColumnMetaData> result = new LinkedHashSet<>();
+        Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : originalMetaDataList) {
             if (existedReviser.isPresent() && !existedReviser.get().isExisted(each.getName())) {
                 continue;
