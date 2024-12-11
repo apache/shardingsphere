@@ -31,7 +31,7 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Get SQL router type.
-     * 
+     *
      * @return SQL router type
      */
     Type getType();
