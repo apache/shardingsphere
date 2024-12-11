@@ -67,20 +67,20 @@ public final class MetaDataReviseEngine {
         return result;
     }
     
-    private static Collection<ShardingSphereTable> convertToTables(final Collection<TableMetaData> tableMetaDataList) {
+    private Collection<ShardingSphereTable> convertToTables(final Collection<TableMetaData> tableMetaDataList) {
         return tableMetaDataList.stream().map(each -> new ShardingSphereTable(
                 each.getName(), convertToColumns(each.getColumns()), convertToIndexes(each.getIndexes()), convertToConstraints(each.getConstraints()), each.getType())).collect(Collectors.toList());
     }
     
-    private static Collection<ShardingSphereColumn> convertToColumns(final Collection<ColumnMetaData> columnMetaDataList) {
+    private Collection<ShardingSphereColumn> convertToColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         return columnMetaDataList.stream().map(ShardingSphereColumn::new).collect(Collectors.toList());
     }
     
-    private static Collection<ShardingSphereIndex> convertToIndexes(final Collection<IndexMetaData> indexMetaDataList) {
+    private Collection<ShardingSphereIndex> convertToIndexes(final Collection<IndexMetaData> indexMetaDataList) {
         return indexMetaDataList.stream().map(ShardingSphereIndex::new).collect(Collectors.toList());
     }
     
-    private static Collection<ShardingSphereConstraint> convertToConstraints(final Collection<ConstraintMetaData> constraintMetaDataList) {
+    private Collection<ShardingSphereConstraint> convertToConstraints(final Collection<ConstraintMetaData> constraintMetaDataList) {
         return constraintMetaDataList.stream().map(ShardingSphereConstraint::new).collect(Collectors.toList());
     }
 }
