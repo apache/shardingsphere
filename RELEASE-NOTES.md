@@ -22,6 +22,8 @@
 1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 1. Transaction: Bump the minimum Seata Client version for Seata AT integration to 2.2.0 - [#33872](https://github.com/apache/shardingsphere/pull/33872)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
+1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
+1. SQL Parser: Support parsing Doris EXTRACT\_URL\_PARAMETER - [#33571](https://github.com/apache/shardingsphere/pull/33571)
 1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)
 1. Proxy: Add query parameters and check for MySQL kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. Proxy: Support table not exist exception for PostgreSQL proxy - [#33885](https://github.com/apache/shardingsphere/pull/33274)

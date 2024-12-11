@@ -765,6 +765,12 @@ EXTENDED
     :  E X T E N D E D
     ;
 
+// DORIS ADDED BEGIN
+EXTRACT_URL_PARAMETER
+    : E X T R A C T UL_ U R L UL_ P A R A M E T E R
+    ;
+// DORIS ADDED END
+
 EXTENT_SIZE
     : E X T E N T UL_ S I Z E
     ;

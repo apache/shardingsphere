@@ -4767,7 +4767,22 @@
             </expression-projection>
         </projections>
     </select>
-  
+    <select sql-case-id="select_extract_url_parameter" db-types="Doris">
+        <projections start-index="7" stop-index="60">
+            <expression-projection start-index="7" stop-index="60" text="EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')">
+                <expr>
+                    <function function-name="EXTRACT_URL_PARAMETER" text="EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" start-index="7" stop-index="60">
+                        <parameter>
+                            <literal-expression value="'http://foo.com/?bar=baz'" start-index="29" stop-index="53" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'bar'" start-index="55" stop-index="59" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>  
     <select sql-case-id="select_lcase_function">
         <projections start-index="7" stop-index="28">
             <expression-projection start-index="7" stop-index="28" text="LCASE('QUADRATICALLY')">
