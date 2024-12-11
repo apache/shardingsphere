@@ -56,7 +56,9 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper implements Yam
     private YamlReadwriteSplittingDataSourceGroupRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupRuleConfig) {
         YamlReadwriteSplittingDataSourceGroupRuleConfiguration result = new YamlReadwriteSplittingDataSourceGroupRuleConfiguration();
         result.setWriteDataSourceName(dataSourceGroupRuleConfig.getWriteDataSourceName());
-        result.setReadDataSourceNames(dataSourceGroupRuleConfig.getReadDataSourceNames());
+        if (null != dataSourceGroupRuleConfig.getReadDataSourceNames() && !dataSourceGroupRuleConfig.getReadDataSourceNames().isEmpty()) {
+            result.setReadDataSourceNames(dataSourceGroupRuleConfig.getReadDataSourceNames());
+        }
         result.setTransactionalReadQueryStrategy(dataSourceGroupRuleConfig.getTransactionalReadQueryStrategy().name());
         result.setLoadBalancerName(dataSourceGroupRuleConfig.getLoadBalancerName());
         return result;
