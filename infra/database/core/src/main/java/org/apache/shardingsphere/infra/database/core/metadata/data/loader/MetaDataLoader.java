@@ -78,7 +78,6 @@ public final class MetaDataLoader {
             }
             throw new SQLException(ex);
         }
-        System.out.println("Schema meta data load cost: " + (System.currentTimeMillis() - start) + "ms");
         return result;
     }
     
