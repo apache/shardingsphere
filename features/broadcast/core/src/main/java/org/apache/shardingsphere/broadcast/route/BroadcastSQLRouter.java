@@ -41,7 +41,10 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
                                            final BroadcastRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> broadcastTableNames = rule.getBroadcastTableNames(tableNames);
-        return broadcastTableNames.isEmpty() ? new RouteContext() : BroadcastRouteEngineFactory.newInstance(queryContext, broadcastTableNames).route(rule);
+        if (broadcastTableNames.isEmpty()) {
+            return new RouteContext();
+        }
+        return BroadcastRouteEngineFactory.newInstance(queryContext, broadcastTableNames).route(rule);
     }
     
     @Override
