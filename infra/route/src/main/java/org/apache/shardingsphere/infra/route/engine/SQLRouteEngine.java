@@ -27,14 +27,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.SQLRouter.Type;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.router.TablelessSQLRouter;
-import org.apache.shardingsphere.infra.route.type.DataSourceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
-import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -55,7 +54,7 @@ public final class SQLRouteEngine {
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, SQLRouter> tableRouters;
+    private final Map<ShardingSphereRule, SQLRouter> dataNodeRouters;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRouter> dataSourceRouters;
@@ -64,15 +63,15 @@ public final class SQLRouteEngine {
     public SQLRouteEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
         Map<ShardingSphereRule, SQLRouter> routers = OrderedSPILoader.getServices(SQLRouter.class, rules);
-        tableRouters = filterRouters(routers, TableSQLRouter.class);
-        dataSourceRouters = filterRouters(routers, DataSourceSQLRouter.class);
+        dataNodeRouters = filterRouters(routers, Type.DATA_NODE);
+        dataSourceRouters = filterRouters(routers, Type.DATA_SOURCE);
     }
     
     @SuppressWarnings("rawtypes")
-    private Map<ShardingSphereRule, SQLRouter> filterRouters(final Map<ShardingSphereRule, SQLRouter> routers, final Class<? extends SQLRouter> targetClass) {
+    private Map<ShardingSphereRule, SQLRouter> filterRouters(final Map<ShardingSphereRule, SQLRouter> routers, final Type type) {
         Map<ShardingSphereRule, SQLRouter> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
-            if (targetClass.isAssignableFrom(entry.getValue().getClass())) {
+            if (type == entry.getValue().getType()) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -95,7 +94,7 @@ public final class SQLRouteEngine {
             return result;
         }
         Collection<String> tableNames = SQLStatementContextExtractor.getTableNames(database, queryContext.getSqlStatementContext());
-        result = route(queryContext, globalRuleMetaData, database, tableRouters, tableNames, result);
+        result = route(queryContext, globalRuleMetaData, database, dataNodeRouters, tableNames, result);
         result = new TablelessSQLRouter().route(queryContext, globalRuleMetaData, database, tableNames, result);
         result = route(queryContext, globalRuleMetaData, database, dataSourceRouters, tableNames, result);
         if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnits().size()) {

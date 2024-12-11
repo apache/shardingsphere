@@ -22,10 +22,25 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 /**
- * SQL Router.
+ * SQL router.
  * 
  * @param <T> type of rule
  */
 @SingletonSPI
 public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
+    
+    /**
+     * Get SQL router type.
+     *
+     * @return SQL router type
+     */
+    Type getType();
+    
+    /**
+     * SQL router type.
+     */
+    enum Type {
+        
+        DATA_NODE, DATA_SOURCE
+    }
 }
