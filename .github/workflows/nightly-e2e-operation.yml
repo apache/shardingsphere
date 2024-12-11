@@ -19,7 +19,7 @@ name: Nightly - E2E Operation
 
 on:
   schedule:
-    - cron: '0 20 */1 * *' # UTC time
+    - cron: '0 20 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
 concurrency:
