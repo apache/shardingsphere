@@ -68,7 +68,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final DropEncryptRuleStatement sqlStatement) {
         Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
+        Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>(sqlStatement.getTables().size(), 1F);
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new EncryptTableRuleConfiguration(each, Collections.emptyList()));
             dropRule(each);
@@ -78,8 +78,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     private void dropRule(final String ruleName) {
-        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream()
-                .filter(each -> each.getName().equalsIgnoreCase(ruleName)).findAny();
+        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equalsIgnoreCase(ruleName)).findAny();
         encryptTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(encryptTableRuleConfig.get()));
     }
     
