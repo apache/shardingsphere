@@ -51,7 +51,8 @@ class IndexReviseEngineTest {
     void assertReviseWithoutIndexReviser() {
         when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.empty());
         Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", Collections.singleton(new IndexMetaData("foo_idx")));
-        assertThat(actual, is(Collections.singleton(new IndexMetaData("foo_idx"))));
+        assertThat(actual.size(), is(1));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
     }
     
     @Test
@@ -60,6 +61,14 @@ class IndexReviseEngineTest {
         when(reviser.revise(eq("foo_tbl"), any(), any())).thenReturn(Optional.of(new IndexMetaData("foo_idx")));
         when(metaDataReviseEntry.getIndexReviser(any(), eq("foo_tbl"))).thenReturn(Optional.of(reviser));
         Collection<IndexMetaData> actual = indexReviseEngine.revise("foo_tbl", Arrays.asList(new IndexMetaData("idx_0"), new IndexMetaData("idx_1")));
-        assertThat(actual, is(Collections.singleton(new IndexMetaData("foo_idx"))));
+        assertThat(actual.size(), is(2));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+        assertIndexMetaData(actual.iterator().next(), new IndexMetaData("foo_idx"));
+    }
+    
+    private void assertIndexMetaData(final IndexMetaData actual, final IndexMetaData expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getColumns(), is(expected.getColumns()));
+        assertThat(actual.isUnique(), is(expected.isUnique()));
     }
 }

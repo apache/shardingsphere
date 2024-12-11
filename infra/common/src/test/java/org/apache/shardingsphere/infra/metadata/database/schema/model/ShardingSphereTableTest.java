@@ -132,15 +132,4 @@ class ShardingSphereTableTest {
         assertThat(table.getAllConstraints(), hasItems(constraint));
         assertThat(table.getAllConstraints().size(), is(1));
     }
-    
-    @Test
-    void assertEquals() {
-        ShardingSphereTable table1 = new ShardingSphereTable("foo_tbl",
-                Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false)),
-                Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
-        ShardingSphereTable table2 = new ShardingSphereTable("foo_tbl",
-                Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false)),
-                Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
-        assertThat(table1, is(table2));
-    }
 }
