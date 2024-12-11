@@ -59,6 +59,7 @@ public final class MetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<MetaDataLoaderMaterial> materials) throws SQLException {
+        long start = System.currentTimeMillis();
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(materials.size(), 1F);
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
         for (MetaDataLoaderMaterial each : materials) {
@@ -77,6 +78,7 @@ public final class MetaDataLoader {
             }
             throw new SQLException(ex);
         }
+        System.out.println("Schema meta data load cost: " + (System.currentTimeMillis() - start) + "ms");
         return result;
     }
     

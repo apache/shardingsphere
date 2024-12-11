@@ -65,6 +65,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
+     * Load table metadata batch size.
+     */
+    LOAD_TABLE_METADATA_BATCH_SIZE("load-table-metadata-batch-size", String.valueOf(1000), int.class, false),
+    
+    /**
      * Frontend database protocol for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", null, DatabaseType.class, false),

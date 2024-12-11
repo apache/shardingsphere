@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
@@ -87,8 +86,7 @@ public final class GenericSchemaBuilder {
     }
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
-        boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material);
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
     }
     
