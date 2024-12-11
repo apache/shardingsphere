@@ -20,11 +20,10 @@ package org.apache.shardingsphere.shadow.route;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.route.type.DataSourceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetrieverFactory;
@@ -39,7 +38,7 @@ import java.util.Optional;
  * Shadow SQL router.
  */
 @HighFrequencyInvocation
-public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule>, DataSourceSQLRouter<ShadowRule> {
+public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
@@ -60,6 +59,11 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule>, Dat
         }
         routeContext.getRouteUnits().removeAll(toBeRemovedRouteUnit);
         routeContext.getRouteUnits().addAll(toBeAddedRouteUnit);
+    }
+    
+    @Override
+    public Type getType() {
+        return Type.DATA_SOURCE;
     }
     
     @Override

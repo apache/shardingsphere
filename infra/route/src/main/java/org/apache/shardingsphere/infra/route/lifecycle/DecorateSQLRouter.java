@@ -15,15 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.type;
+package org.apache.shardingsphere.infra.route.lifecycle;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+
+import java.util.Collection;
 
 /**
- * Decorate SQL Router.
- *
+ * Decorate SQL router.
+ * 
  * @param <T> type of rule
  */
-public interface TableSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+public interface DecorateSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+    
+    /**
+     * Decorate route context.
+     *
+     * @param routeContext route context
+     * @param queryContext query context
+     * @param database database
+     * @param rule rule
+     * @param tableNames table names
+     * @param props configuration properties
+     */
+    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, Collection<String> tableNames, ConfigurationProperties props);
 }
