@@ -170,8 +170,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                                     final InventoryQueryParameter<?> queryParam, final AtomicLong rowCount, final PipelineTableMetaData tableMetaData) throws SQLException {
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         int batchSize = dumperContext.getBatchSize();
-        String sql = buildDumpByPageSQL(queryParam);
-        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, sql, batchSize)) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildDumpByPageSQL(queryParam), batchSize)) {
             runningStatement.set(preparedStatement);
             setParameters(preparedStatement, queryParam);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
