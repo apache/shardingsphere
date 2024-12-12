@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Table name bound info.
  */
-@RequiredArgsConstructor
 @Getter
 public final class TableSegmentBoundInfo {
     
     private final IdentifierValue originalDatabase;
     
     private final IdentifierValue originalSchema;
+    
+    public TableSegmentBoundInfo(final IdentifierValue originalDatabase, final IdentifierValue originalSchema) {
+        this.originalDatabase = null == originalDatabase ? new IdentifierValue("") : originalDatabase;
+        this.originalSchema = null == originalSchema ? new IdentifierValue("") : originalSchema;
+    }
 }

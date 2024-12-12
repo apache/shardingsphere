@@ -291,7 +291,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public String getSchema() {
-        // TODO return databaseName for now in getSchema(), the same as before
         return currentDatabaseName;
     }
     

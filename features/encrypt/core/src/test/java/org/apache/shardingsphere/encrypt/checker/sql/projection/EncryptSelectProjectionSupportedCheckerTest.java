@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -91,16 +92,16 @@ class EncryptSelectProjectionSupportedCheckerTest {
         when(combineSegment.getLeft().getStartIndex()).thenReturn(0);
         when(combineSegment.getRight().getStartIndex()).thenReturn(1);
         when(result.getSqlStatement().getCombine()).thenReturn(Optional.of(combineSegment));
-        ColumnProjection leftColumn1 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_1"), null, databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1")));
-        ColumnProjection leftColumn2 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_2"), null, databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_2")));
+        ColumnProjection leftColumn1 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_1"), null, databaseType, null, null,
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_1")));
+        ColumnProjection leftColumn2 = new ColumnProjection(new IdentifierValue("f"), new IdentifierValue("foo_col_2"), null, databaseType, null, null,
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col_2")));
         SelectStatementContext leftSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(leftSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(leftColumn1, leftColumn2));
-        ColumnProjection rightColumn1 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_1"), null, databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_1")));
-        ColumnProjection rightColumn2 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_2"), null, databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_2")));
+        ColumnProjection rightColumn1 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_1"), null, databaseType, null, null,
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_1")));
+        ColumnProjection rightColumn2 = new ColumnProjection(new IdentifierValue("b"), new IdentifierValue("bar_col_2"), null, databaseType, null, null,
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")), new IdentifierValue("bar_tbl"), new IdentifierValue("bar_col_2")));
         SelectStatementContext rightSelectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(rightSelectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Arrays.asList(rightColumn1, rightColumn2));
         Map<Integer, SelectStatementContext> subqueryContexts = new LinkedHashMap<>(2, 1F);
