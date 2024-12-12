@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseList
 import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.DatabaseMetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
