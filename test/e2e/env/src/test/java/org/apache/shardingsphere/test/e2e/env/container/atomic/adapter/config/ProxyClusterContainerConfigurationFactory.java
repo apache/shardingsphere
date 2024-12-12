@@ -42,6 +42,6 @@ public final class ProxyClusterContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/log/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        return Collections.singletonMap("env/log/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
     }
 }

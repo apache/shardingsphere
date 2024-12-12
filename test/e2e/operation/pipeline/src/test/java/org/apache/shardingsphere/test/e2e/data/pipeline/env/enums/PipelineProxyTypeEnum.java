@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.type;
+package org.apache.shardingsphere.test.e2e.data.pipeline.env.enums;
 
-import org.apache.shardingsphere.infra.route.SQLRouter;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-/**
- * Decorate SQL Router.
- *
- * @param <T> type of rule
- */
-public interface TableSQLRouter<T extends ShardingSphereRule> extends SQLRouter<T> {
+public enum PipelineProxyTypeEnum {
+    
+    NONE, INTERNAL
 }

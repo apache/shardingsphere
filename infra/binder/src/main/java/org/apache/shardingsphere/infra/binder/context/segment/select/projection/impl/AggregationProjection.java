@@ -62,7 +62,16 @@ public class AggregationProjection implements Projection {
         this.expression = expression;
         this.alias = alias;
         this.databaseType = databaseType;
-        this.separator = null;
+        separator = null;
+    }
+    
+    /**
+     * Get separator.
+     *
+     * @return separator
+     */
+    public Optional<String> getSeparator() {
+        return Optional.ofNullable(separator);
     }
     
     @Override
@@ -81,9 +90,5 @@ public class AggregationProjection implements Projection {
     @Override
     public final Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias);
-    }
-    
-    public Optional<String> getSeparator() {
-        return Optional.ofNullable(separator);
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
  * ShardingSphere table.
  */
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class ShardingSphereTable {
     
@@ -82,6 +80,9 @@ public final class ShardingSphereTable {
         int index = 0;
         for (ShardingSphereColumn each : columns) {
             ShardingSphereIdentifier columnName = new ShardingSphereIdentifier(each.getName());
+            if (result.containsKey(columnName)) {
+                continue;
+            }
             result.put(columnName, each);
             columnNames.add(columnName);
             if (each.isPrimaryKey()) {
