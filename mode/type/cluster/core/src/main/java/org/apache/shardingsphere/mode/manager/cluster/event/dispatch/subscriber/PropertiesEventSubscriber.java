@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * Properties event subscriber.
  */
 @RequiredArgsConstructor
-@SuppressWarnings("unused")
 public final class PropertiesEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
