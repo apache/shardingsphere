@@ -77,15 +77,13 @@ public final class MetaDataContextsFactory {
      *
      * @param persistService persist service
      * @param param context manager builder parameter
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                          final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty()
-                ? createByLocal(persistService, param, computeNodeInstanceContext)
-                : createByRepository(persistService, param, computeNodeInstanceContext);
+                                          final ComputeNodeInstanceContext instanceContext) throws SQLException {
+        return isCreateByLocal(persistService) ? createByLocal(persistService, param, instanceContext) : createByRepository(persistService, param, instanceContext);
     }
     
     /**
@@ -99,34 +97,37 @@ public final class MetaDataContextsFactory {
         return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
     }
     
+    private static boolean isCreateByLocal(final MetaDataPersistService persistService) {
+        return persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty();
+    }
+    
     private static MetaDataContexts createByLocal(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                  final ComputeNodeInstanceContext instanceContext) throws SQLException {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = param.getDatabaseConfigs();
         Collection<RuleConfiguration> globalRuleConfigs;
-        if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
-            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext).tryRestore(param.getGlobalRuleConfigs());
+        if (instanceContext.getModeConfiguration().isCluster()) {
+            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(instanceContext).tryRestore(param.getGlobalRuleConfigs());
             param.getGlobalRuleConfigs().clear();
             param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
         } else {
             globalRuleConfigs = param.getGlobalRuleConfigs();
         }
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
-        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, computeNodeInstanceContext);
+        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
-        persistDatabaseConfigurations(result, param, persistService, computeNodeInstanceContext);
+        persistDatabaseConfigurations(result, param, persistService, instanceContext);
         persistMetaData(result, persistService);
         return result;
     }
     
-    private static MetaDataContexts createByRepository(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs =
-                createEffectiveDatabaseConfigurations(getDatabaseNames(computeNodeInstanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
+    private static MetaDataContexts createByRepository(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param, final ComputeNodeInstanceContext instanceContext) {
+        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(
+                getDatabaseNames(instanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Map<String, ShardingSphereDatabase> databases = InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, computeNodeInstanceContext);
+        Map<String, ShardingSphereDatabase> databases = InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
-        restoreRules(result, computeNodeInstanceContext);
+        restoreRules(result, instanceContext);
         return result;
     }
     
@@ -141,9 +142,9 @@ public final class MetaDataContextsFactory {
         return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
     }
     
-    private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext computeNodeInstanceContext,
+    private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext instanceContext,
                                                        final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
-        return computeNodeInstanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
+        return instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
                 ? databaseConfigs.keySet()
                 : persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
@@ -210,8 +211,8 @@ public final class MetaDataContextsFactory {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        if (!computeNodeInstanceContext.getModeConfiguration().isCluster()) {
+    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext instanceContext) {
+        if (!instanceContext.getModeConfiguration().isCluster()) {
             return;
         }
         for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {
@@ -225,8 +226,8 @@ public final class MetaDataContextsFactory {
     }
     
     private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
-                                                      final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext);
+                                                      final ComputeNodeInstanceContext instanceContext) {
+        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(instanceContext);
         persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations()), param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
@@ -260,15 +261,15 @@ public final class MetaDataContextsFactory {
      * @param switchingResource switching resource
      * @param originalMetaDataContexts original meta data contexts
      * @param metaDataPersistService meta data persist service
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createBySwitchResource(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
                                                           final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
-                                                          final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                          final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ShardingSphereDatabase changedDatabase = createChangedDatabase(
-                databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+                databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, instanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -285,15 +286,15 @@ public final class MetaDataContextsFactory {
      * @param ruleConfigs rule configs
      * @param originalMetaDataContexts original meta data contexts
      * @param metaDataPersistService meta data persist service
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createByAlterRule(final String databaseName, final boolean internalLoadMetaData, final Collection<RuleConfiguration> ruleConfigs,
                                                      final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
-                                                     final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                     final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ShardingSphereDatabase changedDatabase = createChangedDatabase(
-                databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+                databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, instanceContext);
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -318,7 +319,7 @@ public final class MetaDataContextsFactory {
      * @param ruleConfigs rule configurations
      * @param originalMetaDataContext original meta data contexts
      * @param metaDataPersistService meta data persist service
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return changed database
      * @throws SQLException SQL exception
      */
@@ -326,22 +327,22 @@ public final class MetaDataContextsFactory {
                                                                final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
                                                                final MetaDataContexts originalMetaDataContext,
                                                                final MetaDataPersistService metaDataPersistService,
-                                                               final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                               final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(originalMetaDataContext.getMetaData().getDatabase(databaseName), switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? originalMetaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs);
         return createChangedDatabase(originalMetaDataContext.getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
-                metaDataPersistService, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps(), computeNodeInstanceContext);
+                metaDataPersistService, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps(), instanceContext);
     }
     
     private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
                                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
-                                                                final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+                                                                final ComputeNodeInstanceContext instanceContext) throws SQLException {
         return internalLoadMetaData
-                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, computeNodeInstanceContext)
-                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, computeNodeInstanceContext);
+                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, instanceContext)
+                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, instanceContext);
     }
     
     private static ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
