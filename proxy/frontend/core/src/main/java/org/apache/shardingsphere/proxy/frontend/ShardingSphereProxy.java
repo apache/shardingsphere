@@ -101,7 +101,15 @@ public final class ShardingSphereProxy {
         });
     }
     
-    private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
+    /**
+     * Start ShardingSphere-Proxy.
+     *
+     * @param port port
+     * @param addresses addresses
+     * @return ChannelFuture list
+     * @throws InterruptedException interrupted exception
+     */
+    public List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
         List<ChannelFuture> result = new ArrayList<>(addresses.size());
@@ -146,7 +154,10 @@ public final class ShardingSphereProxy {
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
     
-    private void close() {
+    /**
+     * Close ShardingSphere-Proxy.
+     */
+    public void close() {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         BackendExecutorContext.getInstance().getExecutorEngine().close();

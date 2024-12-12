@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineProxyTypeEnum;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
@@ -44,6 +45,8 @@ public final class PipelineE2EEnvironment {
     
     private final PipelineEnvTypeEnum itEnvType;
     
+    private final PipelineProxyTypeEnum itProxyType;
+    
     private final List<String> mysqlVersions;
     
     private final List<String> mariadbVersions;
@@ -57,6 +60,7 @@ public final class PipelineE2EEnvironment {
     private PipelineE2EEnvironment() {
         props = loadProperties();
         itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.it.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
+        itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.it.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
         mariadbVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mariadb.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
         postgresqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.postgresql.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
