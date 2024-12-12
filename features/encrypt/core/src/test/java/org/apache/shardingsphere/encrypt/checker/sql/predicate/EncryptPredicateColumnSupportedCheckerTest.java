@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -66,9 +67,11 @@ class EncryptPredicateColumnSupportedCheckerTest {
     
     private SQLStatementContext mockSelectStatementContextWithDifferentEncryptorsInJoinCondition() {
         ColumnSegment leftColumn = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
-        leftColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("t_user"), new IdentifierValue("user_name")));
+        leftColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"),
+                new IdentifierValue("user_name")));
         ColumnSegment rightColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
-        rightColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("t_user"), new IdentifierValue("user_id")));
+        rightColumn.setColumnBoundInfo(
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"), new IdentifierValue("user_id")));
         SelectStatementContext result = mock(SelectStatementContext.class);
         when(result.getJoinConditions()).thenReturn(Collections.singleton(new BinaryOperationExpression(0, 0, leftColumn, rightColumn, "=", "")));
         return result;
@@ -82,8 +85,8 @@ class EncryptPredicateColumnSupportedCheckerTest {
     
     private SQLStatementContext mockSelectStatementContextWithLike() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
-        columnSegment.setColumnBoundInfo(
-                new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("t_user"), new IdentifierValue("user_name")));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"),
+                new IdentifierValue("user_name")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));
@@ -100,8 +103,8 @@ class EncryptPredicateColumnSupportedCheckerTest {
     
     private SQLStatementContext mockSelectStatementContextWithEqual() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
-        columnSegment.setColumnBoundInfo(
-                new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("t_user"), new IdentifierValue("user_name")));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"),
+                new IdentifierValue("user_name")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));

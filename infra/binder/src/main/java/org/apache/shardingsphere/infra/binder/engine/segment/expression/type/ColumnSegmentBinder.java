@@ -260,7 +260,7 @@ public final class ColumnSegmentBinder {
                 : segmentOriginalTable;
         IdentifierValue segmentOriginalColumn = segment.getColumnBoundInfo().getOriginalColumn();
         IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
-        return new ColumnSegmentBoundInfo(originalDatabase, originalSchema, originalTable, originalColumn);
+        return new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema), originalTable, originalColumn);
     }
     
     /**

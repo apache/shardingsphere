@@ -107,7 +107,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
-        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getUsedDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(), params);
+        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(),
+                params);
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
@@ -129,7 +130,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
+        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
         SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
         return kernelProcessor.generateExecutionContext(queryContext, globalRuleMetaData, metaDataContexts.getMetaData().getProps());
     }

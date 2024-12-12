@@ -113,7 +113,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         ConnectionSession result = mock(ConnectionSession.class);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
-        when(result.getUsedDatabaseName()).thenReturn("foo_db");
+        when(result.getCurrentDatabaseName()).thenReturn("foo_db");
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
         connectionContext.setCurrentDatabaseName("foo_db");
         when(result.getConnectionContext()).thenReturn(connectionContext);
