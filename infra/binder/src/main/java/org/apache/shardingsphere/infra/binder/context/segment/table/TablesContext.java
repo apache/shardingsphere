@@ -85,7 +85,7 @@ public final class TablesContext {
                 if (!"DUAL".equalsIgnoreCase(tableName.getIdentifier().getValue())) {
                     simpleTables.add(simpleTableSegment);
                     tableNames.add(tableName.getIdentifier().getValue());
-                    // TODO support bind with all statement contains table segement
+                    // TODO support bind with all statement contains table segement @duanzhengqiang
                     tableName.getTableBoundInfo().ifPresent(optional -> schemaNames.add(optional.getOriginalSchema().getValue()));
                     tableName.getTableBoundInfo().ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
                 }
