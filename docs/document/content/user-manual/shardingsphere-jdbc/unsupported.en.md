@@ -3,6 +3,10 @@ title = "Unsupported Items"
 weight = 6
 +++
 
+## Configuration
+
+* Do not support configuring multiple logic databases
+
 ## DataSource Interface
 
 * Do not support timeout related operations
