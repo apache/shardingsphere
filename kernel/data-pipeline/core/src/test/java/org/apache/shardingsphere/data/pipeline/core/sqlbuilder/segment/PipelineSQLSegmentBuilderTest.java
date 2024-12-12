@@ -27,35 +27,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineSQLSegmentBuilderTest {
     
-    private final PipelineSQLSegmentBuilder mySQLBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final PipelineSQLSegmentBuilder mysqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
-    private final PipelineSQLSegmentBuilder postgreSQLBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final PipelineSQLSegmentBuilder postgresqlBuilder = new PipelineSQLSegmentBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
     
     @Test
     void assertGetEscapedIdentifier() {
-        assertThat(mySQLBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
+        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT"), is("`SELECT`"));
     }
     
     @Test
     void assertGetUnescapedIdentifier() {
-        assertThat(mySQLBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
+        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
-        assertThat(mySQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
-        assertThat(mySQLBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_tbl"));
+        assertThat(mysqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
+        assertThat(mysqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
-        assertThat(postgreSQLBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
-        assertThat(postgreSQLBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_schema.foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_schema.foo_tbl"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchemaAndNullSchema() {
-        assertThat(postgreSQLBuilder.getQualifiedTableName(null, "foo_tbl"), is("foo_tbl"));
-        assertThat(postgreSQLBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName(null, "foo_tbl"), is("foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("foo_tbl"));
     }
 }
