@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber.type;
 
-import lombok.Getter;
+import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber.type.DeliverQualifiedDataSourceSubscriber;
+import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 
 /**
- * Cluster deliver event subscriber registry.
+ * Deliver data source status subscriber.
  */
-@Getter
-public final class ClusterDeliverEventSubscriberRegistry {
+@RequiredArgsConstructor
+public final class DeliverQualifiedDataSourceSubscriber implements EventSubscriber {
     
-    private final Collection<EventSubscriber> subscribers;
+    private final ClusterPersistRepository repository;
     
-    public ClusterDeliverEventSubscriberRegistry(final ClusterPersistRepository repository) {
-        subscribers = Collections.singleton(new DeliverQualifiedDataSourceSubscriber(repository));
+    /**
+     * Delete qualified data source.
+     *
+     * @param event qualified data source deleted event
+     */
+    @Subscribe
+    public void delete(final QualifiedDataSourceDeletedEvent event) {
+        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }
