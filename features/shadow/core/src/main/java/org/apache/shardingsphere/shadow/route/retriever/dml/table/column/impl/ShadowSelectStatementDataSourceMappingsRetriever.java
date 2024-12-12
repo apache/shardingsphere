@@ -58,8 +58,8 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
             if (1 != columns.size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters)
-                    .map(values -> new ShadowColumnCondition(columns.iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), shadowColumnName, values)).ifPresent(result::add);
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(
+                    columns.iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }

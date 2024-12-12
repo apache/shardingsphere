@@ -109,12 +109,12 @@ class SelectStatementContextTest {
     }
     
     private void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
-        ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         selectStatement.setFrom(new SimpleTableSegment(tableNameSegment));
+        ShardingSphereDatabase database = mockDatabase();
         SelectStatementContext selectStatementContext =
                 new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         selectStatementContext.setIndexes(Collections.emptyMap());
