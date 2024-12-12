@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.DatabaseMetaDataChangedListener;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.GlobalMetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 

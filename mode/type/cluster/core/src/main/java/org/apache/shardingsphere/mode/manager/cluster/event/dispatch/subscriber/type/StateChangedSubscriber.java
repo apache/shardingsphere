@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import lombok.Getter;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber.type.DeliverQualifiedDataSourceSubscriber;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
- * Cluster deliver event subscriber registry.
+ * State changed subscriber.
  */
-@Getter
-public final class ClusterDeliverEventSubscriberRegistry {
+public final class StateChangedSubscriber implements EventSubscriber {
     
-    private final Collection<EventSubscriber> subscribers;
+    private final ContextManager contextManager;
     
-    public ClusterDeliverEventSubscriberRegistry(final ClusterPersistRepository repository) {
-        subscribers = Collections.singleton(new DeliverQualifiedDataSourceSubscriber(repository));
+    public StateChangedSubscriber(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+    }
+    
+    /**
+     * Renew cluster state.
+     *
+     * @param event cluster state event
+     */
+    @Subscribe
+    public synchronized void renew(final ClusterStateEvent event) {
+        contextManager.getStateContext().switchClusterState(event.getClusterState());
     }
 }
