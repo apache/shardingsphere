@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.workerid;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.ReservationPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ReservationPersistService;
 import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
