@@ -38,7 +38,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Meta data changed subscriber.
  */
-@SuppressWarnings("unused")
 public final class MetaDataChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

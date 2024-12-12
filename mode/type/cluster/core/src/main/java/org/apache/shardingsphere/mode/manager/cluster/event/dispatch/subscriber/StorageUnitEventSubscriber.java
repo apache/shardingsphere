@@ -33,7 +33,6 @@ import java.util.Collections;
  * Storage unit event subscriber.
  */
 @RequiredArgsConstructor
-@SuppressWarnings("unused")
 public final class StorageUnitEventSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

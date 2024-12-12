@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 /**
  * State changed subscriber.
  */
-@SuppressWarnings("unused")
 public final class StateChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;

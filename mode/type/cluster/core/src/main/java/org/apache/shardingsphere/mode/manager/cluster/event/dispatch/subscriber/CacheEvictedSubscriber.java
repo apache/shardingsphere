@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 /**
  * Cache evicted subscriber.
  */
-@SuppressWarnings("unused")
 public final class CacheEvictedSubscriber implements EventSubscriber {
     
     /**

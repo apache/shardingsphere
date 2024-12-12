@@ -41,7 +41,6 @@ import java.util.Collection;
  * Process list changed subscriber.
  */
 @RequiredArgsConstructor
-@SuppressWarnings("unused")
 public final class ProcessListChangedSubscriber implements EventSubscriber {
     
     private final ContextManager contextManager;
