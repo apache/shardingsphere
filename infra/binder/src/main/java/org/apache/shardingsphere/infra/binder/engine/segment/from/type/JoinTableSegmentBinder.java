@@ -73,7 +73,7 @@ public final class JoinTableSegmentBinder {
         result.setJoinType(segment.getJoinType());
         result.setLeft(TableSegmentBinder.bind(segment.getLeft(), binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setRight(TableSegmentBinder.bind(segment.getRight(), binderContext, tableBinderContexts, outerTableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
