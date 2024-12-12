@@ -74,11 +74,11 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdPacketPayload fdbPacketPayload = (FirebirdPacketPayload) payload;
         FirebirdCommandPacketType type = FirebirdCommandPacketType.valueOf(fdbPacketPayload.readInt4());
         switch (type) {
-            case OP_CONNECT:
+            case CONNECT:
                 return processConnect(context, fdbPacketPayload, rule);
-            case OP_ATTACH:
+            case ATTACH:
                 return processAttach(context, fdbPacketPayload, rule);
-            case OP_CONT_AUTH:
+            case CONT_AUTH:
                 //TODO implement CONT_AUTH
         }
         throw new FirebirdProtocolException("Wrong operation %s during authentication phase", type.name());

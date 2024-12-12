@@ -46,7 +46,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
     private final static int COMPRESS       = 0x100; // Turn on compression if possible
 
     public FirebirdAcceptPacket(final List<FirebirdProtocol> userProtocols) {
-        opCode = FirebirdCommandPacketType.OP_ACCEPT;
+        opCode = FirebirdCommandPacketType.ACCEPT;
         boolean accepted = false;
         for (FirebirdProtocol protocol : userProtocols) {
             if (FirebirdArchType.isValid(protocol.getArch()) &&
@@ -64,7 +64,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
                                     final int authenticated,
                                     final String keys) {
         acceptDataPacket = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
-        opCode = FirebirdCommandPacketType.OP_ACCEPT_DATA;
+        opCode = FirebirdCommandPacketType.ACCEPT_DATA;
     }
 
     @Override

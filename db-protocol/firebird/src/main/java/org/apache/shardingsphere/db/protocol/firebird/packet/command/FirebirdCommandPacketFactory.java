@@ -45,21 +45,21 @@ public final class FirebirdCommandPacketFactory {
      */
     public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload) {
         switch (commandPacketType) {
-            case OP_INFO_DATABASE:
+            case INFO_DATABASE:
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
-            case OP_TRANSACTION:
+            case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
-            case OP_ALLOCATE_STATEMENT:
+            case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementPacket(payload);
-            case OP_PREPARE_STATEMENT:
+            case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementPacket(payload);
-            case OP_EXECUTE:
+            case EXECUTE:
                 return new FirebirdExecuteStatementPacket(payload);
-            case OP_INFO_SQL:
+            case INFO_SQL:
                 return FirebirdSQLInfoPacketType.createPacket(payload);
-            case OP_COMMIT:
+            case COMMIT:
                 return new FirebirdCommitTransactionPacket(payload);
-            case OP_ROLLBACK:
+            case ROLLBACK:
                 return new FirebirdRollbackTransactionPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);

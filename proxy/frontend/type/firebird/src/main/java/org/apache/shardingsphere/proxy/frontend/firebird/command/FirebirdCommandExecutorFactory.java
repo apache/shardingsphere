@@ -62,21 +62,21 @@ public final class FirebirdCommandExecutorFactory {
     public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdCommandPacket commandPacket,
                                               final ConnectionSession connectionSession) throws SQLException {
         switch (commandPacketType) {
-            case OP_INFO_DATABASE:
+            case INFO_DATABASE:
                 return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
-            case OP_TRANSACTION:
+            case TRANSACTION:
                 return new FirebirdStartTransactionCommandExecutor((FirebirdStartTransactionPacket) commandPacket, connectionSession);
-            case OP_ALLOCATE_STATEMENT:
+            case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementCommandExecutor((FirebirdAllocateStatementPacket) commandPacket, connectionSession);
-            case OP_PREPARE_STATEMENT:
+            case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementCommandExecutor((FirebirdPrepareStatementPacket) commandPacket, connectionSession);
-            case OP_EXECUTE:
+            case EXECUTE:
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);
-            case OP_INFO_SQL:
+            case INFO_SQL:
                 return new FirebirdSQLInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
-            case OP_COMMIT:
+            case COMMIT:
                 return new FirebirdCommitTransactionCommandExecutor((FirebirdCommitTransactionPacket) commandPacket, connectionSession);
-            case OP_ROLLBACK:
+            case ROLLBACK:
                 return new FirebirdRollbackTransactionCommandExecutor((FirebirdRollbackTransactionPacket) commandPacket, connectionSession);
             default:
                 return new FirebirdUnsupportedCommandExecutor();

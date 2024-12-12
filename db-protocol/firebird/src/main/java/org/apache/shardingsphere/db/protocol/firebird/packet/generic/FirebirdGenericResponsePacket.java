@@ -59,7 +59,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
 
     @Override
     protected void write(FirebirdPacketPayload payload) {
-        payload.writeInt4(FirebirdCommandPacketType.OP_RESPONSE.getValue());
+        payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
         payload.writeInt4(handle);
         payload.writeInt8(id);
         payload.writeBuffer(data);

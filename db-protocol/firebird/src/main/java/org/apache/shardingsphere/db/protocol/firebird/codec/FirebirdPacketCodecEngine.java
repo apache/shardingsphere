@@ -47,7 +47,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         if (isValidHeader(in.readableBytes())) {
             int type = in.getInt(in.readerIndex());
             FirebirdCommandPacketType commandPacketType = FirebirdCommandPacketType.valueOf(type);
-            if (commandPacketType == FirebirdCommandPacketType.OP_ALLOCATE_STATEMENT) {
+            if (commandPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
                 handleAllocateStatement(in, out);
                 return;
             }
