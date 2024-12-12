@@ -43,14 +43,14 @@ import java.util.Map;
 @HighFrequencyInvocation
 public final class ShadowDMLStatementDataSourceMappingsRetriever implements ShadowDataSourceMappingsRetriever {
     
-    private final Map<String, String> tableAliasNameMap;
+    private final Collection<String> tableNames;
     
     private final ShadowTableHintDataSourceMappingsRetriever tableHintDataSourceMappingsRetriever;
     
     private final ShadowColumnDataSourceMappingsRetriever shadowColumnDataSourceMappingsRetriever;
     
     public ShadowDMLStatementDataSourceMappingsRetriever(final QueryContext queryContext, final ShadowOperationType operationType) {
-        tableAliasNameMap = ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableAliasNameMap();
+        tableNames = ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames();
         tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, queryContext.getHintValueContext().isShadow());
         shadowColumnDataSourceMappingsRetriever = createShadowDataSourceMappingsRetriever(queryContext);
     }
@@ -73,7 +73,7 @@ public final class ShadowDMLStatementDataSourceMappingsRetriever implements Shad
     
     @Override
     public Map<String, String> retrieve(final ShadowRule rule) {
-        Collection<String> shadowTables = rule.filterShadowTables(tableAliasNameMap.values());
+        Collection<String> shadowTables = rule.filterShadowTables(tableNames);
         Map<String, String> result = tableHintDataSourceMappingsRetriever.retrieve(rule, shadowTables);
         return result.isEmpty() && null != shadowColumnDataSourceMappingsRetriever ? shadowColumnDataSourceMappingsRetriever.retrieve(rule, shadowTables) : result;
     }

@@ -38,7 +38,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public AlterViewStatementContext(final AlterViewStatement sqlStatement, final String currentDatabaseName) {
+    public AlterViewStatementContext(final AlterViewStatement sqlStatement) {
         super(sqlStatement);
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
@@ -49,7 +49,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
             tables.addAll(extractor.getRewriteTables());
         });
         sqlStatement.getRenameView().ifPresent(tables::add);
-        tablesContext = new TablesContext(tables, getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(tables);
     }
     
     @Override

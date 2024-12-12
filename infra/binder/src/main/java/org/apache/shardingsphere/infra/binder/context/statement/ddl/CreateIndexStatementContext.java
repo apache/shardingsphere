@@ -42,9 +42,9 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     
     private final boolean generatedIndex;
     
-    public CreateIndexStatementContext(final CreateIndexStatement sqlStatement, final String currentDatabaseName) {
+    public CreateIndexStatementContext(final CreateIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTable());
         generatedIndex = null == sqlStatement.getIndex();
     }
     

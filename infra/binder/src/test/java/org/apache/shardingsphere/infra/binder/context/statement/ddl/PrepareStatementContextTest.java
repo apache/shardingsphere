@@ -63,7 +63,7 @@ class PrepareStatementContextTest {
         sqlStatement.setInsert(getInsert());
         sqlStatement.setUpdate(getUpdate());
         sqlStatement.setDelete(getDelete());
-        PrepareStatementContext actual = new PrepareStatementContext(sqlStatement, "foo_db");
+        PrepareStatementContext actual = new PrepareStatementContext(sqlStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

@@ -47,7 +47,7 @@ class CreateFunctionStatementContextTest {
     }
     
     private void assertNewInstance(final CreateFunctionStatement createDatabaseStatement) {
-        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(createDatabaseStatement, "foo_db");
+        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(createDatabaseStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createDatabaseStatement));
     }

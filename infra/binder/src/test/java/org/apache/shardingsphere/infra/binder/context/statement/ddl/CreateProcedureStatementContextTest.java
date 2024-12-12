@@ -41,7 +41,7 @@ class CreateProcedureStatementContextTest {
     }
     
     private void assertNewInstance(final CreateProcedureStatement createProcedureStatement) {
-        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(createProcedureStatement, "foo_db");
+        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(createProcedureStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createProcedureStatement));
     }

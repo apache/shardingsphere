@@ -65,7 +65,7 @@ class DropTableStatementContextTest {
     }
     
     private void assertNewInstance(final DropTableStatement dropTableStatement) {
-        DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement, "foo_db");
+        DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement);
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         when(dropTableStatement.getTables()).thenReturn(Arrays.asList(table1, table2));

@@ -221,7 +221,7 @@ class SingleSQLRouterTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        return new QueryContext(new CreateTableStatementContext(createTableStatement, "foo_db"), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext,
+        return new QueryContext(new CreateTableStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext,
                 metaData);
     }
 }

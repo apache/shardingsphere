@@ -49,7 +49,7 @@ class AnalyzeTableStatementContextTest {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         analyzeTableStatement.getTables().addAll(Arrays.asList(table1, table2));
-        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement, "foo_db");
+        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

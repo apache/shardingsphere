@@ -57,7 +57,7 @@ class AlterIndexStatementContextTest {
     private void assertNewInstance(final AlterIndexStatement alterIndexStatement) {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_1")));
         when(alterIndexStatement.getIndex()).thenReturn(Optional.of(indexSegment));
-        AlterIndexStatementContext actual = new AlterIndexStatementContext(alterIndexStatement, "foo_db");
+        AlterIndexStatementContext actual = new AlterIndexStatementContext(alterIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterIndexStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.emptyList()));

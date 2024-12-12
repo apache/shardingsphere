@@ -67,7 +67,7 @@ class RevokeStatementContextTest {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
         revokeStatement.getTables().addAll(Arrays.asList(table1, table2));
-        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement, "foo_db");
+        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(revokeStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

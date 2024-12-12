@@ -120,7 +120,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, currentDatabaseName, tableSegments);
-        tablesContext = new TablesContext(tableSegments, subqueryContexts, getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(tableSegments, subqueryContexts);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(getDatabaseType()).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);

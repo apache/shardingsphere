@@ -65,7 +65,7 @@ class AlterViewStatementContextTest {
     }
     
     private void assertNewInstance(final AlterViewStatement alterViewStatement) {
-        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement, "foo_db");
+        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
         assertThat(actual.getTablesContext().getSimpleTables().size(), is(2));

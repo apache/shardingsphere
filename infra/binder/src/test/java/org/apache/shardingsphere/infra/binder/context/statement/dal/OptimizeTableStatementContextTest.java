@@ -37,7 +37,7 @@ class OptimizeTableStatementContextTest {
     void assertNewInstance() {
         MySQLOptimizeTableStatement sqlStatement = new MySQLOptimizeTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
-        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement, "foo_db");
+        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

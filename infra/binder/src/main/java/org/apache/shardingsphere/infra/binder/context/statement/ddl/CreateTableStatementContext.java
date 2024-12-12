@@ -42,9 +42,9 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public CreateTableStatementContext(final CreateTableStatement sqlStatement, final String currentDatabaseName) {
+    public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(getTables(sqlStatement));
     }
     
     private Collection<SimpleTableSegment> getTables(final CreateTableStatement sqlStatement) {

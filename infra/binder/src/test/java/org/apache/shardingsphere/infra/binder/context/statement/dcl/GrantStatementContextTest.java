@@ -67,7 +67,7 @@ class GrantStatementContextTest {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
         grantStatement.getTables().addAll(Arrays.asList(table1, table2));
-        GrantStatementContext actual = new GrantStatementContext(grantStatement, "foo_db");
+        GrantStatementContext actual = new GrantStatementContext(grantStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(grantStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

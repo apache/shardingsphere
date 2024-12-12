@@ -123,7 +123,7 @@ class EncryptOrderByItemSupportedCheckerTest {
         when(result.getOrderByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType, "foo_db"));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment)));
         return result;
     }
 }

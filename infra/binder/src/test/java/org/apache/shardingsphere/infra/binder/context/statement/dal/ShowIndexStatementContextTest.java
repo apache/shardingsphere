@@ -37,7 +37,7 @@ class ShowIndexStatementContextTest {
     void assertNewInstance() {
         MySQLShowIndexStatement sqlStatement = new MySQLShowIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        ShowIndexStatementContext actual = new ShowIndexStatementContext(sqlStatement, "foo_db");
+        ShowIndexStatementContext actual = new ShowIndexStatementContext(sqlStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

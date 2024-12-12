@@ -48,7 +48,7 @@ class CreateViewStatementContextTest {
         SimpleTableSegment view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
         createViewStatement.setView(view);
         createViewStatement.setSelect(mock(SelectStatement.class));
-        CreateViewStatementContext actual = new CreateViewStatementContext(createViewStatement, "foo_db");
+        CreateViewStatementContext actual = new CreateViewStatementContext(createViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }

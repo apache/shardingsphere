@@ -48,7 +48,7 @@ class DropViewStatementContextTest {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
         dropViewStatement.getViews().addAll(Arrays.asList(table1, table2));
-        DropViewStatementContext actual = new DropViewStatementContext(dropViewStatement, "foo_db");
+        DropViewStatementContext actual = new DropViewStatementContext(dropViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropViewStatement));
     }
