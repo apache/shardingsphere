@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecu
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
-import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacadeFactory;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -47,7 +46,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
@@ -91,21 +89,21 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ResultSet currentResultSet;
     
-    public ShardingSphereStatement(final ShardingSphereConnection connection, final String executorType) {
-        this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, executorType);
+    public ShardingSphereStatement(final ShardingSphereConnection connection) {
+        this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final String executorType) {
-        this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT, executorType);
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency) {
+        this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final String executorType) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         this.connection = connection;
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
         connection.getStatementManagers().add(statementManager);
-        driverExecutorFacade = TypedSPILoader.getService(DriverExecutorFacadeFactory.class, executorType).newInstance(connection, statementOption, statementManager, JDBCDriverType.STATEMENT);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT);
         batchStatementExecutor = new BatchStatementExecutor(this);
         statements = new LinkedList<>();
         usedDatabaseName = connection.getCurrentDatabaseName();
