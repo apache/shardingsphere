@@ -55,28 +55,30 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ModeConfiguration modeConfig = param.getModeConfiguration();
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
-        ClusterPersistRepository repository = getClusterPersistRepository(config);
-        repository.init(config, computeNodeInstanceContext);
+        ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
         LockContext<?> lockContext = new GlobalLockContext(new GlobalLockPersistService(repository));
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
-        registerOnline(computeNodeInstanceContext, param, result);
+        registerOnline(computeNodeInstanceContext, param, result, repository);
         return result;
     }
     
-    private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
+    private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         ShardingSpherePreconditions.checkNotNull(config, MissingRequiredClusterRepositoryConfigurationException::new);
-        return TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        ClusterPersistRepository result = TypedSPILoader.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        result.init(config, computeNodeInstanceContext);
+        return result;
     }
     
-    private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager,
+                                final ClusterPersistRepository repository) {
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         EventSubscriberRegistry eventSubscriberRegistry = new EventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
-        eventSubscriberRegistry.register(new ClusterDeliverEventSubscriberRegistry(contextManager).getSubscribers());
+        eventSubscriberRegistry.register(new ClusterDeliverEventSubscriberRegistry(repository).getSubscribers());
         eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry(contextManager).getSubscribers());
     }
     
