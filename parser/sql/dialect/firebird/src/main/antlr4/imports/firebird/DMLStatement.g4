@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : INSERT INTO? tableName (insertValuesClause | insertSelectClause)
+    : INSERT INTO? tableName (insertValuesClause | insertSelectClause) returningClause?
     ;
 
 insertValuesClause
@@ -199,4 +199,12 @@ variableList
 
 variableListClause
     : variableList (COMMA_ variableList)*
+    ;
+
+returningClause
+    : RETURNING targetList
+    ;
+
+targetList
+    : projection (COMMA_ projection)*
     ;
