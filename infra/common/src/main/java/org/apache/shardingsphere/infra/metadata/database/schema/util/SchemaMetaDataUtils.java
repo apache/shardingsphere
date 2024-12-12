@@ -137,7 +137,7 @@ public final class SchemaMetaDataUtils {
     private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
-        if (tableDataNodes.isEmpty()) {
+        if (tableDataNodes.isEmpty() && !material.getStorageUnits().isEmpty()) {
             addDataSourceTableGroups(material.getStorageUnits().keySet().iterator().next(), table, dataSourceTableGroups);
         } else {
             tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), each.getTableName(), dataSourceTableGroups));
