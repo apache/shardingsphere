@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.Create
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.persist.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 

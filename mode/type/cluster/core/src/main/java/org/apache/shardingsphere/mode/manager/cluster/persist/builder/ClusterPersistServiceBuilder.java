@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist;
+package org.apache.shardingsphere.mode.manager.cluster.persist.builder;
 
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;

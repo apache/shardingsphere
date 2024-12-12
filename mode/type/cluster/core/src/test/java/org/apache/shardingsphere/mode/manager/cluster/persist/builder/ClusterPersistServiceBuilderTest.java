@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist;
+package org.apache.shardingsphere.mode.manager.cluster.persist.builder;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -27,18 +29,18 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-class StandalonePersistServiceBuilderTest {
+class ClusterPersistServiceBuilderTest {
     
-    private final PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, "Standalone");
+    private final PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, "Cluster");
     
     @Test
     void assertBuildMetaDataManagerPersistService() {
         assertThat(persistServiceBuilder.buildMetaDataManagerPersistService(mock(PersistRepository.class), mock(MetaDataContextManager.class)),
-                instanceOf(StandaloneMetaDataManagerPersistService.class));
+                instanceOf(ClusterMetaDataManagerPersistService.class));
     }
     
     @Test
     void assertBuildProcessPersistService() {
-        assertThat(persistServiceBuilder.buildProcessPersistService(mock(PersistRepository.class)), instanceOf(StandaloneProcessPersistService.class));
+        assertThat(persistServiceBuilder.buildProcessPersistService(mock(PersistRepository.class)), instanceOf(ClusterProcessPersistService.class));
     }
 }
