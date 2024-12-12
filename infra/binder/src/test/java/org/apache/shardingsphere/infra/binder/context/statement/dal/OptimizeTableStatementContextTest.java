@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -36,7 +37,9 @@ class OptimizeTableStatementContextTest {
     @Test
     void assertNewInstance() {
         MySQLOptimizeTableStatement sqlStatement = new MySQLOptimizeTableStatement();
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        sqlStatement.getTables().add(new SimpleTableSegment(tableNameSegment));
         OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));

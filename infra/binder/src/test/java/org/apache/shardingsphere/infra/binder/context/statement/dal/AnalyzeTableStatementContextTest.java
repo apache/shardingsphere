@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
@@ -36,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class AnalyzeTableStatementContextTest {
     
     @Test
-    void assertMysqlNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(new MySQLAnalyzeTableStatement());
     }
     
@@ -46,8 +47,12 @@ class AnalyzeTableStatementContextTest {
     }
     
     private void assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
+        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
+        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
         analyzeTableStatement.getTables().addAll(Arrays.asList(table1, table2));
         AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));

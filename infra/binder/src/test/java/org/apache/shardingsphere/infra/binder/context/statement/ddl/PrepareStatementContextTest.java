@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
@@ -52,7 +53,9 @@ class PrepareStatementContextTest {
     
     @BeforeEach
     void setUp() {
-        table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        table = new SimpleTableSegment(tableNameSegment);
         column = new ColumnSegment(0, 0, new IdentifierValue("col_1"));
     }
     
