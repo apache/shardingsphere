@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -33,18 +33,17 @@ import java.util.Collections;
  * Firebird start transaction command executor
  */
 @RequiredArgsConstructor
-public final class FirebirdStartTransactionCommandExecutor implements CommandExecutor {
+public final class FirebirdRollbackTransactionCommandExecutor implements CommandExecutor {
     
-    private final FirebirdStartTransactionPacket packet;
+    private final FirebirdRollbackTransactionPacket packet;
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        connectionSession.setAutoCommit(packet.getAutocommit());
-        connectionSession.setReadOnly(packet.getReadOnly());
-        connectionSession.setIsolationLevel(packet.getIsolationLevel());
-        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession.getConnectionId());
-        FirebirdStatementIdGenerator.getInstance().registerTransaction(transactionId);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(transactionId));
+        if (!connectionSession.isAutoCommit()) {
+            BackendTransactionManager backendTransactionManager = new BackendTransactionManager(connectionSession.getDatabaseConnectionManager());
+            backendTransactionManager.rollback();
+        }
+        return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

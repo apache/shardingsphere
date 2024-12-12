@@ -25,6 +25,8 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdPrepareStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -55,6 +57,10 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdExecuteStatementPacket(payload);
             case OP_INFO_SQL:
                 return FirebirdSQLInfoPacketType.createPacket(payload);
+            case OP_COMMIT:
+                return new FirebirdCommitTransactionPacket(payload);
+            case OP_ROLLBACK:
+                return new FirebirdRollbackTransactionPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
