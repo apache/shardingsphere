@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Orde
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
@@ -53,8 +54,6 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Tabl
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ReturningClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TargetListContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
@@ -140,6 +139,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
+        return new ReturningSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ProjectionsSegment) visit(ctx.projections()));
     }
     
     @Override
@@ -494,15 +498,5 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         // add mergeWhenNotMatched and mergeWhenMatched part
         // add RETURNING part
         return result;
-    }
-
-    @Override
-    public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
-        TargetListContext targetList = ctx.targetList();
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(targetList.getStart().getStartIndex(), targetList.getStop().getStopIndex());
-        for (ProjectionContext projectionContext : targetList.projection()) {
-            projectionsSegment.getProjections().add((ProjectionSegment) visit(projectionContext));
-        }
-        return new ReturningSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), projectionsSegment);
     }
 }

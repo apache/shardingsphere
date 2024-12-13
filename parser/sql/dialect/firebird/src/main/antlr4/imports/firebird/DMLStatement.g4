@@ -31,6 +31,10 @@ insertSelectClause
     : columnNames? select
     ;
 
+returningClause
+    : RETURNING projections
+    ;
+
 update
     : UPDATE tableReferences setAssignmentsClause whereClause?
     ;
@@ -199,12 +203,4 @@ variableList
 
 variableListClause
     : variableList (COMMA_ variableList)*
-    ;
-
-returningClause
-    : RETURNING targetList
-    ;
-
-targetList
-    : projection (COMMA_ projection)*
     ;

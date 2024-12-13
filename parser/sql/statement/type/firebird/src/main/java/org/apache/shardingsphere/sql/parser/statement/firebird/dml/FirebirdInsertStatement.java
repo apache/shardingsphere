@@ -29,7 +29,9 @@ import java.util.Optional;
  */
 @Setter
 public final class FirebirdInsertStatement extends InsertStatement implements FirebirdStatement {
+    
     private ReturningSegment returningSegment;
+    
     @Override
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);
