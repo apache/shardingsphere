@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.deliver.datasource.qualified;
+package org.apache.shardingsphere.mode.event.deliver;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.util.event.DeliverEvent;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Qualified data source deleted event.
+ * Deliver event subscriber factory.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QualifiedDataSourceDeletedEvent implements DeliverEvent {
+@SingletonSPI
+public interface DeliverEventSubscriberFactory {
     
-    private final QualifiedDataSource qualifiedDataSource;
+    /**
+     * Create deliver event subscriber.
+     *
+     * @param repository cluster persist repository
+     * @param eventBusContext event bus context
+     * @return created event subscriber
+     */
+    EventSubscriber create(PersistRepository repository, EventBusContext eventBusContext);
 }
