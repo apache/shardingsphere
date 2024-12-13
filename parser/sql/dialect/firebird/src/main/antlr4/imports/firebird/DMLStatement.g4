@@ -36,7 +36,7 @@ returningClause
     ;
 
 update
-    : UPDATE tableReferences setAssignmentsClause whereClause?
+    : UPDATE tableReferences setAssignmentsClause whereClause? returningClause?
     ;
 
 assignment
