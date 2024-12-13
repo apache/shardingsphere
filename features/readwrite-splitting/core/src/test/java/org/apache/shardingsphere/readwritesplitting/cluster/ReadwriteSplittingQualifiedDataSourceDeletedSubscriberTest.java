@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.subscriber;
+package org.apache.shardingsphere.readwritesplitting.cluster;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.spi.PersistRepository;

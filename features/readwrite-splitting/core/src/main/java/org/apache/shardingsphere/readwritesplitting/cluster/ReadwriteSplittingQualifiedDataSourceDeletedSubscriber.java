@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.subscriber;
+package org.apache.shardingsphere.readwritesplitting.cluster;
 
-import lombok.Getter;
+import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.util.event.DeliverEvent;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Readwrite-splitting qualified data source deleted event.
+ * Readwrite-splitting qualified data source deleted subscriber.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ReadwriteSplittingQualifiedDataSourceDeletedEvent implements DeliverEvent {
+public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriber implements EventSubscriber {
     
-    private final QualifiedDataSource qualifiedDataSource;
+    private final PersistRepository repository;
+    
+    /**
+     * Delete qualified data source.
+     *
+     * @param event qualified data source deleted event
+     */
+    @Subscribe
+    public void delete(final ReadwriteSplittingQualifiedDataSourceDeletedEvent event) {
+        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
+    }
 }
