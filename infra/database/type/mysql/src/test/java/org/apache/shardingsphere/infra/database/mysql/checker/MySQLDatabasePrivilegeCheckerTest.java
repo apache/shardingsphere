@@ -56,7 +56,7 @@ class MySQLDatabasePrivilegeCheckerTest {
     }
     
     @Test
-    void assertCheckPrivilegeWithParticularSuccess() throws SQLException {
+    void assertCheckPipelinePrivilegeWithParticularSuccess() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
@@ -65,22 +65,22 @@ class MySQLDatabasePrivilegeCheckerTest {
     }
     
     @Test
-    void assertCheckPrivilegeWithAllSuccess() throws SQLException {
+    void assertCheckPipelinePrivilegeWithAllSuccess() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES CLIENT ON *.* TO '%'@'%'");
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
         new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.PIPELINE);
         verify(preparedStatement).executeQuery();
     }
     
     @Test
-    void assertCheckPrivilegeLackPrivileges() throws SQLException {
+    void assertCheckPipelinePrivilegeWithLackPrivileges() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         assertThrows(MissingRequiredPrivilegeException.class, () -> new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.PIPELINE));
     }
     
     @Test
-    void assertCheckPrivilegeFailure() throws SQLException {
+    void assertCheckPipelinePrivilegeFailure() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenThrow(new SQLException(""));
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.PIPELINE));
@@ -126,5 +126,51 @@ class MySQLDatabasePrivilegeCheckerTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
         when(resultSet.next()).thenThrow(new SQLException(""));
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.XA));
+    }
+    
+    @Test
+    void assertCheckSelectWithSelectPrivileges() throws SQLException {
+        when(dataSource.getConnection().getCatalog()).thenReturn("foo_db");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT SELECT ON *.* TO '%'@'%'");
+        new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.SELECT);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertCheckSelectWithSelectOnDatabasePrivileges() throws SQLException {
+        when(dataSource.getConnection().getCatalog()).thenReturn("foo_db");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT SELECT ON `FOO_DB`.* TO '%'@'%'");
+        new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.SELECT);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertCheckSelectWithAllPrivileges() throws SQLException {
+        when(dataSource.getConnection().getCatalog()).thenReturn("foo_db");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
+        new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.SELECT);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertCheckSelectWithAllPrivilegesOnDatabase() throws SQLException {
+        when(dataSource.getConnection().getCatalog()).thenReturn("foo_db");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON `FOO_DB`.* TO '%'@'%'");
+        new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.SELECT);
+        verify(preparedStatement).executeQuery();
+    }
+    
+    @Test
+    void assertCheckSelectWithLackPrivileges() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        assertThrows(MissingRequiredPrivilegeException.class, () -> new MySQLDatabasePrivilegeChecker().check(dataSource, PrivilegeCheckType.SELECT));
     }
 }

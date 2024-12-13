@@ -98,7 +98,8 @@ public final class MySQLDatabasePrivilegeChecker implements DialectDatabasePrivi
     }
     
     private String[][] getSelectRequiredPrivilege(final Connection connection) throws SQLException {
-        return new String[][]{{"ALL PRIVILEGES", "ON *.*"}, {"SELECT", "ON *.*"}, {"SELECT", String.format("ON `%s`.*", connection.getCatalog()).toUpperCase()}};
+        String onCatalog = String.format("ON `%s`.*", connection.getCatalog().toUpperCase());
+        return new String[][]{{"ALL PRIVILEGES", "ON *.*"}, {"SELECT", "ON *.*"}, {"ALL PRIVILEGES", onCatalog}, {"SELECT", onCatalog}};
     }
     
     private boolean matchPrivileges(final String grantedPrivileges, final String[][] requiredPrivileges) {
