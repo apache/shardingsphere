@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.cluster;
+package org.apache.shardingsphere.mode.event.deliver.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.infra.util.event.DeliverEvent;
 
 /**
- * Readwrite-splitting qualified data source deleted event.
+ * Qualified data source deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingQualifiedDataSourceDeletedEvent implements DeliverEvent {
+public final class QualifiedDataSourceDeletedEvent implements DeliverEvent {
     
     private final QualifiedDataSource qualifiedDataSource;
 }

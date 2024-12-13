@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.mode.event.deliver.pojo.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -37,7 +38,7 @@ public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriber implem
      * @param event qualified data source deleted event
      */
     @Subscribe
-    public void delete(final ReadwriteSplittingQualifiedDataSourceDeletedEvent event) {
+    public void delete(final QualifiedDataSourceDeletedEvent event) {
         repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }
