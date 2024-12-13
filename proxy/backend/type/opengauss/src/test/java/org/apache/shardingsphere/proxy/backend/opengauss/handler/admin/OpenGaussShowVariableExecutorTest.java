@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class OpenGaussShowVariableExecutorTest {
+class OpenGaussShowVariableExecutorTest {
     
     @Test
     void assertExecuteShowAll() throws SQLException {
