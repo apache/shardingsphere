@@ -190,5 +190,4 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
      */
     public void setReturningSegment(final ReturningSegment returningSegment) {
     }
-    
 }
