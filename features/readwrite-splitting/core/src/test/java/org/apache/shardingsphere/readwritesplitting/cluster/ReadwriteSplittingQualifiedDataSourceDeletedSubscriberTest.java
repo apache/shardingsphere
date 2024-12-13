@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.cluster;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.event.deliver.pojo.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberTest {
     
     @Test
     void assertDeleteStorageNodeDataSourceDataSourceState() {
-        subscriber.delete(new ReadwriteSplittingQualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db", "foo_group", "foo_ds")));
+        subscriber.delete(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db", "foo_group", "foo_ds")));
         verify(repository).delete("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds");
     }
 }
