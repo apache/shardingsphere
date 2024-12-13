@@ -30,7 +30,7 @@ public interface DeliverEventSubscriberFactory {
     
     /**
      * Create deliver event subscriber.
-     * 
+     *
      * @param repository cluster persist repository
      * @param eventBusContext event bus context
      * @return created event subscriber
