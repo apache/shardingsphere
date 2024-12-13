@@ -61,7 +61,7 @@ blobValue
     ;
 
 delete
-    : DELETE singleTableClause whereClause?
+    : DELETE singleTableClause whereClause? returningClause?
     ;
 
 singleTableClause
