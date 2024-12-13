@@ -36,9 +36,9 @@ public final class ShowIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public ShowIndexStatementContext(final ShowIndexStatement sqlStatement, final String currentDatabaseName) {
+    public ShowIndexStatementContext(final ShowIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

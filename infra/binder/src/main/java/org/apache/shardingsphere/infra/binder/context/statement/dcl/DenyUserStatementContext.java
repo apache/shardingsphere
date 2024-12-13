@@ -31,9 +31,9 @@ public final class DenyUserStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public DenyUserStatementContext(final DenyUserStatement sqlStatement, final String currentDatabaseName) {
+    public DenyUserStatementContext(final DenyUserStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

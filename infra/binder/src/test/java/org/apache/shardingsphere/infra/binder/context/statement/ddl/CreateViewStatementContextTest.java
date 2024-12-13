@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
@@ -45,10 +46,12 @@ class CreateViewStatementContextTest {
     }
     
     private void assertNewInstance(final CreateViewStatement createViewStatement) {
-        SimpleTableSegment view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("view"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment view = new SimpleTableSegment(tableNameSegment);
         createViewStatement.setView(view);
         createViewStatement.setSelect(mock(SelectStatement.class));
-        CreateViewStatementContext actual = new CreateViewStatementContext(createViewStatement, "foo_db");
+        CreateViewStatementContext actual = new CreateViewStatementContext(createViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }
