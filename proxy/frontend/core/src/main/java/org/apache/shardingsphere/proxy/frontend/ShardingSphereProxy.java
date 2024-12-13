@@ -54,6 +54,8 @@ public final class ShardingSphereProxy {
     
     private final EventLoopGroup workerGroup;
     
+    private boolean isClosed;
+    
     public ShardingSphereProxy() {
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
         workerGroup = getWorkerGroup();
@@ -157,10 +159,14 @@ public final class ShardingSphereProxy {
     /**
      * Close ShardingSphere-Proxy.
      */
-    public void close() {
+    public synchronized void close() {
+        if (isClosed) {
+            return;
+        }
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         BackendExecutorContext.getInstance().getExecutorEngine().close();
         ProxyContext.getInstance().getContextManager().close();
+        isClosed = true;
     }
 }
