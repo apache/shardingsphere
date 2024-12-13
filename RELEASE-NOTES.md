@@ -54,6 +54,7 @@
 1. Sharding: Fixes avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
 1. Encrypt: Fixes merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
 1. SQL Binder: Fixes the expression segment cannot find the outer table when binding - [#34015](https://github.com/apache/shardingsphere/pull/34015)
+1. Proxy: Fixes "ALL PRIVILEGES ON `DB`.*" is not recognized during SELECT privilege verification for MySQL - [#34037](https://github.com/apache/shardingsphere/pull/34037)
 
 ### Change Logs
 
