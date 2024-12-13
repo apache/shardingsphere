@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.subscriber.DeliverEventSubscriberFactory;
+import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriberFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
