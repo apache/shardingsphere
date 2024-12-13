@@ -17,27 +17,18 @@
 
 package org.apache.shardingsphere.readwritesplitting.subscriber;
 
-import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriberFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Qualified data source deleted subscriber.
+ * Readwrite-splitting qualified data source deleted subscriber factory.
  */
-@RequiredArgsConstructor
-public final class QualifiedDataSourceDeletedSubscriber implements EventSubscriber {
+public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberFactory implements DeliverEventSubscriberFactory {
     
-    private final PersistRepository repository;
-    
-    /**
-     * Delete qualified data source.
-     *
-     * @param event qualified data source deleted event
-     */
-    @Subscribe
-    public void delete(final QualifiedDataSourceDeletedEvent event) {
-        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
+    @Override
+    public EventSubscriber create(final PersistRepository repository, final EventBusContext eventBusContext) {
+        return new ReadwriteSplittingQualifiedDataSourceDeletedSubscriber(repository);
     }
 }
