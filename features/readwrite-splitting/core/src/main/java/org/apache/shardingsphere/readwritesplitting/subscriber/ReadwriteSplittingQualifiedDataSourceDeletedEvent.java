@@ -17,32 +17,17 @@
 
 package org.apache.shardingsphere.readwritesplitting.subscriber;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.apache.shardingsphere.infra.util.event.DeliverEvent;
 
-import static org.mockito.Mockito.verify;
-
-@ExtendWith(MockitoExtension.class)
-class QualifiedDataSourceDeletedSubscriberTest {
+/**
+ * Readwrite-splitting qualified data source deleted event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReadwriteSplittingQualifiedDataSourceDeletedEvent implements DeliverEvent {
     
-    private QualifiedDataSourceDeletedSubscriber subscriber;
-    
-    @Mock
-    private PersistRepository repository;
-    
-    @BeforeEach
-    void setUp() {
-        subscriber = new QualifiedDataSourceDeletedSubscriber(repository);
-    }
-    
-    @Test
-    void assertDeleteStorageNodeDataSourceDataSourceState() {
-        subscriber.delete(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db", "foo_group", "foo_ds")));
-        verify(repository).delete("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds");
-    }
+    private final QualifiedDataSource qualifiedDataSource;
 }

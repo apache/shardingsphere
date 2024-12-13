@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.readwritesplitting.subscriber.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.readwritesplitting.subscriber.ReadwriteSplittingQualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
         ReadwriteSplittingStaticDataSourceRuleAttribute ruleAttribute = new ReadwriteSplittingStaticDataSourceRuleAttribute(
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSource("foo_group");
-        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new ReadwriteSplittingQualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
     
     @Test
@@ -87,6 +87,6 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
         ReadwriteSplittingStaticDataSourceRuleAttribute ruleAttribute = new ReadwriteSplittingStaticDataSourceRuleAttribute(
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSources();
-        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new ReadwriteSplittingQualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
 }
