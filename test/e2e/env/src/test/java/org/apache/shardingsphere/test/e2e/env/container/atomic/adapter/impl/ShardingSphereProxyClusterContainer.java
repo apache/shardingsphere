@@ -79,14 +79,10 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
             setPortBindings(config.getPortBindings());
         }
         addEnv("TZ", "UTC");
-        mountConfigurationFiles();
+        mountConfigurationFiles(config.getMountedResources());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
-    }
-    
-    private void mountConfigurationFiles() {
-        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

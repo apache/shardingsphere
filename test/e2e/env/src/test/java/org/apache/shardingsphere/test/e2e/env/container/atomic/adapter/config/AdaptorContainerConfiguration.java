@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * Adaptor container configuration.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public final class AdaptorContainerConfiguration {
     
@@ -34,7 +35,8 @@ public final class AdaptorContainerConfiguration {
     
     private final List<String> portBindings;
     
-    private final Map<String, String> mountedResources;
+    @Setter
+    private Map<String, String> mountedResources;
     
     private final String adapterContainerImage;
     

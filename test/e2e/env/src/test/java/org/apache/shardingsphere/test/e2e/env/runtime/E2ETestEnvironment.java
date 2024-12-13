@@ -19,14 +19,17 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * E2E test environment.
@@ -46,6 +49,8 @@ public final class E2ETestEnvironment {
     
     private final boolean smoke;
     
+    private final Map<String, String> placeholderAndReplacementsMap;
+    
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
@@ -54,6 +59,8 @@ public final class E2ETestEnvironment {
         scenarios = getScenarios(props);
         smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
         clusterEnvironment = new ClusterEnvironment(props);
+        placeholderAndReplacementsMap = props.entrySet().stream().filter(entry -> entry.getKey().toString().startsWith("it.placeholder."))
+                .collect(Collectors.toMap(entry -> "${" + StringUtils.removeStart(String.valueOf(entry.getKey()), "it.placeholder.") + "}", entry -> String.valueOf(entry.getValue())));
     }
     
     @SuppressWarnings("AccessOfSystemProperties")
