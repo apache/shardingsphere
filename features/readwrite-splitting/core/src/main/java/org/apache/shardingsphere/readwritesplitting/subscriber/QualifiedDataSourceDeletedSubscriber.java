@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber.type;
+package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Deliver data source status subscriber.
+ * Qualified data source deleted subscriber.
  */
 @RequiredArgsConstructor
-public final class DeliverQualifiedDataSourceSubscriber implements EventSubscriber {
+public final class QualifiedDataSourceDeletedSubscriber implements EventSubscriber {
     
-    private final ClusterPersistRepository repository;
+    private final PersistRepository repository;
     
     /**
      * Delete qualified data source.

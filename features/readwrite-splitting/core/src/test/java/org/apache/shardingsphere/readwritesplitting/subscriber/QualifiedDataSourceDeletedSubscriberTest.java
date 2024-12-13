@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.deliver.subscriber.type;
+package org.apache.shardingsphere.readwritesplitting.subscriber;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,16 +28,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class DeliverQualifiedDataSourceSubscriberTest {
+class QualifiedDataSourceDeletedSubscriberTest {
     
-    private DeliverQualifiedDataSourceSubscriber subscriber;
+    private QualifiedDataSourceDeletedSubscriber subscriber;
     
     @Mock
-    private ClusterPersistRepository repository;
+    private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        subscriber = new DeliverQualifiedDataSourceSubscriber(repository);
+        subscriber = new QualifiedDataSourceDeletedSubscriber(repository);
     }
     
     @Test
