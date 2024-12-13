@@ -2337,4 +2337,63 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_returning_expressions" parameters="1, 2, 3">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="37" literal-stop-index="37">
+            <assignment start-index="19" stop-index="37" literal-stop-index="37">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <binary-operation-expression start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37">
+                        <left>
+                            <column name="status" start-index="28" stop-index="33" literal-start-index="28" literal-stop-index="33" />
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <literal-expression value="1" start-index="37" stop-index="37" />
+                            <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" literal-start-index="37" literal-stop-index="37" />
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="39" stop-index="72">
+            <expr>
+                <binary-operation-expression start-index="45" stop-index="72">
+                    <left>
+                        <binary-operation-expression start-index="45" stop-index="56">
+                            <left>
+                                <column name="order_id" start-index="45" stop-index="52" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="2" start-index="56" stop-index="56" />
+                                <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="62" stop-index="72">
+                            <left>
+                                <column name="user_id" start-index="62" stop-index="68" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="3" start-index="72" stop-index="72" />
+                                <parameter-marker-expression parameter-index="2" start-index="72" stop-index="72" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <returning start-index="74" stop-index="89">
+            <projections start-index="84" stop-index="89">
+                <column-projection name="status" start-index="84" stop-index="89" />
+            </projections>
+        </returning>
+    </update>
 </sql-parser-test-cases>

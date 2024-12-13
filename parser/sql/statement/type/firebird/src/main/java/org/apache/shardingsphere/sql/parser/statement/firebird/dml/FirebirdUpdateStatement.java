@@ -17,11 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.statement.firebird.dml;
 
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.firebird.FirebirdStatement;
+
+import java.util.Optional;
 
 /**
  * Firebird update statement.
  */
+@Setter
 public final class FirebirdUpdateStatement extends UpdateStatement implements FirebirdStatement {
+    
+    private ReturningSegment returningSegment;
+    
+    @Override
+    public Optional<ReturningSegment> getReturningSegment() {
+        return Optional.ofNullable(returningSegment);
+    }
 }

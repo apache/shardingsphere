@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : INSERT INTO? tableName (insertValuesClause | insertSelectClause)
+    : INSERT INTO? tableName (insertValuesClause | insertSelectClause) returningClause?
     ;
 
 insertValuesClause
@@ -31,8 +31,12 @@ insertSelectClause
     : columnNames? select
     ;
 
+returningClause
+    : RETURNING projections
+    ;
+
 update
-    : UPDATE tableReferences setAssignmentsClause whereClause?
+    : UPDATE tableReferences setAssignmentsClause whereClause? returningClause?
     ;
 
 assignment
@@ -57,7 +61,7 @@ blobValue
     ;
 
 delete
-    : DELETE singleTableClause whereClause?
+    : DELETE singleTableClause whereClause? returningClause?
     ;
 
 singleTableClause
