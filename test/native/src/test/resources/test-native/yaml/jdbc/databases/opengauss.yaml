@@ -21,19 +21,19 @@ dataSources:
     driverClassName: org.opengauss.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.opengauss.ds0.jdbc-url::}
     username: gaussdb
-    password: openGauss@123
+    password: Enmo@123
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.opengauss.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.opengauss.ds1.jdbc-url::}
     username: gaussdb
-    password: openGauss@123
+    password: Enmo@123
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.opengauss.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.opengauss.ds2.jdbc-url::}
     username: gaussdb
-    password: openGauss@123
+    password: Enmo@123
 
 rules:
   - !SHARDING
