@@ -61,8 +61,7 @@ class RuleConfigurationChangedEventBuilderTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertBuild(final String name, final String eventKey, final String eventValue, final DataChangedEvent.Type type,
-                     final boolean isEventPresent, final Class<? extends DispatchEvent> dispatchEventClass) {
+    void assertBuild(final String name, final String eventKey, final String eventValue, final Type type, final boolean isEventPresent, final Class<? extends DispatchEvent> dispatchEventClass) {
         RuleNodePathProvider ruleNodePathProvider = mock(RuleNodePathProvider.class, RETURNS_DEEP_STUBS);
         when(ruleNodePathProvider.getRuleNodePath()).thenReturn(new RuleNodePath("fixture", Collections.singleton("named"), Collections.singleton("unique")));
         when(ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)).thenReturn(Collections.singleton(ruleNodePathProvider));
