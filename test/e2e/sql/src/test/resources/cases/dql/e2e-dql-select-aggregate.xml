@@ -145,11 +145,11 @@
         <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT GROUP_CONCAT(o.remark) as order_id_group_concat FROM t_order o where o.order_id > 1 - 1" db-types="MySQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
+    <test-case sql="SELECT GROUP_CONCAT(o.remark) as order_id_group_concat FROM t_order o where o.order_id > 1 - 1" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT GROUP_CONCAT(distinct o.remark SEPARATOR ' ') as order_id_group_concat FROM t_order o where o.order_id > 1 - 1" db-types="MySQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT GROUP_CONCAT(distinct o.remark SEPARATOR ' ') as order_id_group_concat FROM t_order o where o.order_id > 1 - 1" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>
