@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.datasource.unit;
+package org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
- * Add data source unit event.
+ * View dropped event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterStorageUnitEvent implements DispatchEvent {
+public final class ViewDroppedEvent implements DispatchEvent {
     
     private final String databaseName;
     
-    private final String storageUnitName;
+    private final String schemaName;
+    
+    private final String viewName;
     
     private final String activeVersionKey;
     

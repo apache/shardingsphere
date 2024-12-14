@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableDroppedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewDroppedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,13 +79,13 @@ class MetaDataChangedSubscriberTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
-        subscriber.renew(new CreateOrAlterTableEvent("foo_db", "foo_schema", "foo_tbl", "key", "value"));
+        subscriber.renew(new TableCreatedOrAlteredEvent("foo_db", "foo_schema", "foo_tbl", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
     }
     
     @Test
     void assertRenewWithDropTableEvent() {
-        subscriber.renew(new DropTableEvent("foo_db", "foo_schema", "foo_tbl"));
+        subscriber.renew(new TableDroppedEvent("foo_db", "foo_schema", "foo_tbl"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", "foo_tbl", null);
     }
     
@@ -95,13 +95,13 @@ class MetaDataChangedSubscriberTest {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
-        subscriber.renew(new CreateOrAlterViewEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
+        subscriber.renew(new ViewCreatedOrAlteredEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
     }
     
     @Test
     void assertRenewWithDropViewEvent() {
-        subscriber.renew(new DropViewEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
+        subscriber.renew(new ViewDroppedEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, "foo_view");
     }
 }

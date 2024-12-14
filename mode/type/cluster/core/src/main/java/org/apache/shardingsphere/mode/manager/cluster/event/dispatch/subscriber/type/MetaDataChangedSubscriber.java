@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableDroppedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewDroppedEvent;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
@@ -77,7 +77,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      * @param event create or alter table event
      */
     @Subscribe
-    public synchronized void renew(final CreateOrAlterTableEvent event) {
+    public synchronized void renew(final TableCreatedOrAlteredEvent event) {
         Preconditions.checkArgument(event.getActiveVersion().equals(
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
@@ -93,7 +93,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      * @param event drop table event
      */
     @Subscribe
-    public synchronized void renew(final DropTableEvent event) {
+    public synchronized void renew(final TableDroppedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
         refreshShardingSphereStatisticsData();
     }
@@ -104,7 +104,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      * @param event create or alter view event
      */
     @Subscribe
-    public synchronized void renew(final CreateOrAlterViewEvent event) {
+    public synchronized void renew(final ViewCreatedOrAlteredEvent event) {
         Preconditions.checkArgument(event.getActiveVersion().equals(
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", event.getActiveVersion(), event.getActiveVersionKey());
@@ -120,7 +120,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
      * @param event drop view event
      */
     @Subscribe
-    public synchronized void renew(final DropViewEvent event) {
+    public synchronized void renew(final ViewDroppedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
         refreshShardingSphereStatisticsData();
     }

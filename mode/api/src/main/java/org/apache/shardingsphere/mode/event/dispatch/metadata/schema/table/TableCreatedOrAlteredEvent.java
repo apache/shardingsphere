@@ -22,15 +22,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
- * Drop table event.
+ * Table created or altered event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropTableEvent implements DispatchEvent {
+public final class TableCreatedOrAlteredEvent implements DispatchEvent {
     
     private final String databaseName;
     
     private final String schemaName;
     
     private final String tableName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
