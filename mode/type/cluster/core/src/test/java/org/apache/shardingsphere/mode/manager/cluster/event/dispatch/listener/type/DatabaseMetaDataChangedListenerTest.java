@@ -78,7 +78,7 @@ class DatabaseMetaDataChangedListenerTest {
     private void setMockedBuilder() {
         RuleConfigurationEventBuilder builder = mock(RuleConfigurationEventBuilder.class);
         when(builder.build(eq("foo_db"), any(DataChangedEvent.class))).thenReturn(Optional.of(new AlterUniqueRuleItemEvent("foo_db", "key", "value", "type")));
-        Plugins.getMemberAccessor().set(DatabaseMetaDataChangedListener.class.getDeclaredField("builder"), listener, builder);
+        Plugins.getMemberAccessor().set(DatabaseMetaDataChangedListener.class.getDeclaredField("eventBuilder"), listener, builder);
     }
     
     @ParameterizedTest(name = "{0}")
