@@ -46,7 +46,7 @@ public final class MetaDataChangedEventBuilder {
     
     /**
      * Build meta data changed event.
-     * 
+     *
      * @param databaseName database name
      * @param event data changed event
      * @return built event

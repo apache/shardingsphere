@@ -34,10 +34,10 @@ import static org.mockito.Mockito.verify;
 class DatabaseMetaDataChangedListenerTest {
     
     private DatabaseMetaDataChangedListener listener;
-
+    
     @Mock
     private EventBusContext eventBusContext;
-
+    
     @BeforeEach
     void setUp() {
         listener = new DatabaseMetaDataChangedListener(eventBusContext);
