@@ -36,16 +36,16 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Rule configuration event builder.
+ * Rule configuration changed event builder.
  */
-public final class RuleConfigurationEventBuilder {
+public final class RuleConfigurationChangedEventBuilder {
     
     /**
      * Build rule changed event.
      *
      * @param databaseName database name
      * @param event data changed event
-     * @return rule changed event
+     * @return built event
      */
     public Optional<DispatchEvent> build(final String databaseName, final DataChangedEvent event) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {

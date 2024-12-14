@@ -51,12 +51,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereServiceLoader.class)
-class RuleConfigurationEventBuilderTest {
+class RuleConfigurationChangedEventBuilderTest {
     
     @Test
     void assertBuildWithoutRuleNodePathProvider() {
         when(ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)).thenReturn(Collections.emptyList());
-        assertFalse(new RuleConfigurationEventBuilder().build("foo_db", new DataChangedEvent("k", "v", Type.IGNORED)).isPresent());
+        assertFalse(new RuleConfigurationChangedEventBuilder().build("foo_db", new DataChangedEvent("k", "v", Type.IGNORED)).isPresent());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -66,7 +66,7 @@ class RuleConfigurationEventBuilderTest {
         RuleNodePathProvider ruleNodePathProvider = mock(RuleNodePathProvider.class, RETURNS_DEEP_STUBS);
         when(ruleNodePathProvider.getRuleNodePath()).thenReturn(new RuleNodePath("fixture", Collections.singleton("named"), Collections.singleton("unique")));
         when(ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)).thenReturn(Collections.singleton(ruleNodePathProvider));
-        Optional<DispatchEvent> actual = new RuleConfigurationEventBuilder().build("foo_db", new DataChangedEvent(eventKey, eventValue, type));
+        Optional<DispatchEvent> actual = new RuleConfigurationChangedEventBuilder().build("foo_db", new DataChangedEvent(eventKey, eventValue, type));
         assertThat(actual.isPresent(), is(isEventPresent));
         if (actual.isPresent()) {
             if (dispatchEventClass == AlterNamedRuleItemEvent.class) {

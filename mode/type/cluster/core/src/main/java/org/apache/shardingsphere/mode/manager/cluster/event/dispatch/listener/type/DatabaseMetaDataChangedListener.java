@@ -25,7 +25,7 @@ import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNod
 import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.AlterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.RegisterStorageNodeEvent;
@@ -51,7 +51,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     private final EventBusContext eventBusContext;
     
-    private final RuleConfigurationEventBuilder eventBuilder = new RuleConfigurationEventBuilder();
+    private final RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = new RuleConfigurationChangedEventBuilder();
     
     @Override
     public void onChange(final DataChangedEvent event) {
@@ -78,7 +78,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         if (DataSourceMetaDataNode.isDataSourcesNode(key)) {
             return createDataSourceChangedEvent(databaseName.get(), event);
         }
-        return eventBuilder.build(databaseName.get(), event);
+        return ruleConfigChangedEventBuilder.build(databaseName.get(), event);
     }
     
     private Optional<DispatchEvent> createSchemaChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
