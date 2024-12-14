@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
@@ -173,9 +173,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
-        RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
-        when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
-        setRuleConfigurationEventBuilder(ruleConfigurationEventBuilder);
+        RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = mock(RuleConfigurationChangedEventBuilder.class);
+        when(ruleConfigChangedEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
+        setRuleConfigurationEventBuilder(ruleConfigChangedEventBuilder);
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
         verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(metaDataVersion);
         verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(event);
@@ -192,10 +192,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistService.getDatabaseRulePersistService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
-        RuleConfigurationEventBuilder ruleConfigurationEventBuilder = mock(RuleConfigurationEventBuilder.class);
+        RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = mock(RuleConfigurationChangedEventBuilder.class);
         DropRuleItemEvent event = mock(DropRuleItemEvent.class);
-        when(ruleConfigurationEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
-        setRuleConfigurationEventBuilder(ruleConfigurationEventBuilder);
+        when(ruleConfigChangedEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
+        setRuleConfigurationEventBuilder(ruleConfigChangedEventBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
         verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(event);
     }
@@ -236,7 +236,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setRuleConfigurationEventBuilder(final RuleConfigurationEventBuilder ruleConfigurationEventBuilder) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
+    private void setRuleConfigurationEventBuilder(final RuleConfigurationChangedEventBuilder ruleConfigurationEventBuilder) {
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigChangedEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
     }
 }

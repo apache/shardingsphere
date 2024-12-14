@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.AlterStorageNodeEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.node.RegisterStorageNodeEvent;
@@ -76,9 +76,9 @@ class DatabaseMetaDataChangedListenerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setMockedBuilder() {
-        RuleConfigurationEventBuilder builder = mock(RuleConfigurationEventBuilder.class);
-        when(builder.build(eq("foo_db"), any(DataChangedEvent.class))).thenReturn(Optional.of(new AlterUniqueRuleItemEvent("foo_db", "key", "value", "type")));
-        Plugins.getMemberAccessor().set(DatabaseMetaDataChangedListener.class.getDeclaredField("eventBuilder"), listener, builder);
+        RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = mock(RuleConfigurationChangedEventBuilder.class);
+        when(ruleConfigChangedEventBuilder.build(eq("foo_db"), any(DataChangedEvent.class))).thenReturn(Optional.of(new AlterUniqueRuleItemEvent("foo_db", "key", "value", "type")));
+        Plugins.getMemberAccessor().set(DatabaseMetaDataChangedListener.class.getDeclaredField("ruleConfigChangedEventBuilder"), listener, ruleConfigChangedEventBuilder);
     }
     
     @ParameterizedTest(name = "{0}")

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
  */
 public final class StandaloneMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
-    private final RuleConfigurationEventBuilder ruleConfigEventBuilder = new RuleConfigurationEventBuilder();
+    private final RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = new RuleConfigurationChangedEventBuilder();
     
     private final MetaDataPersistService metaDataPersistService;
     
@@ -302,7 +302,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private Optional<DispatchEvent> buildAlterRuleItemEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
-        return ruleConfigEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type));
+        return ruleConfigChangedEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type));
     }
     
     @Override
