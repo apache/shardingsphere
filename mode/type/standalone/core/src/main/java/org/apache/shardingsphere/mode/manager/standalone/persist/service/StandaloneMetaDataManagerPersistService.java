@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
  */
 public final class StandaloneMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
-    private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
+    private final RuleConfigurationEventBuilder ruleConfigEventBuilder = new RuleConfigurationEventBuilder();
     
     private final MetaDataPersistService metaDataPersistService;
     
@@ -302,7 +302,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private Optional<DispatchEvent> buildAlterRuleItemEvent(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
-        return ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type));
+        return ruleConfigEventBuilder.build(databaseName, new DataChangedEvent(metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type));
     }
     
     @Override
