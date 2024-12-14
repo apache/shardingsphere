@@ -31,12 +31,12 @@ public final class GlobalMetaDataChangedListener implements DataChangedEventList
     
     private final EventBusContext eventBusContext;
     
-    private final DispatchEventBuilder<?> builder;
+    private final DispatchEventBuilder<?> eventBuilder;
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        if (builder.getSubscribedTypes().contains(event.getType())) {
-            builder.build(event).ifPresent(eventBusContext::post);
+        if (eventBuilder.getSubscribedTypes().contains(event.getType())) {
+            eventBuilder.build(event).ifPresent(eventBusContext::post);
         }
     }
 }
