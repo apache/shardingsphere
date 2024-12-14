@@ -27,18 +27,18 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.node.AlterStorageNodeEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.node.RegisterStorageNodeEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.node.UnregisterStorageNodeEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.StorageNodeAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.StorageNodeRegisteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.node.StorageNodeUnregisteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitRegisteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitUnregisteredEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.CreateOrAlterTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.DropTableEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.CreateOrAlterViewEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.DropViewEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableDroppedEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewCreatedOrAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewDroppedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Optional;
@@ -100,11 +100,11 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     private Optional<DispatchEvent> createTableChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
             String tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
-            return Optional.of(new CreateOrAlterTableEvent(databaseName, schemaName, tableName, event.getKey(), event.getValue()));
+            return Optional.of(new TableCreatedOrAlteredEvent(databaseName, schemaName, tableName, event.getKey(), event.getValue()));
         }
         if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
             String tableName = TableMetaDataNode.getTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
-            return Optional.of(new DropTableEvent(databaseName, schemaName, tableName));
+            return Optional.of(new TableDroppedEvent(databaseName, schemaName, tableName));
         }
         return Optional.empty();
     }
@@ -116,11 +116,11 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     private Optional<DispatchEvent> createViewChangedEvent(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
             String viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-            return Optional.of(new CreateOrAlterViewEvent(databaseName, schemaName, viewName, event.getKey(), event.getValue()));
+            return Optional.of(new ViewCreatedOrAlteredEvent(databaseName, schemaName, viewName, event.getKey(), event.getValue()));
         }
         if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
             String viewName = ViewMetaDataNode.getViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-            return Optional.of(new DropViewEvent(databaseName, schemaName, viewName, event.getKey(), event.getValue()));
+            return Optional.of(new ViewDroppedEvent(databaseName, schemaName, viewName, event.getKey(), event.getValue()));
         }
         return Optional.empty();
     }
@@ -139,15 +139,15 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         Optional<String> dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitActiveVersionNode(event.getKey());
         if (dataSourceUnitName.isPresent()) {
             if (Type.ADDED == event.getType()) {
-                return Optional.of(new RegisterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+                return Optional.of(new StorageUnitRegisteredEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
             }
             if (Type.UPDATED == event.getType()) {
-                return Optional.of(new AlterStorageUnitEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
+                return Optional.of(new StorageUnitAlteredEvent(databaseName, dataSourceUnitName.get(), event.getKey(), event.getValue()));
             }
         }
         dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceUnitName.isPresent()) {
-            return Optional.of(new UnregisterStorageUnitEvent(databaseName, dataSourceUnitName.get()));
+            return Optional.of(new StorageUnitUnregisteredEvent(databaseName, dataSourceUnitName.get()));
         }
         return Optional.empty();
     }
@@ -156,15 +156,15 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         Optional<String> dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeActiveVersionNode(event.getKey());
         if (dataSourceNodeName.isPresent()) {
             if (Type.ADDED == event.getType()) {
-                return Optional.of(new RegisterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+                return Optional.of(new StorageNodeRegisteredEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
             }
             if (Type.UPDATED == event.getType()) {
-                return Optional.of(new AlterStorageNodeEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
+                return Optional.of(new StorageNodeAlteredEvent(databaseName, dataSourceNodeName.get(), event.getKey(), event.getValue()));
             }
         }
         dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeNode(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceNodeName.isPresent()) {
-            return Optional.of(new UnregisterStorageNodeEvent(databaseName, dataSourceNodeName.get()));
+            return Optional.of(new StorageNodeUnregisteredEvent(databaseName, dataSourceNodeName.get()));
         }
         return Optional.empty();
     }

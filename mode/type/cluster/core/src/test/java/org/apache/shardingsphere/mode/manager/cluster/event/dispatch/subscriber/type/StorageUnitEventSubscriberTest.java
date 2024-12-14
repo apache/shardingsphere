@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.AlterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.RegisterStorageUnitEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.UnregisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitAlteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitRegisteredEvent;
+import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitUnregisteredEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class StorageUnitEventSubscriberTest {
     void assertRenewWithRegisterStorageUnitEvent() {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
-        subscriber.renew(new RegisterStorageUnitEvent("foo_db", "foo_unit", "key", "value"));
+        subscriber.renew(new StorageUnitRegisteredEvent("foo_db", "foo_unit", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).registerStorageUnit(eq("foo_db"), any());
     }
     
@@ -60,14 +60,14 @@ class StorageUnitEventSubscriberTest {
     void assertRenewWithAlterStorageUnitEvent() {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
-        subscriber.renew(new AlterStorageUnitEvent("foo_db", "foo_unit", "key", "value"));
+        subscriber.renew(new StorageUnitAlteredEvent("foo_db", "foo_unit", "key", "value"));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alterStorageUnit(eq("foo_db"), any());
     }
     
     @Test
     void assertRenewWithUnregisterStorageUnitEvent() {
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        subscriber.renew(new UnregisterStorageUnitEvent("foo_db", "foo_unit"));
+        subscriber.renew(new StorageUnitUnregisteredEvent("foo_db", "foo_unit"));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).unregisterStorageUnit("foo_db", "foo_unit");
     }
 }

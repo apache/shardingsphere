@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.datasource.unit;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.node;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
- * Add data source unit event.
+ * Storage node unregistered event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterStorageUnitEvent implements DispatchEvent {
+public final class StorageNodeUnregisteredEvent implements DispatchEvent {
     
     private final String databaseName;
     
-    private final String storageUnitName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
+    private final String storageNodeName;
 }

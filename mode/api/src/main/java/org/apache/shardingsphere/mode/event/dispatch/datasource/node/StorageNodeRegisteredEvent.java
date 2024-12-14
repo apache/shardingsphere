@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table;
+package org.apache.shardingsphere.mode.event.dispatch.datasource.node;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
- * Create or alter table event.
+ * Storage node registered event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateOrAlterTableEvent implements DispatchEvent {
+public final class StorageNodeRegisteredEvent implements DispatchEvent {
     
     private final String databaseName;
     
-    private final String schemaName;
-    
-    private final String tableName;
+    private final String storageNodeName;
     
     private final String activeVersionKey;
     

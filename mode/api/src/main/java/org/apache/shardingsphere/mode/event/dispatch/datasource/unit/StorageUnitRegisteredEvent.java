@@ -22,13 +22,17 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 
 /**
- * Add data source unit event.
+ * Storage unit registered event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnregisterStorageUnitEvent implements DispatchEvent {
+public final class StorageUnitRegisteredEvent implements DispatchEvent {
     
     private final String databaseName;
     
     private final String storageUnitName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
 }
