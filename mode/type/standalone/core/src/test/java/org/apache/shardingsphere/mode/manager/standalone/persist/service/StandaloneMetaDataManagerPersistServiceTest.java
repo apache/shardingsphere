@@ -237,6 +237,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRuleConfigurationEventBuilder(final RuleConfigurationEventBuilder ruleConfigurationEventBuilder) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigurationEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
     }
 }
