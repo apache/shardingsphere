@@ -29,7 +29,7 @@
     
     <modules>
         <module>migration</module>
-        <module>consistencycheck</module>
+        <module>consistency-check</module>
         <module>cdc</module>
     </modules>
 </project>
