@@ -34,10 +34,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
     
-    private final MetaDataChangedEventBuilder metaDataChangedEventBuilder = new MetaDataChangedEventBuilder();
-    
-    private final RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = new RuleConfigurationChangedEventBuilder();
-    
     private final EventBusContext eventBusContext;
     
     @Override
@@ -51,7 +47,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
-        Optional<DispatchEvent> metaDataChangedEvent = metaDataChangedEventBuilder.build(databaseName.get(), event);
-        return metaDataChangedEvent.isPresent() ? metaDataChangedEvent : ruleConfigChangedEventBuilder.build(databaseName.get(), event);
+        Optional<DispatchEvent> metaDataChangedEvent = new MetaDataChangedEventBuilder().build(databaseName.get(), event);
+        return metaDataChangedEvent.isPresent() ? metaDataChangedEvent : new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
     }
 }
