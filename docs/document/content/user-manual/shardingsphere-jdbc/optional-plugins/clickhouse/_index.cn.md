@@ -98,14 +98,20 @@ dataSources:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
+        username: default
+        password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
+        username: default
+        password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
+        username: default
+        password:
 rules:
 - !SHARDING
     tables:
@@ -305,14 +311,20 @@ dataSources:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0?transactionSupport=true
+        username: default
+        password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1?transactionSupport=true
+        username: default
+        password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
         jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2?transactionSupport=true
+        username: default
+        password:
 rules:
 - !SHARDING
     tables:
