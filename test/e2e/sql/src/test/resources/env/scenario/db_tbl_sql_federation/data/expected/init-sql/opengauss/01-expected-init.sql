@@ -16,7 +16,7 @@
 --
 
 DROP DATABASE IF EXISTS sql_federation;
-CREATE DATABASE sql_federation;
+CREATE DATABASE sql_federation DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE sql_federation TO test_user;
 

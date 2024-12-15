@@ -16,7 +16,7 @@
 --
 
 DROP DATABASE IF EXISTS write_dataset;
-CREATE DATABASE write_dataset;
+CREATE DATABASE write_dataset DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE write_dataset TO test_user;
 

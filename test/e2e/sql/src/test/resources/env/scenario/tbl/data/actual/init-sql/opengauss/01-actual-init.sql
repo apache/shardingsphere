@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE tbl;
+CREATE DATABASE tbl DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE tbl TO test_user;
 
