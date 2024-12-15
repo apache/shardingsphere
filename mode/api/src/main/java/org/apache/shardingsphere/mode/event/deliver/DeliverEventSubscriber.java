@@ -29,7 +29,7 @@ public interface DeliverEventSubscriber extends EventSubscriber {
     
     /**
      * Set persist repository.
-     * 
+     *
      * @param repository persist repository
      */
     void setRepository(PersistRepository repository);
