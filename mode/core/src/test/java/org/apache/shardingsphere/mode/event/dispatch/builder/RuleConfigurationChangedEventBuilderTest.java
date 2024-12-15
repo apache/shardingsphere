@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.builder;
+package org.apache.shardingsphere.mode.event.dispatch.builder;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
