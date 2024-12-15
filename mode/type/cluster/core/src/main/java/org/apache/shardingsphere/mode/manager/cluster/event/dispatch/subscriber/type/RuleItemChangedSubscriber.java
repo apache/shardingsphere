@@ -21,8 +21,9 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
+import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 
 import java.sql.SQLException;
 
@@ -30,9 +31,13 @@ import java.sql.SQLException;
  * Rule item changed subscriber.
  */
 @RequiredArgsConstructor
-public final class RuleItemChangedSubscriber implements EventSubscriber {
+public final class RuleItemChangedSubscriber implements DispatchEventSubscriber {
     
-    private final ContextManager contextManager;
+    private final RuleItemManager ruleItemManager;
+    
+    public RuleItemChangedSubscriber(final ContextManager contextManager) {
+        ruleItemManager = contextManager.getMetaDataContextManager().getRuleItemManager();
+    }
     
     /**
      * Renew with alter rule item.
@@ -42,7 +47,7 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void renew(final AlterRuleItemEvent event) throws SQLException {
-        contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(event);
+        ruleItemManager.alterRuleItem(event);
     }
     
     /**
@@ -53,6 +58,6 @@ public final class RuleItemChangedSubscriber implements EventSubscriber {
      */
     @Subscribe
     public void renew(final DropRuleItemEvent event) throws SQLException {
-        contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(event);
+        ruleItemManager.dropRuleItem(event);
     }
 }

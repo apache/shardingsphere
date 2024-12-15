@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.dispatch.state.cluster.ClusterStateEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 /**
  * State changed subscriber.
  */
-public final class StateChangedSubscriber implements EventSubscriber {
+@RequiredArgsConstructor
+public final class StateChangedSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
-    
-    public StateChangedSubscriber(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-    }
     
     /**
      * Renew cluster state.

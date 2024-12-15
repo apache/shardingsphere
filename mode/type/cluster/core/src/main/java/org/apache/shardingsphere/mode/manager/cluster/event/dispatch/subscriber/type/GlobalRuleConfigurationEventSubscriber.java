@@ -22,9 +22,9 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.dispatch.config.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ import java.util.Optional;
  * Global rule configuration event subscriber.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleConfigurationEventSubscriber implements EventSubscriber {
+public final class GlobalRuleConfigurationEventSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
     

@@ -18,23 +18,29 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 /**
  * Compute node state subscriber.
  */
-@RequiredArgsConstructor
-public final class ComputeNodeStateSubscriber implements EventSubscriber {
+public final class ComputeNodeStateSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
+    
+    private final ComputeNodeInstanceContext computeNodeInstanceContext;
+    
+    public ComputeNodeStateSubscriber(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
+    }
     
     /**
      * Renew instance list.
@@ -43,8 +49,7 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getComputeNodeInstanceContext().addComputeNodeInstance(
-                contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
+        computeNodeInstanceContext.addComputeNodeInstance(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -54,7 +59,7 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getComputeNodeInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
+        computeNodeInstanceContext.deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -64,7 +69,7 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ComputeNodeInstanceStateChangedEvent event) {
-        contextManager.getComputeNodeInstanceContext().updateStatus(event.getInstanceId(), event.getStatus());
+        computeNodeInstanceContext.updateStatus(event.getInstanceId(), event.getStatus());
     }
     
     /**
@@ -74,7 +79,7 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final WorkerIdEvent event) {
-        contextManager.getComputeNodeInstanceContext().updateWorkerId(event.getInstanceId(), event.getWorkerId());
+        computeNodeInstanceContext.updateWorkerId(event.getInstanceId(), event.getWorkerId());
     }
     
     /**
@@ -85,6 +90,6 @@ public final class ComputeNodeStateSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
         // TODO labels may be empty
-        contextManager.getComputeNodeInstanceContext().updateLabels(event.getInstanceId(), event.getLabels());
+        computeNodeInstanceContext.updateLabels(event.getInstanceId(), event.getLabels());
     }
 }

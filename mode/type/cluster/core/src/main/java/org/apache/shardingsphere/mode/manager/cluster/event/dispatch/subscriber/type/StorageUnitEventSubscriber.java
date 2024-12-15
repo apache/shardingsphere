@@ -21,11 +21,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitAlteredEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitRegisteredEvent;
 import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitUnregisteredEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 import java.util.Collections;
 
@@ -33,7 +33,7 @@ import java.util.Collections;
  * Storage unit event subscriber.
  */
 @RequiredArgsConstructor
-public final class StorageUnitEventSubscriber implements EventSubscriber {
+public final class StorageUnitEventSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
     
