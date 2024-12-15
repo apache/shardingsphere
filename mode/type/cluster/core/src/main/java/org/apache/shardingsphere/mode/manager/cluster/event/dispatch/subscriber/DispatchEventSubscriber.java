@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber;
 
-import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 
 /**
- * Cache evicted subscriber.
+ * Dispatch event subscriber.
  */
-public final class CacheEvictedSubscriber implements DispatchEventSubscriber {
-    
-    /**
-     * Callback of any {@link DispatchEvent}.
-     *
-     * @param ignored unused
-     */
-    @Subscribe
-    public void cleanCache(final DispatchEvent ignored) {
-        OrderedServicesCache.clearCache();
-    }
+public interface DispatchEventSubscriber extends EventSubscriber {
 }
