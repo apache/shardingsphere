@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.builder;
+package org.apache.shardingsphere.mode.event.dispatch.builder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;

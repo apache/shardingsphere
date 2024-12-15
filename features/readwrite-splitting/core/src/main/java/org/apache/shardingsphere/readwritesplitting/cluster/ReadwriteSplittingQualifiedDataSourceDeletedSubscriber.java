@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.event.deliver.pojo.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.deliver.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**

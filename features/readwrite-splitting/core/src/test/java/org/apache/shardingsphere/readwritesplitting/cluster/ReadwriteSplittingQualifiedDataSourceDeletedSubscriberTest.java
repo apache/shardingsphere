@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.cluster;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.event.deliver.pojo.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.deliver.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

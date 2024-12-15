@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
-import org.apache.shardingsphere.mode.event.builder.RuleConfigurationChangedEventBuilder;
+import org.apache.shardingsphere.mode.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
