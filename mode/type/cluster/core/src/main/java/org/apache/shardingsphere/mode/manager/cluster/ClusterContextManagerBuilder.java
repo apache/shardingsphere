@@ -81,7 +81,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         ClusterEventSubscriberRegistry eventSubscriberRegistry = new ClusterEventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
-        eventSubscriberRegistry.register(createDeliverEventSubscribers(contextManager, repository));
+        eventSubscriberRegistry.register(createDeliverEventSubscribers(repository));
         eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry(contextManager).getSubscribers());
     }
     
@@ -91,11 +91,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 : metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
     
-    private Collection<EventSubscriber> createDeliverEventSubscribers(final ContextManager contextManager, final ClusterPersistRepository repository) {
+    private Collection<EventSubscriber> createDeliverEventSubscribers(final ClusterPersistRepository repository) {
         Collection<EventSubscriber> result = new LinkedList<>();
         for (DeliverEventSubscriber each : ShardingSphereServiceLoader.getServiceInstances(DeliverEventSubscriber.class)) {
             each.setRepository(repository);
-            each.setEventBusContext(contextManager.getComputeNodeInstanceContext().getEventBusContext());
             result.add(each);
         }
         return result;
