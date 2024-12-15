@@ -57,7 +57,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addSchema(event.getDatabaseName(), event.getSchemaName());
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -68,7 +68,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropSchema(event.getDatabaseName(), event.getSchemaName());
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -84,7 +84,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable()
                 .load(event.getDatabaseName(), event.getSchemaName(), event.getTableName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), table, null);
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -95,7 +95,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final TableDroppedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), null);
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -111,7 +111,7 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView()
                 .load(event.getDatabaseName(), event.getSchemaName(), event.getViewName());
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, view);
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -122,10 +122,10 @@ public final class MetaDataChangedSubscriber implements EventSubscriber {
     @Subscribe
     public synchronized void renew(final ViewDroppedEvent event) {
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getViewName());
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
-    private void refreshShardingSphereStatisticsData() {
+    private void refreshStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
