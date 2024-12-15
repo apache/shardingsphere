@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.deliver.pojo;
+package org.apache.shardingsphere.mode.event.deliver;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
