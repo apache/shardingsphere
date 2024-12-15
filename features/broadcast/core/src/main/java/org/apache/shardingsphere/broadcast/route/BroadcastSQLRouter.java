@@ -25,8 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Collection;
@@ -35,7 +34,7 @@ import java.util.Collection;
  * Broadcast SQL router.
  */
 @HighFrequencyInvocation
-public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule>, TableSQLRouter<BroadcastRule> {
+public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
@@ -45,6 +44,11 @@ public final class BroadcastSQLRouter implements EntranceSQLRouter<BroadcastRule
             return new RouteContext();
         }
         return BroadcastRouteEngineFactory.newInstance(queryContext, broadcastTableNames).route(rule);
+    }
+    
+    @Override
+    public Type getType() {
+        return Type.DATA_NODE;
     }
     
     @Override

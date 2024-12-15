@@ -144,7 +144,8 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         AtomicLong rowCount = new AtomicLong();
         IngestPosition position = dumperContext.getCommonContext().getPosition();
         do {
-            QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) position).getBeginValue(), firstQuery, ((PrimaryKeyIngestPosition<?>) position).getEndValue());
+            QueryRange queryRange = new QueryRange(((PrimaryKeyIngestPosition<?>) position).getBeginValue(), firstQuery && dumperContext.isFirstDump(),
+                    ((PrimaryKeyIngestPosition<?>) position).getEndValue());
             InventoryQueryParameter<?> queryParam = new InventoryRangeQueryParameter(queryRange);
             List<Record> dataRecords = dumpByPage(connection, queryParam, rowCount, tableMetaData);
             if (dataRecords.size() > 1 && Objects.deepEquals(getFirstUniqueKeyValue(dataRecords, 0), getFirstUniqueKeyValue(dataRecords, dataRecords.size() - 1))) {

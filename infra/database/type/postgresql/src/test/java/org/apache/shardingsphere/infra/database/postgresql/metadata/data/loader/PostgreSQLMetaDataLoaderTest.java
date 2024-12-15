@@ -210,15 +210,37 @@ class PostgreSQLMetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, true, true, false, true)));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, true, true, false, true));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         IndexMetaData indexMetaData = new IndexMetaData("id", Collections.singletonList("id"));
         indexMetaData.setUnique(true);
-        assertThat(indexesIterator.next(), is(indexMetaData));
+        assertIndexMetaData(indexesIterator.next(), indexMetaData);
         assertThat(actualTableMetaData.getConstraints().size(), is(1));
         Iterator<ConstraintMetaData> constrainsMetaDataList = actualTableMetaData.getConstraints().iterator();
-        assertThat(constrainsMetaDataList.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
+        assertConstraintMetaData(constrainsMetaDataList.next(), new ConstraintMetaData("tbl_con", "refer_tbl"));
+    }
+    
+    private void assertColumnMetaData(final ColumnMetaData actual, final ColumnMetaData expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getDataType(), is(expected.getDataType()));
+        assertThat(actual.isPrimaryKey(), is(expected.isPrimaryKey()));
+        assertThat(actual.isGenerated(), is(expected.isGenerated()));
+        assertThat(actual.isCaseSensitive(), is(expected.isCaseSensitive()));
+        assertThat(actual.isVisible(), is(expected.isVisible()));
+        assertThat(actual.isUnsigned(), is(expected.isUnsigned()));
+        assertThat(actual.isNullable(), is(expected.isNullable()));
+    }
+    
+    private void assertIndexMetaData(final IndexMetaData actual, final IndexMetaData expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getColumns(), is(expected.getColumns()));
+        assertThat(actual.isUnique(), is(expected.isUnique()));
+    }
+    
+    private void assertConstraintMetaData(final ConstraintMetaData actual, final ConstraintMetaData expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getReferencedTableName(), is(expected.getReferencedTableName()));
     }
 }

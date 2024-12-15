@@ -54,8 +54,8 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
     private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
-        result.put(String.format("/env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
-        result.put("/env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        result.put(String.format("env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
+        result.put("env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
 }

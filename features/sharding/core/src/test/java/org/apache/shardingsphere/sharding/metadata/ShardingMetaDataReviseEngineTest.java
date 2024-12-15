@@ -22,6 +22,9 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -37,6 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -48,9 +53,13 @@ class ShardingMetaDataReviseEngineTest {
     void assertReviseWithKeyGenerateStrategy() {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
-                new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
-        Iterator<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns().iterator();
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule()))
+                .revise(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("sharding_db"));
+        assertThat(actual.get("sharding_db").getAllTables().size(), is(1));
+        ShardingSphereTable table = actual.get("sharding_db").getAllTables().iterator().next();
+        Iterator<ShardingSphereColumn> columns = table.getAllColumns().iterator();
         assertTrue(columns.next().isGenerated());
         assertFalse(columns.next().isGenerated());
         assertFalse(columns.next().isGenerated());

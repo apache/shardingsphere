@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.type;
+package org.apache.shardingsphere.infra.route.lifecycle;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import java.util.Collection;
 
 /**
- * Entrance SQL Router.
+ * Entrance SQL router.
  * 
  * @param <T> type of rule
  */

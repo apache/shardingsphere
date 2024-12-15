@@ -21,18 +21,22 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
-import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
-import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Collection;
 
-public final class TableSQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture>, TableSQLRouter<RouteFailureRuleFixture> {
+public final class DataNodeSQLRouterFailureFixture implements DecorateSQLRouter<RouteFailureRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final RouteFailureRuleFixture rule, final Collection<String> tableNames, final ConfigurationProperties props) {
         throw new UnsupportedOperationException("Route failure.");
+    }
+    
+    @Override
+    public Type getType() {
+        return Type.DATA_NODE;
     }
     
     @Override

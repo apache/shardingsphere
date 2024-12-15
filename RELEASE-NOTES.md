@@ -22,15 +22,18 @@
 1. SQL Federation: Upgrade calcite version to 1.38.0 and update all license info in LICENSE file - [#33279](https://github.com/apache/shardingsphere/pull/33279)
 1. Transaction: Bump the minimum Seata Client version for Seata AT integration to 2.2.0 - [#33872](https://github.com/apache/shardingsphere/pull/33872)
 1. JDBC: Add show database name for JDBC when execute SHOW COMPUTE NODES - [#33437](https://github.com/apache/shardingsphere/pull/33437)
+1. Kernel: Add binding to owner table - [#33533](https://github.com/apache/shardingsphere/pull/33533)
+1. SQL Parser: Support parsing Doris EXTRACT\_URL\_PARAMETER - [#33571](https://github.com/apache/shardingsphere/pull/33571)
 1. JDBC: Support ZonedDateTime on ResultSet - [#33660](https://github.com/apache/shardingsphere/issues/33660)
 1. Proxy: Add query parameters and check for MySQL kill processId - [#33274](https://github.com/apache/shardingsphere/pull/33274)
 1. Proxy: Support table not exist exception for PostgreSQL proxy - [#33885](https://github.com/apache/shardingsphere/pull/33274)
 1. Proxy Native: Change the Base Docker Image of ShardingSphere Proxy Native - [#33263](https://github.com/apache/shardingsphere/issues/33263)
 1. Proxy Native: Support connecting to HiveServer2 with ZooKeeper Service Discovery enabled in GraalVM Native Image - [#33768](https://github.com/apache/shardingsphere/pull/33768)
 1. Proxy Native: Support local transactions of ClickHouse under GraalVM Native Image - [#33801](https://github.com/apache/shardingsphere/pull/33801)
-1. Sharding: Support GroupConcat function for aggregating multiple shards in Mysql, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
+1. Sharding: Support GroupConcat function for aggregating multiple shards in MySQL, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 1. Proxy Native: Support Seata AT integration under Proxy Native in GraalVM Native Image - [#33889](https://github.com/apache/shardingsphere/pull/33889)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
+1. Metadata: Add load-table-metadata-batch-size props to concurrent load table metadata - [#34009](https://github.com/apache/shardingsphere/pull/34009)
 
 ### Bug Fixes
 
@@ -50,6 +53,7 @@
 1. Sharding: Fixes SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
 1. Sharding: Fixes avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)
 1. Encrypt: Fixes merge exception without encrypt rule in database - [#33708](https://github.com/apache/shardingsphere/pull/33708)
+1. SQL Binder: Fixes the expression segment cannot find the outer table when binding - [#34015](https://github.com/apache/shardingsphere/pull/34015)
 
 ### Change Logs
 
