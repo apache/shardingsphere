@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,13 +56,11 @@ class OpenGaussAdminExecutorFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithSQLStatementContextOnly() {
+    void assertNewInstanceWithSQLStatementContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgresqlAdminExecutorFactory.create(sqlStatementContext)).thenReturn(Optional.of(expected));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new OpenGaussShowStatement("all"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(expected));
     }
     
     @Test
