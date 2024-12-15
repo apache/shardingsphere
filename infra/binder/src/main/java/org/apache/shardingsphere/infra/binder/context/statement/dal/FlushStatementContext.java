@@ -31,9 +31,9 @@ public final class FlushStatementContext extends CommonSQLStatementContext imple
     
     private final TablesContext tablesContext;
     
-    public FlushStatementContext(final FlushStatement sqlStatement, final String currentDatabaseName) {
+    public FlushStatementContext(final FlushStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override

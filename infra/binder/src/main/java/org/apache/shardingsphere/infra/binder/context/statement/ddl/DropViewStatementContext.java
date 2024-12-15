@@ -31,9 +31,9 @@ public final class DropViewStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public DropViewStatementContext(final DropViewStatement sqlStatement, final String currentDatabaseName) {
+    public DropViewStatementContext(final DropViewStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getViews(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getViews());
     }
     
     @Override

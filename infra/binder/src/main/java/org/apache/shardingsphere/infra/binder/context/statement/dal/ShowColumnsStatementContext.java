@@ -36,9 +36,9 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement, final String currentDatabaseName) {
+    public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

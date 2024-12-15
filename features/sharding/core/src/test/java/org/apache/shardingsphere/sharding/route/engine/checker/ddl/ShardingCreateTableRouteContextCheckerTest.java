@@ -72,7 +72,7 @@ class ShardingCreateTableRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -85,7 +85,7 @@ class ShardingCreateTableRouteContextCheckerTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertThrows(ShardingDDLRouteException.class,
                 () -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
@@ -94,7 +94,7 @@ class ShardingCreateTableRouteContextCheckerTest {
     void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
 }

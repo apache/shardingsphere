@@ -196,16 +196,16 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private Collection<YamlRuleConfiguration> getYamlRuleConfigurations(final Collection<RuleConfiguration> rules) {
-        Collection<YamlRuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(rules);
-        Optional<YamlSingleRuleConfiguration> originalSingleRuleConfig =
-                ruleConfigurations.stream().filter(YamlSingleRuleConfiguration.class::isInstance).map(YamlSingleRuleConfiguration.class::cast).findFirst();
-        ruleConfigurations.removeIf(YamlSingleRuleConfiguration.class::isInstance);
+        Collection<YamlRuleConfiguration> result = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(rules);
+        Optional<YamlSingleRuleConfiguration> originalSingleRuleConfig = result.stream()
+                .filter(YamlSingleRuleConfiguration.class::isInstance).map(YamlSingleRuleConfiguration.class::cast).findFirst();
+        result.removeIf(YamlSingleRuleConfiguration.class::isInstance);
         YamlSingleRuleConfiguration singleRuleConfig = new YamlSingleRuleConfiguration();
-        // todo Provide only the necessary tables.
+        // TODO Provide only the necessary tables.
         singleRuleConfig.setTables(Collections.singletonList(SingleTableConstants.ALL_TABLES));
         originalSingleRuleConfig.ifPresent(optional -> singleRuleConfig.setDefaultDataSource(optional.getDefaultDataSource()));
-        ruleConfigurations.add(singleRuleConfig);
-        return ruleConfigurations;
+        result.add(singleRuleConfig);
+        return result;
     }
     
     private Map<String, String> buildTargetTableSchemaMap(final Map<String, List<DataNode>> sourceDataNodes) {

@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -108,10 +109,12 @@ class SelectStatementContextTest {
     }
     
     private void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
-        ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        selectStatement.setFrom(new SimpleTableSegment(tableNameSegment));
+        ShardingSphereDatabase database = mockDatabase();
         SelectStatementContext selectStatementContext =
                 new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         selectStatementContext.setIndexes(Collections.emptyMap());
@@ -155,7 +158,9 @@ class SelectStatementContextTest {
     private void assertSetIndexForItemsByColumnOrderByWithOwner(final SelectStatement selectStatement) {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_OWNER))));
         selectStatement.setProjections(createProjectionsSegment());
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table")));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(tableNameSegment);
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db".toUpperCase())));
         selectStatement.setFrom(tableSegment);
         ShardingSphereDatabase database = mockDatabase();
@@ -591,7 +596,9 @@ class SelectStatementContextTest {
                 return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, NullsOrderType.FIRST);
             case COLUMN_ORDER_BY_WITH_OWNER:
                 ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
-                columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
+                OwnerSegment owner = new OwnerSegment(0, 0, new IdentifierValue("table"));
+                owner.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+                columnSegment.setOwner(owner);
                 return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
             case COLUMN_ORDER_BY_WITH_ALIAS:
                 return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, NullsOrderType.FIRST);
@@ -601,16 +608,17 @@ class SelectStatementContextTest {
     }
     
     private ProjectionsSegment createProjectionsSegment() {
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.setDistinctRow(true);
-        projectionsSegment.getProjections().addAll(Arrays.asList(getColumnProjectionSegmentWithoutOwner(),
-                getColumnProjectionSegmentWithoutOwner(true), getColumnProjectionSegmentWithoutOwner(false)));
-        return projectionsSegment;
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.setDistinctRow(true);
+        result.getProjections().addAll(Arrays.asList(getColumnProjectionSegmentWithoutOwner(), getColumnProjectionSegmentWithoutOwner(true), getColumnProjectionSegmentWithoutOwner(false)));
+        return result;
     }
     
     private ProjectionSegment getColumnProjectionSegmentWithoutOwner() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
-        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
+        OwnerSegment owner = new OwnerSegment(0, 0, new IdentifierValue("table"));
+        owner.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        columnSegment.setOwner(owner);
         return new ColumnProjectionSegment(columnSegment);
     }
     
@@ -627,7 +635,9 @@ class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        selectStatement.setFrom(new SimpleTableSegment(tableNameSegment));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext actual = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
@@ -650,7 +660,9 @@ class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         SelectStatement result = new MySQLSelectStatement();
         result.setProjections(projectionsSegment);
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("t_order"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        result.setFrom(new SimpleTableSegment(tableNameSegment));
         return result;
     }
 }

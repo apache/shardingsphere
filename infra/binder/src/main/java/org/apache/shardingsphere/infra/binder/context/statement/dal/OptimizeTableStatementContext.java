@@ -31,9 +31,9 @@ public final class OptimizeTableStatementContext extends CommonSQLStatementConte
     
     private final TablesContext tablesContext;
     
-    public OptimizeTableStatementContext(final OptimizeTableStatement sqlStatement, final String currentDatabaseName) {
+    public OptimizeTableStatementContext(final OptimizeTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override

@@ -19,6 +19,14 @@
 
 cd %~dp0
 
+set LOGS_DIR=..\logs
+
+if not exist %LOGS_DIR% (
+    mkdir %LOGS_DIR%
+)
+
+set STDOUT_FILE=%LOGS_DIR%\stdout.log
+
 set SERVER_NAME=ShardingSphere-Proxy
 
 set CLASS_PATH="..;..\lib\*;..\ext-lib\*"
@@ -81,7 +89,7 @@ if %int_version% == 8 (
 
 echo Starting the %SERVER_NAME% ...
 
-java -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
+javaw -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS% >> %STDOUT_FILE% 2>&1
 
 goto exit
 

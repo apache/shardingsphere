@@ -49,7 +49,7 @@ class ShardingAlterViewSupportedCheckerTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         when(rule.isShardingTable("t_order")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -61,7 +61,7 @@ class ShardingAlterViewSupportedCheckerTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         when(rule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(EngagedViewException.class, () -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -71,7 +71,7 @@ class ShardingAlterViewSupportedCheckerTest {
         OpenGaussAlterViewStatement sqlStatement = new OpenGaussAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
 }

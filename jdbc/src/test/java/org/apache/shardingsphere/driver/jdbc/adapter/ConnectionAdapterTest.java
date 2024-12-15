@@ -96,6 +96,6 @@ class ConnectionAdapterTest {
     private Connection createConnectionAdaptor() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
-        return new ShardingSphereConnection("foo_db", contextManager, null);
+        return new ShardingSphereConnection("foo_db", contextManager);
     }
 }

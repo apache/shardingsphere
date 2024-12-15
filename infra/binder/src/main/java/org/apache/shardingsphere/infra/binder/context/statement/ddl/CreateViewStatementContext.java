@@ -32,11 +32,11 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public CreateViewStatementContext(final CreateViewStatement sqlStatement, final String currentDatabaseName) {
+    public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
         super(sqlStatement);
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
-        tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(extractor.getRewriteTables());
     }
     
     @Override

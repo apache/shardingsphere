@@ -225,7 +225,9 @@ public final class TableExtractor {
     }
     
     private SimpleTableSegment createSimpleTableSegment(final OwnerSegment ownerSegment) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+        TableNameSegment tableNameSegment = new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
+        ownerSegment.getTableBoundInfo().ifPresent(tableNameSegment::setTableBoundInfo);
+        SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         ownerSegment.getOwner().ifPresent(result::setOwner);
         return result;
     }
@@ -235,7 +237,9 @@ public final class TableExtractor {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
                 if (owner.isPresent() && needRewrite(owner.get())) {
-                    rewriteTables.add(new SimpleTableSegment(new TableNameSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier())));
+                    TableNameSegment tableNameSegment = new TableNameSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier());
+                    owner.get().getTableBoundInfo().ifPresent(tableNameSegment::setTableBoundInfo);
+                    rewriteTables.add(new SimpleTableSegment(tableNameSegment));
                 }
             }
         }

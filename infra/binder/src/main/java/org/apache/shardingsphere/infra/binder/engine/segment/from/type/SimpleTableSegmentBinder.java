@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -88,6 +89,7 @@ public final class SimpleTableSegmentBinder {
         tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
                 createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
@@ -158,7 +160,7 @@ public final class SimpleTableSegmentBinder {
                                                      final ShardingSphereColumn column, final QuoteCharacter quoteCharacter, final IdentifierValue tableName) {
         ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(column.getName(), quoteCharacter));
         result.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(tableName)));
-        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(databaseName, schemaName, tableName, new IdentifierValue(column.getName(), quoteCharacter)));
+        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, new IdentifierValue(column.getName(), quoteCharacter)));
         return result;
     }
 }
