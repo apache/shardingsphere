@@ -26,13 +26,14 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.manager.cluster.event.ClusterEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriberFactory;
+import org.apache.shardingsphere.mode.manager.cluster.event.ClusterEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.DataChangedEventListenerRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.ClusterDispatchEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
@@ -45,7 +46,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 /**
  * Cluster context manager builder.
@@ -80,8 +81,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         contextManager.getComputeNodeInstanceContext().getAllClusterInstances().addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         ClusterEventSubscriberRegistry eventSubscriberRegistry = new ClusterEventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
-        eventSubscriberRegistry.register(ShardingSphereServiceLoader.getServiceInstances(DeliverEventSubscriberFactory.class).stream()
-                .map(each -> each.create(repository, contextManager.getComputeNodeInstanceContext().getEventBusContext())).collect(Collectors.toList()));
+        eventSubscriberRegistry.register(createDeliverEventSubscribers(repository));
         eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry(contextManager).getSubscribers());
     }
     
@@ -89,6 +89,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return param.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? param.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
+    }
+    
+    private Collection<EventSubscriber> createDeliverEventSubscribers(final ClusterPersistRepository repository) {
+        Collection<EventSubscriber> result = new LinkedList<>();
+        for (DeliverEventSubscriber each : ShardingSphereServiceLoader.getServiceInstances(DeliverEventSubscriber.class)) {
+            each.setRepository(repository);
+            result.add(each);
+        }
+        return result;
     }
     
     @Override

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.event.deliver;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -26,14 +25,12 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
  * Deliver event subscriber factory.
  */
 @SingletonSPI
-public interface DeliverEventSubscriberFactory {
+public interface DeliverEventSubscriber extends EventSubscriber {
     
     /**
-     * Create deliver event subscriber.
+     * Set persist repository.
      *
-     * @param repository cluster persist repository
-     * @param eventBusContext event bus context
-     * @return created event subscriber
+     * @param repository persist repository
      */
-    EventSubscriber create(PersistRepository repository, EventBusContext eventBusContext);
+    void setRepository(PersistRepository repository);
 }
