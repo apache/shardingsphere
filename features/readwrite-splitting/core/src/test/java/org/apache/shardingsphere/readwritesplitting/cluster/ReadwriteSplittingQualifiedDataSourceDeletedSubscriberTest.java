@@ -38,7 +38,8 @@ class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberTest {
     
     @BeforeEach
     void setUp() {
-        subscriber = new ReadwriteSplittingQualifiedDataSourceDeletedSubscriber(repository);
+        subscriber = new ReadwriteSplittingQualifiedDataSourceDeletedSubscriber();
+        subscriber.setRepository(repository);
     }
     
     @Test
