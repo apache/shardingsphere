@@ -56,7 +56,7 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
         repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()), new DatabaseMetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
     /**
@@ -69,10 +69,10 @@ public final class ListenerAssistedSubscriber implements EventSubscriber {
         repository.removeDataListener(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
-        refreshShardingSphereStatisticsData();
+        refreshStatisticsData();
     }
     
-    private void refreshShardingSphereStatisticsData() {
+    private void refreshStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();

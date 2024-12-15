@@ -64,15 +64,16 @@ import java.util.stream.Collectors;
  */
 public final class StandaloneMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
-    private final RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = new RuleConfigurationChangedEventBuilder();
-    
     private final MetaDataPersistService metaDataPersistService;
     
     private final MetaDataContextManager metaDataContextManager;
     
+    private final RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder;
+    
     public StandaloneMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
         metaDataPersistService = new MetaDataPersistService(repository);
         this.metaDataContextManager = metaDataContextManager;
+        ruleConfigChangedEventBuilder = new RuleConfigurationChangedEventBuilder();
     }
     
     @Override

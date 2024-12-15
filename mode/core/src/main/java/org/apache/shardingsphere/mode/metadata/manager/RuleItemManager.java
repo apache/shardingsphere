@@ -37,13 +37,13 @@ public class RuleItemManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final DatabaseRuleConfigurationManager ruleConfigurationManager;
+    private final DatabaseRuleConfigurationManager ruleConfigManager;
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final DatabaseRuleConfigurationManager ruleConfigurationManager) {
+    public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final DatabaseRuleConfigurationManager ruleConfigManager) {
         this.metaDataContexts = metaDataContexts;
-        this.ruleConfigurationManager = ruleConfigurationManager;
+        this.ruleConfigManager = ruleConfigManager;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
     
@@ -53,7 +53,7 @@ public class RuleItemManager {
      * @param event alter rule item event
      * @throws SQLException SQL Exception
      */
-    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void alterRuleItem(final AlterRuleItemEvent event) throws SQLException {
         Preconditions.checkArgument(event.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(event.getActiveVersionKey())), "Invalid active version: {} of key: {}", event.getActiveVersion(), event.getActiveVersionKey());
@@ -64,7 +64,7 @@ public class RuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            ruleConfigurationManager.alterRuleConfiguration(databaseName, currentRuleConfig);
+            ruleConfigManager.alterRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
     
@@ -74,7 +74,7 @@ public class RuleItemManager {
      * @param event drop rule item event
      * @throws SQLException SQL Exception
      */
-    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void dropRuleItem(final DropRuleItemEvent event) throws SQLException {
         String databaseName = event.getDatabaseName();
         Preconditions.checkState(metaDataContexts.get().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
@@ -82,7 +82,7 @@ public class RuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            ruleConfigurationManager.dropRuleConfiguration(databaseName, currentRuleConfig);
+            ruleConfigManager.dropRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
 }
