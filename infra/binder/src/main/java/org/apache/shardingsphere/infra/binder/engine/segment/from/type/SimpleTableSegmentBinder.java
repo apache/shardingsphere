@@ -58,15 +58,21 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(4, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(10, 1F);
     
     private static final String PG_CATALOG = "pg_catalog";
     
     static {
+        SYSTEM_CATALOG_TABLES.add("pg_class");
         SYSTEM_CATALOG_TABLES.add("pg_database");
         SYSTEM_CATALOG_TABLES.add("pg_tables");
         SYSTEM_CATALOG_TABLES.add("pg_roles");
         SYSTEM_CATALOG_TABLES.add("pg_settings");
+        SYSTEM_CATALOG_TABLES.add("pg_depend");
+        SYSTEM_CATALOG_TABLES.add("pg_attribute");
+        SYSTEM_CATALOG_TABLES.add("pg_attrdef");
+        SYSTEM_CATALOG_TABLES.add("pg_type");
+        SYSTEM_CATALOG_TABLES.add("pg_description");
     }
     
     /**
