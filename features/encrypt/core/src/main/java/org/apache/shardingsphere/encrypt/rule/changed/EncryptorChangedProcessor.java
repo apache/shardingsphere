@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

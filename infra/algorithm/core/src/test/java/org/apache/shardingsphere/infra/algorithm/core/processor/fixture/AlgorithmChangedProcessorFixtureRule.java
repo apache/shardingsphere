@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor.fixture;
+package org.apache.shardingsphere.infra.algorithm.core.processor.fixture;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
