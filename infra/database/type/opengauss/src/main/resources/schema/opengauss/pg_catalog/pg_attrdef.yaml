@@ -17,6 +17,14 @@
 
 name: pg_attrdef
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    unsigned: false
+    visible: true
   adrelid:
     caseSensitive: true
     dataType: -5
