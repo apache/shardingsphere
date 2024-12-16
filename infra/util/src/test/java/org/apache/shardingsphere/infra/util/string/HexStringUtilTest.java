@@ -26,8 +26,8 @@ class HexStringUtilTest {
     
     @Test
     void assertToHexString() {
-        assertThat(HexStringUtil.toHexString(new byte[] {(byte) 1}), is("01"));
-        assertThat(HexStringUtil.toHexString(new byte[] {(byte) 100}), is("64"));
-        assertThat(HexStringUtil.toHexString(new byte[] {(byte) 255, (byte) 256}), is("ff00"));
+        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 1}), is("01"));
+        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 100}), is("64"));
+        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 255, (byte) 256}), is("ff00"));
     }
 }
