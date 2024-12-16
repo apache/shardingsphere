@@ -33,35 +33,37 @@ import java.util.Map;
 @Getter
 public enum FirebirdColumnType implements BinaryColumnType {
 
-    TEXT(452),
-    VARYING(448),
-    SHORT(500),
-    LONG(496),
-    FLOAT(482),
-    DOUBLE(480),
-    D_FLOAT(530),
-    TIMESTAMP(510),
-    BLOB(520),
-    ARRAY(540),
-    QUAD(550),
-    TYPE_TIME(560),
-    TYPE_DATE(570),
-    INT64(580),
-    TIMESTAMP_TZ_EX(32748),
-    TIME_TZ_EX(32750),
-    INT128(32752),
-    TIMESTAMP_TZ(32754),
-    TIME_TZ(32756),
-    DEC16(32760),
-    DEC34(32762),
-    BOOLEAN(32764),
-    NULL(32766);
+    //TODO add different varying length based on a row length
+    TEXT(452, 255),
+    VARYING(448, 255),
+    SHORT(500, 2),
+    LONG(496, 4),
+    FLOAT(482, 4),
+    DOUBLE(480, 8),
+    D_FLOAT(530, 8),
+    TIMESTAMP(510, 8),
+    BLOB(520, 255),
+    ARRAY(540, 255),
+    QUAD(550, 4),
+    TIME(560, 4),
+    DATE(570, 4),
+    INT64(580, 8),
+    TIMESTAMP_TZ_EX(32748, 10),
+    TIME_TZ_EX(32750, 6),
+    INT128(32752, 16),
+    TIMESTAMP_TZ(32754, 10),
+    TIME_TZ(32756, 6),
+    DEC16(32760, 2),
+    DEC34(32762, 4),
+    BOOLEAN(32764, 1),
+    NULL(32766, 0);
 
     private static final Map<Integer, FirebirdColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
 
     private static final Map<Integer, FirebirdColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
 
     private final int value;
+    private final int length;
 
     static {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, SHORT);
@@ -76,8 +78,8 @@ public enum FirebirdColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, TEXT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, BLOB);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, TYPE_DATE);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TYPE_TIME);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, TEXT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARBINARY, VARYING);

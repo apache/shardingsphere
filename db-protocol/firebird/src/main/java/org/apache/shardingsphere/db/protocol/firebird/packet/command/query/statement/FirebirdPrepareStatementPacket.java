@@ -26,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,15 +35,18 @@ import java.util.List;
  */
 @Getter
 public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket implements SQLReceivedPacket {
-
+    
     private final int transactionId;
     private final int statementId;
     private final int sqlDialect;
     private final HintValueContext hintValueContext;
     private final String sql;
     private final List<FirebirdSQLInfoPacketType> infoItems = new ArrayList<>();
+    private int currentItemIdx = -1;
     private final int maxLength;
-
+    
+    private final Charset charset;
+    
     public FirebirdPrepareStatementPacket(FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         transactionId = payload.readInt4();
@@ -53,23 +57,34 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         sql = SQLHintUtils.removeHint(originSQL);
         parseInfo(payload.readBuffer());
         maxLength = payload.readInt4();
+        charset = payload.getCharset();
     }
-
+    
     private void parseInfo(ByteBuf buffer) {
         while (buffer.isReadable()) {
             infoItems.add(FirebirdSQLInfoPacketType.valueOf(buffer.readByte()));
         }
     }
-
+    
     public boolean isValidStatementHandle() {
         return statementId != 0xFFFF;
     }
-
+    
+    public boolean nextItem() {
+        ++currentItemIdx;
+        return currentItemIdx < infoItems.size();
+    }
+    
+    public FirebirdSQLInfoPacketType getCurrentItem() {
+        return infoItems.get(currentItemIdx);
+    }
+    
     @Override
     public String getSQL() {
         return sql;
     }
-
+    
     @Override
-    protected void write(final FirebirdPacketPayload payload) {}
+    protected void write(final FirebirdPacketPayload payload) {
+    }
 }
