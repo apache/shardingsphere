@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -66,6 +65,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -83,7 +83,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -148,8 +147,9 @@ class PortalTest {
         assertThat(portal.getName(), is(""));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
+    void assertExecuteSelectStatementAndReturnAllRows() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
         QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
@@ -168,9 +168,9 @@ class PortalTest {
         portal.bind();
         PostgreSQLPacket portalDescription = portal.describe();
         assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
-        Optional<Collection<PostgreSQLColumnDescription>> columnDescriptions = ReflectionUtils.getFieldValue(portalDescription, "columnDescriptions");
-        assertTrue(columnDescriptions.isPresent());
-        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.get().iterator();
+        Collection<PostgreSQLColumnDescription> columnDescriptions = (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor()
+                .get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), portalDescription);
+        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.iterator();
         PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
         PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
         assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
