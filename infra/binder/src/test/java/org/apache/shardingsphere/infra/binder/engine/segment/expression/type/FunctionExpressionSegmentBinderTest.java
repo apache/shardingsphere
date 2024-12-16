@@ -22,20 +22,19 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class FunctionExpressionSegmentBinderTest {
     
     @Test
     void assertBindFunctionExpressionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%','abc','%')");
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", new MockedDatabaseType(), Collections.emptyList());
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", mock(SQLStatement.class));
         FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(functionSegment.getStartIndex()));
         assertThat(actual.getStopIndex(), is(functionSegment.getStopIndex()));

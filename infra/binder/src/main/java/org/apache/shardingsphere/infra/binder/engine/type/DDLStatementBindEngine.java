@@ -43,7 +43,7 @@ public final class DDLStatementBindEngine {
      * @return bound DDL statement
      */
     public DDLStatement bind(final DDLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(statement, metaData, currentDatabaseName);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, statement);
         if (statement instanceof CursorStatement) {
             return new CursorStatementBinder().bind((CursorStatement) statement, binderContext);
         }
