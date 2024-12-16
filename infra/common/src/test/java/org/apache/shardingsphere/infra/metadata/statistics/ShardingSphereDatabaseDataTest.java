@@ -44,6 +44,7 @@ class ShardingSphereDatabaseDataTest {
         assertTrue(databaseData.getSchema("foo_schema").getTableData().isEmpty());
         assertNull(databaseData.getSchema("bar_schema"));
     }
+    
     @Test
     void assertPutSchema() {
         databaseData.putSchema("bar_schema", new ShardingSphereSchemaData());
