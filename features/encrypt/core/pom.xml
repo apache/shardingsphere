@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mode-core</artifactId>
+            <artifactId>shardingsphere-mode-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
