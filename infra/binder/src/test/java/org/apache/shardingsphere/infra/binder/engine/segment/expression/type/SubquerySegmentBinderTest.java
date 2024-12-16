@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -71,8 +72,8 @@ class SubquerySegmentBinderTest {
         SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(
                 createMetaData(), "foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
-        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
-                new IdentifierValue("foo_db"), new IdentifierValue("foo_db"), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
+        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(
+                new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
         sqlStatementBinderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();

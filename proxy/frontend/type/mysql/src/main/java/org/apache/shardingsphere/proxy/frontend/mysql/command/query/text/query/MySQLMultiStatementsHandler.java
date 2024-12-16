@@ -124,7 +124,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatementContext sqlStatementContext =
-                new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getUsedDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+                new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
     }
     
@@ -170,7 +170,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
-        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName());
+        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
         SQLAuditEngine.audit(queryContext, globalRuleMetaData, currentDatabase);
         return new KernelProcessor().generateExecutionContext(queryContext, globalRuleMetaData, metaDataContexts.getMetaData().getProps());
     }

@@ -3,6 +3,10 @@ title = "不支持项"
 weight = 6
 +++
 
+## 配置
+
+* 不支持配置多个逻辑数据库。
+
 ## DataSource 接口
 
 * 不支持 timeout 相关操作。

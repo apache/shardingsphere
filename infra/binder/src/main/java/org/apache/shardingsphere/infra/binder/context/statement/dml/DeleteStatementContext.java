@@ -50,9 +50,9 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
-    public DeleteStatementContext(final DeleteStatement sqlStatement, final String currentDatabaseName) {
+    public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);

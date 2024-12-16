@@ -153,7 +153,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getUsedDatabaseName()).thenReturn("db");
+        when(result.getCurrentDatabaseName()).thenReturn("db");
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(result.getStatementManager()).thenReturn(backendStatement);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);

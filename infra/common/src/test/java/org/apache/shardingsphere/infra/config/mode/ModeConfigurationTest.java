@@ -26,9 +26,9 @@ class ModeConfigurationTest {
     
     @Test
     void assertIsCluster() {
-        ModeConfiguration standaloneModeConfiguration = new ModeConfiguration("Standalone", null);
-        assertFalse(standaloneModeConfiguration.isCluster());
-        ModeConfiguration clusterModeConfiguration = new ModeConfiguration("Cluster", null);
-        assertTrue(clusterModeConfiguration.isCluster());
+        ModeConfiguration standaloneModeConfig = new ModeConfiguration("Standalone", null);
+        assertFalse(standaloneModeConfig.isCluster());
+        ModeConfiguration clusterModeConfig = new ModeConfiguration("Cluster", null);
+        assertTrue(clusterModeConfig.isCluster());
     }
 }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -107,8 +108,9 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
+        ColumnProjection columnProjection =
+                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
+                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
@@ -122,8 +124,9 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueFailed() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema"), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
+        ColumnProjection columnProjection =
+                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
+                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col")));
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);

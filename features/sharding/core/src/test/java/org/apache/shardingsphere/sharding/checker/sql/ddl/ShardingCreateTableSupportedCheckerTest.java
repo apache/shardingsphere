@@ -83,7 +83,7 @@ class ShardingCreateTableSupportedCheckerTest {
     }
     
     private void assertCheck(final CreateTableStatement sqlStatement) {
-        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "sharding_db");
+        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
@@ -105,7 +105,7 @@ class ShardingCreateTableSupportedCheckerTest {
     }
     
     private void assertCheckIfNotExists(final CreateTableStatement sqlStatement) {
-        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement, "foo_db");
+        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         new ShardingCreateTableSupportedChecker().check(rule, database, mock(), sqlStatementContext);
     }

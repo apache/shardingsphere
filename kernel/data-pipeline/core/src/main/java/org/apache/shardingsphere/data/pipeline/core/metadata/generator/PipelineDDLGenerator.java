@@ -128,8 +128,8 @@ public final class PipelineDDLGenerator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private SQLStatementContext parseSQL(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
-        return new SQLBindEngine(null, databaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
+    private SQLStatementContext parseSQL(final String currentDatabaseName, final SQLParserEngine parserEngine, final String sql) {
+        return new SQLBindEngine(null, currentDatabaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {

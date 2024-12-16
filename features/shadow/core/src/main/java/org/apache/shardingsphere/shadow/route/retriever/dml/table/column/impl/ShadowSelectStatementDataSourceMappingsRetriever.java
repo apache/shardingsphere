@@ -23,18 +23,16 @@ import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Shadow select statement data source mappings retriever.
@@ -60,7 +58,8 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
             if (1 != columns.size()) {
                 continue;
             }
-            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getOwnerTableName(columns.iterator().next()), shadowColumnName, values)).ifPresent(result::add);
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(
+                    columns.iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), shadowColumnName, values)).ifPresent(result::add);
         }
         return result;
     }
@@ -73,12 +72,5 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
             }
         }
         return result;
-    }
-    
-    private String getOwnerTableName(final ColumnSegment columnSegment) {
-        Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return owner.isPresent()
-                ? sqlStatementContext.getTablesContext().getTableAliasNameMap().get(owner.get().getIdentifier().getValue())
-                : sqlStatementContext.getTablesContext().getTableNames().iterator().next();
     }
 }
