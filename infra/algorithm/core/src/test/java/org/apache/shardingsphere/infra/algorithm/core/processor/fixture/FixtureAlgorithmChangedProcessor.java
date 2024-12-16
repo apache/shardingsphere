@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor.fixture;
+package org.apache.shardingsphere.infra.algorithm.core.processor.fixture;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
 
 import java.util.Map;
 
