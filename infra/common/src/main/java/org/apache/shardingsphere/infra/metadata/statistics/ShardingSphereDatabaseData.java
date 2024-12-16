@@ -31,41 +31,41 @@ public final class ShardingSphereDatabaseData {
     private final Map<String, ShardingSphereSchemaData> schemaData = new CaseInsensitiveMap<>();
     
     /**
+     * Judge whether to contains schema.
+     *
+     * @param schemaName schema name
+     * @return contains schema or not
+     */
+    public boolean containsSchema(final String schemaName) {
+        return schemaData.containsKey(schemaName);
+    }
+    
+    /**
      * Get ShardingSphere schema data.
      *
      * @param schemaName schema name
-     * @return ShardingSphere schema data
+     * @return schema data
      */
     public ShardingSphereSchemaData getSchema(final String schemaName) {
         return schemaData.get(schemaName);
     }
     
     /**
-     * Put ShardingSphere schema data.
+     * Put schema data.
      *
      * @param schemaName schema name
-     * @param schema ShardingSphere schema data
+     * @param schema schema data
      */
     public void putSchema(final String schemaName, final ShardingSphereSchemaData schema) {
         schemaData.put(schemaName, schema);
     }
     
     /**
-     * Remove ShardingSphere schema data.
+     * Remove schema data.
      *
      * @param schemaName schema name
      */
     public void removeSchema(final String schemaName) {
         schemaData.remove(schemaName);
-    }
-    
-    /**
-     * Judge contains ShardingSphere schema from ShardingSphere database or not.
-     *
-     * @param schemaName schema name
-     * @return Contains schema from database or not
-     */
-    public boolean containsSchema(final String schemaName) {
-        return schemaData.containsKey(schemaName);
     }
 }
