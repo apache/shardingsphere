@@ -54,17 +54,10 @@ public final class ComputeNodeInstanceContext {
     
     private final Collection<ComputeNodeInstance> allClusterInstances = new CopyOnWriteArrayList<>();
     
-    public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
-                                      final ModeConfiguration modeConfig, final LockContext<?> lockContext, final EventBusContext eventBusContext) {
-        this.instance = instance;
-        this.workerIdGenerator.set(workerIdGenerator);
-        this.modeConfiguration = modeConfig;
-        this.lockContext.set(lockContext);
-        this.eventBusContext = eventBusContext;
-    }
-    
     public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfig, final EventBusContext eventBusContext) {
-        this(instance, null, modeConfig, null, eventBusContext);
+        this.instance = instance;
+        this.modeConfiguration = modeConfig;
+        this.eventBusContext = eventBusContext;
     }
     
     /**
