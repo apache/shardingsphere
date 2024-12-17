@@ -45,18 +45,20 @@ public final class ComputeNodeInstanceContext {
     
     private final EventBusContext eventBusContext;
     
+    @Getter(AccessLevel.NONE)
+    private final AtomicReference<WorkerIdGenerator> workerIdGenerator;
+    
+    @Getter(AccessLevel.NONE)
+    private final AtomicReference<LockContext<?>> lockContext;
+    
     private final ClusterInstanceRegistry clusterInstanceRegistry;
-    
-    @Getter(AccessLevel.NONE)
-    private final AtomicReference<WorkerIdGenerator> workerIdGenerator = new AtomicReference<>();
-    
-    @Getter(AccessLevel.NONE)
-    private final AtomicReference<LockContext<?>> lockContext = new AtomicReference<>();
     
     public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfiguration, final EventBusContext eventBusContext) {
         this.instance = instance;
         this.modeConfiguration = modeConfiguration;
         this.eventBusContext = eventBusContext;
+        workerIdGenerator = new AtomicReference<>();
+        lockContext = new AtomicReference<>();
         clusterInstanceRegistry = new ClusterInstanceRegistry();
     }
     
