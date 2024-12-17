@@ -133,7 +133,7 @@ public final class ProjectionAssert {
     }
     
     private static void assertActualProjections(final SQLCaseAssertContext assertContext, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
-        if (null == expected.getActualProjections()) {
+        if (0 == expected.getActualProjections().getSize()) {
             assertTrue(actual.getActualProjectionSegments().isEmpty(), assertContext.getText("Actual projections should not exist."));
         } else {
             assertFalse(actual.getActualProjectionSegments().isEmpty(), assertContext.getText("Actual projections should exist."));
