@@ -18,69 +18,69 @@
 
 <sql-parser-test-cases>
     <create-table sql-case-id="create_table">
-        <table name="t_order" start-index="13" stop-index="19">
+        <table name="t_order_tmp" start-index="13" stop-index="23">
             <table-bound>
                 <original-database name="foo_db_1" />
                 <original-schema name="foo_db_1" />
             </table-bound>
         </table>
-        <column-definition type="BIGINT" primary-key="true" start-index="22" stop-index="48">
+        <column-definition type="BIGINT" primary-key="true" start-index="26" stop-index="52">
             <column name="order_id">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="order_id" />
                 </column-bound>
             </column>
         </column-definition>
-        <column-definition type="INT" not-null="true" start-index="51" stop-index="70">
+        <column-definition type="INT" not-null="true" start-index="55" stop-index="74">
             <column name="user_id">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="user_id" />
                 </column-bound>
             </column>
         </column-definition>
-        <column-definition type="VARCHAR" not-null="true" start-index="73" stop-index="99">
+        <column-definition type="VARCHAR" not-null="true" start-index="77" stop-index="103">
             <column name="status">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="status" />
                 </column-bound>
             </column>
         </column-definition>
-        <column-definition type="INT" start-index="102" stop-index="116">
+        <column-definition type="INT" start-index="106" stop-index="120">
             <column name="merchant_id">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="merchant_id" />
                 </column-bound>
             </column>
         </column-definition>
-        <column-definition type="VARCHAR" not-null="true" start-index="119" stop-index="145">
+        <column-definition type="VARCHAR" not-null="true" start-index="123" stop-index="149">
             <column name="remark">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="remark" />
                 </column-bound>
             </column>
         </column-definition>
-        <column-definition type="DATE" not-null="true" start-index="148" stop-index="174">
+        <column-definition type="DATE" not-null="true" start-index="152" stop-index="178">
             <column name="creation_date">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                    <original-table name="t_order_tmp" />
+                    <original-column name="creation_date" />
                 </column-bound>
             </column>
         </column-definition>

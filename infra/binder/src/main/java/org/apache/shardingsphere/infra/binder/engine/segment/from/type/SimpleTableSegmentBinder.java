@@ -32,10 +32,14 @@ import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabase
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -72,11 +76,10 @@ public final class SimpleTableSegmentBinder {
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, binderContext);
         IdentifierValue databaseName = getDatabaseName(segment, binderContext);
-        ShardingSpherePreconditions.checkNotNull(databaseName.getValue(), NoDatabaseSelectedException::new);
-        IdentifierValue schemaName = getSchemaName(segment, binderContext);
+        IdentifierValue schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        checkTableExists(binderContext, databaseName.getValue(), schemaName.getValue(), tableName.getValue());
         ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
+        checkTableExists(binderContext, schema, schemaName.getValue(), tableName.getValue());
         tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
                 createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
@@ -94,7 +97,17 @@ public final class SimpleTableSegmentBinder {
     private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
-        return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName()));
+        IdentifierValue result = new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName()));
+        ShardingSpherePreconditions.checkNotNull(result.getValue(), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(result.getValue()), () -> new UnknownDatabaseException(result.getValue()));
+        return result;
+    }
+    
+    private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
+        IdentifierValue result = getSchemaName(segment, binderContext);
+        ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName.getValue()).containsSchema(result.getValue()),
+                () -> new SchemaNotFoundException(result.getValue()));
+        return result;
     }
     
     private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
@@ -110,8 +123,10 @@ public final class SimpleTableSegmentBinder {
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
     }
     
-    private static void checkTableExists(final SQLStatementBinderContext binderContext, final String databaseName, final String schemaName, final String tableName) {
+    private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
+            CreateTableStatement sqlStatement = (CreateTableStatement) binderContext.getSqlStatement();
+            ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
         }
         if ("DUAL".equalsIgnoreCase(tableName)) {
@@ -123,10 +138,7 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
             return;
         }
-        ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(databaseName)
-                && binderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
-                && binderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
-                () -> new TableNotFoundException(tableName));
+        ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
     }
     
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
@@ -135,7 +147,20 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue()).containsTable(tableName.getValue())) {
             return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
+        if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
+            return new SimpleTableSegmentBinderContext(createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName));
+        }
         return new SimpleTableSegmentBinderContext(Collections.emptyList());
+    }
+    
+    private static Collection<ProjectionSegment> createProjectionSegments(final CreateTableStatement sqlStatement, final IdentifierValue databaseName,
+                                                                          final IdentifierValue schemaName, final IdentifierValue tableName) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (ColumnDefinitionSegment each : sqlStatement.getColumnDefinitions()) {
+            each.getColumnName().setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, each.getColumnName().getIdentifier()));
+            result.add(new ColumnProjectionSegment(each.getColumnName()));
+        }
+        return result;
     }
     
     private static SimpleTableSegmentBinderContext createSimpleTableSegmentBinderContextWithMetaData(final SimpleTableSegment segment, final ShardingSphereSchema schema,
