@@ -36,14 +36,14 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.test.it.sql.binder.cases.binder.registry.SQLBinderTestCasesRegistry;
+import org.apache.shardingsphere.test.it.sql.binder.cases.sql.registry.SQLBinderCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLParserTestCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -66,15 +66,15 @@ import static org.mockito.Mockito.mock;
 
 public abstract class SQLBinderIT {
     
-    private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
+    private static final SQLCases SQL_CASES = SQLBinderCasesRegistry.getInstance().getCases();
     
-    private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
+    private static final SQLParserTestCases SQL_BINDER_TEST_CASES = SQLBinderTestCasesRegistry.getInstance().getCases();
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertBind(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_BINDER_TEST_CASES.get(sqlCaseId).getParameters());
+        SQLParserTestCase expected = SQL_BINDER_TEST_CASES.get(sqlCaseId);
         SQLStatement actual = bindSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql, new ArrayList<>(expected.getParameters()));
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
@@ -181,7 +181,7 @@ public abstract class SQLBinderIT {
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
-            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
+            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_BINDER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
         }
     }
 }
