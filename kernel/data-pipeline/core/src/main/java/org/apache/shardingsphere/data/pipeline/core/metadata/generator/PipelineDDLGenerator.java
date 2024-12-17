@@ -61,9 +61,9 @@ import java.util.TreeMap;
 @Slf4j
 public final class PipelineDDLGenerator {
     
-    private final ShardingSphereMetaData metaData;
-    
     private static final String SET_SEARCH_PATH_PREFIX = "set search_path";
+    
+    private final ShardingSphereMetaData metaData;
     
     /**
      * Generate logic DDL.
