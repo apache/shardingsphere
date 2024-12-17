@@ -264,8 +264,9 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement(null != ctx.ifNotExists());
+        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {

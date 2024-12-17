@@ -339,8 +339,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement(null != ctx.ifNotExists());
+        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {

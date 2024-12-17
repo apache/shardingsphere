@@ -172,7 +172,7 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
-            result = findInputColumnSegmentByVariables(segment, binderContext.getVariableNames()).orElse(null);
+            result = findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null);
             isFindInputColumn = null != result;
         }
         if (!isFindInputColumn) {

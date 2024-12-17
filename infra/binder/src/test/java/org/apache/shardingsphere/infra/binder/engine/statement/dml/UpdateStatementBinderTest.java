@@ -53,7 +53,7 @@ class UpdateStatementBinderTest {
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(updateStatement, createMetaData(), "foo_db"));
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

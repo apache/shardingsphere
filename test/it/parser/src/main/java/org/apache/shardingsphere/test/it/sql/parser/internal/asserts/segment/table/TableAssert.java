@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bound.TableBoundAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
@@ -251,12 +252,6 @@ public final class TableAssert {
     
     private static void assertTableNameSegment(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
-        if (null == expected.getTableBound()) {
-            assertFalse(actual.getTableName().getTableBoundInfo().isPresent(), assertContext.getText("Actual table bound should not exist."));
-        } else {
-            assertTrue(actual.getTableName().getTableBoundInfo().isPresent(), assertContext.getText("Actual table bound should exist."));
-            IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().get().getOriginalDatabase(), expected.getTableBound().getOriginalDatabase(), "Bound Database");
-            IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().get().getOriginalSchema(), expected.getTableBound().getOriginalSchema(), "Bound Schema");
-        }
+        TableBoundAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().orElse(null), expected.getTableBound());
     }
 }

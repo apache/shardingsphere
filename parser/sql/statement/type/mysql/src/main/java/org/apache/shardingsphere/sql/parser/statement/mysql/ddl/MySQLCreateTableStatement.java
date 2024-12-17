@@ -35,7 +35,7 @@ import java.util.Optional;
 @Setter
 public final class MySQLCreateTableStatement extends CreateTableStatement implements MySQLStatement {
     
-    private final boolean ifNotExists;
+    private boolean ifNotExists;
     
     private SimpleTableSegment likeTable;
     

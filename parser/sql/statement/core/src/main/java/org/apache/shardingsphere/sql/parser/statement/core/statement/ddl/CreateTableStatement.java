@@ -67,6 +67,14 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
     }
     
     /**
+     * Set if not exists.
+     *
+     * @param ifNotExists if not exists
+     */
+    public void setIfNotExists(final boolean ifNotExists) {
+    }
+    
+    /**
      * Get list of columns.
      *
      * @return list of columns
@@ -85,11 +93,27 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
     }
     
     /**
+     * Set like table.
+     *
+     * @param likeTable like table
+     */
+    public void setLikeTable(final SimpleTableSegment likeTable) {
+    }
+    
+    /**
      * Get create table option.
      *
      * @return create table option
      */
     public Optional<CreateTableOptionSegment> getCreateTableOption() {
         return Optional.empty();
+    }
+    
+    /**
+     * Set create table option.
+     *
+     * @param createTableOption create table option
+     */
+    public void setCreateTableOption(final CreateTableOptionSegment createTableOption) {
     }
 }

@@ -47,7 +47,7 @@ public final class DMLStatementBindEngine {
      * @return bound DML statement
      */
     public DMLStatement bind(final DMLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(statement, metaData, currentDatabaseName);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, statement);
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }
