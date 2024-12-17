@@ -166,7 +166,7 @@ public abstract class SQLBinderIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             SQLBinderITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLBinderITSettings.class);
-            Preconditions.checkNotNull(settings, "Annotation InternalSQLParserITSettings is required.");
+            Preconditions.checkNotNull(settings, "Annotation SQLBinderITSettings is required.");
             return getTestParameters(settings.value()).stream();
         }
         

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.binder.it.mysql;
+package org.apache.shardingsphere.test.it.sql.binder.dialect.mysql;
 
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
