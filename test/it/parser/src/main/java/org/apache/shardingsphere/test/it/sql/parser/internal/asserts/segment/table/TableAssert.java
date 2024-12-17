@@ -121,7 +121,7 @@ public final class TableAssert {
      * @param expected expected table
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
+        assertTableNameSegment(assertContext, actual, expected);
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
             assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
@@ -237,13 +237,6 @@ public final class TableAssert {
         }
     }
     
-    /**
-     * Assert actual table function segment is correct with expected table function.
-     *
-     * @param assertContext assert context
-     * @param actual actual table function
-     * @param expected expected table function
-     */
     private static void assertTableFunction(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedTableFunction expected) {
         if (actual instanceof XmlTableFunctionSegment) {
             XmlTableFunctionSegment actualXmlTableFunction = (XmlTableFunctionSegment) actual;
@@ -253,6 +246,17 @@ public final class TableAssert {
             FunctionSegment actualTableFunction = (FunctionSegment) actual;
             assertThat(assertContext.getText("Function name assertion error"), actualTableFunction.getFunctionName(), is(expected.getFunctionName()));
             assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
+        }
+    }
+    
+    private static void assertTableNameSegment(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
+        IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
+        if (null == expected.getTableBound()) {
+            assertFalse(actual.getTableName().getTableBoundInfo().isPresent(), assertContext.getText("Actual table bound should not exist."));
+        } else {
+            assertTrue(actual.getTableName().getTableBoundInfo().isPresent(), assertContext.getText("Actual table bound should exist."));
+            IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().get().getOriginalDatabase(), expected.getTableBound().getOriginalDatabase(), "Bound Database");
+            IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().get().getOriginalSchema(), expected.getTableBound().getOriginalSchema(), "Bound Schema");
         }
     }
 }

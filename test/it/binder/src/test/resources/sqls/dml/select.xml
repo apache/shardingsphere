@@ -16,25 +16,6 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-test-it</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>spi</module>
-        <module>yaml</module>
-        <module>distsql</module>
-        <module>parser</module>
-        <module>optimizer</module>
-        <module>rewriter</module>
-        <module>pipeline</module>
-        <module>binder</module>
-    </modules>
-</project>
+<sql-cases>
+    <sql-case id="select_with_shorthand_projection" value="SELECT * FROM t_order o" db-types="MySQL"/>
+</sql-cases>
