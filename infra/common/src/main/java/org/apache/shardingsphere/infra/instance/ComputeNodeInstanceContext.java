@@ -178,12 +178,11 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     *  Get lock context.
+     * Get lock context.
      *
      * @return lock context
-     * @throws IllegalStateException if lock context is not initialized
      */
-    public LockContext<?> getLockContext() throws IllegalStateException {
+    public LockContext<?> getLockContext() {
         return Optional.ofNullable(lockContext.get()).orElseThrow(() -> new IllegalStateException("Lock context is not initialized."));
     }
 }
