@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.engine.segment.column.ColumnDefinitionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
@@ -39,13 +40,13 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
         sqlStatement.getSelectStatement().ifPresent(optional -> result.setSelectStatement(new SelectStatementBinder().bind(optional, binderContext)));
+        sqlStatement.getColumnDefinitions().forEach(each -> result.getColumnDefinitions().add(ColumnDefinitionSegmentBinder.bind(each, binderContext, tableBinderContexts)));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static CreateTableStatement copy(final CreateTableStatement sqlStatement) {
         CreateTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.getColumnDefinitions().addAll(sqlStatement.getColumnDefinitions());
         result.getConstraintDefinitions().addAll(sqlStatement.getConstraintDefinitions());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.setIfNotExists(sqlStatement.isIfNotExists());

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bound.ColumnBoundAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.generic.DataTypeAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
@@ -44,7 +45,7 @@ public final class ColumnDefinitionAssert {
      * @param expected expected column definition
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName().getIdentifier().getValue(), is(expected.getColumn().getName()));
+        assertColumnName(assertContext, actual, expected);
         if (null != expected.getType()) {
             assertNotNull(actual.getDataType(), assertContext.getText("Column definition data type should exist."));
             assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType().getDataTypeName(), is(expected.getType()));
@@ -62,5 +63,10 @@ public final class ColumnDefinitionAssert {
         if (expected.isNotNull()) {
             assertThat(assertContext.getText("Column definition not null assertion error: "), actual.isNotNull(), is(expected.isNotNull()));
         }
+    }
+    
+    private static void assertColumnName(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
+        assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName().getIdentifier().getValue(), is(expected.getColumn().getName()));
+        ColumnBoundAssert.assertIs(assertContext, actual.getColumnName().getColumnBoundInfo(), expected.getColumn().getColumnBound());
     }
 }

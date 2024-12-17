@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bound.ColumnBoundAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.generic.ParenthesesAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
@@ -164,12 +165,7 @@ public final class ProjectionAssert {
             assertThat(assertContext.getText("Nested Object attributes assertion error: "), actual.getColumn().getExpression(), is(expected.getName()));
         } else {
             IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
-            if (null != expected.getColumnBound()) {
-                IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getColumnBoundInfo().getOriginalDatabase(), expected.getColumnBound().getOriginalDatabase(), "Bound Database");
-                IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getColumnBoundInfo().getOriginalSchema(), expected.getColumnBound().getOriginalSchema(), "Bound Schema");
-                IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getColumnBoundInfo().getOriginalTable(), expected.getColumnBound().getOriginalTable(), "Bound Table");
-                IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getColumnBoundInfo().getOriginalColumn(), expected.getColumnBound().getOriginalColumn(), "Bound Column");
-            }
+            ColumnBoundAssert.assertIs(assertContext, actual.getColumn().getColumnBoundInfo(), expected.getColumnBound());
         }
     }
     
