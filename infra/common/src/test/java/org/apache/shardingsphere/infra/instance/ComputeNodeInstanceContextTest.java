@@ -112,7 +112,7 @@ class ComputeNodeInstanceContextTest {
     @Test
     void assertUpdateWorkerIdWithOtherInstance() {
         ComputeNodeInstance instance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3306));
-        ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(instance,  mock(ModeConfiguration.class), new EventBusContext());
+        ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(instance, mock(ModeConfiguration.class), new EventBusContext());
         instanceContext.init(mock(WorkerIdGenerator.class), mock(LockContext.class));
         instanceContext.addComputeNodeInstance(new ComputeNodeInstance(new ProxyInstanceMetaData("bar_instance_id", 3307)));
         instanceContext.updateWorkerId("bar_instance_id", 10);
