@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Internal SQL parser integrate test settings.
+ * SQL binder integrate test settings.
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
