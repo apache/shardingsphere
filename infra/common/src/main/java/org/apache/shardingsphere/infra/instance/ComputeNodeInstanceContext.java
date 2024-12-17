@@ -31,7 +31,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -54,7 +53,7 @@ public final class ComputeNodeInstanceContext {
     @Getter(AccessLevel.NONE)
     private final AtomicReference<LockContext<?>> lockContext = new AtomicReference<>();
     
-    private final Collection<ComputeNodeInstance> allClusterInstances = new CopyOnWriteArrayList<>();
+    private final ClusterInstanceRegistry clusterInstanceRegistry = new ClusterInstanceRegistry();
     
     /**
      * Initialize compute node instance context.
@@ -81,7 +80,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(instanceState.get());
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.switchState(instanceState.get()));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> optional.switchState(instanceState.get()));
     }
     
     /**
@@ -94,7 +93,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             updateLabels(instance, labels);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> updateLabels(each, labels));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> updateLabels(optional, labels));
     }
     
     private void updateLabels(final ComputeNodeInstance computeNodeInstance, final Collection<String> labels) {
@@ -112,7 +111,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setWorkerId(workerId);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> optional.setWorkerId(workerId));
     }
     
     /**
@@ -135,35 +134,6 @@ public final class ComputeNodeInstanceContext {
         int result = workerIdGenerator.get().generate(props);
         instance.setWorkerId(result);
         return result;
-    }
-    
-    /**
-     * Add compute node instance.
-     *
-     * @param instance compute node instance
-     */
-    public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
-        allClusterInstances.add(instance);
-    }
-    
-    /**
-     * Delete compute node instance.
-     *
-     * @param instance compute node instance
-     */
-    public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
-    }
-    
-    /**
-     * Get compute node instance.
-     *
-     * @param instanceId instance ID
-     * @return compute node instance
-     */
-    public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
-        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getMetaData().getId())).findFirst();
     }
     
     /**

@@ -48,8 +48,9 @@ class SetComputeNodeStateExecutorTest {
     void assertExecuteUpdateWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("currentInstance");
-        when(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
-        when(contextManager.getComputeNodeInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
+        when(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find("instanceID").isPresent()).thenReturn(true);
+        when(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find("instanceID").get().getState().getCurrentState())
+                .thenReturn(InstanceState.CIRCUIT_BREAK);
         assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "instanceID"), contextManager));
     }
 }
