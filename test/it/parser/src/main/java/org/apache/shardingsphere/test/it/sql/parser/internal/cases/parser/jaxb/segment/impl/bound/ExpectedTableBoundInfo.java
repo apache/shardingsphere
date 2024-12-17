@@ -15,34 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedTableBoundInfo;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.table.ExpectedOriginalDatabase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.table.ExpectedOriginalSchema;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Expected simple table.
+ * Expected table bound info.
  */
 @Getter
 @Setter
-public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedTableBoundInfo extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute
-    private String alias;
+    @XmlElement(name = "original-database")
+    private ExpectedOriginalDatabase originalDatabase;
     
-    @XmlElement
-    private ExpectedOwner owner;
-    
-    @XmlElement(name = "table-bound")
-    private ExpectedTableBoundInfo tableBound;
-    
-    @XmlElement(name = "index-hint")
-    private final Collection<ExpectedIndexHint> indexHints = new LinkedList<>();
+    @XmlElement(name = "original-schema")
+    private ExpectedOriginalSchema originalSchema;
 }
