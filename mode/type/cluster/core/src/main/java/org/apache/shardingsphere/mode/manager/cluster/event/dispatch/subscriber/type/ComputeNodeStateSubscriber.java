@@ -49,7 +49,8 @@ public final class ComputeNodeStateSubscriber implements DispatchEventSubscriber
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        computeNodeInstanceContext.addComputeNodeInstance(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
+        computeNodeInstanceContext.getClusterInstanceRegistry()
+                .add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -59,7 +60,7 @@ public final class ComputeNodeStateSubscriber implements DispatchEventSubscriber
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        computeNodeInstanceContext.deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
+        computeNodeInstanceContext.getClusterInstanceRegistry().delete(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
