@@ -161,7 +161,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         SQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
                 .getSQLParserEngine(metaData.getDatabase(jobConfig.getTargetDatabaseName()).getProtocolType());
-        preparer.prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine));
+        preparer.prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine, metaData));
     }
     
     private void prepareIncremental(final MigrationJobItemContext jobItemContext) {
