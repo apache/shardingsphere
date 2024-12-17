@@ -22,6 +22,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLPar
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.loader.SQLParserTestCaseLoaderCallback;
 import org.apache.shardingsphere.test.it.sql.parser.internal.loader.CaseLoaderTemplate;
 
+import java.io.File;
+
 /**
  * SQL binder test cases registry.
  */
@@ -33,7 +35,8 @@ public final class SQLBinderTestCasesRegistry {
     private final SQLParserTestCases cases;
     
     private SQLBinderTestCasesRegistry() {
-        cases = new SQLParserTestCases(CaseLoaderTemplate.load("cases/", new SQLParserTestCaseLoaderCallback()));
+        File file = new File(SQLBinderTestCasesRegistry.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        cases = new SQLParserTestCases(CaseLoaderTemplate.load(file, "cases/", new SQLParserTestCaseLoaderCallback()));
     }
     
     /**
