@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
@@ -36,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Compute node instance context.
  */
-@RequiredArgsConstructor
 @Getter
 @ThreadSafe
 public final class ComputeNodeInstanceContext {
@@ -47,13 +45,20 @@ public final class ComputeNodeInstanceContext {
     
     private final EventBusContext eventBusContext;
     
+    private final ClusterInstanceRegistry clusterInstanceRegistry;
+    
     @Getter(AccessLevel.NONE)
     private final AtomicReference<WorkerIdGenerator> workerIdGenerator = new AtomicReference<>();
     
     @Getter(AccessLevel.NONE)
     private final AtomicReference<LockContext<?>> lockContext = new AtomicReference<>();
     
-    private final ClusterInstanceRegistry clusterInstanceRegistry = new ClusterInstanceRegistry();
+    public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfiguration, final EventBusContext eventBusContext) {
+        this.instance = instance;
+        this.modeConfiguration = modeConfiguration;
+        this.eventBusContext = eventBusContext;
+        clusterInstanceRegistry = new ClusterInstanceRegistry();
+    }
     
     /**
      * Initialize compute node instance context.
