@@ -53,6 +53,7 @@
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <remoteresources.skip>true</remoteresources.skip>
         <jacoco.skip>true</jacoco.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>

@@ -62,6 +62,7 @@
         <profile>
             <id>release</id>
             <properties>
+                <remoteresources.skip>false</remoteresources.skip>
                 <maven.javadoc.skip>false</maven.javadoc.skip>
                 <checkstyle.skip>false</checkstyle.skip>
                 <rat.skip>false</rat.skip>
