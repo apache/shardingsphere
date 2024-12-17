@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor.fixture;
+package org.apache.shardingsphere.test.it.sql.binder;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Getter
-public final class AlgorithmChangedProcessorFixtureRuleConfiguration implements RuleConfiguration {
+/**
+ * SQL binder integrate test settings.
+ */
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SQLBinderITSettings {
     
-    private final Map<String, AlgorithmConfiguration> algorithmConfigurations = new HashMap<>();
+    /**
+     * Get to be tested database types.
+     *
+     * @return to be tested database types
+     */
+    String[] value();
 }

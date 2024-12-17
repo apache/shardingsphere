@@ -16,7 +16,7 @@
 --
 
 DROP DATABASE IF EXISTS expected_dataset;
-CREATE DATABASE expected_dataset;
+CREATE DATABASE expected_dataset DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO test_user;
 

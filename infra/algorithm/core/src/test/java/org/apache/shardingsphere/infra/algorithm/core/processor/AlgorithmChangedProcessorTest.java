@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor;
+package org.apache.shardingsphere.infra.algorithm.core.processor;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.processor.fixture.AlgorithmChangedProcessorFixtureRule;
+import org.apache.shardingsphere.infra.algorithm.core.processor.fixture.AlgorithmChangedProcessorFixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -25,8 +27,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.processor.fixture.AlgorithmChangedProcessorFixtureRule;
-import org.apache.shardingsphere.mode.processor.fixture.AlgorithmChangedProcessorFixtureRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.Test;
 

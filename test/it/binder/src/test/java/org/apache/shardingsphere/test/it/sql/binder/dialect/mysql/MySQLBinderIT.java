@@ -15,20 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.processor.fixture;
+package org.apache.shardingsphere.test.it.sql.binder.dialect.mysql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 
-@RequiredArgsConstructor
-@Getter
-public final class AlgorithmChangedProcessorFixtureRule implements ShardingSphereRule {
-    
-    private final AlgorithmChangedProcessorFixtureRuleConfiguration configuration;
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
+@SQLBinderITSettings({"MySQL", "H2"})
+class MySQLBinderIT extends SQLBinderIT {
 }

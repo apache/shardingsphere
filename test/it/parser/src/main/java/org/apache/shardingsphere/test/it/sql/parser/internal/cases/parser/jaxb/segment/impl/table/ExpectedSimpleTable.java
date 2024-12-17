@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedTableBoundInfo;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,6 +39,9 @@ public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegm
     
     @XmlElement
     private ExpectedOwner owner;
+    
+    @XmlElement(name = "table-bound")
+    private ExpectedTableBoundInfo tableBound;
     
     @XmlElement(name = "index-hint")
     private final Collection<ExpectedIndexHint> indexHints = new LinkedList<>();

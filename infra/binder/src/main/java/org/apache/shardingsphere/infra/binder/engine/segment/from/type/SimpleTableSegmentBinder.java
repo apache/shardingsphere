@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.from.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -59,16 +58,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(4, 1F);
-    
     private static final String PG_CATALOG = "pg_catalog";
-    
-    static {
-        SYSTEM_CATALOG_TABLES.add("pg_database");
-        SYSTEM_CATALOG_TABLES.add("pg_tables");
-        SYSTEM_CATALOG_TABLES.add("pg_roles");
-        SYSTEM_CATALOG_TABLES.add("pg_settings");
-    }
     
     /**
      * Bind simple table segment.
@@ -113,7 +103,8 @@ public final class SimpleTableSegmentBinder {
         }
         // TODO getSchemaName according to search path
         DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
-        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
+        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
+                && SystemSchemaManager.isSystemTable(databaseType.getType(), PG_CATALOG, segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
