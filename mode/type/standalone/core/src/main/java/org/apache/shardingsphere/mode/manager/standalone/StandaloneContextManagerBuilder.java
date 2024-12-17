@@ -46,14 +46,10 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        ComputeNodeInstanceContext computeNodeInstanceContext = buildComputeNodeInstanceContext(param, eventBusContext);
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new GlobalLockContext(null));
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
-    }
-    
-    private ComputeNodeInstanceContext buildComputeNodeInstanceContext(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) {
-        return new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new GlobalLockContext(null), eventBusContext);
     }
     
     @Override
