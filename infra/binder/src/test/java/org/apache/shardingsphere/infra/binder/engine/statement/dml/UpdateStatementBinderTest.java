@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -53,7 +54,7 @@ class UpdateStatementBinderTest {
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", updateStatement));
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

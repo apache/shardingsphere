@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -66,7 +67,7 @@ class SelectStatementBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         selectStatement.setFrom(simpleTableSegment);
         selectStatement.setWhere(mockWhereSegment());
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", selectStatement));
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), selectStatement));
         assertThat(actual, not(selectStatement));
         assertTrue(actual.getFrom().isPresent());
         assertThat(actual.getFrom().get(), not(simpleTableSegment));
