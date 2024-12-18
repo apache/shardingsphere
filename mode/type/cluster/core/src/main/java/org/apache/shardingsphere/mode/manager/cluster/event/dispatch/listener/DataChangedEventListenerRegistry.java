@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.GlobalMetaDataChangedListener;
+import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -39,10 +40,13 @@ public final class DataChangedEventListenerRegistry {
     
     private final Collection<String> databaseNames;
     
+    private final RuleItemManager ruleItemManager;
+    
     public DataChangedEventListenerRegistry(final ContextManager contextManager, final Collection<String> databaseNames) {
         repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         eventBusContext = contextManager.getComputeNodeInstanceContext().getEventBusContext();
         this.databaseNames = databaseNames;
+        ruleItemManager = contextManager.getMetaDataContextManager().getRuleItemManager();
     }
     
     /**
@@ -54,7 +58,7 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerDatabaseListeners(final String databaseName) {
-        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
+        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext, ruleItemManager));
     }
     
     private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {

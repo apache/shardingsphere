@@ -18,21 +18,26 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.item.RuleItemChanged;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Rule item manager.
  */
+@Slf4j
 public class RuleItemManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
@@ -41,47 +46,61 @@ public class RuleItemManager {
     
     private final MetaDataPersistService metaDataPersistService;
     
+    private final RuleItemChangedBuilder ruleItemChangedBuilder;
+    
     public RuleItemManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository, final DatabaseRuleConfigurationManager ruleConfigManager) {
         this.metaDataContexts = metaDataContexts;
         this.ruleConfigManager = ruleConfigManager;
         metaDataPersistService = new MetaDataPersistService(repository);
+        ruleItemChangedBuilder = new RuleItemChangedBuilder();
     }
     
     /**
      * Alter with rule item.
      *
-     * @param alterRuleItem alter rule item
-     * @throws SQLException SQL Exception
+     * @param databaseName database name
+     * @param activeVersionKey active version key
+     * @param activeVersion active version
+     * @param changeType change type
      */
-    public void alterRuleItem(final AlterRuleItem alterRuleItem) throws SQLException {
-        Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(alterRuleItem.getActiveVersionKey())), "Invalid active version: {} of key: {}",
-                alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
-        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String yamlContent = metaDataPersistService.getMetaDataVersionPersistService()
-                .getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
-        String databaseName = alterRuleItem.getDatabaseName();
-        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
-        synchronized (this) {
-            processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
-            ruleConfigManager.alterRuleConfiguration(databaseName, currentRuleConfig);
+    public void alterRuleItem(final String databaseName, final String activeVersionKey, final String activeVersion, final Type changeType) {
+        Optional<RuleItemChanged> ruleItemChanged = ruleItemChangedBuilder.build(databaseName, activeVersionKey, activeVersion, changeType);
+        if (!ruleItemChanged.isPresent()) {
+            return;
+        }
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, ruleItemChanged.get().getType());
+        if (ruleItemChanged.get() instanceof AlterRuleItem) {
+            alter(databaseName, activeVersionKey, activeVersion, (AlterRuleItem) ruleItemChanged.get(), processor);
+        } else if (ruleItemChanged.get() instanceof DropRuleItem) {
+            drop(databaseName, (DropRuleItem) ruleItemChanged.get(), processor);
         }
     }
     
-    /**
-     * Drop with rule item.
-     *
-     * @param dropRuleItem drop rule item
-     * @throws SQLException SQL Exception
-     */
-    public void dropRuleItem(final DropRuleItem dropRuleItem) throws SQLException {
-        String databaseName = dropRuleItem.getDatabaseName();
+    private void alter(final String databaseName, final String activeVersionKey, final String activeVersion, final AlterRuleItem alterRuleItem, final RuleItemConfigurationChangedProcessor processor) {
+        Preconditions.checkArgument(activeVersion.equals(metaDataPersistService.getMetaDataVersionPersistService()
+                .getActiveVersionByFullPath(activeVersionKey)), "Invalid active version: {} of key: {}", activeVersion, activeVersionKey);
+        String yamlContent = metaDataPersistService.getMetaDataVersionPersistService().getVersionPathByActiveVersion(activeVersionKey, activeVersion);
+        RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
+        synchronized (this) {
+            processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
+            try {
+                ruleConfigManager.alterRuleConfiguration(databaseName, currentRuleConfig);
+            } catch (final SQLException ex) {
+                log.error("Alter rule configuration failed, databaseName:{}, key:{}, version:{}", databaseName, activeVersionKey, activeVersion, ex);
+            }
+        }
+    }
+    
+    private void drop(final String databaseName, final DropRuleItem dropRuleItem, final RuleItemConfigurationChangedProcessor processor) {
         Preconditions.checkState(metaDataContexts.get().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
-        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, dropRuleItem.getType());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
-            ruleConfigManager.dropRuleConfiguration(databaseName, currentRuleConfig);
+            try {
+                ruleConfigManager.dropRuleConfiguration(databaseName, currentRuleConfig);
+            } catch (final SQLException ex) {
+                log.error("Drop rule configuration failed, databaseName:{}, type:{}", databaseName, dropRuleItem.getType(), ex);
+            }
         }
     }
 }

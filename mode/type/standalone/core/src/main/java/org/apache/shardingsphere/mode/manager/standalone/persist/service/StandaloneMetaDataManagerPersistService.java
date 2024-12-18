@@ -38,14 +38,10 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.spi.item.RuleItemChanged;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.sql.SQLException;
@@ -67,12 +63,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private final MetaDataContextManager metaDataContextManager;
     
-    private final RuleItemChangedBuilder ruleItemChangedBuilder;
-    
     public StandaloneMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
         metaDataPersistService = new MetaDataPersistService(repository);
         this.metaDataContextManager = metaDataContextManager;
-        ruleItemChangedBuilder = new RuleItemChangedBuilder();
     }
     
     @Override
@@ -292,17 +285,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .persist(metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         for (MetaDataVersion each : metaDataVersions) {
-            // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
-            Optional<RuleItemChanged> ruleItemChanged = buildAlterRuleItemChanged(databaseName, each, Type.UPDATED);
-            if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof AlterRuleItem) {
-                metaDataContextManager.getRuleItemManager().alterRuleItem((AlterRuleItem) ruleItemChanged.get());
-            }
+            metaDataContextManager.getRuleItemManager().alterRuleItem(databaseName, each.getActiveVersionNodePath(), each.getNextActiveVersion(), Type.UPDATED);
         }
         clearServiceCache();
-    }
-    
-    private Optional<RuleItemChanged> buildAlterRuleItemChanged(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
-        return ruleItemChangedBuilder.build(databaseName, metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type);
     }
     
     @Override
@@ -312,11 +297,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion metaDataVersion : metaDataVersions) {
-            Optional<RuleItemChanged> ruleItemChanged = buildAlterRuleItemChanged(databaseName, metaDataVersion, Type.DELETED);
-            // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
-            if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof DropRuleItem) {
-                metaDataContextManager.getRuleItemManager().dropRuleItem((DropRuleItem) ruleItemChanged.get());
-            }
+            metaDataContextManager.getRuleItemManager().alterRuleItem(databaseName, metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), Type.DELETED);
         }
         clearServiceCache();
     }
