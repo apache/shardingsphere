@@ -22,8 +22,8 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +44,8 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "- foo_tbl");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "- foo_tbl");
         assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
     }
     
@@ -65,18 +65,18 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")));
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     

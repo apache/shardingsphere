@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -48,8 +48,8 @@ class DefaultShardingAuditorStrategyChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        ShardingAuditStrategyConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        ShardingAuditStrategyConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
         assertThat(actual, deepEqual(new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_algo"), true)));
     }
     
@@ -75,19 +75,19 @@ class DefaultShardingAuditorStrategyChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ShardingAuditStrategyConfiguration toBeChangedItemConfig = new ShardingAuditStrategyConfiguration(Collections.singleton("bar_algo"), true);
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames(), is(Collections.singleton("bar_algo")));
         assertTrue(currentRuleConfig.getDefaultAuditStrategy().isAllowHintDisable());
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultAuditStrategy());
     }
     

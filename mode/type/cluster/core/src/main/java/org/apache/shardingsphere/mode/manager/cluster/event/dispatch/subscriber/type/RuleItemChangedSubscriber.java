@@ -19,11 +19,21 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.AlterUniqueRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropUniqueRuleItem;
 
 import java.sql.SQLException;
 
@@ -47,7 +57,8 @@ public final class RuleItemChangedSubscriber implements DispatchEventSubscriber 
      */
     @Subscribe
     public void renew(final AlterRuleItemEvent event) throws SQLException {
-        ruleItemManager.alterRuleItem(event);
+        // TODO remove the event and this subscriber
+        ruleItemManager.alterRuleItem(convertToAlterRuleItem(event));
     }
     
     /**
@@ -58,6 +69,25 @@ public final class RuleItemChangedSubscriber implements DispatchEventSubscriber 
      */
     @Subscribe
     public void renew(final DropRuleItemEvent event) throws SQLException {
-        ruleItemManager.dropRuleItem(event);
+        // TODO remove the event and this subscriber
+        ruleItemManager.dropRuleItem(convertToDropRuleItem(event));
+    }
+    
+    private AlterRuleItem convertToAlterRuleItem(final AlterRuleItemEvent event) {
+        if (event instanceof AlterNamedRuleItemEvent) {
+            AlterNamedRuleItemEvent alterNamedRuleItemEvent = (AlterNamedRuleItemEvent) event;
+            return new AlterNamedRuleItem(alterNamedRuleItemEvent.getDatabaseName(), alterNamedRuleItemEvent.getItemName(), event.getActiveVersionKey(), event.getActiveVersion(), event.getType());
+        }
+        AlterUniqueRuleItemEvent alterUniqueRuleItemEvent = (AlterUniqueRuleItemEvent) event;
+        return new AlterUniqueRuleItem(alterUniqueRuleItemEvent.getDatabaseName(), alterUniqueRuleItemEvent.getActiveVersionKey(), event.getActiveVersion(), event.getType());
+    }
+    
+    private DropRuleItem convertToDropRuleItem(final DropRuleItemEvent event) {
+        if (event instanceof DropNamedRuleItemEvent) {
+            DropNamedRuleItemEvent dropNamedRuleItemEvent = (DropNamedRuleItemEvent) event;
+            return new DropNamedRuleItem(dropNamedRuleItemEvent.getDatabaseName(), dropNamedRuleItemEvent.getItemName(), event.getType());
+        }
+        DropUniqueRuleItemEvent dropUniqueRuleItemEvent = (DropUniqueRuleItemEvent) event;
+        return new DropUniqueRuleItem(dropUniqueRuleItemEvent.getDatabaseName(), event.getType());
     }
 }

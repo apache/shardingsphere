@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
@@ -36,9 +36,9 @@ import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSou
 public final class ShadowDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowDataSourceConfiguration> {
     
     @Override
-    public ShadowDataSourceConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShadowDataSourceConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         YamlShadowDataSourceConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlShadowDataSourceConfiguration.class);
-        return new ShadowDataSourceConfiguration(((AlterNamedRuleItemEvent) event).getItemName(), yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
+        return new ShadowDataSourceConfiguration(((AlterNamedRuleItem) alterRuleItem).getItemName(), yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
     @Override
@@ -47,15 +47,15 @@ public final class ShadowDataSourceChangedProcessor implements RuleItemConfigura
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final ShadowDataSourceConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShadowRuleConfiguration currentRuleConfig, final ShadowDataSourceConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
         currentRuleConfig.getDataSources().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
         currentRuleConfig.getDataSources().add(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getDataSources().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShadowRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getDataSources().removeIf(each -> each.getName().equals(((DropNamedRuleItem) dropRuleItem).getItemName()));
     }
     
     @Override

@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -50,17 +50,17 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfigurationWithoutTransactionalReadQueryStrategy() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo");
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent(null));
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent(null));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer")));
     }
     
     @Test
     void assertSwapRuleItemConfigurationWithTransactionalReadQueryStrategy() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo");
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
         assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.PRIMARY, "foo_balancer")));
     }
@@ -90,21 +90,21 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("foo");
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ReadwriteSplittingDataSourceGroupRuleConfiguration toBeChangedItemConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.FIXED, "foo_balancer");
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(new ArrayList<>(currentRuleConfig.getDataSourceGroups()).get(0).getTransactionalReadQueryStrategy(), is(TransactionalReadQueryStrategy.FIXED));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo");
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
+        when(dropNamedRuleItem.getItemName()).thenReturn("foo");
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getDataSourceGroups().isEmpty());
     }
     
