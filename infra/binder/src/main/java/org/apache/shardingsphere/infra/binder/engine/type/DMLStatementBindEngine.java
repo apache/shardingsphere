@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStateme
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
@@ -40,6 +41,8 @@ public final class DMLStatementBindEngine {
     
     private final String currentDatabaseName;
     
+    private final HintValueContext hintValueContext;
+    
     /**
      * Bind DML statement.
      *
@@ -47,7 +50,7 @@ public final class DMLStatementBindEngine {
      * @return bound DML statement
      */
     public DMLStatement bind(final DMLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, statement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }

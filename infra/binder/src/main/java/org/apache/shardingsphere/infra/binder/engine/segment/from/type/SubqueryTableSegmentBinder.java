@@ -51,7 +51,8 @@ public final class SubqueryTableSegmentBinder {
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, binderContext);
-        SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), segment.getSubquery().getSelect());
+        SQLStatementBinderContext subqueryBinderContext =
+                new SQLStatementBinderContext(binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSubquery().getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         SelectStatement boundSubSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
         SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSubSelect, segment.getSubquery().getText());

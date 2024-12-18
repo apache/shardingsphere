@@ -125,8 +125,8 @@ public final class SimpleTableSegmentBinder {
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
-            CreateTableStatement sqlStatement = (CreateTableStatement) binderContext.getSqlStatement();
-            ShardingSpherePreconditions.checkState(sqlStatement.isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
+                    || ((CreateTableStatement) binderContext.getSqlStatement()).isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
         }
         if ("DUAL".equalsIgnoreCase(tableName)) {
