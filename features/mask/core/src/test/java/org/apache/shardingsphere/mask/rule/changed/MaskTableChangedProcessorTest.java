@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ class MaskTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
         assertThat(actual, deepEqual(new MaskTableRuleConfiguration("foo_tbl", Collections.singletonList(new MaskColumnRuleConfiguration("foo_col", "foo_algo")))));
     }
     
@@ -82,21 +82,21 @@ class MaskTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_tbl");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("foo_tbl");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         MaskTableRuleConfiguration toBeChangedItemConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(mock(MaskColumnRuleConfiguration.class)));
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getColumns().size(), is(1));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_tbl");
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
+        when(dropNamedRuleItem.getItemName()).thenReturn("foo_tbl");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     

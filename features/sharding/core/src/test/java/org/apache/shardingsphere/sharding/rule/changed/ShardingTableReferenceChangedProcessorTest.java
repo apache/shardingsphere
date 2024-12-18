@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -46,8 +46,8 @@ class ShardingTableReferenceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        ShardingTableReferenceRuleConfiguration actual = processor.swapRuleItemConfiguration(event, "foo_ref:foo_tbl_0,foo_tbl_1");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        ShardingTableReferenceRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "foo_ref:foo_tbl_0,foo_tbl_1");
         assertThat(actual, deepEqual(new ShardingTableReferenceRuleConfiguration("foo_ref", "foo_tbl_0,foo_tbl_1")));
     }
     
@@ -67,11 +67,11 @@ class ShardingTableReferenceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_ref");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("foo_ref");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ShardingTableReferenceRuleConfiguration toBeChangedItemConfig = new ShardingTableReferenceRuleConfiguration("foo_ref", "bar_tbl_0,bar_tbl_1");
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertThat(new ArrayList<>(currentRuleConfig.getBindingTableGroups()).get(0).getName(), is("foo_ref"));
         assertThat(new ArrayList<>(currentRuleConfig.getBindingTableGroups()).get(0).getReference(), is("bar_tbl_0,bar_tbl_1"));
@@ -79,10 +79,10 @@ class ShardingTableReferenceChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_ref");
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
+        when(dropNamedRuleItem.getItemName()).thenReturn("foo_ref");
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }
     

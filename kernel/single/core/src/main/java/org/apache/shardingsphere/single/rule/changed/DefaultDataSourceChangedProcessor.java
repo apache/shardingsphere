@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 public final class DefaultDataSourceChangedProcessor implements RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, String> {
     
     @Override
-    public String swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public String swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         return yamlContent;
     }
     
@@ -41,12 +41,12 @@ public final class DefaultDataSourceChangedProcessor implements RuleItemConfigur
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final SingleRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultDataSource(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultDataSource(null);
     }
     

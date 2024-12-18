@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
+import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -47,15 +52,15 @@ class RuleItemChangedSubscriberTest {
     
     @Test
     void assertRenewWithAlterRuleItemEvent() throws SQLException {
-        AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
+        AlterRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
         subscriber.renew(event);
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(event);
+        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(any(AlterRuleItem.class));
     }
     
     @Test
     void assertRenewWithDropRuleItemEvent() throws SQLException {
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
+        DropRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
         subscriber.renew(event);
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).dropRuleItem(event);
+        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).dropRuleItem(any(DropRuleItem.class));
     }
 }

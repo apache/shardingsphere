@@ -30,11 +30,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
-import org.apache.shardingsphere.mode.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -172,13 +172,13 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
-        AlterRuleItemEvent event = mock(AlterRuleItemEvent.class);
-        RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = mock(RuleConfigurationChangedEventBuilder.class);
-        when(ruleConfigChangedEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
-        setRuleConfigurationEventBuilder(ruleConfigChangedEventBuilder);
+        AlterRuleItem alterRuleItem = mock(AlterRuleItem.class);
+        RuleItemChangedBuilder ruleItemChangedBuilder = mock(RuleItemChangedBuilder.class);
+        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(alterRuleItem));
+        setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
         verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(metaDataVersion);
-        verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(event);
+        verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(any(AlterRuleItem.class));
     }
     
     @Test
@@ -192,12 +192,12 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistService.getDatabaseRulePersistService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
-        RuleConfigurationChangedEventBuilder ruleConfigChangedEventBuilder = mock(RuleConfigurationChangedEventBuilder.class);
-        DropRuleItemEvent event = mock(DropRuleItemEvent.class);
-        when(ruleConfigChangedEventBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(event));
-        setRuleConfigurationEventBuilder(ruleConfigChangedEventBuilder);
+        RuleItemChangedBuilder ruleItemChangedBuilder = mock(RuleItemChangedBuilder.class);
+        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
+        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(dropRuleItem));
+        setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
-        verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(event);
+        verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(any(DropRuleItem.class));
     }
     
     @Test
@@ -236,7 +236,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setRuleConfigurationEventBuilder(final RuleConfigurationChangedEventBuilder ruleConfigurationEventBuilder) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleConfigChangedEventBuilder"), metaDataManagerPersistService, ruleConfigurationEventBuilder);
+    private void setRuleConfigurationEventBuilder(final RuleItemChangedBuilder ruleItemChangedBuilder) {
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedBuilder"), metaDataManagerPersistService, ruleItemChangedBuilder);
     }
 }
