@@ -21,19 +21,19 @@ dataSources:
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.mysql.ds0.jdbc-url::}
     username: root
-    password: 123456
+    password: example
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.mysql.ds1.jdbc-url::}
     username: root
-    password: 123456
+    password: example
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: $${fixture.test-native.yaml.database.mysql.ds2.jdbc-url::}
     username: root
-    password: 123456
+    password: example
 
 rules:
 - !SHARDING

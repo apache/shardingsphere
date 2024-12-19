@@ -562,8 +562,8 @@ public class ExampleUtils {
             assert null == System.getProperty("fixture.hive.ds2.jdbc-url");
             String absolutePath = Paths.get("src/test/resources/init.sql").toAbsolutePath().toString();
             System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_0;initFile=" + absolutePath);
-            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_1;initFile=" + absolutePath);
-            System.setProperty("fixture.hive.ds0.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_2;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds1.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_1;initFile=" + absolutePath);
+            System.setProperty("fixture.hive.ds2.jdbc-url", "jdbc:hive2://localhost:10000/demo_ds_2;initFile=" + absolutePath);
             return new HikariDataSource(config);
         } finally {
             System.clearProperty("fixture.hive.ds0.jdbc-url");

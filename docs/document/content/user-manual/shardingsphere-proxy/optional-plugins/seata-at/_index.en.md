@@ -14,7 +14,7 @@ but there are some differences,
 1. If the user uses ShardingSphere JDBC in a hybrid deployment architecture, this scenario does not directly interact with ShardingSphere Proxy and is therefore not relevant to this article.
    This article only discusses the scenario where the business project does not use ShardingSphere JDBC
 2. Seata Client only exists in ShardingSphere Proxy, and the business project does not need to rely on Seata Client
-3. The R2BDC DataSource of the business project can be normally connected to the ShardingSphere Proxy with Seata integration turned on
+3. The R2DBC DataSource of the business project can be normally connected to the ShardingSphere Proxy with Seata integration turned on
 4. For ShardingSphere Proxy with Seata integration turned on, it is not possible to establish a `transaction propagation across services` operation to propagate transactions to other ShardingSphere Proxy instances using Seata integration or other microservices using Seata integration.
 If users have such needs, they should consider submitting a PR for ShardingSphere
 5. The assumptions made by ShardingSphere JDBC on Seata's TCC mode are invalid on ShardingSphere Proxy

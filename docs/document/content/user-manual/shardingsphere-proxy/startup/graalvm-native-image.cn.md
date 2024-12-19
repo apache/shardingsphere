@@ -178,3 +178,32 @@ services:
 用户需要关注尚未关闭的 https://github.com/oracle/graal/issues/8177 。
 
 若用户期望在 ShardingSphere Proxy Native 下使用这类 Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。
+
+## Seata AT 模式集成
+
+对于 GraalVM Native Image 形态的 ShardingSphere Proxy Native，
+用户始终需要修改 ShardingSphere 源代码以添加 Seata Client 和 Seata 集成的 Maven 模块，并编译为 GraalVM Native Image。
+GraalVM Native Image 形态的 ShardingSphere Proxy Native 无法识别额外添加的 JAR 文件。
+
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.seata</groupId>
+         <artifactId>seata-all</artifactId>
+         <version>2.2.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+    </dependencies>
+</project>
+```

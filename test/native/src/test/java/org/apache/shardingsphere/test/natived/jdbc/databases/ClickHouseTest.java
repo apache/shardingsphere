@@ -25,7 +25,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -66,11 +65,12 @@ class ClickHouseTest {
             .withNetworkAliases("clickhouse-keeper-01");
     
     @Container
-    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.11.1.2557")
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("clickhouse/clickhouse-server:24.11.1.2557")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/transactions.xml").toAbsolutePath()),
                     "/etc/clickhouse-server/config.d/transactions.xml")
             .withNetwork(NETWORK)
+            .withExposedPorts(8123)
             .dependsOn(CLICKHOUSE_KEEPER_CONTAINER);
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
@@ -102,18 +102,18 @@ class ClickHouseTest {
     
     private Connection openConnection(final String databaseName) throws SQLException {
         Properties props = new Properties();
-        props.setProperty("user", CONTAINER.getUsername());
-        props.setProperty("password", CONTAINER.getPassword());
+        props.setProperty("user", "default");
+        props.setProperty("password", "");
         return DriverManager.getConnection(jdbcUrlPrefix + databaseName, props);
     }
     
     private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection(CONTAINER.getDatabaseName()).close();
+            openConnection("default").close();
             return true;
         });
         try (
-                Connection connection = openConnection(CONTAINER.getDatabaseName());
+                Connection connection = openConnection("default");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
