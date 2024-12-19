@@ -31,6 +31,7 @@ execute
     | repairTable
     | dropTable
     | truncateTable
+    | recoverTable
     | createIndex
     | dropIndex
     | createProcedure
@@ -39,6 +40,7 @@ execute
     | dropFunction
     | createDatabase
     | dropDatabase
+    | recoverDatabase
     | createEvent
     | dropEvent
     | createLogfileGroup
@@ -128,6 +130,7 @@ execute
     | dropTablespace
     | delimiter
     | startReplica
+    | recoverPartition
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
