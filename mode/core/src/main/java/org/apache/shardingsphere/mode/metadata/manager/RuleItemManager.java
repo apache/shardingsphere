@@ -53,6 +53,7 @@ public class RuleItemManager {
      * @param alterRuleItem alter rule item
      * @throws SQLException SQL Exception
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void alterRuleItem(final AlterRuleItem alterRuleItem) throws SQLException {
         Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
                 .getActiveVersionByFullPath(alterRuleItem.getActiveVersionKey())), "Invalid active version: {} of key: {}",
@@ -74,6 +75,7 @@ public class RuleItemManager {
      * @param dropRuleItem drop rule item
      * @throws SQLException SQL Exception
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void dropRuleItem(final DropRuleItem dropRuleItem) throws SQLException {
         String databaseName = dropRuleItem.getDatabaseName();
         Preconditions.checkState(metaDataContexts.get().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
