@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.t
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,12 +38,9 @@ class DatabaseMetaDataChangedListenerTest {
     @Mock
     private EventBusContext eventBusContext;
     
-    @Mock
-    private RuleItemManager ruleItemManager;
-    
     @BeforeEach
     void setUp() {
-        listener = new DatabaseMetaDataChangedListener(eventBusContext, ruleItemManager);
+        listener = new DatabaseMetaDataChangedListener(eventBusContext);
     }
     
     @Test

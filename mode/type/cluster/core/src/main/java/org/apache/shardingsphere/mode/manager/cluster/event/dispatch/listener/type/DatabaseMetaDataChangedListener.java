@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.event.dispatch.builder.MetaDataChangedEventBuilder;
-import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
+import org.apache.shardingsphere.mode.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Optional;
@@ -36,24 +36,18 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     private final EventBusContext eventBusContext;
     
-    private final RuleItemManager ruleItemManager;
-    
     @Override
     public void onChange(final DataChangedEvent event) {
-        handleDataChangedEvent(event);
+        createDispatchEvent(event).ifPresent(eventBusContext::post);
     }
     
-    private void handleDataChangedEvent(final DataChangedEvent event) {
+    private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
         String key = event.getKey();
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
         if (!databaseName.isPresent()) {
-            return;
+            return Optional.empty();
         }
         Optional<DispatchEvent> metaDataChangedEvent = new MetaDataChangedEventBuilder().build(databaseName.get(), event);
-        if (metaDataChangedEvent.isPresent()) {
-            eventBusContext.post(metaDataChangedEvent.get());
-        } else {
-            ruleItemManager.alterRuleItem(databaseName.get(), event.getKey(), event.getValue(), event.getType());
-        }
+        return metaDataChangedEvent.isPresent() ? metaDataChangedEvent : new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
     }
 }
