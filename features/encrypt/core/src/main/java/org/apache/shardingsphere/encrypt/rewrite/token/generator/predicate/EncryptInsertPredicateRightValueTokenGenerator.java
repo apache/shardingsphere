@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 

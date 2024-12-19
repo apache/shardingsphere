@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.DatabaseAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Predicate right value token generator for encrypt.
@@ -77,7 +78,8 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
         String schemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
         for (EncryptCondition each : encryptConditions) {
-            rule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getTableName());
+            encryptTable.ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
         }
         return result;
     }
@@ -98,15 +100,16 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(encryptCondition.getColumnName());
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(encryptCondition.getColumnSegment().getIdentifier().getValue());
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery()
-                    .orElseThrow(() -> new MissingMatchedEncryptQueryAlgorithmException(encryptTable.getTable(), encryptCondition.getColumnName(), "LIKE"));
-            return likeQueryColumnItem.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+                    .orElseThrow(() -> new MissingMatchedEncryptQueryAlgorithmException(encryptTable.getTable(), encryptCondition.getColumnSegment().getIdentifier().getValue(), "LIKE"));
+            return likeQueryColumnItem.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues);
         }
         return encryptColumn.getAssistedQuery()
-                .map(optional -> optional.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues))
-                .orElseGet(() -> encryptColumn.getCipher().encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues));
+                .map(optional -> optional.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues))
+                .orElseGet(() -> encryptColumn.getCipher().encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(),
+                        originalValues));
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {

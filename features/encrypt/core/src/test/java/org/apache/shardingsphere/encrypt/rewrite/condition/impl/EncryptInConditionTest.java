@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.condition.impl;
 
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -35,7 +37,7 @@ class EncryptInConditionTest {
     @Test
     void assertNewInstance() {
         List<ExpressionSegment> expressions = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new LiteralExpressionSegment(0, 0, "foo"), mock(ExpressionSegment.class));
-        EncryptInCondition actual = new EncryptInCondition("foo_col", null, 0, 0, expressions);
+        EncryptInCondition actual = new EncryptInCondition(new ColumnSegment(0, 0, new IdentifierValue("foo_col")), null, 0, 0, expressions);
         assertThat(actual.getPositionIndexMap(), is(Collections.singletonMap(0, 0)));
         assertThat(actual.getPositionValueMap(), is(Collections.singletonMap(1, "foo")));
     }

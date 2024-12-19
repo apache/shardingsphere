@@ -86,15 +86,16 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         return createEncryptConditions(rule, sqlRewriteContext, sqlStatementContext);
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule rule, final SQLRewriteContext sqlRewriteContext, final SQLStatementContext sqlStatementContext) {
+    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule rule, final SQLRewriteContext sqlRewriteContext,
+                                                                 final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
         Collection<ColumnSegment> columnSegments = SQLStatementContextExtractor.getColumnSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        return new EncryptConditionEngine(
-                rule, sqlRewriteContext.getDatabase()).createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, sqlRewriteContext.getDatabase().getName());
+        return new EncryptConditionEngine(rule, sqlRewriteContext.getDatabase()).createEncryptConditions(whereSegments, columnSegments, sqlStatementContext,
+                sqlRewriteContext.getDatabase().getName());
     }
     
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {

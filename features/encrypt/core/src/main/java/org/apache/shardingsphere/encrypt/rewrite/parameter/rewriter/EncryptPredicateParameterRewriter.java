@@ -84,8 +84,8 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        String tableName = encryptCondition.getTableName();
-        String columnName = encryptCondition.getColumnName();
+        String tableName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalTable().getValue();
+        String columnName = encryptCondition.getColumnSegment().getIdentifier().getValue();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator()) && encryptColumn.getLikeQuery().isPresent()) {
