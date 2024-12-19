@@ -53,7 +53,8 @@ public final class ListenerAssistedSubscriber implements DispatchEventSubscriber
      */
     @Subscribe
     public synchronized void renew(final CreateDatabaseListenerAssistedEvent event) {
-        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()), new DatabaseMetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext()));
+        repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(event.getDatabaseName()), new DatabaseMetaDataChangedListener(contextManager.getComputeNodeInstanceContext().getEventBusContext(),
+                contextManager.getMetaDataContextManager().getRuleItemManager()));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(event.getDatabaseName());
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(event.getDatabaseName());
         refreshStatisticsData();
