@@ -185,3 +185,32 @@ For Java Agents such as `ShardingSphere Agent`, the `native-image` component of 
 Users need to pay attention to https://github.com/oracle/graal/issues/8177 which has not been closed.
 
 If users expect to use such Java Agents under ShardingSphere Proxy Native, they need to pay attention to the changes involved in https://github.com/oracle/graal/pull/8077 .
+
+## Seata AT mode integration
+
+For ShardingSphere Proxy Native in GraalVM Native Image,
+Users always need to modify the ShardingSphere source code to add the Seata Client and Seata integrated Maven modules and compile them into GraalVM Native Image.
+ShardingSphere Proxy Native in GraalVM Native Image cannot recognize the additional JAR files.
+
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.seata</groupId>
+         <artifactId>seata-all</artifactId>
+         <version>2.2.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+    </dependencies>
+</project>
+```
