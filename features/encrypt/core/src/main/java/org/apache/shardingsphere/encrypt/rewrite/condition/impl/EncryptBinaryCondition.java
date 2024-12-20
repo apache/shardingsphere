@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -37,7 +38,7 @@ import java.util.Map;
 @ToString
 public final class EncryptBinaryCondition implements EncryptCondition {
     
-    private final String columnName;
+    private final ColumnSegment columnSegment;
     
     private final String tableName;
     
@@ -53,8 +54,9 @@ public final class EncryptBinaryCondition implements EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptBinaryCondition(final String columnName, final String tableName, final String operator, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
-        this.columnName = columnName;
+    public EncryptBinaryCondition(final ColumnSegment columnSegment, final String tableName, final String operator, final int startIndex, final int stopIndex,
+                                  final ExpressionSegment expressionSegment) {
+        this.columnSegment = columnSegment;
         this.tableName = tableName;
         this.operator = operator;
         this.startIndex = startIndex;
