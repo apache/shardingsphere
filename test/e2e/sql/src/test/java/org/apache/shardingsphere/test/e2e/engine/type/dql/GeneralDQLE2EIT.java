@@ -69,11 +69,32 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
                 || "proxy".equals(testParam.getAdapter()) && "empty_storage_units".equalsIgnoreCase(testParam.getScenario())) {
             return;
         }
+        if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
+            assertQueryForStatementWithXmlExpected(context);
+        } else {
+            assertQueryForPreparedStatementWithXmlExpected(context);
+        }
+    }
+    
+    private void assertQueryForStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(context.getSQL())) {
             assertResultSet(context, resultSet);
+        }
+    }
+    
+    private void assertQueryForPreparedStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
+        try (
+                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
+            for (SQLValue each : context.getAssertion().getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                assertResultSet(context, resultSet);
+            }
         }
     }
     
@@ -143,12 +164,34 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if ("jdbc".equals(testParam.getAdapter())) {
             return;
         }
+        if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
+            assertExecuteForStatementWithXmlExpected(context);
+        } else {
+            assertExecuteForPreparedStatementWithXmlExpected(context);
+        }
+    }
+    
+    private void assertExecuteForStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             assertTrue(statement.execute(context.getSQL()), "Not a query statement.");
             ResultSet resultSet = statement.getResultSet();
             assertResultSet(context, resultSet);
+        }
+    }
+    
+    private void assertExecuteForPreparedStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
+        try (
+                Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
+            for (SQLValue each : context.getAssertion().getSQLValues()) {
+                preparedStatement.setObject(each.getIndex(), each.getValue());
+            }
+            assertTrue(preparedStatement.execute(), "Not a query preparedStatement.");
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                assertResultSet(context, resultSet);
+            }
         }
     }
     
