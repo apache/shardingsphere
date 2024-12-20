@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Prepare target tables parameter.
@@ -38,5 +39,7 @@ public final class PrepareTargetTablesParameter {
     
     private final SQLParserEngine sqlParserEngine;
     
-    private final ShardingSphereMetaData metaData;
+    private final Map<String, ShardingSphereMetaData> targetSchemaMetaData;
+    
+    private final String targetDatabaseName;
 }

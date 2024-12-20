@@ -43,7 +43,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,15 +73,17 @@ public final class PipelineDDLGenerator {
      * @param sourceTableName source table name
      * @param targetTableName target table name
      * @param parserEngine parser engine
+     * @param targetDatabaseName target database name
      * @return DDL SQL
      * @throws SQLException SQL exception 
      */
     public List<String> generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                         final String schemaName, final String sourceTableName, final String targetTableName, final SQLParserEngine parserEngine) throws SQLException {
+                                         final String schemaName, final String sourceTableName, final String targetTableName,
+                                         final SQLParserEngine parserEngine, final String targetDatabaseName) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
         List<String> result = new ArrayList<>();
         for (String each : DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType).buildCreateTableSQLs(sourceDataSource, schemaName, sourceTableName)) {
-            Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, targetTableName, parserEngine, each);
+            Optional<String> queryContext = decorate(databaseType, targetDatabaseName, schemaName, targetTableName, parserEngine, each);
             queryContext.ifPresent(sql -> {
                 String trimmedSql = sql.trim();
                 if (!Strings.isNullOrEmpty(trimmedSql)) {
@@ -95,19 +96,15 @@ public final class PipelineDDLGenerator {
         return result;
     }
     
-    private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
-                                      final SQLParserEngine parserEngine, final String sql) throws SQLException {
+    private Optional<String> decorate(final DatabaseType databaseType, final String targetDatabaseName, final String schemaName, final String targetTableName,
+                                      final SQLParserEngine parserEngine, final String sql) {
         if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }
-        String databaseName;
-        try (Connection connection = dataSource.getConnection()) {
-            databaseName = connection.getCatalog();
-        }
-        String result = decorateActualSQL(databaseName, targetTableName, parserEngine, sql.trim());
+        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
-            return decorateOpenGauss(databaseName, schemaName, result, parserEngine);
+            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine);
         }
         return Optional.of(result);
     }
