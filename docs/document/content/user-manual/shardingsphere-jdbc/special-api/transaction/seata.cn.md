@@ -609,3 +609,15 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 5. 微服务实例 `a-service` 和 `b-service` 均为 Spring Boot 微服务，但使用的组件是 Spring WebFlux 而非 Spring WebMVC。
 在反应式编程 API 下 ShardingSphere JDBC 无法处理 R2DBC DataSource，仅可处理 JDBC DataSource。
 在使用 WebFlux 组件的 Spring Boot 微服务中应避免创建 ShardingSphere JDBC DataSource。
+
+### Log 配置
+
+在业务项目启动 Seata Client 后，可能看到如下的 Error Log。
+
+```shell
+[ERROR] 2024-12-20 11:46:43.878 [ForkJoinPool.commonPool-worker-1] o.a.s.config.ConfigurationFactory - failed to load non-spring configuration :not found service provider for : org.apache.seata.config.ConfigurationProvider
+org.apache.seata.common.loader.EnhancedServiceNotFoundException: not found service provider for : org.apache.seata.config.ConfigurationProvider
+```
+
+根据 https://github.com/apache/incubator-seata/issues/6886 ，抛出此异常是 Seata Client 的预期行为。
+用户可通过在业务项目的 classpath 放置 `logback.xml` 对 Seata Client 的日志加以配置。
