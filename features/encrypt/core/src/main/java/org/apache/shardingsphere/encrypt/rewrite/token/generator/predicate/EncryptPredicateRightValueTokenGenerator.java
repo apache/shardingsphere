@@ -100,15 +100,16 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(encryptCondition.getColumnSegment().getIdentifier().getValue());
+        String columnName = encryptCondition.getColumnSegment().getIdentifier().getValue();
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             LikeQueryColumnItem likeQueryColumnItem = encryptColumn.getLikeQuery()
-                    .orElseThrow(() -> new MissingMatchedEncryptQueryAlgorithmException(encryptTable.getTable(), encryptCondition.getColumnSegment().getIdentifier().getValue(), "LIKE"));
-            return likeQueryColumnItem.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues);
+                    .orElseThrow(() -> new MissingMatchedEncryptQueryAlgorithmException(encryptTable.getTable(), columnName, "LIKE"));
+            return likeQueryColumnItem.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), columnName, originalValues);
         }
         return encryptColumn.getAssistedQuery()
-                .map(optional -> optional.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues))
-                .orElseGet(() -> encryptColumn.getCipher().encrypt(database.getName(), schemaName, encryptCondition.getTableName(), encryptCondition.getColumnSegment().getIdentifier().getValue(),
+                .map(optional -> optional.encrypt(database.getName(), schemaName, encryptCondition.getTableName(), columnName, originalValues))
+                .orElseGet(() -> encryptColumn.getCipher().encrypt(database.getName(), schemaName, encryptCondition.getTableName(), columnName,
                         originalValues));
     }
     
