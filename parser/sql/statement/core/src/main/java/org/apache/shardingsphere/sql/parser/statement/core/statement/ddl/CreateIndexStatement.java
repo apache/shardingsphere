@@ -53,12 +53,28 @@ public abstract class CreateIndexStatement extends AbstractSQLStatement implemen
     }
     
     /**
+     * Set generated index start index.
+     *
+     * @param generatedIndexStartIndex generated index start index
+     */
+    public void setGeneratedIndexStartIndex(final Integer generatedIndexStartIndex) {
+    }
+    
+    /**
      * Judge whether contains if not exists or not.
      *
      * @return whether contains if not exists or not
      */
     public boolean isIfNotExists() {
         return false;
+    }
+    
+    /**
+     * Set if not exists or not.
+     *
+     * @param ifNotExists if not exists or not
+     */
+    public void setIfNotExists(final boolean ifNotExists) {
     }
     
     /**
@@ -71,11 +87,27 @@ public abstract class CreateIndexStatement extends AbstractSQLStatement implemen
     }
     
     /**
+     * Set algorithm type.
+     *
+     * @param algorithmType algorithm type
+     */
+    public void setAlgorithmType(final AlgorithmTypeSegment algorithmType) {
+    }
+    
+    /**
      * Get lock table.
      *
      * @return lock table
      */
     public Optional<LockTableSegment> getLockTable() {
         return Optional.empty();
+    }
+    
+    /**
+     * Set lock table.
+     *
+     * @param lockTable lock table
+     */
+    public void setLockTable(final LockTableSegment lockTable) {
     }
 }

@@ -15,30 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.opengauss.ddl;
+package org.apache.shardingsphere.test.it.sql.binder.dialect.postgresql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 
-import java.util.Optional;
-
-/**
- * OpenGauss create index statement.
- */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
-    
-    private boolean ifNotExists;
-    
-    private Integer generatedIndexStartIndex;
-    
-    @Override
-    public Optional<Integer> getGeneratedIndexStartIndex() {
-        return Optional.ofNullable(generatedIndexStartIndex);
-    }
+@SQLBinderITSettings("PostgreSQL")
+class PostgreSQLBinderIT extends SQLBinderIT {
 }
