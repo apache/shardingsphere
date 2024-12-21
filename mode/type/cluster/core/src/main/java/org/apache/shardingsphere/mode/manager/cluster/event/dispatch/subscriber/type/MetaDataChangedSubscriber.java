@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.Table
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableDroppedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewDroppedEvent;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -128,7 +128,7 @@ public final class MetaDataChangedSubscriber implements DispatchEventSubscriber 
     private void refreshStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager, new GlobalLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
+            new ShardingSphereStatisticsRefreshEngine(contextManager, new ClusterLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
         }
     }
 }
