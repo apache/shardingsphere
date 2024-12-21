@@ -28,5 +28,13 @@
             </simple-table>
         </table>
         <index name="idx_name" start-index="13" stop-index="20" />
+        <column start-index="56" stop-index="62" name="user_id">
+            <column-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="public" />
+                <original-table name="t_order" />
+                <original-column name="user_id" />
+            </column-bound>
+        </column>
     </create-index>
 </sql-parser-test-cases>
