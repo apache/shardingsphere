@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -67,7 +67,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
-    private final ResourceLock resourceLock = new ResourceLock();
+    private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
