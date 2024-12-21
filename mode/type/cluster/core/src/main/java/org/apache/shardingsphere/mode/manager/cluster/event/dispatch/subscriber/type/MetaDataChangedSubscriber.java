@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.Table
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.table.TableDroppedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.event.dispatch.metadata.schema.view.ViewDroppedEvent;
-import org.apache.shardingsphere.mode.lock.GlobalLockContext;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;

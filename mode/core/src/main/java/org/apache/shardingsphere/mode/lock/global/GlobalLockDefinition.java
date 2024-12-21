@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.mode.lock.global;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Global lock context.
+ * Global lock definition.
  */
-@RequiredArgsConstructor
-public final class GlobalLockContext implements LockContext<GlobalLockDefinition> {
+@Getter
+public final class GlobalLockDefinition implements LockDefinition {
     
-    private final LockPersistService<GlobalLockDefinition> globalLockPersistService;
+    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
     
-    @Override
-    public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
-        return globalLockPersistService.tryLock(lockDefinition, timeoutMillis);
-    }
+    private final String lockKey;
     
-    @Override
-    public void unlock(final GlobalLockDefinition lockDefinition) {
-        globalLockPersistService.unlock(lockDefinition);
+    public GlobalLockDefinition(final String lockName) {
+        lockKey = String.format(KEY_PATTERN, lockName);
     }
 }

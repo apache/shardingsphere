@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.mode.lock.global;
 
-import org.junit.jupiter.api.Test;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class GlobalLockDefinitionTest {
+/**
+ * Global lock context.
+ */
+@RequiredArgsConstructor
+public final class GlobalLockContext implements LockContext<GlobalLockDefinition> {
     
-    @Test
-    void assertGetLockKey() {
-        assertThat(new GlobalLockDefinition("foo_lock").getLockKey(), is("/lock/exclusive/locks/foo_lock"));
+    private final LockPersistService<GlobalLockDefinition> globalLockPersistService;
+    
+    @Override
+    public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
+        return globalLockPersistService.tryLock(lockDefinition, timeoutMillis);
+    }
+    
+    @Override
+    public void unlock(final GlobalLockDefinition lockDefinition) {
+        globalLockPersistService.unlock(lockDefinition);
     }
 }
