@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ResourceLockTest {
+class ConnectionResourceLockTest {
     
     @Mock
     private ChannelHandlerContext channelHandlerContext;
@@ -49,7 +49,7 @@ class ResourceLockTest {
     private Channel channel;
     
     @Mock
-    private ResourceLock resourceLock;
+    private ConnectionResourceLock connectionResourceLock;
     
     @Test
     void assertDoAwait() throws NoSuchFieldException, IllegalAccessException {
@@ -57,10 +57,10 @@ class ResourceLockTest {
         when(channel.isActive()).thenReturn(true);
         when(channelHandlerContext.channel()).thenReturn(channel);
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> resourceLock.doAwait(channelHandlerContext));
+        executorService.submit(() -> connectionResourceLock.doAwait(channelHandlerContext));
         Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
-        Plugins.getMemberAccessor().set(ResourceLock.class.getDeclaredField("condition"), resourceLock, new ReentrantLock().newCondition());
-        verify(resourceLock, times(1)).doAwait(channelHandlerContext);
+        Plugins.getMemberAccessor().set(ConnectionResourceLock.class.getDeclaredField("condition"), connectionResourceLock, new ReentrantLock().newCondition());
+        verify(connectionResourceLock, times(1)).doAwait(channelHandlerContext);
     }
     
     @Test
@@ -72,9 +72,9 @@ class ResourceLockTest {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
             Awaitility.await().pollDelay(50L, TimeUnit.MILLISECONDS).until(() -> true);
-            resourceLock.doNotify();
+            connectionResourceLock.doNotify();
         });
-        resourceLock.doAwait(channelHandlerContext);
+        connectionResourceLock.doAwait(channelHandlerContext);
         assertTrue(System.currentTimeMillis() >= startTime);
     }
 }

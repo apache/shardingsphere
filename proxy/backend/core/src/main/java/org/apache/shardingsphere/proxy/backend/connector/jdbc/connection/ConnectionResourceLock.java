@@ -26,9 +26,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Resource lock.
+ * Connection resource lock.
  */
-public final class ResourceLock {
+public final class ConnectionResourceLock {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
