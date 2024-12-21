@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.lock.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Global lock names.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum GlobalLockNames {
