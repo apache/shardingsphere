@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.mode.lock.global;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.junit.jupiter.api.Test;
 
-/**
- * Global lock definition.
- */
-@Getter
-public final class GlobalLockDefinition implements LockDefinition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class GlobalLockDefinitionTest {
     
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
-    
-    private final String lockKey;
-    
-    public GlobalLockDefinition(final String lockName) {
-        lockKey = String.format(KEY_PATTERN, lockName);
+    @Test
+    void assertGetLockKey() {
+        assertThat(new GlobalLockDefinition("foo_lock").getLockKey(), is("/lock/exclusive/locks/foo_lock"));
     }
 }
