@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.mode.manager.cluster.event.ClusterEventSubscrib
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.DataChangedEventListenerRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.ClusterDispatchEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
+import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.workerid.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -59,7 +59,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
         ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
-        LockContext<?> lockContext = new GlobalLockContext(new GlobalLockPersistService(repository));
+        LockContext<?> lockContext = new ClusterLockContext(new GlobalLockPersistService(repository));
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);

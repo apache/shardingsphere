@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockNames;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -34,10 +34,10 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockContext;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.metadata.persist.data.AlteredShardingSphereDatabaseData;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockNames;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -59,7 +59,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     
     private final ContextManager contextManager;
     
-    private final GlobalLockContext globalLockContext;
+    private final LockContext lockContext;
     
     /**
      * Async refresh.
@@ -85,7 +85,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     
     private void collectAndRefresh() {
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.STATISTICS.getLockName());
-        if (globalLockContext.tryLock(lockDefinition, 5000L)) {
+        if (lockContext.tryLock(lockDefinition, 5000L)) {
             try {
                 ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
                 ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
@@ -97,7 +97,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
                 }
                 compareAndUpdate(changedStatistics);
             } finally {
-                globalLockContext.unlock(lockDefinition);
+                lockContext.unlock(lockDefinition);
             }
         }
     }
