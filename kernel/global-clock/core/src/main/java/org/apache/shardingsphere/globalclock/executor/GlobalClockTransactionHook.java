@@ -80,7 +80,6 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
                              final LockContext lockContext) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
@@ -98,7 +97,6 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
                             final LockContext lockContext) {
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();

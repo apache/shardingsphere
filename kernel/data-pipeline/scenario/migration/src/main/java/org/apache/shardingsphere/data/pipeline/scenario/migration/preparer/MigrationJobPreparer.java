@@ -110,7 +110,6 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();

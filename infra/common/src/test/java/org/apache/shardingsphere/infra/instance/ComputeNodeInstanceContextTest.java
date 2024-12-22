@@ -42,7 +42,7 @@ class ComputeNodeInstanceContextTest {
     void assertInit() {
         ComputeNodeInstanceContext context = new ComputeNodeInstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(ModeConfiguration.class), new EventBusContext());
         WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
-        LockContext<?> lockContext = mock(LockContext.class);
+        LockContext lockContext = mock(LockContext.class);
         context.init(workerIdGenerator, lockContext);
         context.generateWorkerId(new Properties());
         verify(workerIdGenerator).generate(new Properties());

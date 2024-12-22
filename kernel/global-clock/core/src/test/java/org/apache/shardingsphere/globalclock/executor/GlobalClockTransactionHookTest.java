@@ -145,7 +145,6 @@ class GlobalClockTransactionHookTest {
         verify(globalClockTransactionExecutor).sendSnapshotTimestamp(Collections.emptyList(), 10L);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBeforeCommitWhenDisabledGlobalClockRule() throws SQLException {
         LockContext lockContext = mock(LockContext.class);
@@ -153,7 +152,6 @@ class GlobalClockTransactionHookTest {
         verify(lockContext, times(0)).tryLock(any(), anyLong());
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertBeforeCommitWhenTryLockFailed() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
@@ -162,7 +160,6 @@ class GlobalClockTransactionHookTest {
         verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBeforeCommitWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
@@ -173,7 +170,6 @@ class GlobalClockTransactionHookTest {
         verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBeforeCommit() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);

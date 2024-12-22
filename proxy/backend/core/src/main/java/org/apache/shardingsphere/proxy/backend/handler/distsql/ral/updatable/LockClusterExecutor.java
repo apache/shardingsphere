@@ -39,7 +39,6 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
         checkAlgorithm(sqlStatement);

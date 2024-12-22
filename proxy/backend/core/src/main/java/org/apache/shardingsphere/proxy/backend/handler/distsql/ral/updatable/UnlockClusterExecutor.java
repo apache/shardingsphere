@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<UnlockClusterStatement> {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
