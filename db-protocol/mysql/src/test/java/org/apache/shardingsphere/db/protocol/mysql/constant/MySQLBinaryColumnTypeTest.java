@@ -45,9 +45,9 @@ class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE), is(MySQLBinaryColumnType.DATE));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIME), is(MySQLBinaryColumnType.TIME));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(MySQLBinaryColumnType.TIMESTAMP));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BINARY), is(MySQLBinaryColumnType.STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLBinaryColumnType.VAR_STRING));
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BINARY), is(MySQLBinaryColumnType.LONG_BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLBinaryColumnType.TINY_BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.BLOB));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NULL), is(MySQLBinaryColumnType.NULL));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.BLOB));
     }
