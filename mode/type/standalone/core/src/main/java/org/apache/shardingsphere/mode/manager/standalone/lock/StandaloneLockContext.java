@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Standalone global lock context.
+ * Standalone lock context.
  */
 public final class StandaloneLockContext implements LockContext<LockDefinition> {
     
