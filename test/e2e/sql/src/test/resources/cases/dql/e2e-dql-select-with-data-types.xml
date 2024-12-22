@@ -16,7 +16,6 @@
   ~ limitations under the License.
   -->
 
-<!-- SPEX ADDED: BEGIN -->
 <e2e-test-cases>
     <!--<test-case sql="SELECT * FROM t_data_type_binary WHERE id = ?" db-types="MySQL" scenario-types="passthrough">
         <assertion parameters="1:int" expected-data-source-name="expected_dataset" />
@@ -30,4 +29,3 @@
         <assertion parameters="1:int" expected-data-source-name="expected_dataset" />
     </test-case>
 </e2e-test-cases>
-<!-- SPEX ADDED: END -->
