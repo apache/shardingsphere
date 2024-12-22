@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
  * Cluster lock context.
  */
 @RequiredArgsConstructor
-public final class ClusterLockContext implements LockContext<LockDefinition> {
+public final class ClusterLockContext implements LockContext {
     
     private final LockPersistService<GlobalLockDefinition> globalLockPersistService;
     

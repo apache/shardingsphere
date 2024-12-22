@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 /**
  * Standalone lock context.
  */
-public final class StandaloneLockContext implements LockContext<LockDefinition> {
+public final class StandaloneLockContext implements LockContext {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {

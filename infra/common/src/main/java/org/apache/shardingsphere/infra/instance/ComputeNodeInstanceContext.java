@@ -49,7 +49,7 @@ public final class ComputeNodeInstanceContext {
     private final AtomicReference<WorkerIdGenerator> workerIdGenerator;
     
     @Getter(AccessLevel.NONE)
-    private final AtomicReference<LockContext<?>> lockContext;
+    private final AtomicReference<LockContext> lockContext;
     
     private final ClusterInstanceRegistry clusterInstanceRegistry;
     
@@ -68,7 +68,7 @@ public final class ComputeNodeInstanceContext {
      * @param workerIdGenerator worker id generator
      * @param lockContext lock context
      */
-    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext<?> lockContext) {
+    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext lockContext) {
         this.workerIdGenerator.set(workerIdGenerator);
         this.lockContext.set(lockContext);
     }
@@ -148,7 +148,7 @@ public final class ComputeNodeInstanceContext {
      *
      * @return lock context
      */
-    public LockContext<?> getLockContext() {
+    public LockContext getLockContext() {
         return Optional.ofNullable(lockContext.get()).orElseThrow(() -> new IllegalStateException("Lock context is not initialized."));
     }
 }
