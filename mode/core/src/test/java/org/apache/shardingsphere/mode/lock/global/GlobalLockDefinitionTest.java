@@ -26,6 +26,6 @@ class GlobalLockDefinitionTest {
     
     @Test
     void assertGetLockKey() {
-        assertThat(new GlobalLockDefinition("foo_lock").getLockKey(), is("/lock/exclusive/locks/foo_lock"));
+        assertThat(new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK).getLockKey(), is("/lock/exclusive/locks/cluster_lock"));
     }
 }

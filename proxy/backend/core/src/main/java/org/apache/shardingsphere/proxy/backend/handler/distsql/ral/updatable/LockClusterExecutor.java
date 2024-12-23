@@ -43,7 +43,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK);
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
                 checkState(contextManager);

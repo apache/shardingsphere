@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockNames;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,15 +38,15 @@ class GlobalLockPersistServiceTest {
     
     @Test
     void assertTryLock() {
-        when(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock").tryLock(1000L)).thenReturn(true);
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+        when(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/cluster_lock").tryLock(1000L)).thenReturn(true);
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK);
         assertTrue(new GlobalLockPersistService(repository).tryLock(lockDefinition, 1000L));
     }
     
     @Test
     void assertUnlock() {
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK);
         new GlobalLockPersistService(repository).unlock(lockDefinition);
-        verify(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock")).unlock();
+        verify(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/cluster_lock")).unlock();
     }
 }

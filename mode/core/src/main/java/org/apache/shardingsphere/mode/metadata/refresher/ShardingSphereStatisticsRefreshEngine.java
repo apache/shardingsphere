@@ -84,7 +84,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     }
     
     private void collectAndRefresh() {
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.STATISTICS.getLockName());
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.STATISTICS);
         if (lockContext.tryLock(lockDefinition, 5000L)) {
             try {
                 ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
