@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.metadata.persist.data.AlteredShardingSphereDatabaseData;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockName;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.refresher.lock.StatisticsLock;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -84,7 +84,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     }
     
     private void collectAndRefresh() {
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockName.STATISTICS);
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
         if (lockContext.tryLock(lockDefinition, 5000L)) {
             try {
                 ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
