@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -56,7 +55,6 @@ class EncryptGroupByItemTokenGeneratorTest {
     @BeforeEach
     void setup() {
         generator = new EncryptGroupByItemTokenGenerator(mockEncryptRule());
-        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
     }
     
     private EncryptRule mockEncryptRule() {

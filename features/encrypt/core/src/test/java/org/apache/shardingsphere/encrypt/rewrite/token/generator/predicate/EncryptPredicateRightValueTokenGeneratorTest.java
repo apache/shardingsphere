@@ -63,6 +63,6 @@ class EncryptPredicateRightValueTokenGeneratorTest {
     private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updateStatementContext) {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db")));
         return new EncryptConditionEngine(EncryptGeneratorFixtureBuilder.createEncryptRule(), database)
-                .createEncryptConditions(updateStatementContext.getWhereSegments(), updateStatementContext.getColumnSegments(), updateStatementContext, "foo_db");
+                .createEncryptConditions(updateStatementContext.getWhereSegments());
     }
 }

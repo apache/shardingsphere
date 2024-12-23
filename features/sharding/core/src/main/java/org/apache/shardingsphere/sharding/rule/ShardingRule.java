@@ -68,7 +68,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -586,8 +585,8 @@ public final class ShardingRule implements DatabaseRule {
                 return false;
             }
             for (AndPredicate andPredicate : andPredicates) {
-                databaseJoinConditionTables.addAll(getJoinConditionTables(schema, select, andPredicate.getPredicates(), true));
-                tableJoinConditionTables.addAll(getJoinConditionTables(schema, select, andPredicate.getPredicates(), false));
+                databaseJoinConditionTables.addAll(getJoinConditionTables(andPredicate.getPredicates(), true));
+                tableJoinConditionTables.addAll(getJoinConditionTables(andPredicate.getPredicates(), false));
             }
         }
         ShardingTable shardingTable = getShardingTable(tableNames.iterator().next());
@@ -598,8 +597,7 @@ public final class ShardingRule implements DatabaseRule {
         return containsDatabaseShardingColumns && containsTableShardingColumns;
     }
     
-    private Collection<String> getJoinConditionTables(final ShardingSphereSchema schema, final SelectStatementContext select,
-                                                      final Collection<ExpressionSegment> predicates, final boolean isDatabaseJoinCondition) {
+    private Collection<String> getJoinConditionTables(final Collection<ExpressionSegment> predicates, final boolean isDatabaseJoinCondition) {
         Collection<String> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {
             if (!isJoinConditionExpression(each)) {
@@ -607,9 +605,8 @@ public final class ShardingRule implements DatabaseRule {
             }
             ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
             ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
-            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNames(Arrays.asList(leftColumn, rightColumn), schema);
-            Optional<ShardingTable> leftShardingTable = findShardingTable(columnExpressionTableNames.get(leftColumn.getExpression()));
-            Optional<ShardingTable> rightShardingTable = findShardingTable(columnExpressionTableNames.get(rightColumn.getExpression()));
+            Optional<ShardingTable> leftShardingTable = findShardingTable(leftColumn.getColumnBoundInfo().getOriginalTable().getValue());
+            Optional<ShardingTable> rightShardingTable = findShardingTable(rightColumn.getColumnBoundInfo().getOriginalTable().getValue());
             if (!leftShardingTable.isPresent() || !rightShardingTable.isPresent()) {
                 continue;
             }
@@ -621,8 +618,8 @@ public final class ShardingRule implements DatabaseRule {
                     : getTableShardingStrategyConfiguration(rightShardingTable.get());
             if (findShardingColumn(leftConfig, leftColumn.getIdentifier().getValue()).isPresent()
                     && findShardingColumn(rightConfig, rightColumn.getIdentifier().getValue()).isPresent()) {
-                result.add(columnExpressionTableNames.get(leftColumn.getExpression()));
-                result.add(columnExpressionTableNames.get(rightColumn.getExpression()));
+                result.add(leftColumn.getColumnBoundInfo().getOriginalTable().getValue());
+                result.add(rightColumn.getColumnBoundInfo().getOriginalTable().getValue());
             }
         }
         return result;
