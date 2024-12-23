@@ -47,7 +47,7 @@ public final class PipelineDDLGenerator {
      * @throws SQLException SQL exception 
      */
     public static List<String> generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                         final String schemaName, final String sourceTableName, final String targetTableName) throws SQLException {
+                                                final String schemaName, final String sourceTableName, final String targetTableName) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
         List<String> result = new ArrayList<>(DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType)
                 .buildCreateTableSQLs(sourceDataSource, schemaName, sourceTableName));

@@ -68,7 +68,7 @@ public final class PipelineDDLDecorator {
      * @return decorated SQL
      */
     public Optional<String> decorate(final DatabaseType databaseType, final String targetDatabaseName, final String schemaName, final String targetTableName,
-                                      final SQLParserEngine parserEngine, final String sql) {
+                                     final SQLParserEngine parserEngine, final String sql) {
         if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }

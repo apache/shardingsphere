@@ -90,7 +90,7 @@ public final class PipelineJobDataSourcePreparer {
     }
     
     private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager,
-                                                                 final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
+                                     final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
         log.info("Prepare target schemas SQL: {}", sql);
         try (
                 Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
