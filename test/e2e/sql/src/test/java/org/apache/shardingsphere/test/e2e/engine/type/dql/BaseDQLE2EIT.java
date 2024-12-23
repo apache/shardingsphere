@@ -137,7 +137,7 @@ public abstract class BaseDQLE2EIT implements E2EEnvironmentAware {
                 continue;
             }
             if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())
-                    || "passthrough".equals(testParam.getScenario())) {
+                    || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
             }
