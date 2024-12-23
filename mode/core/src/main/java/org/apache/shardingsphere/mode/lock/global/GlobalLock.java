@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.mode.lock.global;
 
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-class GlobalLockDefinitionTest {
+/**
+ * Global lock.
+ */
+public interface GlobalLock {
     
-    @Test
-    void assertGetLockKey() {
-        GlobalLock globalLock = mock(GlobalLock.class);
-        when(globalLock.getName()).thenReturn("foo_lock");
-        assertThat(new GlobalLockDefinition(globalLock).getLockKey(), is("/lock/exclusive/locks/foo_lock"));
-    }
+    /**
+     * Get lock name.
+     *
+     * @return lock name
+     */
+    String getName();
 }

@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-class GlobalLockDefinitionTest {
+/**
+ * Cluster lock.
+ */
+public final class ClusterLock implements GlobalLock {
     
-    @Test
-    void assertGetLockKey() {
-        GlobalLock globalLock = mock(GlobalLock.class);
-        when(globalLock.getName()).thenReturn("foo_lock");
-        assertThat(new GlobalLockDefinition(globalLock).getLockKey(), is("/lock/exclusive/locks/foo_lock"));
+    @Override
+    public String getName() {
+        return "cluster_lock";
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockName;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -41,7 +40,7 @@ import java.util.Optional;
  */
 public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
     
-    private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockName.GLOBAL_CLOCK);
+    private final LockDefinition lockDefinition = new GlobalLockDefinition(new GlobalClockLock());
     
     @Override
     public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
