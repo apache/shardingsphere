@@ -101,6 +101,7 @@ public enum MySQLCharacterSet {
     UTF32_GENERAL_CI(60, () -> Charset.forName("utf32")),
     UTF32_BIN(61, () -> Charset.forName("utf32")),
     UTF16LE_BIN(62, () -> StandardCharsets.UTF_16LE),
+    BINARY(63, () -> Charset.forName("binary")),
     ARMSCII8_BIN(64, () -> Charset.forName("armscii8")),
     ASCII_BIN(65, () -> StandardCharsets.US_ASCII),
     CP1250_BIN(66, () -> Charset.forName("cp1250")),

@@ -29,3 +29,6 @@ CREATE TABLE passthrough.t_data_type_money (id INT PRIMARY KEY, val NUMERIC(16, 
 CREATE TABLE passthrough.t_data_type_bytea (id INT PRIMARY KEY, val BLOB NOT NULL);
 CREATE TABLE passthrough.t_data_type_date (id INT PRIMARY KEY, creation_date DATE NOT NULL, update_date DATETIME NOT NULL);
 CREATE TABLE passthrough.t_data_type_uuid (id INT PRIMARY KEY, val VARCHAR(36) NOT NULL);
+CREATE TABLE passthrough.t_data_type_binary (id INT PRIMARY KEY, val BINARY(10) NOT NULL);
+CREATE TABLE passthrough.t_data_type_varbinary (id INT PRIMARY KEY, val VARBINARY(10) NOT NULL);
+CREATE TABLE passthrough.t_data_type_longblob (id INT PRIMARY KEY, val LONGBLOB NOT NULL);

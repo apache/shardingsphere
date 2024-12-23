@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -30,8 +31,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
+import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,19 +49,22 @@ public final class ResponsePacketBuilder {
     
     private static final String BLOB_COLUMN_TYPE_KEYWORD = "BLOB";
     
+    private static final Collection<Integer> BINARY_TYPES = new HashSet<>(Arrays.asList(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY));
+    
     /**
      * Build query response packets.
      *
      * @param queryResponseHeader query response header
-     * @param characterSet MySQL character set id
+     * @param sessionCharacterSet MySQL character set id
      * @param statusFlags server status flags
      * @return query response packets
      */
-    public static Collection<DatabasePacket> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet, final int statusFlags) {
+    public static Collection<DatabasePacket> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int sessionCharacterSet, final int statusFlags) {
         Collection<DatabasePacket> result = new LinkedList<>();
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
+            int characterSet = BINARY_TYPES.contains(each.getColumnType()) ? MySQLCharacterSet.BINARY.getId() : sessionCharacterSet;
             result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
@@ -81,6 +88,9 @@ public final class ResponsePacketBuilder {
         }
         if (header.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || header.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD)) {
             result += MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue();
+        }
+        if (BINARY_TYPES.contains(header.getColumnType())) {
+            result += MySQLColumnDefinitionFlag.BLOB.getValue();
         }
         return result;
     }
