@@ -55,7 +55,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXB;
+import jakarta.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
