@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.lock;
 
 import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockNames;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ClusterLockContextTest {
     
-    private final GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+    private final GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK);
     
     @Mock
     private LockPersistService<GlobalLockDefinition> lockPersistService;

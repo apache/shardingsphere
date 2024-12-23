@@ -41,7 +41,7 @@ import java.util.Optional;
  */
 public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
     
-    private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK.getLockName());
+    private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK);
     
     @Override
     public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
