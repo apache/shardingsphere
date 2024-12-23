@@ -31,7 +31,7 @@ public enum GlobalLockName {
     
     PREPARE("prepare_%s"),
     
-    GLOBAL_LOCK("global_clock"),
+    GLOBAL_CLOCK("global_clock"),
     
     STATISTICS("statistics");
     
