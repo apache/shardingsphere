@@ -24,7 +24,7 @@ public interface GlobalLock {
     
     /**
      * Get lock name.
-     * 
+     *
      * @return lock name
      */
     String getName();
