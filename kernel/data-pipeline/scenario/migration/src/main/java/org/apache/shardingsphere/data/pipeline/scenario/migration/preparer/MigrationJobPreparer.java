@@ -70,7 +70,7 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockNames;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockName;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -118,7 +118,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }
-        LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.PREPARE, jobConfig.getJobId());
+        LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockName.PREPARE, jobConfig.getJobId());
         long startTimeMillis = System.currentTimeMillis();
         if (lockContext.tryLock(lockDefinition, 600 * 1000L)) {
             log.info("Lock success, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);

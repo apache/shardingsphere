@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Global lock names.
+ * Global lock name.
  */
 @RequiredArgsConstructor
 @Getter
-public enum GlobalLockNames {
+public enum GlobalLockName {
     
     CLUSTER_LOCK("cluster_lock"),
     
