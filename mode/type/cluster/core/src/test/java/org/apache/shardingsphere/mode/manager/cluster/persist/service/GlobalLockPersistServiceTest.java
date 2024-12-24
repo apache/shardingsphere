@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -32,19 +34,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GlobalLockPersistServiceTest {
     
+    @Mock
+    private GlobalLock globalLock;
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ClusterPersistRepository repository;
+    
+    @BeforeEach
+    void setUp() {
+        when(globalLock.getName()).thenReturn("foo_lock");
+    }
     
     @Test
     void assertTryLock() {
         when(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock").tryLock(1000L)).thenReturn(true);
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         assertTrue(new GlobalLockPersistService(repository).tryLock(lockDefinition, 1000L));
     }
     
     @Test
     void assertUnlock() {
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         new GlobalLockPersistService(repository).unlock(lockDefinition);
         verify(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock")).unlock();
     }

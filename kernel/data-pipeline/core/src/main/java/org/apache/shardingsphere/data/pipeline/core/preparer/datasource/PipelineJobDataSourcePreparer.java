@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLDecorator;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
@@ -41,10 +43,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -65,16 +65,14 @@ public final class PipelineJobDataSourcePreparer {
      * Prepare target schemas.
      *
      * @param param prepare target schemas parameter
-     * @return target schemas
      * @throws SQLException if prepare target schema fail
      */
-    public Map<String, ShardingSphereMetaData> prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
-            return Collections.emptyMap();
+            return;
         }
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(param.getCreateTableConfigurations().size(), 1F);
         String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
@@ -85,21 +83,19 @@ public final class PipelineJobDataSourcePreparer {
             }
             Optional<String> sql = pipelineSQLBuilder.buildCreateSchemaSQL(targetSchemaName);
             if (sql.isPresent()) {
-                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get()).ifPresent(metaData -> result.put(targetSchemaName, metaData));
+                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
                 createdSchemaNames.add(targetSchemaName);
             }
         }
-        return result;
     }
     
-    private Optional<ShardingSphereMetaData> executeCreateSchema(final PipelineDataSourceManager dataSourceManager,
-                                                                 final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager,
+                                     final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
         log.info("Prepare target schemas SQL: {}", sql);
         try (
                 Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
-            return Optional.of(((ShardingSphereConnection) connection).getContextManager().getMetaDataContexts().getMetaData());
         } catch (final SQLException ex) {
             if (DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
                     .map(DialectPipelineJobDataSourcePrepareOption::isSupportIfNotExistsOnCreateSchema).orElse(true)) {
@@ -107,7 +103,6 @@ public final class PipelineJobDataSourcePreparer {
             }
             log.warn("Create schema failed", ex);
         }
-        return Optional.empty();
     }
     
     /**
@@ -121,27 +116,34 @@ public final class PipelineJobDataSourcePreparer {
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
-                ShardingSphereMetaData metaData = param.getTargetSchemaMetaData().get(each.getTargetName().getSchemaName());
-                if (null == metaData) {
-                    metaData = ((ShardingSphereConnection) targetConnection).getContextManager().getMetaDataContexts().getMetaData();
-                }
-                List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine(), metaData, param.getTargetDatabaseName());
+                List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager);
                 for (String sql : createTargetTableSQL) {
-                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
+                    ShardingSphereMetaData metaData = ((ShardingSphereConnection) targetConnection).getContextManager().getMetaDataContexts().getMetaData();
+                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), metaData, param.getTargetDatabaseName(), sql);
+                    if (decoratedSQL.isPresent()) {
+                        executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(decoratedSQL.get()));
+                    }
                 }
             }
         }
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager,
-                                                 final SQLParserEngine sqlParserEngine, final ShardingSphereMetaData metaData, final String targetDatabaseName) throws SQLException {
+    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
         String schemaName = createTableConfig.getSourceName().getSchemaName();
         String sourceTableName = createTableConfig.getSourceName().getTableName();
         String targetTableName = createTableConfig.getTargetName().getTableName();
-        return new PipelineDDLGenerator(metaData).generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine, targetDatabaseName);
+        return PipelineDDLGenerator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName);
+    }
+    
+    private Optional<String> decorateTargetTableSQL(final CreateTableConfiguration createTableConfig, final SQLParserEngine sqlParserEngine,
+                                                    final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
+        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String targetTableName = createTableConfig.getTargetName().getTableName();
+        Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, sql);
+        return decoratedSQL.map(String::trim).filter(trimmedSql -> !Strings.isNullOrEmpty(trimmedSql));
     }
     
     private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

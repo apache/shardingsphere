@@ -148,7 +148,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     }
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
-        ShardingSpherePreconditions.checkNotNull(param.getFirstUniqueKey(),
+        ShardingSpherePreconditions.checkState(param.getUniqueKeys() != null && !param.getUniqueKeys().isEmpty() && null != param.getFirstUniqueKey(),
                 () -> new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now."));
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
