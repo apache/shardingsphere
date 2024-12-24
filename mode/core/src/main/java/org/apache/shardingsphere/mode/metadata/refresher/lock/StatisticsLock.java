@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.mode.metadata.refresher.lock;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
 /**
- * Global lock definition.
+ * Statistics lock.
  */
-@Getter
-public final class GlobalLockDefinition implements LockDefinition {
+public final class StatisticsLock implements GlobalLock {
     
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
-    
-    private final String lockKey;
-    
-    public GlobalLockDefinition(final GlobalLock globalLock) {
-        lockKey = String.format(KEY_PATTERN, globalLock.getName());
+    @Override
+    public String getName() {
+        return "statistics";
     }
 }

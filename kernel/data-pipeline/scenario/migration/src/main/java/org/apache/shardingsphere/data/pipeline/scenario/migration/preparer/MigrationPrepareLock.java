@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
 /**
- * Global lock definition.
+ * Migration prepare lock.
  */
-@Getter
-public final class GlobalLockDefinition implements LockDefinition {
+@RequiredArgsConstructor
+public final class MigrationPrepareLock implements GlobalLock {
     
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
+    private final String jobId;
     
-    private final String lockKey;
-    
-    public GlobalLockDefinition(final GlobalLock globalLock) {
-        lockKey = String.format(KEY_PATTERN, globalLock.getName());
+    @Override
+    public String getName() {
+        return String.format("migration_prepare_%s", jobId);
     }
 }

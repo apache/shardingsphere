@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.globalclock.executor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
 /**
- * Global lock names.
+ * Global clock lock.
  */
-@RequiredArgsConstructor
-@Getter
-public enum GlobalLockNames {
+public final class GlobalClockLock implements GlobalLock {
     
-    CLUSTER_LOCK("cluster_lock"),
-    
-    PREPARE("prepare_%s"),
-    
-    GLOBAL_LOCK("global_clock"),
-    
-    STATISTICS("statistics");
-    
-    private final String lockName;
+    @Override
+    public String getName() {
+        return "global_clock";
+    }
 }

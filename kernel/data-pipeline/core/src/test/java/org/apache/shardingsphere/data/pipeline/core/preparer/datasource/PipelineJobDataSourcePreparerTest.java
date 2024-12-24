@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +59,7 @@ class PipelineJobDataSourcePreparerTest {
         when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
         PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(
                 Collections.singleton(createTableConfig), pipelineDataSourceManager,
-                mock(SQLParserEngine.class), mock(Map.class), "foo_db");
+                mock(SQLParserEngine.class), "foo_db");
         assertDoesNotThrow(() -> new PipelineJobDataSourcePreparer(databaseType).prepareTargetTables(parameter));
     }
 }

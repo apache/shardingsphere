@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.mode.lock.global;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-
 /**
- * Global lock definition.
+ * Global lock.
  */
-@Getter
-public final class GlobalLockDefinition implements LockDefinition {
+public interface GlobalLock {
     
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
-    
-    private final String lockKey;
-    
-    public GlobalLockDefinition(final GlobalLock globalLock) {
-        lockKey = String.format(KEY_PATTERN, globalLock.getName());
-    }
+    /**
+     * Get lock name.
+     *
+     * @return lock name
+     */
+    String getName();
 }
