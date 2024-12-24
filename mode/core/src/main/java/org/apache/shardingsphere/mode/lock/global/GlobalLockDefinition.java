@@ -30,10 +30,6 @@ public final class GlobalLockDefinition implements LockDefinition {
     
     private final String lockKey;
     
-    public GlobalLockDefinition(final GlobalLockName lockName, final Object... lockParams) {
-        lockKey = String.format(KEY_PATTERN, String.format(lockName.getLockName(), lockParams));
-    }
-    
     public GlobalLockDefinition(final GlobalLock globalLock) {
         lockKey = String.format(KEY_PATTERN, globalLock.getName());
     }
