@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.assign.AssignmentSe
 import org.apache.shardingsphere.infra.binder.engine.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.WhereSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
@@ -38,6 +39,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     public UpdateStatement bind(final UpdateStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         UpdateStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        sqlStatement.getWithSegment().ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())));
         result.setTable(TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create()));
         sqlStatement.getFrom().ifPresent(optional -> result.setFrom(TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
         sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
@@ -50,7 +52,6 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
-        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;

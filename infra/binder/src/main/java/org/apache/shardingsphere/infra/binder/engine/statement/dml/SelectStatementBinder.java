@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.order.OrderBySegmen
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.HavingSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.ProjectionsSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.util.SubqueryTableBindUtils;
@@ -59,6 +60,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     public SelectStatement bind(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         SelectStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        sqlStatement.getWithSegment().ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())));
         Optional<TableSegment> boundTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
         boundTableSegment.ifPresent(result::setFrom);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
@@ -71,7 +73,6 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
                 OrderBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getHaving().ifPresent(optional -> result.setHaving(HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, outerTableBinderContexts)));
-        // TODO support other segment bind in select statement
         return result;
     }
     
@@ -90,7 +91,6 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
         sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
-        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
