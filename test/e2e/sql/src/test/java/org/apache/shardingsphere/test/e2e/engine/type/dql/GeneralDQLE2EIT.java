@@ -65,8 +65,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
         // TODO Fix jdbc adapter and empty_storage_units proxy adapter
-        if ("jdbc".equals(testParam.getAdapter()) && !"empty_storage_units".equalsIgnoreCase(testParam.getScenario())
-                || "proxy".equals(testParam.getAdapter()) && "empty_storage_units".equalsIgnoreCase(testParam.getScenario())) {
+        if (isNeedSkipExecuteQueryWithXmlExcepted(testParam)) {
             return;
         }
         if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
@@ -74,6 +73,11 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         } else {
             assertQueryForPreparedStatementWithXmlExpected(context);
         }
+    }
+    
+    private boolean isNeedSkipExecuteQueryWithXmlExcepted(final AssertionTestParameter testParam) {
+        return "jdbc".equals(testParam.getAdapter()) && !"empty_storage_units".equalsIgnoreCase(testParam.getScenario())
+                || "proxy".equals(testParam.getAdapter()) && "empty_storage_units".equalsIgnoreCase(testParam.getScenario());
     }
     
     private void assertQueryForStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
@@ -161,7 +165,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteWithXmlExpected(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
         // TODO Fix jdbc adapter
-        if ("jdbc".equals(testParam.getAdapter())) {
+        if (isNeedSkipExecuteWithXmlExcepted(testParam)) {
             return;
         }
         if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
@@ -169,6 +173,10 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         } else {
             assertExecuteForPreparedStatementWithXmlExpected(context);
         }
+    }
+    
+    private boolean isNeedSkipExecuteWithXmlExcepted(final AssertionTestParameter testParam) {
+        return "jdbc".equals(testParam.getAdapter());
     }
     
     private void assertExecuteForStatementWithXmlExpected(final E2ETestContext context) throws SQLException {
