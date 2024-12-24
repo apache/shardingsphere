@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 @Getter
 public final class GlobalLockDefinition implements LockDefinition {
     
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
+    private static final String KEY_PATTERN = "/lock/global/locks/%s";
     
     private final String lockKey;
     
