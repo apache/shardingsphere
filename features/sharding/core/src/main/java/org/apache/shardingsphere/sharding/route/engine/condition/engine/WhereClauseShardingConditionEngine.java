@@ -21,11 +21,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
@@ -63,9 +59,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {
     
-    private final ShardingSphereDatabase database;
-    
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private final TimestampServiceRule timestampServiceRule;
     
@@ -103,19 +97,12 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName))
-                : database.getSchema(defaultSchemaName);
-    }
-    
     private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, final List<Object> params) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
                 String tableName = columnSegment.getColumnBoundInfo().getOriginalTable().getValue();
-                Optional<String> shardingColumn = shardingRule.findShardingColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), tableName);
+                Optional<String> shardingColumn = rule.findShardingColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), tableName);
                 if (!shardingColumn.isPresent()) {
                     continue;
                 }
