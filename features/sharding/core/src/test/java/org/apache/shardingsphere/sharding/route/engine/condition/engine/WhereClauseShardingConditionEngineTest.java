@@ -76,8 +76,6 @@ class WhereClauseShardingConditionEngineTest {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(ShardingSphereDatabase.create("test_db",
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), new ConfigurationProperties(new Properties())), shardingRule, mock(TimestampServiceRule.class));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     }
     
     @Test
