@@ -65,9 +65,11 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)));
         sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
-        sqlStatement.getGroupBy().ifPresent(optional -> result.setGroupBy(GroupBySegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
-        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result);
+        sqlStatement.getGroupBy().ifPresent(optional -> result.setGroupBy(
+                GroupBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
+        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
+                OrderBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getHaving().ifPresent(optional -> result.setHaving(HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
         return result;

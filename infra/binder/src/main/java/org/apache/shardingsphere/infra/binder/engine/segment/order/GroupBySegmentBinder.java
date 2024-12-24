@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.order.item.OrderByItemSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 
@@ -42,15 +43,29 @@ public final class GroupBySegmentBinder {
      *
      * @param segment group by segment
      * @param binderContext SQL statement binder context
+     * @param currentTableBinderContexts current table binder contexts
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound group by segment
      */
     public static GroupBySegment bind(final GroupBySegment segment, final SQLStatementBinderContext binderContext,
+                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         Collection<OrderByItemSegment> boundGroupByItems = new LinkedList<>();
-        segment.getGroupByItems().forEach(each -> boundGroupByItems.add(OrderByItemSegmentBinder.bind(each, binderContext, tableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY)));
+        for (OrderByItemSegment each : segment.getGroupByItems()) {
+            boundGroupByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+        }
         return new GroupBySegment(segment.getStartIndex(), segment.getStopIndex(), boundGroupByItems);
+    }
+    
+    private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final OrderByItemSegment groupByItemSegment) {
+        try {
+            return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, currentTableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
+        } catch (final ColumnNotFoundException ignored) {
+            return OrderByItemSegmentBinder.bind(groupByItemSegment, binderContext, tableBinderContexts, outerTableBinderContexts, SegmentType.GROUP_BY);
+        }
     }
 }
