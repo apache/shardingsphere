@@ -30,6 +30,6 @@ class GlobalLockDefinitionTest {
     void assertGetLockKey() {
         GlobalLock globalLock = mock(GlobalLock.class);
         when(globalLock.getName()).thenReturn("foo_lock");
-        assertThat(new GlobalLockDefinition(globalLock).getLockKey(), is("/lock/exclusive/locks/foo_lock"));
+        assertThat(new GlobalLockDefinition(globalLock).getLockKey(), is("/lock/global/locks/foo_lock"));
     }
 }
