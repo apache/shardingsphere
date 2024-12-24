@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.order.OrderBySegmen
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.HavingSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.ProjectionsSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.util.SubqueryTableBindUtils;
