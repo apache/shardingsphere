@@ -21,69 +21,42 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
-import org.apache.shardingsphere.infra.exception.generic.FileIOException;
-import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.proxy.backend.util.MetaDataImportExecutor;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Import meta data executor.
  */
 public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<ImportMetaDataStatement> {
     
-    private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-    
-    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
-    
     @Override
     public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        String jsonMetaDataConfig;
-        if (sqlStatement.getFilePath().isPresent()) {
-            File file = new File(sqlStatement.getFilePath().get());
-            try {
-                jsonMetaDataConfig = FileUtils.readFileToString(file, Charset.defaultCharset());
-            } catch (final IOException ignore) {
-                throw new FileIOException(file);
-            }
-        } else {
-            jsonMetaDataConfig = new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));
-        }
+        String jsonMetaDataConfig = sqlStatement.getFilePath().isPresent() ? getMetaDataFromFile(sqlStatement) : getMetaDataFromConsole(sqlStatement);
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
-        importServerConfiguration(contextManager, exportedMetaData);
-        importDatabase(exportedMetaData);
+        new MetaDataImportExecutor(contextManager).importClusterConfigurations(exportedMetaData);
     }
     
-    private void importServerConfiguration(final ContextManager contextManager, final ExportedMetaData exportedMetaData) throws SQLException {
-        YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
-        if (null == yamlServerConfig) {
-            return;
+    private String getMetaDataFromFile(final ImportMetaDataStatement sqlStatement) {
+        File file = new File(sqlStatement.getFilePath().get());
+        try {
+            return FileUtils.readFileToString(file, Charset.defaultCharset());
+        } catch (final IOException ignore) {
+            throw new FileIOException(file);
         }
-        Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        for (RuleConfiguration each : rules) {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
-        }
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
     }
     
-    private void importDatabase(final ExportedMetaData exportedMetaData) throws SQLException {
-        for (String each : exportedMetaData.getDatabases().values()) {
-            YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
-            databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);
-        }
+    private String getMetaDataFromConsole(final ImportMetaDataStatement sqlStatement) {
+        return new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));
     }
     
     @Override

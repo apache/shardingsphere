@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -33,18 +31,8 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.net.URL;
@@ -60,81 +48,68 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ImportDatabaseConfigurationExecutorTest {
-    
-    private ImportDatabaseConfigurationExecutor executor;
-    
-    @BeforeAll
-    static void setUp() throws ClassNotFoundException {
-        Class.forName(MockedDriver.class.getName());
-    }
     
     @Test
     void assertImportDatabaseExecutorForSharding() throws SQLException {
-        assertExecute("sharding_db", "/conf/import/database-sharding.yaml");
+        ContextManager contextManager = mockContextManager("sharding_db");
+        assertExecute(contextManager, "/conf/import/database-sharding.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
-        assertExecute("readwrite_splitting_db", "/conf/import/database-readwrite-splitting.yaml");
+        ContextManager contextManager = mockContextManager("readwrite_splitting_db");
+        assertExecute(contextManager, "/conf/import/database-readwrite-splitting.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForEncrypt() throws SQLException {
-        assertExecute("encrypt_db", "/conf/import/database-encrypt.yaml");
+        ContextManager contextManager = mockContextManager("encrypt_db");
+        assertExecute(contextManager, "/conf/import/database-encrypt.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForShadow() throws SQLException {
-        assertExecute("shadow_db", "/conf/import/database-shadow.yaml");
+        ContextManager contextManager = mockContextManager("shadow_db");
+        assertExecute(contextManager, "/conf/import/database-shadow.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForMask() throws SQLException {
-        assertExecute("mask_db", "/conf/import/database-mask.yaml");
+        ContextManager contextManager = mockContextManager("mask_db");
+        assertExecute(contextManager, "/conf/import/database-mask.yaml");
     }
     
     @Test
     void assertImportExistedDatabase() {
-        String databaseName = "sharding_db";
-        when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
-        assertThrows(DatabaseCreateExistsException.class, () -> assertExecute(databaseName, "/conf/import/database-sharding.yaml"));
+        ContextManager contextManager = mockContextManager("sharding_db");
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("sharding_db")).thenReturn(true);
+        assertThrows(DatabaseCreateExistsException.class, () -> assertExecute(contextManager, "/conf/import/database-sharding.yaml"));
     }
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
+        ContextManager contextManager = mockContextManager("sharding_db");
+        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute(contextManager, "/conf/import/database-empty-database-name.yaml"));
     }
     
     @Test
     void assertImportDuplicatedLogicTable() {
-        assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/database-duplicated-logic-table.yaml"));
+        ContextManager contextManager = mockContextManager("sharding_db");
+        assertThrows(DuplicateRuleException.class, () -> assertExecute(contextManager, "/conf/import/database-duplicated-logic-table.yaml"));
     }
     
     @Test
     void assertImportInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute("sharding_db", "/conf/import/database-invalid-algorithm.yaml"));
+        ContextManager contextManager = mockContextManager("sharding_db");
+        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute(contextManager, "/conf/import/database-invalid-algorithm.yaml"));
     }
     
-    private void assertExecute(final String databaseName, final String filePath) throws SQLException {
-        init(databaseName);
+    private void assertExecute(final ContextManager contextManager, final String filePath) throws SQLException {
+        ImportDatabaseConfigurationExecutor executor = new ImportDatabaseConfigurationExecutor();
         URL url = ImportDatabaseConfigurationExecutorTest.class.getResource(filePath);
         assertNotNull(url);
-        executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), mock(ContextManager.class));
-    }
-    
-    @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
-    private void init(final String databaseName) {
-        ContextManager contextManager = mockContextManager(databaseName);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor = new ImportDatabaseConfigurationExecutor();
-        YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
-        Plugins.getMemberAccessor().set(ImportDatabaseConfigurationExecutor.class.getDeclaredField("databaseConfigImportExecutor"), executor, databaseConfigImportExecutor);
-        Plugins.getMemberAccessor().set(
-                YamlDatabaseConfigurationImportExecutor.class.getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
+        executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), contextManager);
     }
     
     private ContextManager mockContextManager(final String databaseName) {
