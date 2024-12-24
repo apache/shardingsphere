@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -149,6 +150,12 @@ public final class SimpleTableSegmentBinder {
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
             return new SimpleTableSegmentBinderContext(createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName));
+        }
+        CaseInsensitiveString caseInsensitiveTableName = new CaseInsensitiveString(tableName.getValue());
+        if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
+            TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
+            return new SimpleTableSegmentBinderContext(
+                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType()));
         }
         return new SimpleTableSegmentBinderContext(Collections.emptyList());
     }
