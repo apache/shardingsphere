@@ -38,9 +38,14 @@ public final class MetaDataImportExecutor {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     
-    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
+    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor;
     
     private final ContextManager contextManager;
+    
+    public MetaDataImportExecutor(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        this.databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor(contextManager);
+    }
     
     /**
      * Import cluster configurations.

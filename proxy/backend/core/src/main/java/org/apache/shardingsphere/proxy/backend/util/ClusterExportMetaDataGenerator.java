@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Cluster export metadata generator.
@@ -68,15 +67,12 @@ public final class ClusterExportMetaDataGenerator {
     }
     
     private Map<String, String> generatorDatabasesExportData() {
-        Collection<String> databaseNames = contextManager.getMetaDataContexts().getMetaData().getAllDatabases().stream()
-                .map(ShardingSphereDatabase::getName).collect(Collectors.toList());
-        Map<String, String> result = new LinkedHashMap<>(databaseNames.size(), 1F); 
-        for (String each : databaseNames) {
-            ShardingSphereDatabase database = contextManager.getDatabase(each);
-            if (database.getResourceMetaData().getAllInstanceDataSourceNames().isEmpty()) {
+        Map<String, String> result = new LinkedHashMap<>(contextManager.getMetaDataContexts().getMetaData().getAllDatabases().size(), 1F);
+        for (ShardingSphereDatabase each : contextManager.getMetaDataContexts().getMetaData().getAllDatabases()) {
+            if (each.getResourceMetaData().getAllInstanceDataSourceNames().isEmpty()) {
                 continue;
             }
-            result.put(each, new DatabaseExportMetaDataGenerator(database).generateYAMLFormat());
+            result.put(each.getName(), new DatabaseExportMetaDataGenerator(each).generateYAMLFormat());
         }
         return result;
     }
