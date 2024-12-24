@@ -59,7 +59,7 @@ public final class ShardingTableBroadcastRouteEngine implements ShardingRouteEng
             result.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, ""));
             return result;
         }
-        if (logicTableNames.size() > 1 && shardingRule.isAllBindingTables(logicTableNames)) {
+        if (logicTableNames.size() > 1 && shardingRule.isAllConfigBindingTables(logicTableNames)) {
             result.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, logicTableNames));
         } else {
             Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, logicTableNames);

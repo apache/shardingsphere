@@ -98,7 +98,7 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule rule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                             final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final Collection<String> logicTableNames,
                                                             final ConfigurationProperties props) {
-        boolean allBindingTables = logicTableNames.size() > 1 && rule.isAllBindingTables(database, sqlStatementContext, logicTableNames);
+        boolean allBindingTables = logicTableNames.size() > 1 && rule.isBindingTablesUseShardingColumnsJoin(sqlStatementContext, logicTableNames);
         if (isShardingStandardQuery(rule, logicTableNames, allBindingTables)) {
             return new ShardingStandardRouteEngine(getLogicTableName(shardingConditions, logicTableNames), shardingConditions, sqlStatementContext, hintValueContext, props);
         }
@@ -135,13 +135,12 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRouteEngine(sqlStatementContext, tableNames, queryContext.getConnectionContext());
         }
-        return getDQLRouteEngineForShardingTable(rule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, logicTableNames, props);
+        return getDQLRouteEngineForShardingTable(rule, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, logicTableNames, props);
     }
     
-    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule rule, final ShardingSphereDatabase database,
-                                                                         final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
+    private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                                                                          final ShardingConditions shardingConditions, final Collection<String> logicTableNames, final ConfigurationProperties props) {
-        boolean allBindingTables = logicTableNames.size() > 1 && rule.isAllBindingTables(database, sqlStatementContext, logicTableNames);
+        boolean allBindingTables = logicTableNames.size() > 1 && rule.isBindingTablesUseShardingColumnsJoin(sqlStatementContext, logicTableNames);
         if (isShardingStandardQuery(rule, logicTableNames, allBindingTables)) {
             return new ShardingStandardRouteEngine(getLogicTableName(shardingConditions, logicTableNames), shardingConditions, sqlStatementContext, hintValueContext, props);
         }
