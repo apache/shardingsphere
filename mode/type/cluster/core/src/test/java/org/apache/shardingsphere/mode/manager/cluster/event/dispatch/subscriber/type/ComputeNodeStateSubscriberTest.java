@@ -58,13 +58,13 @@ class ComputeNodeStateSubscriberTest {
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(instanceMetaData)).thenReturn(computeNodeInstance);
         subscriber.renew(new InstanceOnlineEvent(instanceMetaData));
-        verify(contextManager.getComputeNodeInstanceContext()).addComputeNodeInstance(computeNodeInstance);
+        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);
     }
     
     @Test
     void assertRenewWithInstanceOfflineEvent() {
         subscriber.renew(new InstanceOfflineEvent(mock(InstanceMetaData.class)));
-        verify(contextManager.getComputeNodeInstanceContext()).deleteComputeNodeInstance(any());
+        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).delete(any());
     }
     
     @Test

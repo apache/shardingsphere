@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
@@ -38,7 +39,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<CommentSegment> commentSegments = new LinkedList<>();
     
-    private final Collection<String> variableNames = new HashSet<>();
+    private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
     @Override
     public int getParameterCount() {

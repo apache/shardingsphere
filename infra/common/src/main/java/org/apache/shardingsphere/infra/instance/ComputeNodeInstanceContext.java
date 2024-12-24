@@ -30,7 +30,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -42,29 +41,25 @@ public final class ComputeNodeInstanceContext {
     
     private final ComputeNodeInstance instance;
     
-    @Getter(AccessLevel.NONE)
-    private final AtomicReference<WorkerIdGenerator> workerIdGenerator = new AtomicReference<>();
-    
     private final ModeConfiguration modeConfiguration;
-    
-    @Getter(AccessLevel.NONE)
-    private final AtomicReference<LockContext<?>> lockContext = new AtomicReference<>();
     
     private final EventBusContext eventBusContext;
     
-    private final Collection<ComputeNodeInstance> allClusterInstances = new CopyOnWriteArrayList<>();
+    @Getter(AccessLevel.NONE)
+    private final AtomicReference<WorkerIdGenerator> workerIdGenerator;
     
-    public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
-                                      final ModeConfiguration modeConfig, final LockContext<?> lockContext, final EventBusContext eventBusContext) {
+    @Getter(AccessLevel.NONE)
+    private final AtomicReference<LockContext> lockContext;
+    
+    private final ClusterInstanceRegistry clusterInstanceRegistry;
+    
+    public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfiguration, final EventBusContext eventBusContext) {
         this.instance = instance;
-        this.workerIdGenerator.set(workerIdGenerator);
-        this.modeConfiguration = modeConfig;
-        this.lockContext.set(lockContext);
+        this.modeConfiguration = modeConfiguration;
         this.eventBusContext = eventBusContext;
-    }
-    
-    public ComputeNodeInstanceContext(final ComputeNodeInstance instance, final ModeConfiguration modeConfig, final EventBusContext eventBusContext) {
-        this(instance, null, modeConfig, null, eventBusContext);
+        workerIdGenerator = new AtomicReference<>();
+        lockContext = new AtomicReference<>();
+        clusterInstanceRegistry = new ClusterInstanceRegistry();
     }
     
     /**
@@ -73,7 +68,7 @@ public final class ComputeNodeInstanceContext {
      * @param workerIdGenerator worker id generator
      * @param lockContext lock context
      */
-    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext<?> lockContext) {
+    public void init(final WorkerIdGenerator workerIdGenerator, final LockContext lockContext) {
         this.workerIdGenerator.set(workerIdGenerator);
         this.lockContext.set(lockContext);
     }
@@ -92,7 +87,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(instanceState.get());
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.switchState(instanceState.get()));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> optional.switchState(instanceState.get()));
     }
     
     /**
@@ -105,7 +100,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             updateLabels(instance, labels);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> updateLabels(each, labels));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> updateLabels(optional, labels));
     }
     
     private void updateLabels(final ComputeNodeInstance computeNodeInstance, final Collection<String> labels) {
@@ -123,7 +118,7 @@ public final class ComputeNodeInstanceContext {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setWorkerId(workerId);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
+        clusterInstanceRegistry.find(instanceId).ifPresent(optional -> optional.setWorkerId(workerId));
     }
     
     /**
@@ -149,41 +144,11 @@ public final class ComputeNodeInstanceContext {
     }
     
     /**
-     * Add compute node instance.
-     *
-     * @param instance compute node instance
-     */
-    public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
-        allClusterInstances.add(instance);
-    }
-    
-    /**
-     * Delete compute node instance.
-     *
-     * @param instance compute node instance
-     */
-    public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
-    }
-    
-    /**
-     * Get compute node instance.
-     *
-     * @param instanceId instance ID
-     * @return compute node instance
-     */
-    public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
-        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getMetaData().getId())).findFirst();
-    }
-    
-    /**
-     *  Get lock context.
+     * Get lock context.
      *
      * @return lock context
-     * @throws IllegalStateException if lock context is not initialized
      */
-    public LockContext<?> getLockContext() throws IllegalStateException {
+    public LockContext getLockContext() {
         return Optional.ofNullable(lockContext.get()).orElseThrow(() -> new IllegalStateException("Lock context is not initialized."));
     }
 }

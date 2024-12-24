@@ -33,7 +33,7 @@ import java.util.Optional;
 @Setter
 public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
     
-    private final boolean ifNotExists;
+    private boolean ifNotExists;
     
     private Integer generatedIndexStartIndex;
     

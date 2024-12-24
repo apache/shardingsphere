@@ -14,7 +14,7 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
 1. 若用户采用混合部署架构使用 ShardingSphere JDBC，此情景不直接与 ShardingSphere Proxy 交互，因此与本文无关。
    本文仅讨论业务项目不使用 ShardingSphere JDBC 的场景
 2. Seata Client 只存在于 ShardingSphere Proxy 中，业务项目并不需要依赖 Seata Client
-3. 业务项目的 R2BDC DataSource 可以正常连接至开启 Seata 集成的 ShardingSphere Proxy
+3. 业务项目的 R2DBC DataSource 可以正常连接至开启 Seata 集成的 ShardingSphere Proxy
 4. 对于开启 Seata 集成的 ShardingSphere Proxy，无法通过建立 `跨服务的事务传播` 的操作，
    传播事务到其他使用 Seata 集成的 ShardingSphere Proxy 实例或其他使用 Seata 集成的微服务。用户如果有这种需求，应考虑为 ShardingSphere 提交 PR
 5. ShardingSphere JDBC 对 Seata 的 TCC 模式建立的假设，在 ShardingSphere Proxy 上失效
@@ -360,35 +360,4 @@ public class ExampleUtils {
         }
     }
 }
-```
-
-## 使用限制
-
-### 针对 GraalVM Native Image 形态的 ShardingSphere Proxy Native
-
-对于 GraalVM Native Image 形态的 ShardingSphere Proxy Native，
-用户始终需要修改 ShardingSphere 源代码以添加 Seata Client 和 Seata 集成的 Maven 模块，并编译为 GraalVM Native Image。
-GraalVM Native Image 形态的 ShardingSphere Proxy Native 无法识别额外添加的 JAR 文件。
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
 ```

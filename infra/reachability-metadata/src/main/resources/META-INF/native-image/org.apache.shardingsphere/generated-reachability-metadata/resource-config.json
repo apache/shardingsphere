@@ -4,9 +4,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/dgminfo\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/druid-driver.properties\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule\\E"
   }, {
@@ -21,9 +18,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/seata/io.seata.core.auth.AuthSigner\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/io.seata.core.context.ContextCore\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/seata/io.seata.core.model.ResourceManager\\E"
@@ -46,9 +40,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.core.auth.AuthSigner\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/org.apache.seata.core.context.ContextCore\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.core.model.ResourceManager\\E"
   }, {
@@ -66,9 +57,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.rm.datasource.exec.InsertExecutor\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/org.apache.seata.rm.datasource.undo.UndoLogManager\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.rm.datasource.undo.UndoLogParser\\E"
@@ -88,9 +76,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.sqlparser.struct.TableMetaCache\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/seata/org.apache.seata.sqlparser.util.DbTypeParser\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.icatch.TransactionServicePlugin\\E"
   }, {
@@ -106,7 +91,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007faf37cb8640"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f30b7cc6cb8"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -123,9 +108,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/io.seata.core.auth.AuthSigner\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/io.seata.core.context.ContextCore\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/io.seata.core.model.ResourceManager\\E"
@@ -181,9 +163,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.core.auth.AuthSigner\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/org.apache.seata.core.context.ContextCore\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.core.model.ResourceManager\\E"
   }, {
@@ -202,9 +181,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.rm.datasource.exec.InsertExecutor\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/org.apache.seata.rm.datasource.undo.UndoLogManager\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.rm.datasource.undo.UndoLogParser\\E"
   }, {
@@ -222,9 +198,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
     "pattern":"\\QMETA-INF/services/org.apache.seata.sqlparser.struct.TableMetaCache\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/org.apache.seata.sqlparser.util.DbTypeParser\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.authority.rule.AuthorityRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.authority.spi.PrivilegeProvider\\E"
@@ -246,9 +219,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacadeFactory\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm\\E"
@@ -298,7 +268,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine"},
@@ -351,6 +321,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.ContextManagerBuilder\\E"
@@ -474,9 +447,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qjta.properties\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
-    "pattern":"\\Qlib/sqlparser/druid.jar\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"},
     "pattern":"\\Qmapred-default.xml\\E"

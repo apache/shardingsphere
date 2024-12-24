@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -144,9 +145,13 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         
         @Override
         protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
-                    .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
-            return database.map(Collections::singletonList).orElse(Collections.emptyList());
+            ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(connectionSession.getCurrentDatabaseName());
+            if (null != database && isAuthorized(database.getName(), connectionSession.getConnectionContext().getGrantee()) && AbstractDatabaseMetaDataExecutor.hasDataSource(database.getName())) {
+                return Collections.singleton(database.getName());
+            }
+            Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getConnectionContext().getGrantee()))
+                    .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
+            return databaseNames.isEmpty() ? Collections.emptyList() : Collections.singletonList(databaseNames.iterator().next());
         }
         
         @Override

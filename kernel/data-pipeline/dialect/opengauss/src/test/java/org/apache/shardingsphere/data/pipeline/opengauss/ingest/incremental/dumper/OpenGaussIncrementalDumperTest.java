@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.dumper;
 
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,15 +27,15 @@ import static org.mockito.Mockito.mock;
 class OpenGaussIncrementalDumperTest {
     
     @Test
-    void assertGetVersion() throws NoSuchMethodException {
+    void assertGetVersion() throws ReflectiveOperationException {
         OpenGaussIncrementalDumper dumper = mock(OpenGaussIncrementalDumper.class);
-        int version = ReflectionUtils.invokeMethod(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), dumper,
+        int version = (int) Plugins.getMemberAccessor().invoke(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), dumper,
                 "(openGauss 3.1.0 build ) compiled at 2023-02-17 16:13:51 commit 0 last mr   on x86_64-unknown-linux-gnu, compiled by g++ (GCC) 7.3.0, 64-bit");
         assertThat(version, is(3));
         OpenGaussIncrementalDumper mock = mock(OpenGaussIncrementalDumper.class);
-        version = ReflectionUtils.invokeMethod(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "(openGauss 5.0.1 build )");
+        version = (int) Plugins.getMemberAccessor().invoke(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "(openGauss 5.0.1 build )");
         assertThat(version, is(5));
-        version = ReflectionUtils.invokeMethod(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "not match");
+        version = (int) Plugins.getMemberAccessor().invoke(OpenGaussIncrementalDumper.class.getDeclaredMethod("parseMajorVersion", String.class), mock, "not match");
         assertThat(version, is(2));
     }
 }

@@ -65,11 +65,10 @@ class ZookeeperServiceDiscoveryTest {
             .withExposedPorts(2181);
     
     /**
-     * TODO Maybe we should be able to find a better solution than {@link InstanceSpec#getRandomPort()} to use a random available port on the host.
-     *  It is not a good practice to use {@link FixedHostPortGenericContainer}.
-     *  See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a> .
+     * Due to the design flaw of testcontainers-java,
+     * starting HiveServer2 using Zookeeper service discovery can only be done through the deprecated {@link FixedHostPortGenericContainer}.
+     * See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a>.
      */
-    @SuppressWarnings("unused")
     @Container
     private static final GenericContainer<?> HS2_1_CONTAINER = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
             .withNetwork(NETWORK)
@@ -105,11 +104,6 @@ class ZookeeperServiceDiscoveryTest {
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
     }
     
-    /**
-     * TODO Same problem {@link InstanceSpec#getRandomPort()} as {@code HIVE_SERVER2_1_CONTAINER}.
-     *
-     * @throws SQLException SQL exception.
-     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://" + ZOOKEEPER_CONTAINER.getHost() + ":" + ZOOKEEPER_CONTAINER.getMappedPort(2181) + "/";

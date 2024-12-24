@@ -35,7 +35,7 @@ import java.util.Optional;
 @Setter
 public final class DorisCreateTableStatement extends CreateTableStatement implements DorisStatement {
     
-    private final boolean ifNotExists;
+    private boolean ifNotExists;
     
     private SimpleTableSegment likeTable;
     

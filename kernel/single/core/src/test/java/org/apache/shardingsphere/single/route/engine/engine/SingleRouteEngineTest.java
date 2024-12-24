@@ -95,7 +95,9 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
-        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock(HintValueContext.class));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
@@ -110,7 +112,9 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
-        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false), mock(HintValueContext.class));
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock(HintValueContext.class));
         SingleRule singleRule =
                 new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -149,7 +153,8 @@ class SingleRouteEngineTest {
     }
     
     private SQLStatement mockStatement(final boolean ifNotExists) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement(ifNotExists);
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
+        result.setIfNotExists(ifNotExists);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
     }

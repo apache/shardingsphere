@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -136,7 +136,8 @@ public abstract class BaseDQLE2EIT implements E2EEnvironmentAware {
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
                 continue;
             }
-            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())) {
+            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode()) && "encrypt".equals(testParam.getScenario())
+                    || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
             }

@@ -83,7 +83,8 @@ public final class JoinTableSegmentBinder {
             result.setDerivedUsing(bindUsingColumns(derivedUsingColumns, tableBinderContexts));
             result.getDerivedUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue()));
         }
-        result.getDerivedJoinTableProjectionSegments().addAll(getDerivedJoinTableProjectionSegments(result, binderContext.getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
+        result.getDerivedJoinTableProjectionSegments()
+                .addAll(getDerivedJoinTableProjectionSegments(result, binderContext.getSqlStatement().getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
         binderContext.getJoinTableProjectionSegments().addAll(result.getDerivedJoinTableProjectionSegments());
         return result;
     }

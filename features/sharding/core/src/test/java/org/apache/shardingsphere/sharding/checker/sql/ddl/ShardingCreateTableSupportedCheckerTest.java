@@ -49,7 +49,8 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
@@ -63,7 +64,8 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
@@ -92,14 +94,16 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckIfNotExistsForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(true);
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertCheckIfNotExists(sqlStatement);
     }
     
     @Test
     void assertCheckIfNotExistsForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(true);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertCheckIfNotExists(sqlStatement);
     }

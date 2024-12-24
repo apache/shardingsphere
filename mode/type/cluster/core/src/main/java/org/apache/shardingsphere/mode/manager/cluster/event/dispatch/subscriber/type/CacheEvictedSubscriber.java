@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 /**
  * Cache evicted subscriber.
  */
-public final class CacheEvictedSubscriber implements EventSubscriber {
+public final class CacheEvictedSubscriber implements DispatchEventSubscriber {
     
     /**
      * Callback of any {@link DispatchEvent}.

@@ -68,8 +68,9 @@ public final class EncryptProjectionTokenGenerator {
      * @return generated SQL tokens
      */
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
-        Collection<SQLToken> result = new LinkedList<>(generateSelectSQLTokens(selectStatementContext));
+        Collection<SQLToken> result = new LinkedList<>();
         selectStatementContext.getSubqueryContexts().values().stream().map(this::generateSQLTokens).forEach(result::addAll);
+        result.addAll(generateSelectSQLTokens(selectStatementContext));
         return result;
     }
     

@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.event.dispatch.state.compute.ReportLocalProcessesEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,12 +40,19 @@ import java.util.Collection;
 /**
  * Process list changed subscriber.
  */
-@RequiredArgsConstructor
-public final class ProcessListChangedSubscriber implements EventSubscriber {
+public final class ProcessListChangedSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
     
-    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
+    private final PersistRepository repository;
+    
+    private final YamlProcessListSwapper swapper;
+    
+    public ProcessListChangedSubscriber(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        repository = contextManager.getPersistServiceFacade().getRepository();
+        swapper = new YamlProcessListSwapper();
+    }
     
     /**
      * Report local processes.
@@ -59,10 +66,9 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            contextManager.getPersistServiceFacade().getRepository().persist(
-                    ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
+            repository.persist(ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        contextManager.getPersistServiceFacade().getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
+        repository.delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
     
     /**
@@ -93,7 +99,7 @@ public final class ProcessListChangedSubscriber implements EventSubscriber {
                 each.cancel();
             }
         }
-        contextManager.getPersistServiceFacade().getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+        repository.delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
     
     /**
