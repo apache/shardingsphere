@@ -49,7 +49,7 @@ public final class MetaDataImportExecutor {
     
     /**
      * Import cluster configurations.
-     * 
+     *
      * @param exportedMetaData exported metadata
      * @throws SQLException SQL exception
      */
