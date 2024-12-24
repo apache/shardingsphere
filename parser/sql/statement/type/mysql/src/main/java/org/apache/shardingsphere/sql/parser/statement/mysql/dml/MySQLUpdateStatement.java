@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
@@ -35,6 +36,8 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     
     private LimitSegment limit;
     
+    private WithSegment withSegment;
+
     @Override
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
@@ -44,4 +47,7 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
+
+    @Override
+    public Optional<WithSegment> getWithSegment(){ return Optional.ofNullable(withSegment); }
 }

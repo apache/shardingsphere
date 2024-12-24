@@ -30,7 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * SQL statement binder context.
@@ -38,7 +40,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 public final class SQLStatementBinderContext {
-    
+
     private final ShardingSphereMetaData metaData;
     
     private final String currentDatabaseName;
@@ -46,7 +48,9 @@ public final class SQLStatementBinderContext {
     private final HintValueContext hintValueContext;
     
     private final SQLStatement sqlStatement;
-    
+
+    private final Set<CaseInsensitiveString> commonTableExpressionsSegmentsUniqueAliases = new HashSet<>();
+
     private final Collection<String> usingColumnNames = new CaseInsensitiveSet<>();
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
