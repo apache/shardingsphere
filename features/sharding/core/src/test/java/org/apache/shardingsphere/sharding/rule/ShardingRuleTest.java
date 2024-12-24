@@ -70,7 +70,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -736,15 +735,6 @@ class ShardingRuleTest {
         if (null != owner) {
             result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
         }
-        return result;
-    }
-    
-    private Map<String, String> createColumnTableNameMap() {
-        Map<String, String> result = new HashMap<>(4, 1F);
-        result.put("logic_Table.user_id", "logic_Table");
-        result.put("sub_Logic_Table.user_id", "sub_Logic_Table");
-        result.put("logic_Table.order_id", "logic_Table");
-        result.put("sub_Logic_Table.order_id", "sub_Logic_Table");
         return result;
     }
     
