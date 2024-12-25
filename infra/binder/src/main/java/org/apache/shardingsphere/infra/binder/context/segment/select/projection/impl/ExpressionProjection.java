@@ -52,7 +52,7 @@ public final class ExpressionProjection implements Projection {
     @Override
     public String getColumnLabel() {
         ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return getAlias().map(extractEngine::getIdentifierValue).orElseGet(() -> extractEngine.getColumnNameFromExpression(expressionSegment.getText()));
+        return getAlias().map(extractEngine::getIdentifierValue).orElseGet(() -> extractEngine.getColumnNameFromExpression(expressionSegment));
     }
     
     @Override

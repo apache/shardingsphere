@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ class ProjectionIdentifierExtractEngineTest {
     
     @Test
     void assertGetColumnNameFromExpression() {
-        assertThat(new ProjectionIdentifierExtractEngine(databaseType).getColumnNameFromExpression("expression"), is("expression"));
+        assertThat(new ProjectionIdentifierExtractEngine(databaseType).getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "expression")), is("expression"));
     }
     
     @Test

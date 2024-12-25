@@ -100,6 +100,6 @@ public final class SubqueryTableBindUtils {
         if (expressionSegment instanceof AliasAvailable && ((AliasAvailable) expressionSegment).getAlias().isPresent()) {
             return extractEngine.getIdentifierValue(((AliasAvailable) expressionSegment).getAlias().get());
         }
-        return extractEngine.getColumnNameFromExpression(expressionSegment.getText());
+        return extractEngine.getColumnNameFromExpression(expressionSegment);
     }
 }
