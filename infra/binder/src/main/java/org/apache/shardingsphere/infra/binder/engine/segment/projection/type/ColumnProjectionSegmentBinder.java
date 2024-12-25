@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.projection.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,11 +40,13 @@ public final class ColumnProjectionSegmentBinder {
      * @param segment table segment
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bound column projection segment
      */
-    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment,
-                                               final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create());
+    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final SQLStatementBinderContext binderContext,
+                                               final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                               final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        ColumnSegment boundColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());

@@ -293,4 +293,41 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_with_current_select_projection_reference">
+        <projections start-index="7" stop-index="58">
+            <column-projection name="order_id" start-index="7" stop-index="25" alias="orderId">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+            <subquery-projection start-index="28" stop-index="43" alias="tempOrderId" text="(SELECT orderId)">
+                <subquery>
+                    <select>
+                        <projections start-index="36" stop-index="42">
+                            <column-projection name="orderId" start-index="36" stop-index="42">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+        <from start-index="60" stop-index="71">
+            <simple-table name="t_order" start-index="65" stop-index="71">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
