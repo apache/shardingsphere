@@ -39,7 +39,7 @@ jobs:
     name: Build E2E Image
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
