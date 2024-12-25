@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDa
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseExportMetaDataGenerator;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 
 import java.util.Collection;
@@ -44,13 +45,13 @@ public final class ExportDatabaseConfigurationExecutor implements DistSQLQueryEx
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ExportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
-        String exportedData = ExportUtils.generateExportDatabaseData(database);
-        if (!sqlStatement.getFilePath().isPresent()) {
-            return Collections.singleton(new LocalDataQueryResultRow(exportedData));
+        String exportedData = new DatabaseExportMetaDataGenerator(database).generateYAMLFormat();
+        if (sqlStatement.getFilePath().isPresent()) {
+            String filePath = sqlStatement.getFilePath().get();
+            ExportUtils.exportToFile(filePath, exportedData);
+            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to: '%s'", filePath)));
         }
-        String filePath = sqlStatement.getFilePath().get();
-        ExportUtils.exportToFile(filePath, exportedData);
-        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to: '%s'", filePath)));
+        return Collections.singleton(new LocalDataQueryResultRow(exportedData));
     }
     
     @Override
