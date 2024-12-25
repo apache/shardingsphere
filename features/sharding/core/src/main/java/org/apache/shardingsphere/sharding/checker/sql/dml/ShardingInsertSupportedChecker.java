@@ -61,7 +61,7 @@ public final class ShardingInsertSupportedChecker implements SupportedSQLChecker
             throw new MissingGenerateKeyColumnWithInsertSelectException();
         }
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (rule.containsShardingTable(tablesContext.getTableNames()) && !isAllSameTables(tablesContext.getTableNames()) && !rule.isAllBindingTables(tablesContext.getTableNames())) {
+        if (rule.containsShardingTable(tablesContext.getTableNames()) && !isAllSameTables(tablesContext.getTableNames()) && !rule.isAllConfigBindingTables(tablesContext.getTableNames())) {
             throw new InsertSelectTableViolationException();
         }
     }

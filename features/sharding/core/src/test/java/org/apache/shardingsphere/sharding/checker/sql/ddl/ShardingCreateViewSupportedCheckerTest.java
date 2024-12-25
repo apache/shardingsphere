@@ -79,7 +79,7 @@ class ShardingCreateViewSupportedCheckerTest {
     @Test
     void assertCheckWithException() {
         when(rule.isShardingTable(any())).thenReturn(true);
-        when(rule.isAllBindingTables(any())).thenReturn(false);
+        when(rule.isAllConfigBindingTables(any())).thenReturn(false);
         assertThrows(EngagedViewException.class, () -> new ShardingCreateViewSupportedChecker().check(rule, mock(), mock(), createViewStatementContext));
     }
 }

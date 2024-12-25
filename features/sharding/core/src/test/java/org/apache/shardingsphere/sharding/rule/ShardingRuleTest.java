@@ -70,7 +70,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -264,26 +263,26 @@ class ShardingRuleTest {
     
     @Test
     void assertIsAllBindingTableWhenLogicTablesIsEmpty() {
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Collections.emptyList()));
     }
     
     @Test
     void assertIsNotAllBindingTable() {
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "new_Table")));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("new_Table")));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Arrays.asList("logic_Table", "new_Table")));
     }
     
     @Test
     void assertIsAllBindingTable() {
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_Logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_logic_table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "sub_Logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("logic_Table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("logic_table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("sub_logic_table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isAllConfigBindingTables(Arrays.asList("logic_table", "sub_logic_Table")));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Collections.emptyList()));
+        assertFalse(createMaximumShardingRule().isAllConfigBindingTables(Collections.singleton("new_Table")));
     }
     
     @Test
@@ -615,16 +614,14 @@ class ShardingRuleTest {
     @Test
     void assertIsAllBindingTableWithUpdateStatementContext() {
         SQLStatementContext sqlStatementContext = mock(UpdateStatementContext.class);
-        assertTrue(
-                createMaximumShardingRule().isAllBindingTables(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
     void assertIsAllBindingTableWithoutJoinQuery() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(false);
-        assertTrue(
-                createMaximumShardingRule().isAllBindingTables(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
@@ -636,8 +633,7 @@ class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
-        assertFalse(
-                createMaximumShardingRule().isAllBindingTables(database, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertFalse(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
@@ -658,7 +654,7 @@ class ShardingRuleTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_db")).thenReturn(schema);
-        assertFalse(createMaximumShardingRule().isAllBindingTables(database, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertFalse(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
@@ -681,7 +677,7 @@ class ShardingRuleTest {
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        assertFalse(createMaximumShardingRule().isAllBindingTables(database, sqlStatementContext, Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
+        assertFalse(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
     @Test
@@ -715,7 +711,7 @@ class ShardingRuleTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_db")).thenReturn(schema);
-        assertTrue(createMaximumShardingRule().isAllBindingTables(database, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
@@ -739,15 +735,6 @@ class ShardingRuleTest {
         if (null != owner) {
             result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
         }
-        return result;
-    }
-    
-    private Map<String, String> createColumnTableNameMap() {
-        Map<String, String> result = new HashMap<>(4, 1F);
-        result.put("logic_Table.user_id", "logic_Table");
-        result.put("sub_Logic_Table.user_id", "sub_Logic_Table");
-        result.put("logic_Table.order_id", "logic_Table");
-        result.put("sub_Logic_Table.order_id", "sub_Logic_Table");
         return result;
     }
     

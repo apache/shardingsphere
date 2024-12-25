@@ -52,15 +52,14 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         if (!selectStatementContext.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
-        if (isSelfJoinWithoutShardingColumn(selectStatementContext, rule, database, tableNames)) {
+        if (isSelfJoinWithoutShardingColumn(selectStatementContext, rule, tableNames)) {
             return true;
         }
-        return tableNames.size() > 1 && !rule.isAllBindingTables(database, selectStatementContext, tableNames);
+        return tableNames.size() > 1 && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
     }
     
-    private boolean isSelfJoinWithoutShardingColumn(final SelectStatementContext selectStatementContext,
-                                                    final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        return 1 == tableNames.size() && selectStatementContext.isContainsJoinQuery() && !rule.isAllBindingTables(database, selectStatementContext, tableNames);
+    private boolean isSelfJoinWithoutShardingColumn(final SelectStatementContext selectStatementContext, final ShardingRule rule, final Collection<String> tableNames) {
+        return 1 == tableNames.size() && selectStatementContext.isContainsJoinQuery() && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
     }
     
     private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames) {
