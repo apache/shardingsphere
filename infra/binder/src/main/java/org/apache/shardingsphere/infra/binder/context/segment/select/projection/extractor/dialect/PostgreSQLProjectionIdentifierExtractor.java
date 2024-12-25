@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -40,7 +41,9 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
-        return expressionSegment instanceof FunctionSegment ? ((FunctionSegment) expressionSegment).getFunctionName() : "?column?";
+        return expressionSegment instanceof ExpressionProjectionSegment && ((ExpressionProjectionSegment) expressionSegment).getExpr() instanceof FunctionSegment
+                ? ((FunctionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr()).getFunctionName()
+                : "?column?";
     }
     
     @Override
