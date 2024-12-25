@@ -63,9 +63,9 @@ public final class OrderBySegmentBinder {
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final OrderByItemSegment orderByItemSegment) {
         try {
-            return OrderByItemSegmentBinder.bind(orderByItemSegment, binderContext, currentTableBinderContexts, outerTableBinderContexts, SegmentType.ORDER_BY);
-        } catch (final ColumnNotFoundException ignored) {
             return OrderByItemSegmentBinder.bind(orderByItemSegment, binderContext, tableBinderContexts, outerTableBinderContexts, SegmentType.ORDER_BY);
+        } catch (final ColumnNotFoundException ignored) {
+            return OrderByItemSegmentBinder.bind(orderByItemSegment, binderContext, currentTableBinderContexts, outerTableBinderContexts, SegmentType.ORDER_BY);
         }
     }
 }

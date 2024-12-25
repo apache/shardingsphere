@@ -53,7 +53,9 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         result.getColumns().addAll(sqlStatement.getColumns());
         sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
         sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
+        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }
 }
