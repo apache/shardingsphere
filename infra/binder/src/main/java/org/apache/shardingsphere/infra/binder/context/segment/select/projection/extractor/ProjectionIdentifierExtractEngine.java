@@ -62,7 +62,7 @@ public final class ProjectionIdentifierExtractEngine {
     /**
      * Get column name from expression.
      *
-     * @param expressionSegment expression
+     * @param expressionSegment expression segment
      * @return column name
      */
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
