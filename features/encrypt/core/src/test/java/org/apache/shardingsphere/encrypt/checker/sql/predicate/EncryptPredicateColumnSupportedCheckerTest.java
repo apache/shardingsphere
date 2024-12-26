@@ -88,7 +88,6 @@ class EncryptPredicateColumnSupportedCheckerTest {
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"),
                 new IdentifierValue("user_name")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));
         when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, columnSegment, columnSegment, "LIKE", ""))));
         when(result.getSubqueryContexts()).thenReturn(Collections.emptyMap());
@@ -106,7 +105,6 @@ class EncryptPredicateColumnSupportedCheckerTest {
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("t_user"),
                 new IdentifierValue("user_name")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().findTableNames(Collections.singleton(columnSegment), null)).thenReturn(Collections.singletonMap("user_name", "t_user"));
         when(result.getColumnSegments()).thenReturn(Collections.singleton(columnSegment));
         when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, columnSegment, columnSegment, "=", ""))));
         when(result.getSubqueryContexts()).thenReturn(Collections.emptyMap());

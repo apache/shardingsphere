@@ -103,6 +103,13 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("t_account_view", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_order", Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
+                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     

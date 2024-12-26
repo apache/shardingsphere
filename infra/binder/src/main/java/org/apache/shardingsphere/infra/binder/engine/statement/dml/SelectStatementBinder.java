@@ -22,17 +22,26 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.combine.CombineSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.TableSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.lock.LockSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.projection.ProjectionsSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.where.WhereSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.combine.CombineSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.lock.LockSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.GroupBySegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.OrderBySegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.HavingSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.ProjectionsSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -51,29 +60,40 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     public SelectStatement bind(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         SelectStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        sqlStatement.getWithSegment().ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())));
         Optional<TableSegment> boundTableSegment = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
         boundTableSegment.ifPresent(result::setFrom);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundTableSegment.orElse(null), tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)));
         sqlStatement.getLock().ifPresent(optional -> result.setLock(LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
-        // TODO support other segment bind in select statement
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result);
+        sqlStatement.getGroupBy().ifPresent(optional -> result.setGroupBy(
+                GroupBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
+        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
+                OrderBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
+        sqlStatement.getHaving().ifPresent(optional -> result.setHaving(HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, outerTableBinderContexts)));
+        return result;
+    }
+    
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext, final SelectStatement selectStatement) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
+                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType());
+        result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private SelectStatement copy(final SelectStatement sqlStatement) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
-        sqlStatement.getHaving().ifPresent(result::setHaving);
-        sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
         sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
-        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }
 }

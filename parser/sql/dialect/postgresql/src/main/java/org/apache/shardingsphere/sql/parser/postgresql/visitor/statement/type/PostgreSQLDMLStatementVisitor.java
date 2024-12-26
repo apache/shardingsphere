@@ -98,7 +98,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
         if (null != ctx.qualifiedName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
+            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
             if (null != ctx.columnNames()) {
                 result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
@@ -127,7 +127,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
         if (null != ctx.qualifiedName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
+            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
             if (null != ctx.columnNames()) {
                 result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
@@ -142,7 +142,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
         if (null != ctx.qualifiedName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
+            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
         return result;
     }

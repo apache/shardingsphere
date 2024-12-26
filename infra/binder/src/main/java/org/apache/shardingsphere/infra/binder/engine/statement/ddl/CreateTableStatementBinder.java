@@ -21,9 +21,9 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.column.ColumnDefinitionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.type.SimpleTableSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.ddl.column.ColumnDefinitionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
@@ -53,7 +53,9 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         result.getColumns().addAll(sqlStatement.getColumns());
         sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
         sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
+        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }
 }

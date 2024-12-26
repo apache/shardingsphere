@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.ExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedColumnBoundInfo;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.item.ExpectedOrderByItem;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
@@ -38,4 +39,7 @@ public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem impleme
     
     @XmlElement
     private ExpectedOwner owner;
+    
+    @XmlElement(name = "column-bound")
+    private ExpectedColumnBoundInfo columnBound;
 }
