@@ -411,6 +411,18 @@ restart
     : RESTART
     ;
 
+recoverDatabase
+    : RECOVER DATABASE databaseName (databaseId | AS newDatabaseName=identifier)?
+    ;
+
+recoverPartition
+    : RECOVER PARTITION partitionName partitionId? (AS newPartitionName=identifier)? FROM tableName
+    ;
+
+recoverTable
+    : RECOVER TABLE tableName tableId? (AS newTableName=identifier)?
+    ;
+
 shutdown
     : SHUTDOWN
     ;
