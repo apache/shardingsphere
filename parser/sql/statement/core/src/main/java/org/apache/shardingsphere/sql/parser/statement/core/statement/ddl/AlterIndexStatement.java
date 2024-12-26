@@ -49,7 +49,7 @@ public abstract class AlterIndexStatement extends AbstractSQLStatement implement
     public Optional<SimpleTableSegment> getSimpleTable() {
         return Optional.empty();
     }
-
+    
     /**
      * Set simple table segment.
      *
