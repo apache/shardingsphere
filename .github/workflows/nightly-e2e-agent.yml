@@ -1,0 +1,145 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Nightly - E2E Agent
+
+on:
+  schedule:
+    - cron: '0 0 * * 1-5' # Once a day between Monday and Friday. UTC time
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+  
+  build-e2e-image:
+    if: github.repository == 'apache/shardingsphere'
+    name: Build E2E Image
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: apache-shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
+          restore-keys: |
+            apache-shardingsphere-maven-third-party-e2e-cache-
+            apache-shardingsphere-maven-third-party-
+      - name: Build Project
+        run: ./mvnw -B clean install -DskipTests -Prelease
+      - name: Build Proxy E2E Image
+        run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/engine/pom.xml
+      - name: Save Proxy E2E Image
+        run: docker save -o /tmp/apache-shardingsphere-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proxy-e2e-image
+          path: /tmp/apache-shardingsphere-proxy-agent-test.tar
+          retention-days: 10
+      - name: Build JDBC E2E Image
+        run: ./mvnw clean install -DskipTests -Pit.env.jdbc -f test/e2e/agent/engine/pom.xml
+      - name: Save JDBC E2E Image
+        run: docker save -o /tmp/apache-shardingsphere-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jdbc-e2e-image
+          path: /tmp/apache-shardingsphere-jdbc-agent-test.tar
+          retention-days: 10
+          
+  agent-mysql:
+    name: E2E - Agent with MySQL
+    if: github.repository == 'apache/shardingsphere'
+    needs: [ global-environment, build-e2e-image ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      max-parallel: 20
+      fail-fast: false
+      matrix:
+        include:
+          - adapter: proxy
+            feature: tracing
+            plugin: jaeger
+          - adapter: proxy
+            feature: tracing
+            plugin: zipkin
+          - adapter: proxy
+            feature: metrics
+            plugin: prometheus
+          - adapter: proxy
+            feature: logging
+            plugin: file
+          - adapter: jdbc
+            feature: logging
+            plugin: file
+          - adapter: jdbc
+            feature: metrics
+            plugin: prometheus
+          - adapter: jdbc
+            feature: tracing
+            plugin: jaeger
+          - adapter: jdbc
+            feature: tracing
+            plugin: zipkin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: apache-shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            apache-shardingsphere-maven-third-party-
+      - name: Download Proxy E2E Image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v4
+        with:
+          name: proxy-e2e-image
+          path: /tmp/
+      - name: Load Proxy E2E Image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/apache-shardingsphere-proxy-agent-test.tar
+      - name: Download JDBC E2E Image
+        if: matrix.adapter == 'jdbc'
+        uses: actions/download-artifact@v4
+        with:
+          name: jdbc-e2e-image
+          path: /tmp/
+      - name: Load JDBC E2E Image
+        if: matrix.adapter == 'jdbc'
+        run: docker load -i /tmp/apache-shardingsphere-jdbc-agent-test.tar
+      - name: Build Project
+        run: ./mvnw -B clean install -am -pl test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }} -DskipTests
+      - name: Run E2E Test
+        run: ./mvnw -nsu -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.plugin=${{ matrix.plugin }}

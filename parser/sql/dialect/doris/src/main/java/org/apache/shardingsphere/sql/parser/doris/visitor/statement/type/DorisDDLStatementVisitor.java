@@ -664,7 +664,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DorisDropTableStatement result = new DorisDropTableStatement(null != ctx.ifExists());
+        DorisDropTableStatement result = new DorisDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

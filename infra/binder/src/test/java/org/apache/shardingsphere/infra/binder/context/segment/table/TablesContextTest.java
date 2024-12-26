@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.table;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -33,16 +29,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class TablesContextTest {
     
@@ -75,75 +68,12 @@ class TablesContextTest {
         assertThat(tablesContext.getTableNames(), is(Collections.singleton("tbl")));
     }
     
-    @Test
-    void assertFindTableNameWhenSingleTable() {
-        SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableNames(Collections.singletonList(columnSegment), mock());
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnSegmentOwnerPresent() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2", "sharding_db_1");
-        ColumnSegment columnSegment = createColumnSegment("table_1", "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNames(Collections.singletonList(columnSegment), mock());
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("table_1.col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2", "sharding_db_1");
-        ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNames(Collections.singletonList(columnSegment), mock());
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumn() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2", "sharding_db_1");
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("table_1")).thenReturn(true);
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(table.containsColumn("col")).thenReturn(true);
-        when(schema.getTable("table_1")).thenReturn(table);
-        ColumnSegment columnSegment = createColumnSegment(null, "col");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNames(Collections.singletonList(columnSegment), schema);
-        assertThat(actual.get("col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
-        SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1", "sharding_db_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2", "sharding_db_1");
-        ShardingSphereTable table = new ShardingSphereTable("TABLE_1",
-                Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
-        ColumnSegment columnSegment = createColumnSegment(null, "COL");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNames(Collections.singletonList(columnSegment), schema);
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("TABLE_1"));
-    }
-    
     private SimpleTableSegment createTableSegment(final String tableName, final String alias, final String databaseName) {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(tableName));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(databaseName), new IdentifierValue(databaseName)));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
-        return result;
-    }
-    
-    private ColumnSegment createColumnSegment(final String owner, final String name) {
-        ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(name));
-        if (null != owner) {
-            result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
-        }
         return result;
     }
     

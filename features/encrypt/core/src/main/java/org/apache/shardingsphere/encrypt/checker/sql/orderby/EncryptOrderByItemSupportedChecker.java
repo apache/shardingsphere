@@ -32,9 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,7 +62,7 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
     public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SelectStatementContext sqlStatementContext) {
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                checkColumnOrderByItem(rule, currentSchema, sqlStatementContext, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
+                checkColumnOrderByItem(rule, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
             }
         }
     }
@@ -80,10 +78,8 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
         return result;
     }
     
-    private void checkColumnOrderByItem(final EncryptRule rule, final ShardingSphereSchema schema, final SelectStatementContext sqlStatementContext, final ColumnSegment columnSegment) {
-        Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
-        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+    private void checkColumnOrderByItem(final EncryptRule rule, final ColumnSegment columnSegment) {
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
         String columnName = columnSegment.getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName), () -> new UnsupportedEncryptSQLException("ORDER BY"));
     }

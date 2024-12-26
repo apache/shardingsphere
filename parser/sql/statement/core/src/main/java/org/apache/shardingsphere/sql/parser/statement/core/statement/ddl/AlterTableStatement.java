@@ -93,6 +93,14 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     }
     
     /**
+     * Set modify collection retrieval.
+     *
+     * @param modifyCollectionRetrieval modify collection retrieval
+     */
+    public void setModifyCollectionRetrieval(final ModifyCollectionRetrievalSegment modifyCollectionRetrieval) {
+    }
+    
+    /**
      * Get modify collection retrieval.
      *
      * @return modify collection retrieval

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Pipeline DDL generator.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineDDLGenerator {
     

@@ -47,7 +47,7 @@ class GlobalLockPersistServiceTest {
     
     @Test
     void assertTryLock() {
-        when(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock").tryLock(1000L)).thenReturn(true);
+        when(repository.getDistributedLockHolder().getDistributedLock("/lock/global/locks/foo_lock").tryLock(1000L)).thenReturn(true);
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         assertTrue(new GlobalLockPersistService(repository).tryLock(lockDefinition, 1000L));
     }
@@ -56,6 +56,6 @@ class GlobalLockPersistServiceTest {
     void assertUnlock() {
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         new GlobalLockPersistService(repository).unlock(lockDefinition);
-        verify(repository.getDistributedLockHolder().getDistributedLock("/lock/exclusive/locks/foo_lock")).unlock();
+        verify(repository.getDistributedLockHolder().getDistributedLock("/lock/global/locks/foo_lock")).unlock();
     }
 }

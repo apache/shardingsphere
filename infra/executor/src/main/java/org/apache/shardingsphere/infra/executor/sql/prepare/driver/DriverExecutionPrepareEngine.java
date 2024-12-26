@@ -102,7 +102,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<ExecutionUnit> executionUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        DatabaseType databaseType = storageUnits.get(dataSourceName).getStorageType();
+        // TODO use metadata to replace storageUnits to support multiple logic databases
+        DatabaseType databaseType = storageUnits.containsKey(dataSourceName) ? storageUnits.get(dataSourceName).getStorageType() : storageUnits.values().iterator().next().getStorageType();
         for (ExecutionUnit each : executionUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionMode, option, databaseType));
         }

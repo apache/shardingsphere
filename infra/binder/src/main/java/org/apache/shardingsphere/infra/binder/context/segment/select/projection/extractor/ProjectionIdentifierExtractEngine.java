@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -61,11 +62,12 @@ public final class ProjectionIdentifierExtractEngine {
     /**
      * Get column name from expression.
      *
-     * @param expression expression
+     * @param expressionSegment expression segment
      * @return column name
      */
-    public String getColumnNameFromExpression(final String expression) {
-        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType).map(optional -> optional.getColumnNameFromExpression(expression)).orElse(expression);
+    public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
+        return DatabaseTypedSPILoader.findService(DialectProjectionIdentifierExtractor.class, databaseType).map(optional -> optional.getColumnNameFromExpression(expressionSegment))
+                .orElse(expressionSegment.getText());
     }
     
     /**

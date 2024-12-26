@@ -33,7 +33,7 @@
                 <original-database name="foo_db_1" />
                 <original-schema name="public" />
                 <original-table name="t_order" />
-                <original-column name="user_id" />
+                <original-column name="user_id" start-delimiter="&quot;" end-delimiter="&quot;" />
             </column-bound>
         </column>
     </create-index>
