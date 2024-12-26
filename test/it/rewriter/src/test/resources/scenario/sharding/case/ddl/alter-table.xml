@@ -70,8 +70,8 @@
         <output sql="ALTER TABLE t_single ADD CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id)" />
     </rewrite-assertion>
     <rewrite-assertion id="alter_table_with_single_table_with_rename_table" db-types="MySQL,PostgreSQL,openGauss">
-        <input sql="ALTER TABLE t_single RENAME TO t_single_extend" />
-        <output sql="ALTER TABLE t_single RENAME TO t_single_extend" />
+        <input sql="ALTER TABLE t_single RENAME TO t_single_tmp" />
+        <output sql="ALTER TABLE t_single RENAME TO t_single_tmp" />
     </rewrite-assertion>
     <rewrite-assertion id="alter_table_with_multi_data_node_drop_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="ALTER TABLE t_account DROP CONSTRAINT t_account_fk" />

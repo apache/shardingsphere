@@ -21,38 +21,30 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.column.ColumnDefinitionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 /**
- * Create table statement binder.
+ * Drop table statement binder.
  */
-public final class CreateTableStatementBinder implements SQLStatementBinder<CreateTableStatement> {
+public final class DropTableStatementBinder implements SQLStatementBinder<DropTableStatement> {
     
     @Override
-    public CreateTableStatement bind(final CreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        CreateTableStatement result = copy(sqlStatement);
+    public DropTableStatement bind(final DropTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        DropTableStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
-        sqlStatement.getSelectStatement().ifPresent(optional -> result.setSelectStatement(new SelectStatementBinder().bind(optional, binderContext)));
-        sqlStatement.getColumnDefinitions().forEach(each -> result.getColumnDefinitions().add(ColumnDefinitionSegmentBinder.bind(each, binderContext, tableBinderContexts)));
+        sqlStatement.getTables().forEach(each -> result.getTables().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static CreateTableStatement copy(final CreateTableStatement sqlStatement) {
-        CreateTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.getConstraintDefinitions().addAll(sqlStatement.getConstraintDefinitions());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.setIfNotExists(sqlStatement.isIfNotExists());
-        result.getColumns().addAll(sqlStatement.getColumns());
-        sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
-        sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
+    private static DropTableStatement copy(final DropTableStatement sqlStatement) {
+        DropTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        result.setIfExists(sqlStatement.isIfExists());
+        result.setContainsCascade(sqlStatement.isContainsCascade());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());

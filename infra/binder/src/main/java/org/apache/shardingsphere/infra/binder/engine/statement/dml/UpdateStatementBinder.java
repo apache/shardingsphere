@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.order.OrderBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
@@ -44,16 +45,18 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         sqlStatement.getFrom().ifPresent(optional -> result.setFrom(TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
         sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
+        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
+                OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private UpdateStatement copy(final UpdateStatement sqlStatement) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }
 }

@@ -106,6 +106,7 @@ class OpenGaussComBatchBindExecutorTest {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionContext()).thenReturn(new ConnectionContext(Collections::emptySet));
         when(result.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(result.getUsedDatabaseName()).thenReturn("foo_db");
         ConnectionContext connectionContext = mockConnectionContext();
         when(result.getConnectionContext()).thenReturn(connectionContext);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);

@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * MySQL drop table statement.
+ * Expected derived insert columns.
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
-public final class MySQLDropTableStatement extends DropTableStatement implements MySQLStatement {
+public final class ExpectedDerivedInsertColumns extends AbstractExpectedSQLSegment {
     
-    private boolean ifExists;
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }
