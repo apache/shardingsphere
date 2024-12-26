@@ -19,11 +19,13 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
@@ -57,6 +59,9 @@ public final class DDLStatementBindEngine {
         }
         if (statement instanceof CreateIndexStatement) {
             return new CreateIndexStatementBinder().bind((CreateIndexStatement) statement, binderContext);
+        }
+        if (statement instanceof AlterIndexStatement) {
+            return new AlterIndexStatementBinder().bind((AlterIndexStatement) statement, binderContext);
         }
         return statement;
     }

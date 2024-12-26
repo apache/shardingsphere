@@ -80,8 +80,10 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
         ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
         checkTableExists(binderContext, schema, schemaName.getValue(), tableName.getValue());
-        tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
-                createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
+        if (null != tableBinderContexts) {
+            tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
+                    createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
+        }
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
