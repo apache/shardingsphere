@@ -116,7 +116,7 @@ public final class ColumnSegmentBinder {
         if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
             return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments()));
         }
-        return tableBinderContexts.values().isEmpty() ? outerTableBinderContexts.values() : tableBinderContexts.values();
+        return tableBinderContexts.values();
     }
     
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
