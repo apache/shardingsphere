@@ -73,7 +73,6 @@ class ExportDatabaseConfigurationExecutorTest {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        System.out.println(row.getCell(1));
         assertThat(row.getCell(1), is(loadExpectedRow()));
     }
     
