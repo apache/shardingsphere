@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexSta
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropIndexStatementBinder;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIn
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
@@ -81,6 +83,9 @@ public final class DDLStatementBindEngine {
         }
         if (statement instanceof AlterIndexStatement) {
             return new AlterIndexStatementBinder().bind((AlterIndexStatement) statement, binderContext);
+        }
+        if (statement instanceof CreateViewStatement) {
+            return new CreateViewStatementBinder().bind((CreateViewStatement) statement, binderContext);
         }
         if (statement instanceof TruncateStatement) {
             return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
