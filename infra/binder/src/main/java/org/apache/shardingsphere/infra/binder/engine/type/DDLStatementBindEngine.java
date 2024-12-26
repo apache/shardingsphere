@@ -19,14 +19,17 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
@@ -34,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 
 /**
  * DDL statement bind engine.
@@ -72,6 +76,12 @@ public final class DDLStatementBindEngine {
         }
         if (statement instanceof CreateIndexStatement) {
             return new CreateIndexStatementBinder().bind((CreateIndexStatement) statement, binderContext);
+        }
+        if (statement instanceof AlterIndexStatement) {
+            return new AlterIndexStatementBinder().bind((AlterIndexStatement) statement, binderContext);
+        }
+        if (statement instanceof TruncateStatement) {
+            return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
         }
         return statement;
     }
