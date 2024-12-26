@@ -17,16 +17,16 @@
   -->
 
 <sql-parser-test-cases>
-    <create-view sql-case-id="create_view" view-definition="SELECT order_id FROM t_order">
-        <view name="t_order_view_tmp" start-index="12" stop-index="27">
+    <alter-view sql-case-id="alter_view" view-definition="SELECT order_id FROM t_order">
+        <view name="t_order_view" start-index="11" stop-index="22">
             <table-bound>
                 <original-database name="foo_db_1" />
                 <original-schema name="foo_db_1" />
             </table-bound>
         </view>
         <select>
-            <projections start-index="39" stop-index="46">
-                <column-projection name="order_id" start-index="39" stop-index="46">
+            <projections start-index="34" stop-index="41">
+                <column-projection name="order_id" start-index="34" stop-index="41">
                     <column-bound>
                         <original-database name="foo_db_1" />
                         <original-schema name="foo_db_1" />
@@ -35,8 +35,8 @@
                     </column-bound>
                 </column-projection>
             </projections>
-            <from start-index="48" stop-index="59">
-                <simple-table name="t_order" start-index="53" stop-index="59">
+            <from>
+                <simple-table name="t_order" start-index="48" stop-index="54">
                     <table-bound>
                         <original-database name="foo_db_1" />
                         <original-schema name="foo_db_1" />
@@ -44,5 +44,5 @@
                 </simple-table>
             </from>
         </select>
-    </create-view>
+    </alter-view>
 </sql-parser-test-cases>

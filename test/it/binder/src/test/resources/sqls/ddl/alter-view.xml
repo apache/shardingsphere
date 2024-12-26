@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_view" value="CREATE VIEW t_order_view_tmp AS SELECT order_id FROM t_order" db-types="MySQL" />
+    <sql-case id="alter_view" value="ALTER VIEW t_order_view AS SELECT order_id FROM t_order" db-types="MySQL" />
 </sql-cases>

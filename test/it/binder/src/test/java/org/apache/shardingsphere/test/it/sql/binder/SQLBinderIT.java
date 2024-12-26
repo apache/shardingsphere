@@ -130,6 +130,13 @@ public abstract class SQLBinderIT {
                 new ShardingSphereColumn("business_code", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.CHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereTable("t_order_view", Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
+                new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     

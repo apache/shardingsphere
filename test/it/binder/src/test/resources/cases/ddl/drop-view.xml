@@ -16,6 +16,13 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="create_view" value="CREATE VIEW t_order_view_tmp AS SELECT order_id FROM t_order" db-types="MySQL" />
-</sql-cases>
+<sql-parser-test-cases>
+    <drop-view sql-case-id="drop_view">
+        <view name="t_order_view" start-index="10" stop-index="21">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </view>
+    </drop-view>
+</sql-parser-test-cases>
