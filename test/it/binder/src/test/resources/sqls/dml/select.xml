@@ -20,4 +20,5 @@
     <sql-case id="select_with_shorthand_projection" value="SELECT * FROM t_order o" db-types="MySQL"/>
     <sql-case id="select_with_group_by_order_by" value="SELECT order_id, COUNT(1) count FROM t_order o GROUP BY order_id HAVING count > 1 ORDER BY order_id" db-types="MySQL"/>
     <sql-case id="select_with_with_clause" value="WITH t_order_tmp AS (SELECT * FROM t_order o) SELECT * FROM t_order_tmp" db-types="MySQL"/>
+    <sql-case id="select_with_current_select_projection_reference" value="SELECT order_id AS orderId, (SELECT orderId) AS tempOrderId FROM t_order" db-types="MySQL"/>
 </sql-cases>
