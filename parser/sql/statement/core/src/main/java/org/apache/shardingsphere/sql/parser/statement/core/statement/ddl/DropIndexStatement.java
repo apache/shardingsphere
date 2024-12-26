@@ -46,12 +46,28 @@ public abstract class DropIndexStatement extends AbstractSQLStatement implements
     }
     
     /**
+     * Set simple table.
+     *
+     * @param simpleTableSegment simple table
+     */
+    public void setSimpleTable(final SimpleTableSegment simpleTableSegment) {
+    }
+    
+    /**
      * Judge whether contains exist clause or not.
      *
      * @return whether contains exist clause or not
      */
     public boolean isIfExists() {
         return false;
+    }
+    
+    /**
+     * Set if exists or not.
+     *
+     * @param ifExists if exists or not
+     */
+    public void setIfExists(final boolean ifExists) {
     }
     
     /**
@@ -64,11 +80,27 @@ public abstract class DropIndexStatement extends AbstractSQLStatement implements
     }
     
     /**
+     * Set algorithm type.
+     *
+     * @param algorithmTypeSegment algorithm type
+     */
+    public void setAlgorithmType(final AlgorithmTypeSegment algorithmTypeSegment) {
+    }
+    
+    /**
      * Get lock table segment.
      *
      * @return lock table segment
      */
     public Optional<LockTableSegment> getLockTable() {
         return Optional.empty();
+    }
+    
+    /**
+     * Set lock table segment.
+     *
+     * @param lockTableSegment lock table segment
+     */
+    public void setLockTable(final LockTableSegment lockTableSegment) {
     }
 }
