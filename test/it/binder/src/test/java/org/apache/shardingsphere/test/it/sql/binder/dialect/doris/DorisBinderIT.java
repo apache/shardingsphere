@@ -15,21 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
+package org.apache.shardingsphere.test.it.sql.binder.dialect.doris;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 
-/**
- * MySQL drop table statement.
- */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class MySQLDropTableStatement extends DropTableStatement implements MySQLStatement {
-    
-    private boolean ifExists;
+@SQLBinderITSettings("Doris")
+class DorisBinderIT extends SQLBinderIT {
 }
