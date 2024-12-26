@@ -49,7 +49,7 @@ public final class ColumnDefinitionSegmentBinder {
         ColumnSegment boundColumnSegment = ColumnSegmentBinder.bind(segment.getColumnName(), SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         ColumnDefinitionSegment result =
                 new ColumnDefinitionSegment(segment.getStartIndex(), segment.getStopIndex(), boundColumnSegment, segment.getDataType(), segment.isPrimaryKey(), segment.isNotNull(), segment.getText());
-        copy(segment, result);
+        copy(result, segment);
         segment.getReferencedTables().forEach(each -> result.getReferencedTables().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
         return result;
     }

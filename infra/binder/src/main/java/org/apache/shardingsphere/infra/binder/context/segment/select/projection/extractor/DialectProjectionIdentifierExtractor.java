@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -46,12 +47,13 @@ public interface DialectProjectionIdentifierExtractor extends DatabaseTypedSPI {
     String getColumnNameFromFunction(String functionName, String functionExpression);
     
     /**
-     * Get column name from expression.
+     * Get column name from expression segment.
      *
-     * @param expression expression
+     * @param expressionSegment expression segment
      * @return column name
      */
-    String getColumnNameFromExpression(String expression);
+    
+    String getColumnNameFromExpression(ExpressionSegment expressionSegment);
     
     /**
      * Get column name from subquery segment.

@@ -34,4 +34,8 @@ public final class InvalidAlgorithmConfigurationException extends AlgorithmDefin
     public InvalidAlgorithmConfigurationException(final String algorithmType) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
     }
+    
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm, final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'. %s.", algorithmType, algorithm, message);
+    }
 }

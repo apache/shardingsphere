@@ -75,7 +75,7 @@ class ShardingTableTokenGeneratorTest {
     void assertIsGenerateSQLTokenWithAllBindingTables() {
         Collection<String> logicTableNames = Arrays.asList("foo_tbl", "bar_tbl");
         when(rule.getShardingLogicTableNames(logicTableNames)).thenReturn(logicTableNames);
-        when(rule.isAllBindingTables(logicTableNames)).thenReturn(true);
+        when(rule.isAllConfigBindingTables(logicTableNames)).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(logicTableNames);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));

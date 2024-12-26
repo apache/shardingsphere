@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -48,7 +49,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -130,6 +133,14 @@ public final class SimpleTableSegmentBinder {
                     || ((CreateTableStatement) binderContext.getSqlStatement()).isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
         }
+        if (binderContext.getSqlStatement() instanceof AlterTableStatement && isRenameTable((AlterTableStatement) binderContext.getSqlStatement(), tableName)) {
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            return;
+        }
+        if (binderContext.getSqlStatement() instanceof DropTableStatement) {
+            ShardingSpherePreconditions.checkState(((DropTableStatement) binderContext.getSqlStatement()).isIfExists() || schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            return;
+        }
         if ("DUAL".equalsIgnoreCase(tableName)) {
             return;
         }
@@ -146,6 +157,10 @@ public final class SimpleTableSegmentBinder {
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
     }
     
+    private static boolean isRenameTable(final AlterTableStatement alterTableStatement, final String tableName) {
+        return alterTableStatement.getRenameTable().isPresent() && alterTableStatement.getRenameTable().get().getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName);
+    }
+    
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                   final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
@@ -154,6 +169,12 @@ public final class SimpleTableSegmentBinder {
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
             return new SimpleTableSegmentBinderContext(createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName));
+        }
+        CaseInsensitiveString caseInsensitiveTableName = new CaseInsensitiveString(tableName.getValue());
+        if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
+            TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
+            return new SimpleTableSegmentBinderContext(
+                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType()));
         }
         return new SimpleTableSegmentBinderContext(Collections.emptyList());
     }

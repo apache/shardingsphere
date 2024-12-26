@@ -89,7 +89,7 @@ public final class ShardingSupportedCommonChecker {
      */
     public static void checkMultipleTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
-        boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
+        boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllConfigBindingTables(tableNames));
         boolean isAllSingleTables = !shardingRule.containsShardingTable(tableNames);
         ShardingSpherePreconditions.checkState(isAllShardingTables || isAllSingleTables, () -> new DMLWithMultipleShardingTablesException(tableNames));
     }

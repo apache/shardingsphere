@@ -80,7 +80,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenDropTableInUsedForMySQL() {
-        MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
+        MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
@@ -119,7 +119,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -134,7 +134,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -148,7 +148,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
