@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
@@ -27,7 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStateme
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class SQLServerDropTableStatement extends DropTableStatement implements SQLServerStatement {
     
-    private final boolean ifExists;
+    private boolean ifExists;
 }

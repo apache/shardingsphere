@@ -17,7 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_table" value="CREATE TABLE t_order_tmp (order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL)" db-types="MySQL,Doris" />
-    <sql-case id="create_table_with_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL)" db-types="MySQL,Doris" />
-    <sql-case id="create_table_with_skip_metadata_validate" value="/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ CREATE TABLE t_order (order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL)" db-types="MySQL,Doris" />
+    <sql-case id="drop_table" value="DROP TABLE t_order, t_order_item" db-types="MySQL,Doris" />
+    <sql-case id="drop_table_with_if_exists" value="DROP TABLE IF EXISTS t_order, t_order_tmp" db-types="MySQL,Doris" />
 </sql-cases>
