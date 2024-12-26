@@ -180,7 +180,7 @@ class ExportMetaDataExecutorTest {
         MockedDataSource result = new MockedDataSource();
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", name));
         result.setUsername("root");
-        result.setPassword("");
+        result.setPassword(null);
         result.setMaxPoolSize(50);
         result.setMinPoolSize(1);
         return result;
