@@ -412,15 +412,15 @@ restart
     ;
 
 recoverDatabase
-    : RECOVER DATABASE databaseName (databaseId | AS newDatabaseName)?
+    : RECOVER DATABASE databaseName (databaseId | AS newDatabaseName=identifier)?
     ;
 
 recoverPartition
-    : RECOVER PARTITION partitionName partitionId? (AS newPartitionName)? FROM tableName
+    : RECOVER PARTITION partitionName partitionId? (AS newPartitionName=identifier)? FROM tableName
     ;
 
 recoverTable
-    : RECOVER TABLE tableName tableId? (AS newDatabaseName)?
+    : RECOVER TABLE tableName tableId? (AS newTableName=identifier)?
     ;
 
 shutdown

@@ -667,10 +667,6 @@ databaseName
     : identifier
     ;
 
-newDatabaseName
-    : identifier
-    ;
-
 databaseId
     : identifier
     ;
@@ -854,11 +850,6 @@ userOrRole
 partitionName
     : identifier
     ;
-
-newPartitionName
-    : identifier
-    ;
-
 
 partitionId
     : identifier

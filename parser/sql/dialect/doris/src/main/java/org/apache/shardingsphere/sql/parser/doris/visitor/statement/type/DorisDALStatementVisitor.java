@@ -123,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionIdSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
@@ -137,8 +138,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseIdSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableIdSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -935,17 +940,17 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
                 ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
-
+    
     private VariableAssignSegment getVariableAssignSegment(final OptionValueListContext ctx) {
         VariableSegment variable = new VariableSegment(
                 ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText(), ctx.optionType().getText());
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.setExprOrDefault().stop.getStopIndex(), variable, ctx.setExprOrDefault().getText());
     }
-
+    
     private VariableAssignSegment getVariableAssignSegment(final OptionValueNoOptionTypeContext ctx) {
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getVariableSegment(ctx), getAssignValue(ctx));
     }
-
+    
     private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
         if (null != ctx.NAMES()) {
             // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
@@ -1080,44 +1085,89 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         result.setSearchString(ctx.textOrIdentifier().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitRecoverDatabase(final RecoverDatabaseContext ctx) {
         DorisRecoverDatabaseStatement result = new DorisRecoverDatabaseStatement();
-        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        DatabaseSegment databaseName = new DatabaseSegment(
+                ctx.databaseName().start.getStartIndex(),
+                ctx.databaseName().stop.getStopIndex(),
+                new IdentifierValue(ctx.databaseName().identifier().getText()));
+        result.setDatabaseName(databaseName);
+        
         if (null != ctx.databaseId()) {
-            result.setDatabaseId(new IdentifierValue(ctx.databaseId().getText()).getValue());
+            DatabaseIdSegment databaseIdSegment = new DatabaseIdSegment(
+                    ctx.databaseId().start.getStartIndex(),
+                    ctx.databaseId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.databaseId().identifier().getText()));
+            result.setDatabaseId(databaseIdSegment);
         }
-        if (null != ctx.newDatabaseName()) {
-            result.setDatabaseName(new IdentifierValue(ctx.newDatabaseName().getText()).getValue());
+        if (null != ctx.newDatabaseName) {
+            DatabaseSegment newDatabaseName = new DatabaseSegment(
+                    ctx.newDatabaseName.start.getStartIndex(),
+                    ctx.newDatabaseName.stop.getStopIndex(),
+                    new IdentifierValue(ctx.newDatabaseName.getText()));
+            result.setDatabaseName(newDatabaseName);
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitRecoverPartition(final RecoverPartitionContext ctx) {
         DorisRecoverPartitionStatement result = new DorisRecoverPartitionStatement();
-        result.setPartitionName(new IdentifierValue(ctx.partitionName().getText()).getValue());
+        PartitionSegment partitionSegment = new PartitionSegment(
+                ctx.partitionName().start.getStartIndex(),
+                ctx.partitionName().stop.getStopIndex(),
+                new IdentifierValue(ctx.partitionName().identifier().getText()));
+        result.setPartitionName(partitionSegment);
         if (null != ctx.partitionId()) {
-            result.setPartitionId(new IdentifierValue(ctx.partitionId().getText()).getValue());
+            PartitionIdSegment partitionId = new PartitionIdSegment(
+                    ctx.partitionId().start.getStartIndex(),
+                    ctx.partitionId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.partitionId().identifier().getText()));
+            result.setPartitionId(partitionId);
         }
-        if (null != ctx.newPartitionName()) {
-            result.setNewPartitionName(new IdentifierValue(ctx.newPartitionName().getText()).getValue());
+        if (null != ctx.newPartitionName) {
+            final PartitionSegment newPartitionName = new PartitionSegment(
+                    ctx.newPartitionName.start.getStartIndex(),
+                    ctx.newPartitionName.stop.getStopIndex(),
+                    new IdentifierValue(ctx.newPartitionName.getText()));
+            result.setNewPartitionName(newPartitionName);
         }
-        if (null != ctx.tableName().owner()) {
-            result.setOwner(new IdentifierValue(ctx.tableName().owner().getText()).getValue());
-        }
-        result.setTableName(new IdentifierValue(ctx.tableName().name().getText()).getValue());
+        SimpleTableSegment simpleTableSegment = createSimpleTableSegment(ctx.tableName());
+        result.setTableName(simpleTableSegment);
+        
         return result;
     }
-
+    
     @Override
     public ASTNode visitRecoverTable(final RecoverTableContext ctx) {
         DorisRecoverTableStatement result = new DorisRecoverTableStatement();
-        result.setTableName(new IdentifierValue(ctx.tableName().getText()).getValue());
+        SimpleTableSegment simpleTableSegment = createSimpleTableSegment(ctx.tableName());
+        result.setTableName(simpleTableSegment);
         if (null != ctx.tableId()) {
-            result.setTableName(new IdentifierValue(ctx.tableId().getText()).getValue());
+            final TableIdSegment tableIdSegment = new TableIdSegment(
+                    ctx.tableId().start.getStartIndex(),
+                    ctx.tableId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.tableId().getText()));
+            result.setTableId(tableIdSegment);
         }
         return result;
+    }
+    
+    private SimpleTableSegment createSimpleTableSegment(final TableNameContext tableNameContext) {
+        final TableNameSegment tableNameSegment = new TableNameSegment(
+                tableNameContext.start.getStartIndex(),
+                tableNameContext.stop.getStopIndex(),
+                new IdentifierValue(tableNameContext.getText()));
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
+        if (null != tableNameContext.owner()) {
+            OwnerSegment ownerSegment = new OwnerSegment(
+                    tableNameContext.owner().start.getStartIndex(),
+                    tableNameContext.owner().stop.getStopIndex(),
+                    new IdentifierValue(tableNameContext.owner().getText()));
+            simpleTableSegment.setOwner(ownerSegment);
+        }
+        return simpleTableSegment;
     }
 }

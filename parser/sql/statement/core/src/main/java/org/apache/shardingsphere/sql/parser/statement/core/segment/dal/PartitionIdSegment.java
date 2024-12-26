@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Create database statement.
+ * Partition Id segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-public abstract class RecoverTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PartitionIdSegment implements SQLSegment {
     
-    private String tableName;
+    private final int startIndex;
     
-    private String tableId;
+    private final int stopIndex;
     
+    private final IdentifierValue name;
 }

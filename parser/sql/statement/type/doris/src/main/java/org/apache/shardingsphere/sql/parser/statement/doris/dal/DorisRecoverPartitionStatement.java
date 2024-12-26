@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RecoverPartitionStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionIdSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**
- * Doris create database statement.
+ * Doris recover partition statement.
  */
-public final class DorisRecoverPartitionStatement extends RecoverPartitionStatement implements DorisStatement {
+@Setter
+@Getter
+public final class DorisRecoverPartitionStatement extends AbstractSQLStatement implements DorisStatement {
+    
+    private PartitionSegment partitionName;
+    
+    private PartitionSegment newPartitionName;
+    
+    private PartitionIdSegment partitionId;
+    
+    private DatabaseSegment databaseName;
+    
+    private SimpleTableSegment tableName;
 }

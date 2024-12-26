@@ -17,11 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RecoverDatabaseStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseIdSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**
- * Doris create database statement.
+ * Doris recover database statement.
  */
-public final class DorisRecoverDatabaseStatement extends RecoverDatabaseStatement implements DorisStatement {
+
+@Setter
+@Getter
+public final class DorisRecoverDatabaseStatement extends AbstractSQLStatement implements DorisStatement {
+    
+    private DatabaseSegment databaseName;
+    
+    private DatabaseIdSegment databaseId;
 }
