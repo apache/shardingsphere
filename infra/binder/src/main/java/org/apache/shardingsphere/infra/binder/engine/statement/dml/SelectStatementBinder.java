@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableS
 import org.apache.shardingsphere.infra.binder.engine.segment.lock.LockSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.where.WhereSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
