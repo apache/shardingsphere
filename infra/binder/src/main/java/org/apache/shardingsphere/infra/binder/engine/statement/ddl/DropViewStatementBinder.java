@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
@@ -25,32 +25,24 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 
 /**
- * Drop index statement binder.
+ * Drop view statement binder.
  */
-public final class DropIndexStatementBinder implements SQLStatementBinder<DropIndexStatement> {
+public final class DropViewStatementBinder implements SQLStatementBinder<DropViewStatement> {
     
     @Override
-    public DropIndexStatement bind(final DropIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        if (!sqlStatement.getSimpleTable().isPresent()) {
-            return sqlStatement;
-        }
-        DropIndexStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
-        sqlStatement.getIndexes().forEach(each -> result.getIndexes().add(each));
+    public DropViewStatement bind(final DropViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        DropViewStatement result = copy(sqlStatement);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        sqlStatement.getViews().forEach(each -> result.getViews().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static DropIndexStatement copy(final DropIndexStatement sqlStatement) {
-        DropIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
-        sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
-        sqlStatement.getLockTable().ifPresent(result::setLockTable);
-        result.setIfExists(sqlStatement.isIfExists());
+    private static DropViewStatement copy(final DropViewStatement sqlStatement) {
+        DropViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
