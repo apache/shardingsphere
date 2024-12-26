@@ -41,7 +41,8 @@
 1. SQL Binder: Support select with statement sql bind and add bind test case - [#34141](https://github.com/apache/shardingsphere/pull/34141)
 1. SQL Binder: Support sql bind for select with current select projection reference - [#34151](https://github.com/apache/shardingsphere/pull/34151)
 1. SQL Binder: Support alter table, drop table sql bind and add test case - [#34154](https://github.com/apache/shardingsphere/pull/34154)
-1. Support rename table statement sql bind and split segment bind to ddl and dml package - [#34158](https://github.com/apache/shardingsphere/pull/34158)
+1. SQL Binder: Support rename table statement sql bind and split segment bind to ddl and dml package - [#34158](https://github.com/apache/shardingsphere/pull/34158)
+1. SQL Binder: Support copy statement sql bind and add bind test case - [#34159](https://github.com/apache/shardingsphere/pull/34159)
 
 ### Bug Fixes
 
