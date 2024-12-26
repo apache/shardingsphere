@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.type.SimpleTableSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
 
 /**
  * Alter index statement binder.
@@ -31,21 +34,18 @@ public class AlterIndexStatementBinder implements SQLStatementBinder<AlterIndexS
     
     @Override
     public AlterIndexStatement bind(final AlterIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        if (sqlStatement instanceof SQLServerAlterIndexStatement) {
-            SQLServerAlterIndexStatement source = (SQLServerAlterIndexStatement) sqlStatement;
-            if (!source.getSimpleTable().isPresent()) {
-                return sqlStatement;
-            }
-            SQLServerAlterIndexStatement result = copy(source);
-            result.setSimpleTable(SimpleTableSegmentBinder.bind(source.getSimpleTable().get(), binderContext, null));
-            return result;
+        if (!sqlStatement.getSimpleTable().isPresent()) {
+            return sqlStatement;
         }
-        return sqlStatement;
+        AlterIndexStatement result = copy(sqlStatement);
+        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLServerAlterIndexStatement copy(final SQLServerAlterIndexStatement sqlStatement) {
-        SQLServerAlterIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private static AlterIndexStatement copy(final AlterIndexStatement sqlStatement) {
+        AlterIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getIndex().ifPresent(result::setIndex);
         sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());

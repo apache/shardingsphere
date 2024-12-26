@@ -36,4 +36,9 @@ public final class SQLServerAlterIndexStatement extends AlterIndexStatement impl
     public Optional<SimpleTableSegment> getSimpleTable() {
         return Optional.ofNullable(simpleTable);
     }
+    
+    @Override
+    public void setSimpleTable(final SimpleTableSegment simpleTable) {
+        this.simpleTable = simpleTable;
+    }
 }
