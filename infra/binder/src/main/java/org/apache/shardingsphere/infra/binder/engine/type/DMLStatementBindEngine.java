@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStateme
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadDataStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadXMLStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
@@ -32,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 
 /**
  * DML statement bind engine.
@@ -67,6 +71,12 @@ public final class DMLStatementBindEngine {
         }
         if (statement instanceof CopyStatement) {
             return new CopyStatementBinder().bind((CopyStatement) statement, binderContext);
+        }
+        if (statement instanceof LoadDataStatement) {
+            return new LoadDataStatementBinder().bind((LoadDataStatement) statement, binderContext);
+        }
+        if (statement instanceof LoadXMLStatement) {
+            return new LoadXMLStatementBinder().bind((LoadXMLStatement) statement, binderContext);
         }
         return statement;
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
@@ -25,8 +24,4 @@ import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
  * Doris load xml statement.
  */
 public final class DorisLoadXMLStatement extends LoadXMLStatement implements DorisStatement {
-    
-    public DorisLoadXMLStatement(final SimpleTableSegment tableSegment) {
-        super(tableSegment);
-    }
 }
