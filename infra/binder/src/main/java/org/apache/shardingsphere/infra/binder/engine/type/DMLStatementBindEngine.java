@@ -19,12 +19,14 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.CopyStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
@@ -62,6 +64,9 @@ public final class DMLStatementBindEngine {
         }
         if (statement instanceof DeleteStatement) {
             return new DeleteStatementBinder().bind((DeleteStatement) statement, binderContext);
+        }
+        if (statement instanceof CopyStatement) {
+            return new CopyStatementBinder().bind((CopyStatement) statement, binderContext);
         }
         return statement;
     }
