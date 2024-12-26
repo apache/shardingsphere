@@ -21,23 +21,29 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CursorStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropIndexStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 
@@ -82,11 +88,20 @@ public final class DDLStatementBindEngine {
         if (statement instanceof AlterIndexStatement) {
             return new AlterIndexStatementBinder().bind((AlterIndexStatement) statement, binderContext);
         }
-        if (statement instanceof TruncateStatement) {
-            return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
-        }
         if (statement instanceof DropIndexStatement) {
             return new DropIndexStatementBinder().bind((DropIndexStatement) statement, binderContext);
+        }
+        if (statement instanceof CreateViewStatement) {
+            return new CreateViewStatementBinder().bind((CreateViewStatement) statement, binderContext);
+        }
+        if (statement instanceof AlterViewStatement) {
+            return new AlterViewStatementBinder().bind((AlterViewStatement) statement, binderContext);
+        }
+        if (statement instanceof DropViewStatement) {
+            return new DropViewStatementBinder().bind((DropViewStatement) statement, binderContext);
+        }
+        if (statement instanceof TruncateStatement) {
+            return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
         }
         return statement;
     }

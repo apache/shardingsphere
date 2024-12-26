@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
@@ -25,29 +25,27 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 
 /**
- * Alter index statement binder.
+ * Create view statement binder.
  */
-public final class AlterIndexStatementBinder implements SQLStatementBinder<AlterIndexStatement> {
+public final class CreateViewStatementBinder implements SQLStatementBinder<CreateViewStatement> {
     
     @Override
-    public AlterIndexStatement bind(final AlterIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        if (!sqlStatement.getSimpleTable().isPresent()) {
-            return sqlStatement;
-        }
-        AlterIndexStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
+    public CreateViewStatement bind(final CreateViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        CreateViewStatement result = copy(sqlStatement);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        result.setView(SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts));
+        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static AlterIndexStatement copy(final AlterIndexStatement sqlStatement) {
-        AlterIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        sqlStatement.getIndex().ifPresent(result::setIndex);
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
+    private static CreateViewStatement copy(final CreateViewStatement sqlStatement) {
+        CreateViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        result.setViewDefinition(sqlStatement.getViewDefinition());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());

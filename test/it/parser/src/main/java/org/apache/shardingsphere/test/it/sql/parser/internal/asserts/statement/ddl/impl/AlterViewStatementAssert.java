@@ -70,10 +70,10 @@ public final class AlterViewStatementAssert {
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         if (null == expected.getSelectStatement()) {
-            assertFalse(actual.getSelectStatement().isPresent(), "actual select statement should not exist");
+            assertFalse(actual.getSelect().isPresent(), "actual select statement should not exist");
         } else {
-            assertTrue(actual.getSelectStatement().isPresent(), "actual select statement should exist");
-            SelectStatementAssert.assertIs(assertContext, actual.getSelectStatement().get(), expected.getSelectStatement());
+            assertTrue(actual.getSelect().isPresent(), "actual select statement should exist");
+            SelectStatementAssert.assertIs(assertContext, actual.getSelect().get(), expected.getSelectStatement());
         }
     }
     

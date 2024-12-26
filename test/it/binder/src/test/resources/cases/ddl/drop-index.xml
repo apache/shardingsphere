@@ -26,6 +26,7 @@
             </table-bound>
         </table>
     </drop-index>
+
     <drop-index sql-case-id="drop_index_for_sqlserver">
         <index name="idx_user_id" start-index="11" stop-index="21"/>
         <table name="t_order" start-index="26" stop-index="32">
@@ -35,6 +36,7 @@
             </table-bound>
         </table>
     </drop-index>
+
     <drop-index sql-case-id="drop_index_with_lock_algorithm">
         <index name="idx_user_id" start-index="11" stop-index="21"/>
         <table name="t_order" start-index="26" stop-index="32">

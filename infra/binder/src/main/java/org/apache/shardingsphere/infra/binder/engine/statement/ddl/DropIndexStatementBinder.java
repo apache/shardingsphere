@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropInd
 /**
  * Drop index statement binder.
  */
-public class DropIndexStatementBinder implements SQLStatementBinder<DropIndexStatement> {
+public final class DropIndexStatementBinder implements SQLStatementBinder<DropIndexStatement> {
     
     @Override
     public DropIndexStatement bind(final DropIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
