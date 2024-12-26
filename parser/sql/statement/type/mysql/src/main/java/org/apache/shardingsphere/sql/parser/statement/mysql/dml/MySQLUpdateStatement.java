@@ -37,7 +37,7 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     private LimitSegment limit;
     
     private WithSegment withSegment;
-
+    
     @Override
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
@@ -47,7 +47,9 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
-
+    
     @Override
-    public Optional<WithSegment> getWithSegment(){ return Optional.ofNullable(withSegment); }
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
 }

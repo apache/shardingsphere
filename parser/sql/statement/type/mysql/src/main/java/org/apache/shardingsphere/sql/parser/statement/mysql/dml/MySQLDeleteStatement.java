@@ -38,9 +38,9 @@ public final class MySQLDeleteStatement extends DeleteStatement implements MySQL
     private LimitSegment limit;
     
     private ReturningSegment returningSegment;
-
+    
     private WithSegment withSegment;
-
+    
     @Override
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
@@ -55,8 +55,10 @@ public final class MySQLDeleteStatement extends DeleteStatement implements MySQL
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);
     }
-
+    
     @Override
-    public Optional<WithSegment> getWithSegment() { return Optional.ofNullable(withSegment); }
-
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
+    
 }

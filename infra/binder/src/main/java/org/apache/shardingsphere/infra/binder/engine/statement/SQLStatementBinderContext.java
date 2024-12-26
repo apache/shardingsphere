@@ -40,7 +40,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 public final class SQLStatementBinderContext {
-
+    
     private final ShardingSphereMetaData metaData;
     
     private final String currentDatabaseName;
@@ -48,9 +48,9 @@ public final class SQLStatementBinderContext {
     private final HintValueContext hintValueContext;
     
     private final SQLStatement sqlStatement;
-
+    
     private final Set<CaseInsensitiveString> commonTableExpressionsSegmentsUniqueAliases = new HashSet<>();
-
+    
     private final Collection<String> usingColumnNames = new CaseInsensitiveSet<>();
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();

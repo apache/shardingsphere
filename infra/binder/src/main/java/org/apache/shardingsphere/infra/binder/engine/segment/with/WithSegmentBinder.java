@@ -63,9 +63,10 @@ public final class WithSegmentBinder {
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
             CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, segment.isRecursive());
             boundCommonTableExpressions.add(boundCommonTableExpression);
-            if( each.getAliasName().isPresent() ) {
-                ShardingSpherePreconditions.checkNotContains(binderContext.getCommonTableExpressionsSegmentsUniqueAliases(), each.getAliasName(), () -> new UniqueCommonTableExpressionException( each.getAliasName().get() ));
-                binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(new CaseInsensitiveString( each.getAliasName().get() ));
+            if (each.getAliasName().isPresent()) {
+                ShardingSpherePreconditions.checkNotContains(binderContext.getCommonTableExpressionsSegmentsUniqueAliases(), each.getAliasName(),
+                        () -> new UniqueCommonTableExpressionException(each.getAliasName().get()));
+                binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(new CaseInsensitiveString(each.getAliasName().get()));
             }
             if (segment.isRecursive() && each.getAliasName().isPresent()) {
                 externalTableBinderContexts.removeAll(new CaseInsensitiveString(each.getAliasName().get()));
@@ -73,11 +74,7 @@ public final class WithSegmentBinder {
             bindWithColumns(each.getColumns(), boundCommonTableExpression);
             each.getAliasName().ifPresent(optional -> externalTableBinderContexts.put(new CaseInsensitiveString(optional), createWithTableBinderContext(boundCommonTableExpression)));
         }
-
-
-
-
-
+        
         return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions);
     }
     

@@ -75,7 +75,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getHaving().ifPresent(optional -> result.setHaving(HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, outerTableBinderContexts)));
         return result;
     }
-
+    
     private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext, final SelectStatement selectStatement) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(

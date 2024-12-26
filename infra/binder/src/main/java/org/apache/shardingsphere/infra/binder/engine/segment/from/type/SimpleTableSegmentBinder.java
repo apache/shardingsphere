@@ -81,7 +81,7 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue databaseName = getDatabaseName(segment, binderContext);
         IdentifierValue schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-
+        
         ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
         checkTableExists(binderContext, schema, schemaName.getValue(), tableName.getValue());
         tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
@@ -93,11 +93,11 @@ public final class SimpleTableSegmentBinder {
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;
     }
-
+    
     private static void fillPivotColumnNamesInBinderContext(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue())));
     }
-
+    
     private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
@@ -106,14 +106,14 @@ public final class SimpleTableSegmentBinder {
         ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(result.getValue()), () -> new UnknownDatabaseException(result.getValue()));
         return result;
     }
-
+    
     private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
         IdentifierValue result = getSchemaName(segment, binderContext);
         ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName.getValue()).containsSchema(result.getValue()),
                 () -> new SchemaNotFoundException(result.getValue()));
         return result;
     }
-
+    
     private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         if (segment.getOwner().isPresent()) {
             return segment.getOwner().get().getIdentifier();
@@ -126,7 +126,7 @@ public final class SimpleTableSegmentBinder {
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
     }
-
+    
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
@@ -150,8 +150,7 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
             return;
         }
-        if( binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(new CaseInsensitiveString(tableName)) )
-        {
+        if (binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(new CaseInsensitiveString(tableName))) {
             return;
         }
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));

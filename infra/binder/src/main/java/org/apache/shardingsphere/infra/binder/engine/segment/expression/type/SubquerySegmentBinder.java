@@ -50,10 +50,10 @@ public final class SubquerySegmentBinder {
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
-        selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().forEach( each -> {
-            ShardingSpherePreconditions.checkNotContains( binderContext.getCommonTableExpressionsSegmentsUniqueAliases() , each , () -> new  UniqueCommonTableExpressionException( each.toString() ));
+        selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().forEach(each -> {
+            ShardingSpherePreconditions.checkNotContains(binderContext.getCommonTableExpressionsSegmentsUniqueAliases(), each, () -> new UniqueCommonTableExpressionException(each.toString()));
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(each);
-        } );
+        });
         return result;
     }
 }
