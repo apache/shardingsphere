@@ -35,7 +35,24 @@ import java.util.Optional;
 @Setter
 public abstract class CopyStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private SimpleTableSegment tableSegment;
+    private SimpleTableSegment table;
+    
+    /**
+     * Get table.
+     *
+     * @return table
+     */
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
+    }
+    
+    /**
+     * Set prepare statement query segment.
+     *
+     * @param prepareStatementQuery prepare statement query segment
+     */
+    public void setPrepareStatementQuery(final PrepareStatementQuerySegment prepareStatementQuery) {
+    }
     
     /**
      * Get prepare statement query segment.

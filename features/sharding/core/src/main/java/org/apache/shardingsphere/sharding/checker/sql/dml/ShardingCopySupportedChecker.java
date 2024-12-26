@@ -35,12 +35,12 @@ public final class ShardingCopySupportedChecker implements SupportedSQLChecker<C
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CopyStatementContext;
+        return sqlStatementContext instanceof CopyStatementContext && ((CopyStatementContext) sqlStatementContext).getSqlStatement().getTable().isPresent();
     }
     
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CopyStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSpherePreconditions.checkState(!rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException("COPY", tableName));
     }
 }

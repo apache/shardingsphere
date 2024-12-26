@@ -51,6 +51,14 @@ public abstract class AlterIndexStatement extends AbstractSQLStatement implement
     }
     
     /**
+     * Set simple table segment.
+     *
+     * @param simpleTableSegment simple table segment
+     */
+    public void setSimpleTable(final SimpleTableSegment simpleTableSegment) {
+    }
+    
+    /**
      * Get rename index segment.
      *
      * @return rename index segment
