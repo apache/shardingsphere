@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.lock;
 
-import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,7 @@ class ClusterLockContextTest {
     private GlobalLock globalLock;
     
     @Mock
-    private LockPersistService<GlobalLockDefinition> lockPersistService;
+    private GlobalLockPersistService globalLockPersistService;
     
     private GlobalLockDefinition lockDefinition;
     
@@ -47,18 +47,18 @@ class ClusterLockContextTest {
     void init() {
         when(globalLock.getName()).thenReturn("foo_lock");
         lockDefinition = new GlobalLockDefinition(globalLock);
-        lockContext = new ClusterLockContext(lockPersistService);
+        lockContext = new ClusterLockContext(globalLockPersistService);
     }
     
     @Test
     void assertTryLock() {
-        when(lockPersistService.tryLock(lockDefinition, 3000L)).thenReturn(true);
+        when(globalLockPersistService.tryLock(lockDefinition, 3000L)).thenReturn(true);
         assertTrue(lockContext.tryLock(lockDefinition, 3000L));
     }
     
     @Test
     void assertUnlock() {
         lockContext.unlock(lockDefinition);
-        verify(lockPersistService).unlock(lockDefinition);
+        verify(globalLockPersistService).unlock(lockDefinition);
     }
 }
