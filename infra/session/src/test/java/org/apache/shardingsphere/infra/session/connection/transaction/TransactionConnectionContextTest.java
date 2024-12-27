@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class TransactionConnectionContextTest {
     
@@ -32,7 +33,7 @@ class TransactionConnectionContextTest {
     
     @Test
     void assertBeginTransaction() {
-        transactionConnectionContext.beginTransaction("XA");
+        transactionConnectionContext.beginTransaction("XA", mock(TransactionManager.class));
         assertThat(transactionConnectionContext.getTransactionType(), is(Optional.of("XA")));
         assertTrue(transactionConnectionContext.isInTransaction());
     }
@@ -44,19 +45,19 @@ class TransactionConnectionContextTest {
     
     @Test
     void assertIsNotInDistributedTransactionWithLocal() {
-        transactionConnectionContext.beginTransaction("LOCAL");
+        transactionConnectionContext.beginTransaction("LOCAL", mock(TransactionManager.class));
         assertFalse(transactionConnectionContext.isInDistributedTransaction());
     }
     
     @Test
     void assertIsInDistributedTransactionWithXA() {
-        transactionConnectionContext.beginTransaction("XA");
+        transactionConnectionContext.beginTransaction("XA", mock(TransactionManager.class));
         assertTrue(transactionConnectionContext.isInDistributedTransaction());
     }
     
     @Test
     void assertIsInDistributedTransactionWithBASE() {
-        transactionConnectionContext.beginTransaction("BASE");
+        transactionConnectionContext.beginTransaction("BASE", mock(TransactionManager.class));
         assertTrue(transactionConnectionContext.isInDistributedTransaction());
     }
     
@@ -68,7 +69,7 @@ class TransactionConnectionContextTest {
     
     @Test
     void assertClose() {
-        transactionConnectionContext.beginTransaction("XA");
+        transactionConnectionContext.beginTransaction("XA", mock(TransactionManager.class));
         transactionConnectionContext.close();
         assertFalse(transactionConnectionContext.getTransactionType().isPresent());
         assertFalse(transactionConnectionContext.isInTransaction());
