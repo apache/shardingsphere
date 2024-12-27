@@ -46,12 +46,12 @@ class UnlockClusterExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(null), contextManager));
     }
-
+    
     @Test
-    void assertExecuteUpdateWithUsingTimeOut() {
+    void assertExecuteUpdateWithUsingTimeout() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.UNAVAILABLE);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertDoesNotThrow(() -> executor.executeUpdate(new UnlockClusterStatement("2000"), contextManager));
+        assertDoesNotThrow(() -> executor.executeUpdate(new UnlockClusterStatement(2000L), contextManager));
     }
 }

@@ -30,10 +30,10 @@ import java.util.Optional;
 public final class LockClusterStatement extends UpdatableRALStatement {
     
     private final AlgorithmSegment lockStrategy;
-
-    private final String timeout;
-
-    public Optional<String> getTimeout() {
-        return Optional.ofNullable(timeout);
+    
+    private final Long timeoutMillis;
+    
+    public Optional<Long> getTimeoutMillis() {
+        return Optional.of(timeoutMillis);
     }
 }

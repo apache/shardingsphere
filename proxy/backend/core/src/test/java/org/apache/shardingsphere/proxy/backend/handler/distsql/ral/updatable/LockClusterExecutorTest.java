@@ -56,11 +56,11 @@ class LockClusterExecutorTest {
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
-
+    
     @Test
-    void assertExecuteUpdateWithUsingTimeOut() {
+    void assertExecuteUpdateWithUsingTimeout() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
-        assertDoesNotThrow(() -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), "2000"), contextManager));
+        assertDoesNotThrow(() -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L), contextManager));
     }
 }

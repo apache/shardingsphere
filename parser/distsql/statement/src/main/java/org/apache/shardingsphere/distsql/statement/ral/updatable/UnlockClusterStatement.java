@@ -25,10 +25,10 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class UnlockClusterStatement extends UpdatableRALStatement {
-
-    private final String timeout;
-
-    public Optional<String> getTimeout() {
-        return Optional.ofNullable(timeout);
+    
+    private final Long timeoutMillis;
+    
+    public Optional<Long> getTimeoutMillis() {
+        return Optional.of(timeoutMillis);
     }
 }
