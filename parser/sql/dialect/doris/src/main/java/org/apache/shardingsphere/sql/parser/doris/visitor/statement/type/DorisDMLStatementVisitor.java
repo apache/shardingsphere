@@ -94,12 +94,16 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new DorisLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
+        DorisLoadDataStatement result = new DorisLoadDataStatement();
+        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        return new DorisLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
+        DorisLoadXMLStatement result = new DorisLoadXMLStatement();
+        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @Override

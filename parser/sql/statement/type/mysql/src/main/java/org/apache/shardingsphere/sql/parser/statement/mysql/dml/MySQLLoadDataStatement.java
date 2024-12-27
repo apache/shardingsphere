@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
@@ -25,8 +24,4 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
  * MySQL load data statement.
  */
 public final class MySQLLoadDataStatement extends LoadDataStatement implements MySQLStatement {
-    
-    public MySQLLoadDataStatement(final SimpleTableSegment tableSegment) {
-        super(tableSegment);
-    }
 }
