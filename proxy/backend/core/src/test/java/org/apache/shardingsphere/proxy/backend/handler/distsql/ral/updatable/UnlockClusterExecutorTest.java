@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,14 @@ class UnlockClusterExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
+        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(null), contextManager));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithUsingTimeout() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.UNAVAILABLE);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertDoesNotThrow(() -> executor.executeUpdate(new UnlockClusterStatement(2000L), contextManager));
     }
 }

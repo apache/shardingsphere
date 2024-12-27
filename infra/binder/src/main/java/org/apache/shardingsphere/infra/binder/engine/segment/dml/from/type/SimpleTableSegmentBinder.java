@@ -51,7 +51,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -129,7 +131,8 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
-        if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
+        // TODO refactor table exists check with spi @duanzhengqiang
+        if (binderContext.getSqlStatement() instanceof CreateTableStatement && isCreateTable(((CreateTableStatement) binderContext.getSqlStatement()).getTable(), tableName)) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
                     || ((CreateTableStatement) binderContext.getSqlStatement()).isIfNotExists() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
@@ -146,6 +149,14 @@ public final class SimpleTableSegmentBinder {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
         }
+        if (binderContext.getSqlStatement() instanceof CreateViewStatement && isCreateTable(((CreateViewStatement) binderContext.getSqlStatement()).getView(), tableName)) {
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            return;
+        }
+        if (binderContext.getSqlStatement() instanceof AlterViewStatement && isRenameView((AlterViewStatement) binderContext.getSqlStatement(), tableName)) {
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            return;
+        }
         if ("DUAL".equalsIgnoreCase(tableName)) {
             return;
         }
@@ -156,6 +167,10 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+    }
+    
+    private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
+        return simpleTableSegment.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName);
     }
     
     private static boolean isRenameTable(final AlterTableStatement alterTableStatement, final String tableName) {
@@ -169,6 +184,10 @@ public final class SimpleTableSegmentBinder {
             }
         }
         return false;
+    }
+    
+    private static boolean isRenameView(final AlterViewStatement alterViewStatement, final String tableName) {
+        return alterViewStatement.getRenameView().isPresent() && alterViewStatement.getRenameView().get().getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName);
     }
     
     private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,

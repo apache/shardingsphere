@@ -44,8 +44,8 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
         checkAlgorithm(sqlStatement);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
-        // TODO should configured in SQL Statement
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
+        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
+        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
                 TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();

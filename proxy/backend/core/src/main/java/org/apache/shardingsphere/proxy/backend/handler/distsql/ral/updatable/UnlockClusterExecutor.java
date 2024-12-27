@@ -39,8 +39,8 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
         checkState(contextManager);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
-        // TODO should configured in SQL Statement
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
+        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
+        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
                 contextManager.getPersistServiceFacade().getStatePersistService().update(ClusterState.OK);

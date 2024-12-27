@@ -22,23 +22,26 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable {
+public final class UpdateStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable, WithAvailable {
     
     private final TablesContext tablesContext;
     
@@ -75,5 +78,10 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
         return columnSegments;
+    }
+    
+    @Override
+    public Optional<WithSegment> getWith() {
+        return getSqlStatement().getWithSegment();
     }
 }

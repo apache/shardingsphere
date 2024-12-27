@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIn
 /**
  * Alter index statement binder.
  */
-public class AlterIndexStatementBinder implements SQLStatementBinder<AlterIndexStatement> {
+public final class AlterIndexStatementBinder implements SQLStatementBinder<AlterIndexStatement> {
     
     @Override
     public AlterIndexStatement bind(final AlterIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {

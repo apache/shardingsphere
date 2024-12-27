@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.infra.binder.context.type;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+
+import java.util.Optional;
 
 /**
- * Lock persist service.
- *
- * @param <T> type of lock definition
+ * With available.
  */
-public interface LockPersistService<T extends LockDefinition> {
+public interface WithAvailable {
     
     /**
-     * Try lock.
+     * Get with segement.
      *
-     * @param lockDefinition lock definition
-     * @param timeoutMillis timeout millis
-     * @return is locked or not
+     * @return with segement
      */
-    boolean tryLock(T lockDefinition, long timeoutMillis);
-    
-    /**
-     * Unlock.
-     *
-     * @param lockDefinition lock definition
-     */
-    void unlock(T lockDefinition);
+    Optional<WithSegment> getWith();
 }
