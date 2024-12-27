@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.executor.engine.DriverExecuteExecutor;
 import org.apache.shardingsphere.driver.executor.engine.DriverExecuteQueryExecutor;
 import org.apache.shardingsphere.driver.executor.engine.DriverExecuteUpdateExecutor;
+import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionSQLStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -63,6 +64,8 @@ public final class DriverExecutorFacade implements AutoCloseable {
     
     private final SQLFederationEngine sqlFederationEngine;
     
+    private final DriverTransactionSQLStatementExecutor transactionExecutor;
+    
     private final DriverExecuteQueryExecutor queryExecutor;
     
     private final DriverExecuteUpdateExecutor updateExecutor;
@@ -79,10 +82,11 @@ public final class DriverExecutorFacade implements AutoCloseable {
         String currentSchemaName = new DatabaseTypeRegistry(metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType()).getDefaultSchemaName(connection.getCurrentDatabaseName());
         sqlFederationEngine =
                 new SQLFederationEngine(connection.getCurrentDatabaseName(), currentSchemaName, metaData, connection.getContextManager().getMetaDataContexts().getStatistics(), jdbcExecutor);
+        transactionExecutor = new DriverTransactionSQLStatementExecutor(connection);
         RawExecutor rawExecutor = new RawExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         queryExecutor = new DriverExecuteQueryExecutor(connection, metaData, jdbcExecutor, rawExecutor, sqlFederationEngine);
         updateExecutor = new DriverExecuteUpdateExecutor(connection, metaData, jdbcExecutor, rawExecutor);
-        executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, sqlFederationEngine);
+        executeExecutor = new DriverExecuteExecutor(connection, metaData, jdbcExecutor, rawExecutor, sqlFederationEngine, transactionExecutor);
     }
     
     /**
