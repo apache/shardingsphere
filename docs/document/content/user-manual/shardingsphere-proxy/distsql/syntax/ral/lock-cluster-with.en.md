@@ -11,6 +11,7 @@ The `LOCK CLUSTER WITH` syntax is utilized to apply a lock with a specific algor
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
+
 ```sql
 LockClusterWith ::=
   'LOCK' 'CLUSTER' 'WITH' lockStrategy ('TIMEOUT' timeoutMillis)?
@@ -33,10 +34,13 @@ timeoutmillis ::=
 ### Example
 
 - Lock the `CLUSTER` with an exclusive lock without setting the timeout.
+- 
 ```sql
 LOCK CLUSTER WITH WRITE;
 ```
+
 - Lock the CLUSTER with a read-write lock and set the timeout to 2000 milliseconds.
+- 
 ```sql
 LOCK CLUSTER WITH READ_WRITE TIMEOUT 2000;
 ```
