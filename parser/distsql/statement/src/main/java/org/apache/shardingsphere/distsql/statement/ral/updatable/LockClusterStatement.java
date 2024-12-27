@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 
 import java.util.Optional;
+
 /**
  * Lock cluster statement.
  */
