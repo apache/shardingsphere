@@ -66,17 +66,17 @@ public final class DriverTransactionSQLStatementExecutor {
     /**
      * Execute TCL statement.
      *
-     * @param sqlStatement SQL statement
+     * @param tclStatement SQL statement
      * @return whether to execute TCL statement or not
      * @throws SQLException SQL exception
      */
-    public boolean execute(final TCLStatement sqlStatement) throws SQLException {
+    public boolean execute(final TCLStatement tclStatement) throws SQLException {
         if (TransactionOperationType.SAVEPOINT == operationType) {
-            connection.setSavepoint();
+            connection.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
             return true;
         }
         if (TransactionOperationType.RELEASE_SAVEPOINT == operationType) {
-            ShardingSphereSavepoint savepoint = new ShardingSphereSavepoint(((ReleaseSavepointStatement) sqlStatement).getSavepointName());
+            ShardingSphereSavepoint savepoint = new ShardingSphereSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
             connection.releaseSavepoint(savepoint);
             return true;
         }
