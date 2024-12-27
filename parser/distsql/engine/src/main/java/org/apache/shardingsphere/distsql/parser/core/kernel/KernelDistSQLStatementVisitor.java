@@ -322,12 +322,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitLockCluster(final LockClusterContext ctx) {
-        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()));
+        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()), Long.parseLong(getIdentifierValue(ctx.INT_())));
     }
     
     @Override
     public ASTNode visitUnlockCluster(final UnlockClusterContext ctx) {
-        return new UnlockClusterStatement();
+        return new UnlockClusterStatement(Long.parseLong(getIdentifierValue(ctx.INT_())));
     }
     
     private String getIdentifierValue(final ParseTree context) {

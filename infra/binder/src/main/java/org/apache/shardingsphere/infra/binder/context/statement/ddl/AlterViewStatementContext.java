@@ -42,7 +42,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
         super(sqlStatement);
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
-        Optional<SelectStatement> selectStatement = sqlStatement.getSelectStatement();
+        Optional<SelectStatement> selectStatement = sqlStatement.getSelect();
         selectStatement.ifPresent(optional -> {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(optional);

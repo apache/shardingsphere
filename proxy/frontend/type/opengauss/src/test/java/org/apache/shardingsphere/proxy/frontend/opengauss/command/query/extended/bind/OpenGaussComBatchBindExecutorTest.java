@@ -62,7 +62,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -124,7 +123,6 @@ class OpenGaussComBatchBindExecutorTest {
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(result.getTransactionContext()).thenReturn(mock(TransactionConnectionContext.class));
         return result;
     }
