@@ -139,6 +139,7 @@
 1. Pipeline: Support page query for inventory dumper and data consistency streaming query
 1. Pipeline: Use case-insensitive identifiers to enhance the table metadata loader
 1. Pipeline: Support primary key columns ordering for standard pipeline table metadata loader
+1. Sharding: Optimize sharding table index name rewriting rules and remove unnecessary suffix rewriting - [#31171](https://github.com/apache/shardingsphere/issues/31171)
 
 ### Bug Fixes
 
