@@ -74,7 +74,7 @@ public final class TablelessRouteEngineFactory {
         if (sqlStatement instanceof DALStatement) {
             return getDALRouteEngine(sqlStatement, database);
         }
-        // TODO remove this logic when savepoint handle in proxy and jdbc adapter @zhangcheng
+        // TODO Support more TCL statements by transaction module, then remove this.
         if (sqlStatement instanceof TCLStatement) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
