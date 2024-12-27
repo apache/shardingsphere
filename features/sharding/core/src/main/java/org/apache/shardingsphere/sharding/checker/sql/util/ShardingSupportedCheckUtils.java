@@ -56,7 +56,7 @@ public final class ShardingSupportedCheckUtils {
     public static boolean isShardingTablesNotBindingWithView(final Collection<SimpleTableSegment> tableSegments, final ShardingRule shardingRule, final String viewName) {
         for (SimpleTableSegment each : tableSegments) {
             String logicTable = each.getTableName().getIdentifier().getValue();
-            if (shardingRule.isShardingTable(logicTable) && !shardingRule.isAllBindingTables(Arrays.asList(viewName, logicTable))) {
+            if (shardingRule.isShardingTable(logicTable) && !shardingRule.isAllConfigBindingTables(Arrays.asList(viewName, logicTable))) {
                 return true;
             }
         }

@@ -17,44 +17,51 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
+import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,96 +69,101 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ImportMetaDataExecutorTest {
     
-    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7InNoYXJkaW5nX2RiIjoiZGF0YWJhc2VOYW1lOiBzaGFyZGluZ19kYlxuZGF0YVNvdXJjZXM6XG4gIGRzXzA6XG4gICAgcGFzc3dvcmQ6IFxu"
-            + "ICAgIGRhdGFTb3VyY2VDbGFzc05hbWU6IG51bGxcbiAgICB1cmw6IGpkYmM6bXlzcWw6Ly8xMjcuMC4wLjE6MzMwNi9kZW1vX2RzXzA/dXNlU1NMPWZhbHNlXG4gICAgdXNlcm5hbWU6IHJvb3RcbiAgICBtaW5Qb29sU2l6ZTogMVxuICAgI"
-            + "GNvbm5lY3Rpb25UaW1lb3V0TWlsbGlzZWNvbmRzOiAzMDAwMFxuICAgIG1heExpZmV0aW1lTWlsbGlzZWNvbmRzOiAxODAwMDAwXG4gICAgaWRsZVRpbWVvdXRNaWxsaXNlY29uZHM6IDYwMDAwXG4gICAgbWF4UG9vbFNpemU6IDUwXG4gIG"
-            + "RzXzE6XG4gICAgcGFzc3dvcmQ6IFxuICAgIGRhdGFTb3VyY2VDbGFzc05hbWU6IG51bGxcbiAgICB1cmw6IGpkYmM6bXlzcWw6Ly8xMjcuMC4wLjE6MzMwNi9kZW1vX2RzXzE/dXNlU1NMPWZhbHNlXG4gICAgdXNlcm5hbWU6IHJvb3RcbiA"
-            + "gICBtaW5Qb29sU2l6ZTogMVxuICAgIGNvbm5lY3Rpb25UaW1lb3V0TWlsbGlzZWNvbmRzOiAzMDAwMFxuICAgIG1heExpZmV0aW1lTWlsbGlzZWNvbmRzOiAxODAwMDAwXG4gICAgaWRsZVRpbWVvdXRNaWxsaXNlY29uZHM6IDYwMDAwXG4g"
-            + "ICAgbWF4UG9vbFNpemU6IDUwXG5ydWxlczpcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzeXN0ZW0tbG9nLWxldmVsOiBJTkZPXG4gIHNxbC1zaG93OiBmYWxzZVxuIiwicnVsZXMiOiJydWxlczpcbi0gIUFVVEhPUklUWVxuICBwcml2aWxlZ"
-            + "2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhdXRoZW50aWNhdGlvbk1ldGhvZE5hbWU6ICcnXG4gICAgcGFzc3dvcmQ6IHJvb3RcbiAgICB1c2VyOiByb290QCVcbiJ9fQ==";
+    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7Im5vcm1hbF9kYiI6ImRhdGFiYXNlTmFtZTogbm9ybWFsX2RiXG5kYXRhU291cmNlczpcbiAgZHNfMDpcbiA"
+            + "gICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzA7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9"
+            + "vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiAgZHNfMTpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzE7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2"
+            + "U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzcWwtc2hvdzogdHJ1ZVxuIiwicnVsZXMiOiJydWxlczpcbi0g"
+            + "IUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhZG1pbjogdHJ1ZVxuICAgIGF1dGhlbnRpY2F0aW9uTWV0aG9kTmFtZTogJydcbiAgIC"
+            + "BwYXNzd29yZDogcm9vdFxuICAgIHVzZXI6IHJvb3RAJVxuLSAhR0xPQkFMX0NMT0NLXG4gIGVuYWJsZWQ6IGZhbHNlXG4gIHByb3ZpZGVyOiBsb2NhbFxuICB0eXBlOiBUU09cbiJ9fQ==";
     
-    private static final String EMPTY = "empty_metadata";
-    
-    private ImportMetaDataExecutor executor;
+    private static final String EMPTY_DATABASE_NAME = "empty_metadata";
     
     private final Map<String, String> featureMap = new HashMap<>(1, 1F);
     
     @BeforeEach
     void setup() {
-        featureMap.put(EMPTY, "/conf/import/empty-metadata.json");
+        featureMap.put(EMPTY_DATABASE_NAME, "/conf/import/empty-metadata.json");
     }
     
     @Test
     void assertImportEmptyMetaData() {
-        init(null);
+        ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(
-                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY_DATABASE_NAME))).getPath()), contextManager));
     }
     
     @Test
     void assertImportMetaDataFromJsonValue() throws SQLException {
-        init(EMPTY);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
         executor.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), contextManager);
-        assertNotNull(contextManager.getDatabase("sharding_db"));
+        assertNotNull(contextManager.getDatabase("normal_db"));
     }
     
     @Test
     void assertImportExistedMetaDataFromFile() {
-        init(EMPTY);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ImportMetaDataExecutor executor = new ImportMetaDataExecutor();
+        ContextManager contextManager = mockContextManager();
         assertThrows(DatabaseCreateExistsException.class, () -> executor.executeUpdate(
-                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY))).getPath()), contextManager));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataExecutorTest.class.getResource(featureMap.get(EMPTY_DATABASE_NAME))).getPath()), contextManager));
     }
     
-    @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
-    private void init(final String feature) {
-        executor = new ImportMetaDataExecutor();
-        ContextManager contextManager = mockContextManager(feature);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
-        YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
-        Plugins.getMemberAccessor().set(ImportMetaDataExecutor.class.getDeclaredField("databaseConfigImportExecutor"), executor, databaseConfigImportExecutor);
-        Plugins.getMemberAccessor().set(
-                YamlDatabaseConfigurationImportExecutor.class.getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DistSQLDataSourcePoolPropertiesValidator.class));
-    }
-    
-    private ContextManager mockContextManager(final String feature) {
+    private ContextManager mockContextManager() {
+        ShardingSphereDatabase database = mockShardingSphereDatabase();
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singleton(database),
+                new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
+                        new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build()))),
+                new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
+        ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
+                new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), mock(LockContext.class));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps())
-                .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
-        if (null != feature) {
-            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getName()).thenReturn(feature);
-            when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList()));
-            Map<String, StorageUnit> storageUnits = createStorageUnits();
-            when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
-            when(result.getMetaDataContexts().getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
-            when(result.getMetaDataContexts().getMetaData().getDatabase(feature)).thenReturn(database);
-        }
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
+        return result;
+    }
+    
+    private ShardingSphereDatabase mockShardingSphereDatabase() {
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getName()).thenReturn(EMPTY_DATABASE_NAME);
+        when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(storageUnits.keySet());
+        when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(result.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return result;
     }
     
     private Map<String, StorageUnit> createStorageUnits() {
-        Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
-        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/ds_0", "username", "test"));
-        result.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
-        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Maps.of("url", "jdbc:mock://127.0.0.1/ds_1", "username", "test"));
-        result.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
+        Map<String, DataSourcePoolProperties> propsMap = createDataSourceMap().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, StorageUnit> result = new LinkedHashMap<>(propsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
+            StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+            when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
+            result.put(entry.getKey(), storageUnit);
+        }
         return result;
     }
     
-    private Collection<ShardingSphereTable> createTables() {
-        Collection<ShardingSphereColumn> columns = Collections.singleton(new ShardingSphereColumn("order_id", 0, false, false, false, true, false, false));
-        Collection<ShardingSphereIndex> indexes = Collections.singleton(new ShardingSphereIndex("primary", Collections.emptyList(), false));
-        return Collections.singletonList(new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
+        result.put("ds_0", createDataSource("demo_ds_0"));
+        result.put("ds_1", createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String name) {
+        MockedDataSource result = new MockedDataSource();
+        result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", name));
+        result.setUsername("root");
+        result.setPassword("");
+        result.setMaxPoolSize(50);
+        result.setMinPoolSize(1);
+        return result;
     }
 }

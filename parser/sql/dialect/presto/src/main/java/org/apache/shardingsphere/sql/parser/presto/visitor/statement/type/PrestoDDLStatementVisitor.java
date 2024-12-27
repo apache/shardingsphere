@@ -119,7 +119,8 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PrestoDropTableStatement result = new PrestoDropTableStatement(null != ctx.ifExists());
+        PrestoDropTableStatement result = new PrestoDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

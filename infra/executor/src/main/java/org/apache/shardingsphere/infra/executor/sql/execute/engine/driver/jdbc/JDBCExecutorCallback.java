@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -76,12 +77,17 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      */
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final String processId) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DatabaseType storageType = resourceMetaData.getStorageUnits().get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName()).getStorageType();
-        ConnectionProperties connectionProps = resourceMetaData.getStorageUnits().get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName()).getConnectionProperties();
+        String dataSourceName = jdbcExecutionUnit.getExecutionUnit().getDataSourceName();
+        // TODO use metadata to replace storageUnits to support multiple logic databases
+        StorageUnit storageUnit = resourceMetaData.getStorageUnits().containsKey(dataSourceName)
+                ? resourceMetaData.getStorageUnits().get(dataSourceName)
+                : resourceMetaData.getStorageUnits().values().iterator().next();
+        DatabaseType storageType = storageUnit.getStorageType();
+        ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
-            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), connectionProps, isTrunkThread);
+            sqlExecutionHook.start(dataSourceName, sqlUnit.getSql(), sqlUnit.getParameters(), connectionProps, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
             processEngine.completeSQLUnitExecution(jdbcExecutionUnit, processId);

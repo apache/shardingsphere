@@ -125,7 +125,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
                     switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
-            afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+            afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.close();
         } finally {
             closeNewDataSources(newDataSources);
@@ -179,18 +179,12 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         return toBeDroppedResourceNames.stream().filter(propsMap::containsKey).collect(Collectors.toList());
     }
     
-    private void afterStorageUnitsRegistered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
+    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaData)));
         metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
-        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getAllSchemas().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade()
-                .getSchema().alterByRuleAltered(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
-        afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
     }
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {

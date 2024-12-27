@@ -57,7 +57,7 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
         Collection<String> shardingLogicTableNames = sqlStatementContext instanceof TableAvailable
                 ? rule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())
                 : Collections.emptyList();
-        return shardingLogicTableNames.size() > 1 && rule.isAllBindingTables(shardingLogicTableNames);
+        return shardingLogicTableNames.size() > 1 && rule.isAllConfigBindingTables(shardingLogicTableNames);
     }
     
     @Override

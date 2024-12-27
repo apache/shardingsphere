@@ -35,7 +35,7 @@ public final class MySQLAlterViewStatement extends AlterViewStatement implements
     private String viewDefinition;
     
     @Override
-    public Optional<SelectStatement> getSelectStatement() {
+    public Optional<SelectStatement> getSelect() {
         return Optional.ofNullable(select);
     }
     
