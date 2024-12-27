@@ -45,6 +45,7 @@
 1. SQL Binder: Support copy statement sql bind and add bind test case - [#34159](https://github.com/apache/shardingsphere/pull/34159)
 1. SQL Binder: Support truncate table sql bind and add test case - [#34162](https://github.com/apache/shardingsphere/pull/34162)
 1. SQL Binder: Support create view, alter view, drop view sql bind logic - [#34167](https://github.com/apache/shardingsphere/pull/34167)
+1. Transaction: Support savepoint/release savepoint TCL statements in jdbc adapter -[#34173](https://github.com/apache/shardingsphere/pull/34173)
 
 ### Bug Fixes
 
