@@ -70,7 +70,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            getTransactionContext().beginTransaction(String.valueOf(transactionType));
+            getTransactionContext().beginTransaction(transactionType.name(), distributedTransactionManager);
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }
