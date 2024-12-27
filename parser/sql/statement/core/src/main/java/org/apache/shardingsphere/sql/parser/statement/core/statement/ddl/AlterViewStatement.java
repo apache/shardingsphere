@@ -40,8 +40,16 @@ public abstract class AlterViewStatement extends AbstractSQLStatement implements
      *
      * @return select statement
      */
-    public Optional<SelectStatement> getSelectStatement() {
+    public Optional<SelectStatement> getSelect() {
         return Optional.empty();
+    }
+    
+    /**
+     * Set select statement.
+     *
+     * @param select select statement
+     */
+    public void setSelect(final SelectStatement select) {
     }
     
     /**
@@ -54,6 +62,14 @@ public abstract class AlterViewStatement extends AbstractSQLStatement implements
     }
     
     /**
+     * Get view definition.
+     *
+     * @param viewDefinition view definition
+     */
+    public void setViewDefinition(final String viewDefinition) {
+    }
+    
+    /**
      * Get rename view.
      *
      * @return rename view
@@ -63,11 +79,27 @@ public abstract class AlterViewStatement extends AbstractSQLStatement implements
     }
     
     /**
+     * Get rename view.
+     *
+     * @param renameView rename view
+     */
+    public void setRenameView(final SimpleTableSegment renameView) {
+    }
+    
+    /**
      * Get constraint definition.
      *
      * @return constraint definition
      */
     public Optional<ConstraintDefinitionSegment> getConstraintDefinition() {
         return Optional.empty();
+    }
+    
+    /**
+     * Get constraint definition.
+     *
+     * @param constraintDefinition constraint definition
+     */
+    public void setConstraintDefinition(final ConstraintDefinitionSegment constraintDefinition) {
     }
 }

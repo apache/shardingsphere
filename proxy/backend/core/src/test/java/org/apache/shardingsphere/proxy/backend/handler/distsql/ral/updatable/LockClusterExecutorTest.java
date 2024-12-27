@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,13 +47,20 @@ class LockClusterExecutorTest {
     void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.UNAVAILABLE);
-        assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithUsingTimeout() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
+        assertDoesNotThrow(() -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L), contextManager));
     }
 }

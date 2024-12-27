@@ -42,13 +42,15 @@ class ShardingLoadXmlSupportedCheckerTest {
     
     @Test
     void assertCheckWithSingleTable() {
-        MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement();
+        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithShardingTable() {
-        MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement();
+        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(rule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement)));
     }

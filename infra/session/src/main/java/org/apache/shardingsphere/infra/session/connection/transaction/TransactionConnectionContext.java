@@ -41,14 +41,18 @@ public final class TransactionConnectionContext implements AutoCloseable {
     @Setter
     private volatile String readWriteSplitReplicaRoute;
     
+    private volatile TransactionManager transactionManager;
+    
     /**
      * Begin transaction.
      *
-     * @param transactionType transaction type 
+     * @param transactionType transaction type
+     * @param transactionManager transaction manager
      */
-    public void beginTransaction(final String transactionType) {
+    public void beginTransaction(final String transactionType, final TransactionManager transactionManager) {
         this.transactionType = transactionType;
         inTransaction = true;
+        this.transactionManager = transactionManager;
     }
     
     /**
@@ -78,6 +82,15 @@ public final class TransactionConnectionContext implements AutoCloseable {
         return Optional.ofNullable(readWriteSplitReplicaRoute);
     }
     
+    /**
+     * Get transaction manager.
+     *
+     * @return transaction manager
+     */
+    public Optional<TransactionManager> getTransactionManager() {
+        return Optional.ofNullable(transactionManager);
+    }
+    
     @Override
     public void close() {
         transactionType = null;
@@ -85,5 +98,6 @@ public final class TransactionConnectionContext implements AutoCloseable {
         beginMills = 0L;
         exceptionOccur = false;
         readWriteSplitReplicaRoute = null;
+        transactionManager = null;
     }
 }
