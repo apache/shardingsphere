@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -48,6 +49,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -59,17 +65,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -86,7 +88,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class SelectStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable, ParameterAware {
+public final class SelectStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable, ParameterAware, WithAvailable {
     
     private final TablesContext tablesContext;
     
@@ -418,5 +420,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     @Override
     public void setUpParameters(final List<Object> params) {
         paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
+    }
+    
+    @Override
+    public Optional<WithSegment> getWith() {
+        return getSqlStatement().getWithSegment();
     }
 }
