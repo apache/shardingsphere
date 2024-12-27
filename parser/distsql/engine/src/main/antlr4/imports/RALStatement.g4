@@ -100,11 +100,11 @@ convertYamlConfiguration
     ;
 
 lockCluster
-    : LOCK CLUSTER WITH lockStrategy
+    : LOCK CLUSTER WITH lockStrategy (TIMEOUT INT_)?
     ;
 
 unlockCluster
-    : UNLOCK CLUSTER
+    : UNLOCK CLUSTER (TIMEOUT INT_)?
     ;
 
 showPluginImplementations
