@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.context.segment.table;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
@@ -110,7 +109,6 @@ public final class TablesContext {
      * @return database name
      */
     public Optional<String> getDatabaseName() {
-        Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database.");
         return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
     

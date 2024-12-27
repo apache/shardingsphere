@@ -33,7 +33,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -97,24 +96,6 @@ class TablesContextTest {
         TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2));
         assertTrue(tablesContext.getDatabaseName().isPresent());
         assertThat(tablesContext.getDatabaseName().get(), is("sharding_db_1"));
-    }
-    
-    @Test
-    void assertGetSchemaNameWithDifferentSchemaAndSameTable() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
-        SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1", "sharding_db_2");
-        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).getDatabaseName());
-    }
-    
-    @Test
-    void assertGetSchemaNameWithDifferentSchemaAndDifferentTable() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1", "sharding_db_1");
-        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2", "sharding_db_2");
-        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
-        assertThrows(IllegalStateException.class, () -> new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).getDatabaseName());
     }
     
     @Test
