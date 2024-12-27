@@ -31,7 +31,7 @@ public final class UnlockClusterStatement extends UpdatableRALStatement {
     
     /**
      * Get lock timeout milliseconds.
-     * 
+     *
      * @return lock timeout milliseconds
      */
     public Optional<Long> getTimeoutMillis() {
