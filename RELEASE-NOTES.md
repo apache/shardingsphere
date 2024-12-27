@@ -49,7 +49,7 @@
 1. SQL Binder: Support load data and load xml sql bind and add test case - [#34177](https://github.com/apache/shardingsphere/pull/34177)
 1. Transaction: Support savepoint/release savepoint TCL statements in jdbc adapter -[#34173](https://github.com/apache/shardingsphere/pull/34173)
 1. Kernel: Add WithAvailable interface and encrypt with, combine, insert select support checker - [#34175](https://github.com/apache/shardingsphere/pull/34175)
-
+1. SQL Exception: Support with keyword with UniqueCommonTableExpressionException - [#34163](https://github.com/apache/shardingsphere/pull/34163)
 ### Bug Fixes
 
 1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
