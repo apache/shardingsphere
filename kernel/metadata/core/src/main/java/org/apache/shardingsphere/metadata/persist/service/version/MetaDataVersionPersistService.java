@@ -43,7 +43,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
             }
             repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
             getVersions(each.getVersionsPath()).stream()
-                    .filter(version -> !version.equals(each.getNextActiveVersion()))
+                    .filter(version -> Integer.parseInt(version) < Integer.parseInt(each.getNextActiveVersion()))
                     .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
         }
     }
