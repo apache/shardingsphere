@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDat
 /**
  * Load data statement binder.
  */
-public class LoadDataStatementBinder implements SQLStatementBinder<LoadDataStatement> {
+public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDataStatement> {
     
     @Override
     public LoadDataStatement bind(final LoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
