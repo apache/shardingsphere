@@ -48,13 +48,15 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 public class WithSegmentBinderTest {
     
     @Test
     void assertBind() {
-
+        
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
         ProjectionsSegment projectionSegment = new ProjectionsSegment(42, 48);
         ColumnSegment columnSegment = new ColumnSegment(42, 48, new IdentifierValue("user_id"));
@@ -73,22 +75,22 @@ public class WithSegmentBinderTest {
         commonTableExpressionSegments.add(new CommonTableExpressionSegment(5, 33, new AliasSegment(5, 7, new IdentifierValue("cte")), subquerySegment));
         WithSegment withSegment = new WithSegment(0, 33, commonTableExpressionSegments);
         mySQLSelectStatement.setWithSegment(withSegment);
-
+        
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mySQLSelectStatement);
         WithSegment actual = WithSegmentBinder.bind(withSegment, binderContext, binderContext.getExternalTableBinderContexts());
-
+        
         assertThat(binderContext.getExternalTableBinderContexts().size(), is(1));
         assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().size(), is(1));
         assertThat(actual.getStartIndex(), is(0));
         assertTrue(binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString("cte")));
-        SimpleTableSegmentBinderContext simpleTableSegment = (SimpleTableSegmentBinderContext) binderContext.getExternalTableBinderContexts().get(new CaseInsensitiveString("cte")).iterator().next();
         assertTrue(actual.getCommonTableExpressions().iterator().next().getAliasName().isPresent());
         assertThat(actual.getCommonTableExpressions().iterator().next().getAliasName().get(), is("cte"));
         assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().iterator().next(), is(new CaseInsensitiveString("cte")));
-
+        
+        SimpleTableSegmentBinderContext simpleTableSegment = (SimpleTableSegmentBinderContext) binderContext.getExternalTableBinderContexts().get(new CaseInsensitiveString("cte")).iterator().next();
         ArrayList<ColumnProjectionSegment> columnProjectionSegments = new ArrayList<>();
         simpleTableSegment.getProjectionSegments().forEach(each -> columnProjectionSegments.add((ColumnProjectionSegment) each));
-
+        
         assertThat(columnProjectionSegments.get(0).getColumn().getIdentifier().getValue(), is("user_id"));
         assertThat(columnProjectionSegments.get(1).getColumn().getIdentifier().getValue(), is("name"));
         assertTrue(columnProjectionSegments.get(1).getColumn().getOwner().isPresent());
