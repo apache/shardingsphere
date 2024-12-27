@@ -119,7 +119,7 @@ public final class ConnectionSession {
      * @return used database name
      */
     public String getUsedDatabaseName() {
-        return null == queryContext ? currentDatabaseName : queryContext.getUsedDatabaseNames().iterator().next();
+        return null == queryContext || queryContext.getUsedDatabaseNames().isEmpty() ? currentDatabaseName : queryContext.getUsedDatabaseNames().iterator().next();
     }
     
     /**
