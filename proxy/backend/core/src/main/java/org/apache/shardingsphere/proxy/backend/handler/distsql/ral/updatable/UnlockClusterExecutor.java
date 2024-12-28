@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterSt
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.exception.NotLockedClusterException;
+import org.apache.shardingsphere.mode.lock.exception.NotLockedClusterException;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.ClusterLock;
