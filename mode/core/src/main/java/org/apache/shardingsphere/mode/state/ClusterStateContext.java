@@ -15,12 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state.cluster;
+package org.apache.shardingsphere.mode.state;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Cluster state.
+ * Cluster state context.
  */
-public enum ClusterState {
+public final class ClusterStateContext {
     
-    OK, READ_ONLY, UNAVAILABLE
+    private final AtomicReference<ClusterState> clusterState;
+    
+    public ClusterStateContext(final ClusterState clusterState) {
+        this.clusterState = new AtomicReference<>(clusterState);
+    }
+    
+    /**
+     * Get cluster state.
+     *
+     * @return cluster state
+     */
+    public ClusterState getState() {
+        return clusterState.get();
+    }
+    
+    /**
+     * Switch cluster state.
+     *
+     * @param state to be switched cluster state
+     */
+    public void switchState(final ClusterState state) {
+        clusterState.set(state);
+    }
 }

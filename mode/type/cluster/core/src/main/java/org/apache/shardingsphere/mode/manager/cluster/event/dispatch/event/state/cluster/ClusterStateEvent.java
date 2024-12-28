@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.mode.state.ClusterState;
 
 /**
  * Cluster state event.
