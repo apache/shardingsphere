@@ -48,6 +48,7 @@
 1. SQL Binder: Support load data and load xml sql bind and add test case - [#34177](https://github.com/apache/shardingsphere/pull/34177)
 1. Transaction: Support savepoint/release savepoint TCL statements in jdbc adapter -[#34173](https://github.com/apache/shardingsphere/pull/34173)
 1. Kernel: Add WithAvailable interface and encrypt with, combine, insert select support checker - [#34175](https://github.com/apache/shardingsphere/pull/34175)
+1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
 
 ### Bug Fixes
 
