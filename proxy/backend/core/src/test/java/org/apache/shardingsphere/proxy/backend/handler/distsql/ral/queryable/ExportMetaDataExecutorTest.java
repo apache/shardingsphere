@@ -139,7 +139,7 @@ class ExportMetaDataExecutorTest {
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
-        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), mock(LockContext.class));
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
