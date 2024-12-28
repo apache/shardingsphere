@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterUniqueRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;

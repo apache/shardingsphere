@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

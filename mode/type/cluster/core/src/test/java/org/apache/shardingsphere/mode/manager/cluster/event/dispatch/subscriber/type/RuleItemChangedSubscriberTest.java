@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.item.DropRuleItem;

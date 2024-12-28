@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

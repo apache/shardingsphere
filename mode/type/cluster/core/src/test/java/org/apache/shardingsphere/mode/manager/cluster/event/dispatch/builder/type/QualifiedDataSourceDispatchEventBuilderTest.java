@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
 
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.state.storage.QualifiedDataSourceStateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.storage.QualifiedDataSourceStateEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

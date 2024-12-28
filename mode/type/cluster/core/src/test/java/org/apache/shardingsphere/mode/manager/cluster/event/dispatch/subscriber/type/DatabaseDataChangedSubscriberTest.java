@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataAddedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.DatabaseDataDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.SchemaDataAddedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.SchemaDataDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.ShardingSphereRowDataDeletedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.metadata.data.TableDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.DatabaseDataAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.DatabaseDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.SchemaDataAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.SchemaDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.ShardingSphereRowDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.ShardingSphereRowDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.data.TableDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

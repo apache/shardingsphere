@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.ty
 
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.config.AlterPropertiesEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

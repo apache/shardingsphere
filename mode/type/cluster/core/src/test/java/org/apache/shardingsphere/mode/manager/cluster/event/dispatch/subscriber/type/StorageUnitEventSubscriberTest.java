@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitAlteredEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitRegisteredEvent;
-import org.apache.shardingsphere.mode.event.dispatch.datasource.unit.StorageUnitUnregisteredEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.datasource.unit.StorageUnitAlteredEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.datasource.unit.StorageUnitRegisteredEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.datasource.unit.StorageUnitUnregisteredEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

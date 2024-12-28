@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

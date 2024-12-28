@@ -23,7 +23,7 @@ import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.MetaDataChangedEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Optional;
