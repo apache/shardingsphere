@@ -17,36 +17,10 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
- * State context.
+ * Cluster state.
  */
-public final class StateContext {
+public enum ClusterState {
     
-    private final AtomicReference<ClusterState> clusterState;
-    
-    public StateContext(final ClusterState clusterState) {
-        this.clusterState = new AtomicReference<>(clusterState);
-    }
-    
-    /**
-     * Get cluster state.
-     *
-     * @return cluster state
-     */
-    public ClusterState getClusterState() {
-        return clusterState.get();
-    }
-    
-    /**
-     * Switch cluster state.
-     *
-     * @param state to be switched cluster state
-     */
-    public void switchClusterState(final ClusterState state) {
-        clusterState.set(state);
-    }
+    OK, READ_ONLY, UNAVAILABLE
 }

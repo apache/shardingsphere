@@ -38,6 +38,6 @@ public final class StateChangedSubscriber implements DispatchEventSubscriber {
      */
     @Subscribe
     public synchronized void renew(final ClusterStateEvent event) {
-        contextManager.getStateContext().switchClusterState(event.getClusterState());
+        contextManager.getStateContext().switchState(event.getClusterState());
     }
 }
