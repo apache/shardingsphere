@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -111,6 +110,6 @@ class DatabaseAdminQueryBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        return new ContextManager(MetaDataContextsFactory.create(mock(), metaData), mock(LockContext.class), computeNodeInstanceContext, mock());
+        return new ContextManager(MetaDataContextsFactory.create(mock(), metaData), computeNodeInstanceContext, mock());
     }
 }
