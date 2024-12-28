@@ -60,21 +60,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
         repositorySQL = JDBCRepositorySQLLoader.load(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-        
-        Properties hikariProperties = PropertyElf.copyProperties(props);
-        hikariProperties.remove(JDBCRepositoryPropertyKey.PROVIDER.getKey());
-        hikariProperties.remove(JDBCRepositoryPropertyKey.JDBC_URL.getKey());
-        hikariProperties.remove(JDBCRepositoryPropertyKey.USERNAME.getKey());
-        hikariProperties.remove(JDBCRepositoryPropertyKey.PASSWORD.getKey());
-        
-        HikariConfig hikariConfig = new HikariConfig(hikariProperties);
-        hikariConfig.setDriverClassName(repositorySQL.getDriverClassName());
-        hikariConfig.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
-        hikariConfig.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
-        hikariConfig.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
-        
-        dataSource = new HikariDataSource(hikariConfig);
-        
+        dataSource = new HikariDataSource(createHikariConfig(props, jdbcRepositoryProps));
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -88,6 +74,24 @@ public final class JDBCRepository implements StandalonePersistRepository {
             }
             // Finish TODO
         }
+    }
+    
+    private HikariConfig createHikariConfig(final Properties props, final JDBCRepositoryProperties jdbcRepositoryProps) {
+        HikariConfig result = new HikariConfig(copyProperties(props));
+        result.setDriverClassName(repositorySQL.getDriverClassName());
+        result.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        result.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
+        result.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        return result;
+    }
+    
+    private Properties copyProperties(final Properties props) {
+        Properties result = PropertyElf.copyProperties(props);
+        result.remove(JDBCRepositoryPropertyKey.PROVIDER.getKey());
+        result.remove(JDBCRepositoryPropertyKey.JDBC_URL.getKey());
+        result.remove(JDBCRepositoryPropertyKey.USERNAME.getKey());
+        result.remove(JDBCRepositoryPropertyKey.PASSWORD.getKey());
+        return result;
     }
     
     @Override
