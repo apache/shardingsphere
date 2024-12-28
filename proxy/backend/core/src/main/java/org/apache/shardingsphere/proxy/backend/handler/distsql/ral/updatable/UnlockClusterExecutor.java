@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.exception.NotLockedClusterException;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
@@ -37,16 +36,15 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     @Override
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
-        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
         long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
-        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
+        if (contextManager.getLockContext().tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
                 contextManager.getPersistServiceFacade().getStatePersistService().update(ClusterState.OK);
                 // TODO unlock snapshot info if locked
             } finally {
-                lockContext.unlock(lockDefinition);
+                contextManager.getLockContext().unlock(lockDefinition);
             }
         }
     }

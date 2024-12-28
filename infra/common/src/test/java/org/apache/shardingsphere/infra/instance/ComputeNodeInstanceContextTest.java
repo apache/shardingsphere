@@ -46,7 +46,6 @@ class ComputeNodeInstanceContextTest {
         context.init(workerIdGenerator, lockContext);
         context.generateWorkerId(new Properties());
         verify(workerIdGenerator).generate(new Properties());
-        assertThat(context.getLockContext(), is(lockContext));
     }
     
     @Test
