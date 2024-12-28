@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.deliver;
+package org.apache.shardingsphere.readwritesplitting.cluster;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
