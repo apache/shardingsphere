@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -55,8 +54,6 @@ public final class ContextManager implements AutoCloseable {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;
     
-    private final LockContext lockContext;
-    
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final ExecutorEngine executorEngine;
@@ -67,9 +64,8 @@ public final class ContextManager implements AutoCloseable {
     
     private final MetaDataContextManager metaDataContextManager;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final LockContext lockContext, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
-        this.lockContext = lockContext;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);

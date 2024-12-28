@@ -93,7 +93,7 @@ public final class BackendTransactionManager implements TransactionManager {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
             entry.getValue().beforeCommit(entry.getKey(), databaseType,
-                    connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getLockContext());
+                    connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getLockContext());
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
@@ -105,7 +105,7 @@ public final class BackendTransactionManager implements TransactionManager {
             } finally {
                 for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                     entry.getValue().afterCommit(entry.getKey(), databaseType,
-                            connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getLockContext());
+                            connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getLockContext());
                 }
                 for (Connection each : connection.getCachedConnections().values()) {
                     ConnectionSavepointManager.getInstance().transactionFinished(each);

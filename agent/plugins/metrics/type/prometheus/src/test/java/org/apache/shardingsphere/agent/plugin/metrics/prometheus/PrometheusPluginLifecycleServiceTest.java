@@ -73,7 +73,7 @@ class PrometheusPluginLifecycleServiceTest {
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
-        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
-        return new ContextManager(metaDataContexts, mock(LockContext.class), computeNodeInstanceContext, mock(PersistRepository.class));
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), mock(LockContext.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
     }
 }
