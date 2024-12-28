@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.ty
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.config.AlterPropertiesEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 

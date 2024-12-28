@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.rule.RuleItemChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterUniqueRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.RuleItemChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.alter.AlterUniqueRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropNamedRuleItemEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.rule.drop.DropUniqueRuleItemEvent;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
