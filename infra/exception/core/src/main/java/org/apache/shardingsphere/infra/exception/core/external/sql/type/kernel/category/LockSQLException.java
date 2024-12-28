@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.exception;
+package org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Not locked cluster exception.
+ * Lock SQL exception.
  */
-public final class NotLockedClusterException extends ClusterSQLException {
+public abstract class LockSQLException extends KernelSQLException {
     
-    private static final long serialVersionUID = -9181518142445461894L;
+    private static final long serialVersionUID = 7889797502163128147L;
     
-    public NotLockedClusterException() {
-        super(XOpenSQLState.GENERAL_ERROR, 31, "Cluster is not locked.");
+    private static final int KERNEL_CODE = 5;
+    
+    public LockSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }

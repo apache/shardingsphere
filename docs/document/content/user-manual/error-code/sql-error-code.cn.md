@@ -100,6 +100,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |
 | 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
+### 锁
+
+| Vendor Code | SQL State | 错误信息                       |
+|-------------|-----------|----------------------------|
+| 15030       | HY000     | Cluster is already locked. |
+| 15031       | HY000     | Cluster is not locked.     |
+
 ### 集群
 
 | Vendor Code | SQL State | 错误信息                                                          |
@@ -108,8 +115,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
-| 17030       | HY000     | Cluster is already locked.                                    |
-| 17031       | HY000     | Cluster is not locked.                                        |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### 数据管道
