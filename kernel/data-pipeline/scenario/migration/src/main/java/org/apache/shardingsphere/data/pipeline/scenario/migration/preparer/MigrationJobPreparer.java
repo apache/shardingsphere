@@ -65,7 +65,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
@@ -113,13 +112,12 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         String jobId = jobConfig.getJobId();
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }
         LockDefinition lockDefinition = new GlobalLockDefinition(new MigrationPrepareLock(jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
-        if (lockContext.tryLock(lockDefinition, 600 * 1000L)) {
+        if (contextManager.getLockContext().tryLock(lockDefinition, 600 * 1000L)) {
             log.info("Lock success, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
             try {
                 PipelineJobOffsetGovernanceRepository offsetRepository = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getJobFacade().getOffset();
@@ -132,7 +130,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
                 }
             } finally {
                 log.info("Unlock, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
-                lockContext.unlock(lockDefinition);
+                contextManager.getLockContext().unlock(lockDefinition);
             }
         } else {
             log.warn("Lock failed, jobId={}, shardingItem={}.", jobId, jobItemContext.getShardingItem());

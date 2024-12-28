@@ -47,9 +47,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
-        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new StandaloneLockContext());
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        return new ContextManager(metaDataContexts, new StandaloneLockContext(), computeNodeInstanceContext, repository);
     }
     
     @Override

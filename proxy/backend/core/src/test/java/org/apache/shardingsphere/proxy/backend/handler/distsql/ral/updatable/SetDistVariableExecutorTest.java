@@ -110,7 +110,8 @@ class SetDistVariableExecutorTest {
         when(metaDataPersistService.getPropsService()).thenReturn(mock(PropertiesPersistService.class));
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
-        computeNodeInstanceContext.init(mock(WorkerIdGenerator.class), mock(LockContext.class));
-        return new ContextManager(MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData()), computeNodeInstanceContext, mock(PersistRepository.class));
+        computeNodeInstanceContext.init(mock(WorkerIdGenerator.class));
+        return new ContextManager(MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData()), mock(LockContext.class), computeNodeInstanceContext,
+                mock(PersistRepository.class));
     }
 }
