@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.google.common.base.Strings;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.util.PropertyElf;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -58,11 +60,21 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
         repositorySQL = JDBCRepositorySQLLoader.load(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-        dataSource = new HikariDataSource();
-        dataSource.setDriverClassName(repositorySQL.getDriverClassName());
-        dataSource.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
-        dataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
-        dataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        
+        Properties hikariProperties = PropertyElf.copyProperties(props);
+        hikariProperties.remove(JDBCRepositoryPropertyKey.PROVIDER.getKey());
+        hikariProperties.remove(JDBCRepositoryPropertyKey.JDBC_URL.getKey());
+        hikariProperties.remove(JDBCRepositoryPropertyKey.USERNAME.getKey());
+        hikariProperties.remove(JDBCRepositoryPropertyKey.PASSWORD.getKey());
+        
+        HikariConfig hikariConfig = new HikariConfig(hikariProperties);
+        hikariConfig.setDriverClassName(repositorySQL.getDriverClassName());
+        hikariConfig.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        hikariConfig.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
+        hikariConfig.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        
+        dataSource = new HikariDataSource(hikariConfig);
+        
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
