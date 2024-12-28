@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.dispatch.builder;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder;
 
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
