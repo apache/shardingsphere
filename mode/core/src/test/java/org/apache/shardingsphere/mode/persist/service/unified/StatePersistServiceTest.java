@@ -15,34 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service;
+package org.apache.shardingsphere.mode.persist.service.unified;
 
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.ClusterState;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ListenerAssistedPersistServiceTest {
+class StatePersistServiceTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private StatePersistService statePersistService;
+    
+    @Mock
     private PersistRepository repository;
     
-    @Test
-    void assertPersistDatabaseNameListenerAssisted() {
-        new ListenerAssistedPersistService(repository).persistDatabaseNameListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", ListenerAssistedType.CREATE_DATABASE.name());
+    @BeforeEach
+    void setUp() {
+        statePersistService = new StatePersistService(repository);
     }
     
     @Test
-    void assertDeleteDatabaseNameListenerAssisted() {
-        new ListenerAssistedPersistService(repository).deleteDatabaseNameListenerAssisted("foo_db");
-        verify(repository).delete("/states/listener_assisted/foo_db");
+    void assertUpdate() {
+        statePersistService.update(ClusterState.OK);
+        verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
+    }
+    
+    @Test
+    void assertLoad() {
+        when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
+        assertThat(statePersistService.load(), is(ClusterState.READ_ONLY));
+    }
+    
+    @Test
+    void assertLoadWithEmptyState() {
+        when(repository.query("/states/cluster_state")).thenReturn("");
+        assertThat(statePersistService.load(), is(ClusterState.OK));
     }
 }
