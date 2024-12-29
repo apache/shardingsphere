@@ -106,6 +106,7 @@ public final class ProcessRegistry {
     /**
      * Kill process.
      *
+     * @param processId process ID
      * @throws SQLException SQL exception
      */
     public void kill(final String processId) throws SQLException {
