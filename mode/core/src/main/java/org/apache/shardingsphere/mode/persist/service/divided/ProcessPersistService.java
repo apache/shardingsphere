@@ -29,7 +29,7 @@ public interface ProcessPersistService {
     
     /**
      * Report local processes.
-     * 
+     *
      * @param instanceId instance ID
      * @param taskId task ID
      */
@@ -52,7 +52,7 @@ public interface ProcessPersistService {
     
     /**
      * Clean process.
-     * 
+     *
      * @param instanceId instance ID
      * @param processId process ID
      */
