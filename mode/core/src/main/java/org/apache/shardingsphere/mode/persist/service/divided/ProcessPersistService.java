@@ -33,7 +33,7 @@ public interface ProcessPersistService {
      * @param instanceId instance ID
      * @param taskId task ID
      */
-    void reportLocalProcesses(final String instanceId, final String taskId);
+    void reportLocalProcesses(String instanceId, String taskId);
     
     /**
      * Get process list.
