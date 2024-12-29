@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 
 import java.sql.SQLException;
 
@@ -37,11 +37,11 @@ public final class ProcessListChangedSubscriber implements DispatchEventSubscrib
     
     private final String instanceId;
     
-    private final ProcessPersistService processPersistService;
+    private final ProcessPersistCoordinator processPersistService;
     
     public ProcessListChangedSubscriber(final ContextManager contextManager) {
         instanceId = contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId();
-        processPersistService = contextManager.getPersistServiceFacade().getProcessPersistService();
+        processPersistService = contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator();
     }
     
     /**
