@@ -32,7 +32,7 @@ public final class ListenerAssistedPersistService {
     
     /**
      * Persist database name listener assisted.
-     * 
+     *
      * @param databaseName database name
      * @param listenerAssistedType listener assisted type
      */
