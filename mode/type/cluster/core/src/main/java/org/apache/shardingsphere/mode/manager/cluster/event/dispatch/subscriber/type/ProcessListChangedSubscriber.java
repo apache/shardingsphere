@@ -42,14 +42,14 @@ import java.util.Collection;
  */
 public final class ProcessListChangedSubscriber implements DispatchEventSubscriber {
     
-    private final ContextManager contextManager;
+    private final String instanceMetaDataId;
     
     private final PersistRepository repository;
     
     private final YamlProcessListSwapper swapper;
     
     public ProcessListChangedSubscriber(final ContextManager contextManager) {
-        this.contextManager = contextManager;
+        instanceMetaDataId = contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId();
         repository = contextManager.getPersistServiceFacade().getRepository();
         swapper = new YamlProcessListSwapper();
     }
@@ -61,7 +61,7 @@ public final class ProcessListChangedSubscriber implements DispatchEventSubscrib
      */
     @Subscribe
     public void reportLocalProcesses(final ReportLocalProcessesEvent event) {
-        if (!event.getInstanceId().equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+        if (!event.getInstanceId().equals(instanceMetaDataId)) {
             return;
         }
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
@@ -89,7 +89,7 @@ public final class ProcessListChangedSubscriber implements DispatchEventSubscrib
      */
     @Subscribe
     public synchronized void killLocalProcess(final KillLocalProcessEvent event) throws SQLException {
-        if (!event.getInstanceId().equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+        if (!event.getInstanceId().equals(instanceMetaDataId)) {
             return;
         }
         Process process = ProcessRegistry.getInstance().get(event.getProcessId());
