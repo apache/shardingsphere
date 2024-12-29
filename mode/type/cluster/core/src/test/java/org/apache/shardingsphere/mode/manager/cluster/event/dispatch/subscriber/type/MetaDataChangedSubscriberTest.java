@@ -21,14 +21,13 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableDroppedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewDroppedEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +52,6 @@ class MetaDataChangedSubscriberTest {
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(mock(ClusterPersistRepository.class));
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)).thenReturn(false);
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         subscriber = new MetaDataChangedSubscriber(contextManager);
