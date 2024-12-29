@@ -28,6 +28,14 @@ import java.util.Collection;
 public interface ProcessPersistService {
     
     /**
+     * Report local processes.
+     *
+     * @param instanceId instance ID
+     * @param taskId task ID
+     */
+    void reportLocalProcesses(String instanceId, String taskId);
+    
+    /**
      * Get process list.
      *
      * @return collection of process
@@ -41,4 +49,12 @@ public interface ProcessPersistService {
      * @throws  SQLException SQL exception
      */
     void killProcess(String processId) throws SQLException;
+    
+    /**
+     * Clean process.
+     *
+     * @param instanceId instance ID
+     * @param processId process ID
+     */
+    void cleanProcess(String instanceId, String processId);
 }

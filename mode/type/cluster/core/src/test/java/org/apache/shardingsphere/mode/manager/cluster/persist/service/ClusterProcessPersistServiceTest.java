@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
@@ -40,12 +41,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProcessOperationLockRegistry.class)
+@StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
 class ClusterProcessPersistServiceTest {
     
     @Mock
@@ -56,6 +59,22 @@ class ClusterProcessPersistServiceTest {
     @BeforeEach
     void setUp() {
         processPersistService = new ClusterProcessPersistService(repository);
+    }
+    
+    @Test
+    void assertReportEmptyLocalProcesses() {
+        when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
+        processPersistService.reportLocalProcesses("foo_instance_id", "foo_task_id");
+        verify(repository, times(0)).persist(any(), any());
+        verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id");
+    }
+    
+    @Test
+    void assertReportNotEmptyLocalProcesses() {
+        when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.singleton(mock(Process.class, RETURNS_DEEP_STUBS)));
+        processPersistService.reportLocalProcesses("foo_instance_id", "foo_task_id");
+        verify(repository).persist(eq("/execution_nodes/foo_task_id/foo_instance_id"), any());
+        verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id");
     }
     
     @Test
@@ -110,5 +129,11 @@ class ClusterProcessPersistServiceTest {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         processPersistService.killProcess("foo_process_id");
         verify(repository).persist("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id", "");
+    }
+    
+    @Test
+    void assertCleanProcess() {
+        processPersistService.cleanProcess("foo_instance_id", "foo_pid");
+        verify(repository).delete("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid");
     }
 }

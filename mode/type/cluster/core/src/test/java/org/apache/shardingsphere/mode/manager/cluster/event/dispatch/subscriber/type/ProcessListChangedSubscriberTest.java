@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -37,12 +36,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,19 +68,10 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertReportEmptyLocalProcesses() {
+    void assertReportLocalProcesses() {
         when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent("foo_instance_id", "foo_task_id"));
-        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).persist(any(), any());
-        verify(contextManager.getPersistServiceFacade().getRepository()).delete("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id");
-    }
-    
-    @Test
-    void assertReportNotEmptyLocalProcesses() {
-        when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.singleton(mock(Process.class, RETURNS_DEEP_STUBS)));
-        subscriber.reportLocalProcesses(new ReportLocalProcessesEvent("foo_instance_id", "foo_task_id"));
-        verify(contextManager.getPersistServiceFacade().getRepository()).persist(eq("/execution_nodes/foo_task_id/foo_instance_id"), any());
-        verify(contextManager.getPersistServiceFacade().getRepository()).delete("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id");
+        verify(contextManager.getPersistServiceFacade().getProcessPersistService()).reportLocalProcesses("foo_instance_id", "foo_task_id");
     }
     
     @Test
@@ -94,28 +81,15 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
+    void assertKillLocalProcessWithCurrentInstance() throws SQLException {
+        subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
+        verify(contextManager.getPersistServiceFacade().getProcessPersistService()).cleanProcess("foo_instance_id", "foo_pid");
+    }
+    
+    @Test
     void assertKillLocalProcessWithNotCurrentInstance() throws SQLException {
         subscriber.killLocalProcess(new KillLocalProcessEvent("bar_instance_id", "foo_pid"));
-        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
-    }
-    
-    @Test
-    void assertKillLocalProcessWithoutExistedProcess() throws SQLException {
-        when(ProcessRegistry.getInstance().get("foo_pid")).thenReturn(null);
-        subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
-        verify(contextManager.getPersistServiceFacade().getRepository()).delete("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid");
-    }
-    
-    @Test
-    void assertKillLocalProcessWithExistedProcess() throws SQLException {
-        Process process = mock(Process.class, RETURNS_DEEP_STUBS);
-        Statement statement = mock(Statement.class);
-        when(process.getProcessStatements()).thenReturn(Collections.singletonMap(1, statement));
-        when(ProcessRegistry.getInstance().get("foo_pid")).thenReturn(process);
-        subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
-        verify(process).setInterrupted(true);
-        verify(statement).cancel();
-        verify(contextManager.getPersistServiceFacade().getRepository()).delete("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid");
+        verify(contextManager.getPersistServiceFacade().getProcessPersistService(), times(0)).cleanProcess("bar_instance_id", "foo_pid");
     }
     
     @Test
