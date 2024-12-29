@@ -22,16 +22,14 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableDroppedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewCreatedOrAlteredEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewDroppedEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -128,7 +126,7 @@ public final class MetaDataChangedSubscriber implements DispatchEventSubscriber 
     private void refreshStatisticsData() {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()
                 && InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager, new ClusterLockContext(new GlobalLockPersistService(repository))).asyncRefresh();
+            new ShardingSphereStatisticsRefreshEngine(contextManager).asyncRefresh();
         }
     }
 }
