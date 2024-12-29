@@ -42,14 +42,14 @@ class ListenerAssistedDispatchEventBuilderTest {
     
     @Test
     void assertBuildCreateDatabaseListenerAssistedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/listener_assisted/foo_db", "{databaseName: foo_db, listenerAssistedType: CREATE_DATABASE}", Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/listener_assisted/foo_db", "CREATE_DATABASE", Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((CreateDatabaseListenerAssistedEvent) actual.get()).getDatabaseName(), is("foo_db"));
     }
     
     @Test
     void assertBuildDropDatabaseListenerAssistedEvent() {
-        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/listener_assisted/foo_db", "{databaseName: foo_db, listenerAssistedType: DROP_DATABASE}", Type.ADDED));
+        Optional<DispatchEvent> actual = builder.build(new DataChangedEvent("/states/listener_assisted/foo_db", "DROP_DATABASE", Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((DropDatabaseListenerAssistedEvent) actual.get()).getDatabaseName(), is("foo_db"));
     }
