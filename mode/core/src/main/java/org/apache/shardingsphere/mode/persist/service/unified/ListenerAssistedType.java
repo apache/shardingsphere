@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist;
+package org.apache.shardingsphere.mode.persist.service.unified;
 
 /**
  * Listener assisted type.
