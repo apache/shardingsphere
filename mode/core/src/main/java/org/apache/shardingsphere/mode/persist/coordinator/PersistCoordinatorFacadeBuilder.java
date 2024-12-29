@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist.service;
+package org.apache.shardingsphere.mode.persist.coordinator;
 
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Standalone process persist service.
+ * Persist coordinator facade builder.
  */
-public final class StandaloneProcessPersistService implements ProcessPersistService {
+@SingletonSPI
+public interface PersistCoordinatorFacadeBuilder extends TypedSPI {
     
-    @Override
-    public Collection<Process> getProcessList() {
-        return ProcessRegistry.getInstance().listAll();
-    }
-    
-    @Override
-    public void killProcess(final String processId) throws SQLException {
-        ProcessRegistry.getInstance().kill(processId);
-    }
+    /**
+     * Build process persist coordinator.
+     *
+     * @param repository persist repository
+     * @return built process persist coordinator
+     */
+    ProcessPersistCoordinator buildProcessPersistCoordinator(PersistRepository repository);
 }

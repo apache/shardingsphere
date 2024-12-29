@@ -71,7 +71,7 @@ class ProcessListChangedSubscriberTest {
     void assertReportLocalProcesses() {
         when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent("foo_instance_id", "foo_task_id"));
-        verify(contextManager.getPersistServiceFacade().getProcessPersistService()).reportLocalProcesses("foo_instance_id", "foo_task_id");
+        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).reportLocalProcesses("foo_instance_id", "foo_task_id");
     }
     
     @Test
@@ -83,13 +83,13 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertKillLocalProcessWithCurrentInstance() throws SQLException {
         subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
-        verify(contextManager.getPersistServiceFacade().getProcessPersistService()).cleanProcess("foo_instance_id", "foo_pid");
+        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).cleanProcess("foo_instance_id", "foo_pid");
     }
     
     @Test
     void assertKillLocalProcessWithNotCurrentInstance() throws SQLException {
         subscriber.killLocalProcess(new KillLocalProcessEvent("bar_instance_id", "foo_pid"));
-        verify(contextManager.getPersistServiceFacade().getProcessPersistService(), times(0)).cleanProcess("bar_instance_id", "foo_pid");
+        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator(), times(0)).cleanProcess("bar_instance_id", "foo_pid");
     }
     
     @Test

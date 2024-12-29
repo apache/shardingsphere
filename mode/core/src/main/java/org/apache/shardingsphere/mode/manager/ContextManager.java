@@ -37,6 +37,7 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.state.ClusterStateContext;
 
@@ -64,6 +65,8 @@ public final class ContextManager implements AutoCloseable {
     
     private final MetaDataContextManager metaDataContextManager;
     
+    private final PersistCoordinatorFacade persistCoordinatorFacade;
+    
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
@@ -74,6 +77,7 @@ public final class ContextManager implements AutoCloseable {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             each.onInitialized(this);
         }
+        persistCoordinatorFacade = new PersistCoordinatorFacade(repository, computeNodeInstanceContext.getModeConfiguration());
     }
     
     /**
