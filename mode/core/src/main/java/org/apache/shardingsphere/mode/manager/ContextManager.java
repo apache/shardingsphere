@@ -67,8 +67,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final PersistCoordinatorFacade persistCoordinatorFacade;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                          final PersistRepository repository, final PersistCoordinatorFacade persistCoordinatorFacade) {
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = new AtomicReference<>(metaDataContexts);
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, repository);
@@ -78,7 +77,7 @@ public final class ContextManager implements AutoCloseable {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             each.onInitialized(this);
         }
-        this.persistCoordinatorFacade = persistCoordinatorFacade;
+        persistCoordinatorFacade = new PersistCoordinatorFacade(repository, computeNodeInstanceContext.getModeConfiguration());
     }
     
     /**

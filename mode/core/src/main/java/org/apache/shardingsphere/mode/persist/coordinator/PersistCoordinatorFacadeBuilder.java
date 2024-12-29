@@ -28,10 +28,10 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 public interface PersistCoordinatorFacadeBuilder extends TypedSPI {
     
     /**
-     * Build persist coordinator facade.
+     * Build process persist coordinator.
      *
      * @param repository persist repository
-     * @return persist coordinator facade
+     * @return built process persist coordinator
      */
-    PersistCoordinatorFacade build(PersistRepository repository);
+    ProcessPersistCoordinator buildProcessPersistCoordinator(PersistRepository repository);
 }

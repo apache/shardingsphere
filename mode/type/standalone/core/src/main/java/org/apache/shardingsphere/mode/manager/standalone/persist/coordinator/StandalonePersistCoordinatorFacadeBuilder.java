@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.coordinator;
+package org.apache.shardingsphere.mode.manager.standalone.persist.coordinator;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder;
+import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Persist coordinator facade.
+ * Standalone persist coordinator facade builder.
  */
-@Getter
-public final class PersistCoordinatorFacade {
+public final class StandalonePersistCoordinatorFacadeBuilder implements PersistCoordinatorFacadeBuilder {
     
-    private final ProcessPersistCoordinator processPersistCoordinator;
+    @Override
+    public ProcessPersistCoordinator buildProcessPersistCoordinator(final PersistRepository repository) {
+        return null;
+    }
     
-    public PersistCoordinatorFacade(final PersistRepository repository, final ModeConfiguration modeConfig) {
-        PersistCoordinatorFacadeBuilder builder = TypedSPILoader.getService(PersistCoordinatorFacadeBuilder.class, modeConfig.getType());
-        processPersistCoordinator = builder.buildProcessPersistCoordinator(repository);
+    @Override
+    public Object getType() {
+        return "Standalone";
     }
 }

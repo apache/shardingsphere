@@ -41,8 +41,6 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLock
 import org.apache.shardingsphere.mode.manager.cluster.workerid.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder;
-import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -65,8 +63,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, param, computeNodeInstanceContext);
-        PersistCoordinatorFacade persistCoordinatorFacade = TypedSPILoader.getService(PersistCoordinatorFacadeBuilder.class, "Cluster").build(repository);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, persistCoordinatorFacade);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         registerOnline(computeNodeInstanceContext, param, result, repository);
         return result;
     }

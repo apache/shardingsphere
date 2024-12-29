@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
+package org.apache.shardingsphere.mode.fixture;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade;
+import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-/**
- * Cluster persist coordinator facade.
- */
-@RequiredArgsConstructor
-public final class ClusterPersistCoordinatorFacade implements PersistCoordinatorFacade {
-    
-    private final PersistRepository repository;
+public final class PersistCoordinatorFacadeBuilderFixture implements PersistCoordinatorFacadeBuilder {
     
     @Override
-    public ProcessPersistCoordinator getProcessPersistCoordinator() {
-        return new ClusterProcessPersistCoordinator(repository);
+    public ProcessPersistCoordinator buildProcessPersistCoordinator(final PersistRepository repository) {
+        return null;
+    }
+    
+    @Override
+    public Object getType() {
+        return "foo_type";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
