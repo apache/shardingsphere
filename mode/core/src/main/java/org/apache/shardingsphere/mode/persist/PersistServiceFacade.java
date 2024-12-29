@@ -68,7 +68,7 @@ public final class PersistServiceFacade {
     
     /**
      * Close persist service facade.
-     * 
+     *
      * @param computeNodeInstance compute node instance
      */
     public void close(final ComputeNodeInstance computeNodeInstance) {
