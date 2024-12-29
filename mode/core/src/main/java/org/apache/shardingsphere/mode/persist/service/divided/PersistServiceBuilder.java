@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.fixture;
+package org.apache.shardingsphere.mode.persist.service.divided;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
-public final class PersistServiceBuilderFixture implements PersistServiceBuilder {
+/**
+ * Persist service builder.
+ */
+public interface PersistServiceBuilder extends TypedSPI {
     
-    @Override
-    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return null;
-    }
+    /**
+     * Build meta data manager persist service.
+     *
+     * @param repository persist repository
+     * @param metaDataContextManager meta data context manager
+     * @return meta data manager persist service
+     */
+    MetaDataManagerPersistService buildMetaDataManagerPersistService(PersistRepository repository, MetaDataContextManager metaDataContextManager);
     
-    @Override
-    public ProcessPersistService buildProcessPersistService(final PersistRepository repository) {
-        return null;
-    }
-    
-    @Override
-    public Object getType() {
-        return "foo_type";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Build process persist service.
+     *
+     * @param repository persist repository
+     * @return process persist service
+     */
+    ProcessPersistService buildProcessPersistService(PersistRepository repository);
 }

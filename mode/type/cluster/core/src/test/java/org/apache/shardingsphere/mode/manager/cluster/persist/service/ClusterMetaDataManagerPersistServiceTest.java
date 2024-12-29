@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;

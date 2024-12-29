@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.Dis
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.DropDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.persist.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
 
 import java.util.Arrays;
 import java.util.Collection;

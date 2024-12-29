@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
+import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

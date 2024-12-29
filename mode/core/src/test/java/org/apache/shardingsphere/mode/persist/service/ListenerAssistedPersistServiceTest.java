@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.persist.service;
 
-import org.apache.shardingsphere.mode.persist.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

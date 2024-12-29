@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service;
+package org.apache.shardingsphere.mode.persist.service.unified;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.state.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * State persist service.
+ * Listener assisted persist service.
  */
 @RequiredArgsConstructor
-public final class StatePersistService {
+public final class ListenerAssistedPersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Update cluster state.
+     * Persist database name listener assisted.
      *
-     * @param state to be updated cluster state
+     * @param databaseName database name
+     * @param listenerAssistedType listener assisted type
      */
-    public void update(final ClusterState state) {
-        repository.persist(StatesNode.getClusterStateNodePath(), state.name());
+    public void persistDatabaseNameListenerAssisted(final String databaseName, final ListenerAssistedType listenerAssistedType) {
+        repository.persistEphemeral(StatesNode.getDatabaseNameListenerAssistedNodePath(databaseName), listenerAssistedType.name());
     }
     
     /**
-     * Load cluster state.
+     * Delete database name listener assisted.
      *
-     * @return loaded cluster state
+     * @param databaseName database name
      */
-    public ClusterState load() {
-        String value = repository.query(StatesNode.getClusterStateNodePath());
-        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
+    public void deleteDatabaseNameListenerAssisted(final String databaseName) {
+        repository.delete(StatesNode.getDatabaseNameListenerAssistedNodePath(databaseName));
     }
 }
