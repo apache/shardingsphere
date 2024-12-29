@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.CreateDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.DropDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.ListenerAssistedType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,13 +47,12 @@ public final class ListenerAssistedDispatchEventBuilder implements DispatchEvent
     
     @Override
     public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        Optional<String> databaseName = StatesNode.getDatabaseNameByListenerAssistedNodePath(event.getKey());
-        if (!databaseName.isPresent()) {
-            return Optional.empty();
-        }
-        ListenerAssistedType listenerAssistedType = YamlEngine.unmarshal(event.getValue(), ListenerAssisted.class).getListenerAssistedType();
-        return Optional.of(ListenerAssistedType.CREATE_DATABASE == listenerAssistedType
-                ? new CreateDatabaseListenerAssistedEvent(databaseName.get())
-                : new DropDatabaseListenerAssistedEvent(databaseName.get()));
+        return StatesNode.getDatabaseNameByListenerAssistedNodePath(event.getKey()).map(optional -> createDatabaseListenerAssistedEvent(optional, event));
+    }
+    
+    private DispatchEvent createDatabaseListenerAssistedEvent(final String databaseName, final DataChangedEvent event) {
+        return ListenerAssistedType.CREATE_DATABASE == ListenerAssistedType.valueOf(event.getValue())
+                ? new CreateDatabaseListenerAssistedEvent(databaseName)
+                : new DropDatabaseListenerAssistedEvent(databaseName);
     }
 }

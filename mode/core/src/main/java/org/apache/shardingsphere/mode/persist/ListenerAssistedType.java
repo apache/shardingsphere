@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.pojo;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+package org.apache.shardingsphere.mode.persist;
 
 /**
- * Listener assisted.
+ * Listener assisted type.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public final class ListenerAssisted implements YamlConfiguration {
+public enum ListenerAssistedType {
     
-    private String databaseName;
-    
-    private ListenerAssistedType listenerAssistedType;
+    CREATE_DATABASE, DROP_DATABASE
 }

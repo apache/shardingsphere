@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist.service;
 
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.ListenerAssistedType;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +35,7 @@ class ListenerAssistedPersistServiceTest {
     
     @Test
     void assertPersistDatabaseNameListenerAssisted() {
-        new ListenerAssistedPersistService(repository).persistDatabaseNameListenerAssisted(new ListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE));
+        new ListenerAssistedPersistService(repository).persistDatabaseNameListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE);
         verify(repository).persistEphemeral("/states/listener_assisted/foo_db", "databaseName: foo_db" + System.lineSeparator() + "listenerAssistedType: CREATE_DATABASE" + System.lineSeparator());
     }
     
