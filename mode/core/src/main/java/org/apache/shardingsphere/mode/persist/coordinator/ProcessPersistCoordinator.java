@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist.service;
-
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-
-import java.sql.SQLException;
-import java.util.Collection;
+package org.apache.shardingsphere.mode.persist.coordinator;
 
 /**
- * Standalone process persist service.
+ * Process persist coordinator.
  */
-public final class StandaloneProcessPersistService implements ProcessPersistService {
+public interface ProcessPersistCoordinator {
     
-    @Override
-    public Collection<Process> getProcessList() {
-        return ProcessRegistry.getInstance().listAll();
-    }
+    /**
+     * Report local processes.
+     *
+     * @param instanceId instance ID
+     * @param taskId task ID
+     */
+    void reportLocalProcesses(String instanceId, String taskId);
     
-    @Override
-    public void killProcess(final String processId) throws SQLException {
-        ProcessRegistry.getInstance().kill(processId);
-    }
+    /**
+     * Clean process.
+     *
+     * @param instanceId instance ID
+     * @param processId process ID
+     */
+    void cleanProcess(String instanceId, String processId);
 }

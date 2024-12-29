@@ -110,7 +110,7 @@ public final class PipelineContextUtils {
         ClusterPersistRepository persistRepository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistService(persistRepository));
         PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
-                contextManager.getPersistServiceFacade().getRepository()));
+                contextManager.getPersistServiceFacade().getRepository(), contextManager.getPersistCoordinatorFacade()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     

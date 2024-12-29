@@ -49,7 +49,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new StandaloneLockContext());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, null);
     }
     
     @Override

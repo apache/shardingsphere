@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist.service;
+package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
 
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade;
+import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Standalone process persist service.
+ * Cluster persist coordinator facade.
  */
-public final class StandaloneProcessPersistService implements ProcessPersistService {
+@RequiredArgsConstructor
+public final class ClusterPersistCoordinatorFacade implements PersistCoordinatorFacade {
+    
+    private final PersistRepository repository;
     
     @Override
-    public Collection<Process> getProcessList() {
-        return ProcessRegistry.getInstance().listAll();
-    }
-    
-    @Override
-    public void killProcess(final String processId) throws SQLException {
-        ProcessRegistry.getInstance().kill(processId);
+    public ProcessPersistCoordinator getProcessPersistCoordinator() {
+        return new ClusterProcessPersistCoordinator(repository);
     }
 }
