@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -31,21 +32,14 @@ import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metad
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewDroppedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Meta data changed subscriber.
  */
+@RequiredArgsConstructor
 public final class MetaDataChangedSubscriber implements DispatchEventSubscriber {
     
     private final ContextManager contextManager;
-    
-    private final ClusterPersistRepository repository;
-    
-    public MetaDataChangedSubscriber(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-    }
     
     /**
      * Renew to added schema.
