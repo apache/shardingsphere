@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 
 /**
@@ -31,18 +30,20 @@ import java.util.Collection;
 public final class StandaloneProcessPersistService implements ProcessPersistService {
     
     @Override
+    public void reportLocalProcesses(final String instanceId, final String taskId) {
+    }
+    
+    @Override
     public Collection<Process> getProcessList() {
         return ProcessRegistry.getInstance().listAll();
     }
     
     @Override
     public void killProcess(final String processId) throws SQLException {
-        Process process = ProcessRegistry.getInstance().get(processId);
-        if (null == process) {
-            return;
-        }
-        for (Statement each : process.getProcessStatements().values()) {
-            each.cancel();
-        }
+        ProcessRegistry.getInstance().kill(processId);
+    }
+    
+    @Override
+    public void cleanProcess(final String instanceId, final String processId) {
     }
 }

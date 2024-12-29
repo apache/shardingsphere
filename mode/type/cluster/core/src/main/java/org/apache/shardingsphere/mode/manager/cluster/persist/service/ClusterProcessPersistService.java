@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
@@ -42,6 +43,17 @@ import java.util.stream.Stream;
 public final class ClusterProcessPersistService implements ProcessPersistService {
     
     private final PersistRepository repository;
+    
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
+    
+    @Override
+    public void reportLocalProcesses(final String instanceId, final String taskId) {
+        Collection<Process> processes = ProcessRegistry.getInstance().listAll();
+        if (!processes.isEmpty()) {
+            repository.persist(ProcessNode.getProcessListInstancePath(taskId, instanceId), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
+        }
+        repository.delete(ComputeNode.getProcessTriggerInstanceNodePath(instanceId, taskId));
+    }
     
     @Override
     public Collection<Process> getProcessList() {
@@ -97,5 +109,10 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private boolean isReady(final Collection<String> paths) {
         return paths.stream().noneMatch(each -> null != repository.query(each));
+    }
+    
+    @Override
+    public void cleanProcess(final String instanceId, final String processId) {
+        repository.delete(ComputeNode.getProcessKillInstanceIdNodePath(instanceId, processId));
     }
 }
