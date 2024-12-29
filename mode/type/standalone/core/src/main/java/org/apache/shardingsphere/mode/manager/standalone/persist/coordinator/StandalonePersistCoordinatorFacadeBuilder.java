@@ -35,4 +35,9 @@ public final class StandalonePersistCoordinatorFacadeBuilder implements PersistC
     public Object getType() {
         return "Standalone";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
