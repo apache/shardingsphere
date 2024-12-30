@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -105,13 +106,13 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
         public void run() {
             while (!IS_FINISHED.get()) {
                 alterLocalTransactionRule();
-                TimeUnit.SECONDS.sleep(20);
+                Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
                 alterXaTransactionRule("Narayana");
                 if (SWITCH_COUNT.incrementAndGet() >= MAX_SWITCH_COUNT) {
                     IS_FINISHED.set(true);
                     break;
                 }
-                TimeUnit.SECONDS.sleep(20);
+                Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
             }
         }
         
@@ -220,7 +221,8 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
                 PreparedStatement deleteStatement = connection.prepareStatement("delete from account where id = ?");
                 deleteStatement.setObject(1, id);
                 deleteStatement.execute();
-                Thread.sleep(random.nextInt(900) + 100);
+                long time = random.nextLong(900) + 100;
+                Awaitility.await().atMost(time + 10L, TimeUnit.MILLISECONDS).pollInterval(time, MILLISECONDS).until(() -> true);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
