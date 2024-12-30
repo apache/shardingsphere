@@ -44,7 +44,6 @@ public interface DataChangedEventHandler {
      */
     Collection<Type> getSubscribedTypes();
     
-    
     /**
      * Handle data changed event.
      *
