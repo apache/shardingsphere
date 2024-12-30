@@ -29,7 +29,7 @@ public abstract class LockSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 5;
     
-    public LockSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+    protected LockSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }
