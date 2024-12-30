@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
-import org.apache.shardingsphere.mode.state.ClusterState;
 import org.apache.shardingsphere.metadata.persist.node.StatesNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.cluster.ClusterStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.state.ClusterState;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Cluster state dispatch event builder.
+ * Cluster state changed handler.
  */
-public final class ClusterStateDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class ClusterStateChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -45,8 +43,8 @@ public final class ClusterStateDispatchEventBuilder implements DispatchEventBuil
     }
     
     @Override
-    public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return event.getKey().equals(StatesNode.getClusterStateNodePath()) ? Optional.of(new ClusterStateEvent(getClusterState(event))) : Optional.empty();
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
+        contextManager.getStateContext().switchState(getClusterState(event));
     }
     
     private ClusterState getClusterState(final DataChangedEvent event) {
