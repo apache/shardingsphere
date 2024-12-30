@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.instance.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 

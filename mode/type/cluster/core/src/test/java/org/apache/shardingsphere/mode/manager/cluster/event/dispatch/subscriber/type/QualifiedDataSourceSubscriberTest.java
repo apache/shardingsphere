@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
-import org.apache.shardingsphere.mode.event.dispatch.state.storage.QualifiedDataSourceStateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.storage.QualifiedDataSourceStateEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

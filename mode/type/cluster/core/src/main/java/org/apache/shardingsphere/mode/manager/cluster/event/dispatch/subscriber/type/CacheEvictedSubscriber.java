@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 /**

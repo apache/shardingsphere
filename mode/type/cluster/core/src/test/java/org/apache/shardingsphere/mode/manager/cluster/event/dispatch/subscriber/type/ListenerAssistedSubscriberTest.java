@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.CreateDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.DropDatabaseListenerAssistedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProcessOperationLockRegistry.class)
+@StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
 class ClusterProcessPersistServiceTest {
     
     @Mock

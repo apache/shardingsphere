@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.event.dispatch.config.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.config.AlterGlobalRuleConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

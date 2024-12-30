@@ -100,6 +100,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |
 | 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
+### Lock
+
+| Vendor Code | SQL State | Reason                     |
+|-------------|-----------|----------------------------|
+| 15030       | HY000     | Cluster is already locked. |
+| 15031       | HY000     | Cluster is not locked.     |
+
 ### Cluster
 
 | Vendor Code | SQL State | Reason                                                        |
@@ -108,8 +115,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
-| 17030       | HY000     | Cluster is already locked.                                    |
-| 17031       | HY000     | Cluster is not locked.                                        |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### Data Pipeline

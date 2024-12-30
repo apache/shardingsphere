@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.event.dispatch.DispatchEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.ComputeNodeInstanceStateChangedEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.LabelsEvent;
-import org.apache.shardingsphere.mode.event.dispatch.state.compute.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ComputeNodeInstanceStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.WorkerIdEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
