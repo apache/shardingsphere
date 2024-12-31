@@ -33,8 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,7 +56,7 @@ class KillProcessHandlerTest {
     }
     
     @Test
-    void assertHandleWithInvalidKillProcessListTriggerEventKey() throws SQLException {
+    void assertHandleWithInvalidKillProcessListTriggerEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", "", Type.DELETED));
         verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
     }
