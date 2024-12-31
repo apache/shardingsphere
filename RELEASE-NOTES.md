@@ -72,6 +72,7 @@
 1. Encrypt: Use sql bind info in EncryptInsertPredicateColumnTokenGenerator to avoid wrong column table mapping - [#34110](https://github.com/apache/shardingsphere/pull/34110)
 1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
 1. Mode: Fixes duplicate column names added when index changed in DDL - [#33982](https://github.com/apache/shardingsphere/issues/33281)
+1. SQL Binder:  Fixes bug: throwing exception while using WHERE statement in ON CONFLICT with INSERT INTO in Postgres [#32280](https://github.com/apache/shardingsphere/issues/32280)
 
 ### Change Logs
 
