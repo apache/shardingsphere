@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -222,7 +221,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
                 deleteStatement.setObject(1, id);
                 deleteStatement.execute();
                 long time = random.nextLong(900) + 100;
-                Awaitility.await().atMost(time + 10L, TimeUnit.MILLISECONDS).pollInterval(time, MILLISECONDS).until(() -> true);
+                Awaitility.await().atMost(time + 10L, TimeUnit.MILLISECONDS).pollInterval(time, TimeUnit.MILLISECONDS).until(() -> true);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
