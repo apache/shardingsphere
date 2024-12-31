@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 
 /**
@@ -40,27 +37,6 @@ public final class ComputeNodeStateSubscriber implements DispatchEventSubscriber
     public ComputeNodeStateSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-    }
-    
-    /**
-     * Renew instance list.
-     *
-     * @param event compute node online event
-     */
-    @Subscribe
-    public synchronized void renew(final InstanceOnlineEvent event) {
-        computeNodeInstanceContext.getClusterInstanceRegistry()
-                .add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceMetaData()));
-    }
-    
-    /**
-     * Renew instance list.
-     *
-     * @param event compute node offline event
-     */
-    @Subscribe
-    public synchronized void renew(final InstanceOfflineEvent event) {
-        computeNodeInstanceContext.getClusterInstanceRegistry().delete(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**

@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ComputeNodeInstanceStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,10 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ComputeNodeStateSubscriberTest {
@@ -50,21 +43,6 @@ class ComputeNodeStateSubscriberTest {
     @BeforeEach
     void setUp() {
         subscriber = new ComputeNodeStateSubscriber(contextManager);
-    }
-    
-    @Test
-    void assertRenewWithInstanceOnlineEvent() {
-        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
-        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(instanceMetaData)).thenReturn(computeNodeInstance);
-        subscriber.renew(new InstanceOnlineEvent(instanceMetaData));
-        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);
-    }
-    
-    @Test
-    void assertRenewWithInstanceOfflineEvent() {
-        subscriber.renew(new InstanceOfflineEvent(mock(InstanceMetaData.class)));
-        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).delete(any());
     }
     
     @Test

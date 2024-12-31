@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -27,21 +28,18 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.instance.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  Compute node online dispatch event builder.
+ *  Compute node online handler.
  */
-public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class ComputeNodeOnlineHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -54,25 +52,20 @@ public final class ComputeNodeOnlineDispatchEventBuilder implements DispatchEven
     }
     
     @Override
-    public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return createInstanceEvent(event);
-    }
-    
-    private Optional<DispatchEvent> createInstanceEvent(final DataChangedEvent event) {
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         Matcher matcher = getInstanceOnlinePathMatcher(event.getKey());
         if (!matcher.find()) {
-            return Optional.empty();
+            return;
         }
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(
                 matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName());
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new InstanceOnlineEvent(instanceMetaData));
+            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()
+                    .add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(instanceMetaData));
+        } else if (Type.DELETED == event.getType()) {
+            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().delete(new ComputeNodeInstance(instanceMetaData));
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new InstanceOfflineEvent(instanceMetaData));
-        }
-        return Optional.empty();
     }
     
     private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
