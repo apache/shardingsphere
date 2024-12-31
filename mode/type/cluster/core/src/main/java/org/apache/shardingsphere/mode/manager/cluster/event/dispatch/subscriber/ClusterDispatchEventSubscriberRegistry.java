@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ListenerAssistedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.MetaDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ProcessListChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.QualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.StorageUnitEventSubscriber;
 
@@ -49,7 +48,6 @@ public final class ClusterDispatchEventSubscriberRegistry {
                 new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
                 new ComputeNodeStateSubscriber(contextManager),
-                new QualifiedDataSourceSubscriber(contextManager),
                 new StorageUnitEventSubscriber(contextManager));
     }
 }

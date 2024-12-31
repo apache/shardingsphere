@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.storage.QualifiedDataSourceStateEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,31 +34,46 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class QualifiedDataSourceSubscriberTest {
+class QualifiedDataSourceChangedHandlerTest {
     
-    private QualifiedDataSourceSubscriber subscriber;
+    private DataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        subscriber = new QualifiedDataSourceSubscriber(contextManager);
+        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+                .filter(each -> each.getSubscribedKey().equals("/nodes/qualified_data_sources")).findFirst().orElse(null);
     }
     
     @Test
-    void assertRenew() {
+    void assertHandleWithEmptyValue() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "", Type.ADDED));
+        verify(contextManager.getMetaDataContexts(), times(0)).getMetaData();
+    }
+    
+    @Test
+    void assertHandleWithoutQualifiedDataSource() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources", "state: DISABLED", Type.ADDED));
+        verify(contextManager.getMetaDataContexts(), times(0)).getMetaData();
+    }
+    
+    @Test
+    void assertHandle() {
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         StaticDataSourceRuleAttribute staticDataSourceRuleAttribute = mock(StaticDataSourceRuleAttribute.class);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class))
                 .thenReturn(Collections.singleton(staticDataSourceRuleAttribute));
-        QualifiedDataSource qualifiedDataSource = new QualifiedDataSource("foo_db.foo_group.foo_ds");
-        subscriber.renew(new QualifiedDataSourceStateEvent(qualifiedDataSource, new QualifiedDataSourceState(DataSourceState.DISABLED)));
-        verify(staticDataSourceRuleAttribute).updateStatus(qualifiedDataSource, DataSourceState.DISABLED);
+        handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: DISABLED", Type.ADDED));
+        verify(staticDataSourceRuleAttribute).updateStatus(refEq(new QualifiedDataSource("foo_db.foo_group.foo_ds")), eq(DataSourceState.DISABLED));
     }
 }

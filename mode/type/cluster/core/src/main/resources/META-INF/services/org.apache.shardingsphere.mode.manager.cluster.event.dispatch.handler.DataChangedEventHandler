@@ -16,5 +16,6 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ClusterStateChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.QualifiedDataSourceChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.GlobalRuleChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.PropertiesChangedHandler

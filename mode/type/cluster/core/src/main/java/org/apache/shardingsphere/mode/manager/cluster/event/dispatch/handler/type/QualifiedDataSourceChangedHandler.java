@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
@@ -26,18 +29,16 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.storage.QualifiedDataSourceStateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Qualified data source dispatch event builder.
+ * Qualified data source changed handler.
  */
-public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class QualifiedDataSourceChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -50,15 +51,16 @@ public final class QualifiedDataSourceDispatchEventBuilder implements DispatchEv
     }
     
     @Override
-    public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        if (Strings.isNullOrEmpty(event.getValue())) {
-            return Optional.empty();
-        }
-        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey());
-        if (qualifiedDataSource.isPresent()) {
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
+        if (!Strings.isNullOrEmpty(event.getValue())) {
             QualifiedDataSourceState state = new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceState.class));
-            return Optional.of(new QualifiedDataSourceStateEvent(qualifiedDataSource.get(), state));
+            QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey()).ifPresent(optional -> handle(contextManager.getMetaDataContexts().getMetaData(), optional, state));
         }
-        return Optional.empty();
+    }
+    
+    private void handle(final ShardingSphereMetaData metaData, final QualifiedDataSource qualifiedDataSource, final QualifiedDataSourceState state) {
+        Preconditions.checkState(metaData.containsDatabase(qualifiedDataSource.getDatabaseName()), "No database '%s' exists.", qualifiedDataSource.getDatabaseName());
+        metaData.getDatabase(qualifiedDataSource.getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)
+                .forEach(each -> each.updateStatus(qualifiedDataSource, state.getState()));
     }
 }
