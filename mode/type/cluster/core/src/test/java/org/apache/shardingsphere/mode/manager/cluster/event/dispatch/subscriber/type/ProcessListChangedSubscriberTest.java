@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -35,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,23 +75,5 @@ class ProcessListChangedSubscriberTest {
     void assertCompleteToReportLocalProcesses() {
         subscriber.completeToReportLocalProcesses(new ReportLocalProcessesCompletedEvent("foo_task_id"));
         verify(ProcessOperationLockRegistry.getInstance()).notify("foo_task_id");
-    }
-    
-    @Test
-    void assertKillLocalProcessWithCurrentInstance() throws SQLException {
-        subscriber.killLocalProcess(new KillLocalProcessEvent("foo_instance_id", "foo_pid"));
-        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).cleanProcess("foo_instance_id", "foo_pid");
-    }
-    
-    @Test
-    void assertKillLocalProcessWithNotCurrentInstance() throws SQLException {
-        subscriber.killLocalProcess(new KillLocalProcessEvent("bar_instance_id", "foo_pid"));
-        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator(), times(0)).cleanProcess("bar_instance_id", "foo_pid");
-    }
-    
-    @Test
-    void assertCompleteToKillLocalProcess() {
-        subscriber.completeToKillLocalProcess(new KillLocalProcessCompletedEvent("foo_pid"));
-        verify(ProcessOperationLockRegistry.getInstance()).notify("foo_pid");
     }
 }

@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.DispatchEventSubscriber;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
-
-import java.sql.SQLException;
 
 /**
  * Process list changed subscriber.
@@ -64,30 +59,5 @@ public final class ProcessListChangedSubscriber implements DispatchEventSubscrib
     @Subscribe
     public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
         ProcessOperationLockRegistry.getInstance().notify(event.getTaskId());
-    }
-    
-    /**
-     * Kill local process.
-     *
-     * @param event kill local process event
-     * @throws SQLException SQL exception
-     */
-    @Subscribe
-    public synchronized void killLocalProcess(final KillLocalProcessEvent event) throws SQLException {
-        if (!event.getInstanceId().equals(instanceId)) {
-            return;
-        }
-        ProcessRegistry.getInstance().kill(event.getProcessId());
-        processPersistService.cleanProcess(instanceId, event.getProcessId());
-    }
-    
-    /**
-     * Complete to kill local process.
-     *
-     * @param event kill local process completed event
-     */
-    @Subscribe
-    public synchronized void completeToKillLocalProcess(final KillLocalProcessCompletedEvent event) {
-        ProcessOperationLockRegistry.getInstance().notify(event.getProcessId());
     }
 }

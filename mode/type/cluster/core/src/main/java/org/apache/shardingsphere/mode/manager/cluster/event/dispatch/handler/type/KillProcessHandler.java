@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.KillLocalProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Kill process dispatch event builder.
+ * Kill process handler.
  */
-public final class KillProcessDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class KillProcessHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -47,22 +48,26 @@ public final class KillProcessDispatchEventBuilder implements DispatchEventBuild
     }
     
     @Override
-    public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return createKillLocalProcessEvent(event);
-    }
-    
-    private Optional<DispatchEvent> createKillLocalProcessEvent(final DataChangedEvent event) {
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         Matcher matcher = getKillProcessTriggerMatcher(event);
         if (!matcher.find()) {
-            return Optional.empty();
+            return;
         }
+        String instanceId = matcher.group(1);
+        String processId = matcher.group(2);
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new KillLocalProcessEvent(matcher.group(1), matcher.group(2)));
+            if (!instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                return;
+            }
+            try {
+                ProcessRegistry.getInstance().kill(processId);
+            } catch (final SQLException ex) {
+                throw new SQLWrapperException(ex);
+            }
+            contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().cleanProcess(instanceId, processId);
+        } else if (Type.DELETED == event.getType()) {
+            ProcessOperationLockRegistry.getInstance().notify(processId);
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new KillLocalProcessCompletedEvent(matcher.group(2)));
-        }
-        return Optional.empty();
     }
     
     private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {

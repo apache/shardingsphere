@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.DatabaseDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.MetaDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ProcessListChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.StorageUnitEventSubscriber;
 
@@ -42,7 +41,6 @@ public final class ClusterDispatchEventSubscriberRegistry {
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new MetaDataChangedSubscriber(contextManager),
                 new DatabaseDataChangedSubscriber(contextManager),
-                new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
                 new StorageUnitEventSubscriber(contextManager));
     }
