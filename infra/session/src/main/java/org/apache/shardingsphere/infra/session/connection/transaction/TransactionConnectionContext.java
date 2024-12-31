@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Transaction connection context.
@@ -41,7 +42,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     @Setter
     private volatile String readWriteSplitReplicaRoute;
     
-    private volatile TransactionManager transactionManager;
+    private AtomicReference<TransactionManager> transactionManager;
     
     /**
      * Begin transaction.
@@ -52,7 +53,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     public void beginTransaction(final String transactionType, final TransactionManager transactionManager) {
         this.transactionType = transactionType;
         inTransaction = true;
-        this.transactionManager = transactionManager;
+        this.transactionManager = new AtomicReference<>(transactionManager);
     }
     
     /**
@@ -88,7 +89,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
      * @return transaction manager
      */
     public Optional<TransactionManager> getTransactionManager() {
-        return Optional.ofNullable(transactionManager);
+        return null == transactionManager ? Optional.empty() : Optional.ofNullable(transactionManager.get());
     }
     
     @Override
