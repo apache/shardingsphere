@@ -45,6 +45,9 @@ class ListenerAssistedChangedHandlerTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
+    @Mock
+    private ClusterPersistRepository repository;
+    
     @BeforeEach
     void setUp() {
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
@@ -57,9 +60,6 @@ class ListenerAssistedChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted", "", Type.ADDED));
         verify(contextManager.getPersistServiceFacade(), times(0)).getListenerAssistedPersistService();
     }
-    
-    @Mock
-    private ClusterPersistRepository repository;
     
     @Test
     void assertRenewWithCreateDatabaseListenerAssistedEvent() {
