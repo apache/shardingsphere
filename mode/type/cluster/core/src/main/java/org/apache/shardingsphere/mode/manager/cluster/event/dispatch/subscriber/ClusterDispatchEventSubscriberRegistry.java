@@ -21,16 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ComputeNodeStateSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.DatabaseDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.GlobalRuleConfigurationEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ListenerAssistedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.MetaDataChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ProcessListChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.PropertiesEventSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.QualifiedDataSourceSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.StateChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.StorageUnitEventSubscriber;
 
 import java.util.Arrays;
@@ -47,15 +39,7 @@ public final class ClusterDispatchEventSubscriberRegistry {
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
         subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
                 new MetaDataChangedSubscriber(contextManager),
-                new ListenerAssistedSubscriber(contextManager),
-                new StateChangedSubscriber(contextManager),
-                new DatabaseDataChangedSubscriber(contextManager),
-                new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
-                new ComputeNodeStateSubscriber(contextManager),
-                new QualifiedDataSourceSubscriber(contextManager),
-                new StorageUnitEventSubscriber(contextManager),
-                new PropertiesEventSubscriber(contextManager),
-                new GlobalRuleConfigurationEventSubscriber(contextManager));
+                new StorageUnitEventSubscriber(contextManager));
     }
 }
