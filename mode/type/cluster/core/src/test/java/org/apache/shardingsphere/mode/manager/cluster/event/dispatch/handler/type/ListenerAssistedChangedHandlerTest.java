@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,6 +54,7 @@ class ListenerAssistedChangedHandlerTest {
     @BeforeEach
     void setUp() {
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
                 .filter(each -> each.getSubscribedKey().equals("/states/listener_assisted")).findFirst().orElse(null);
     }
