@@ -48,6 +48,7 @@ public final class SubquerySegmentBinder {
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
+        binderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         return new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
     }
 }

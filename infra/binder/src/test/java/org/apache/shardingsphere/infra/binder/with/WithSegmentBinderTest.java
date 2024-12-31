@@ -85,7 +85,7 @@ public class WithSegmentBinderTest {
         assertTrue(binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString("cte")));
         assertTrue(actual.getCommonTableExpressions().iterator().next().getAliasName().isPresent());
         assertThat(actual.getCommonTableExpressions().iterator().next().getAliasName().get(), is("cte"));
-        assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().iterator().next(), is(new CaseInsensitiveString("cte")));
+        assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().iterator().next(), is("cte"));
         
         SimpleTableSegmentBinderContext simpleTableSegment = (SimpleTableSegmentBinderContext) binderContext.getExternalTableBinderContexts().get(new CaseInsensitiveString("cte")).iterator().next();
         ArrayList<ColumnProjectionSegment> columnProjectionSegments = new ArrayList<>();

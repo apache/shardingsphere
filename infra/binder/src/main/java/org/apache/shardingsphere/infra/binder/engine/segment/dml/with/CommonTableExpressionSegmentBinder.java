@@ -47,9 +47,9 @@ public final class CommonTableExpressionSegmentBinder {
      * @return bound common table expression segment
      */
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext, final boolean recursive) {
-        if( segment.getAliasName().isPresent() ) {
-            ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()) ,
-                    () -> new UniqueCommonTableExpressionException( segment.getAliasName().get() ));
+        if (segment.getAliasName().isPresent()) {
+            ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()),
+                    () -> new UniqueCommonTableExpressionException(segment.getAliasName().get()));
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(segment.getAliasName().get());
         }
         if (recursive && segment.getAliasName().isPresent()) {
