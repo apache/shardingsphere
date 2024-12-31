@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type.ShardingSphereDataDispatchEventBuilder
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type.ShowProcessListDispatchEventBuilder

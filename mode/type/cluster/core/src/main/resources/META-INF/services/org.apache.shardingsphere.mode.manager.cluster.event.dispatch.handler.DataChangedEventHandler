@@ -22,4 +22,5 @@ org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.Compu
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.GlobalRuleChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.PropertiesChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ListenerAssistedChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ShowProcessListHandler
 org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.KillProcessHandler

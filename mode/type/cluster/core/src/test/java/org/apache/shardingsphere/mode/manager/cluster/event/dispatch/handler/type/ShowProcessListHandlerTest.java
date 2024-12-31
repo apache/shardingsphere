@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,6 @@ import org.mockito.quality.Strictness;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,36 +44,42 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
-class ProcessListChangedSubscriberTest {
+class ShowProcessListHandlerTest {
     
-    private ProcessListChangedSubscriber subscriber;
+    private DataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(mock(ClusterPersistRepository.class));
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
-        subscriber = new ProcessListChangedSubscriber(contextManager);
+        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+                .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes/show_process_list_trigger")).findFirst().orElse(null);
     }
     
     @Test
-    void assertReportLocalProcessesWithNotCurrentInstance() {
-        subscriber.reportLocalProcesses(new ReportLocalProcessesEvent("bar_instance_id", "foo_task_id"));
+    void assertHandleWithInvalidShowProcessListTriggerEventKey() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", "", Type.DELETED));
+        verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
+    }
+    
+    @Test
+    void assertHandleReportLocalProcessesWithNotCurrentInstance() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/bar_instance_id:foo_task_id", "", Type.ADDED));
         verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
     }
     
     @Test
-    void assertReportLocalProcesses() {
+    void assertHandleReportLocalProcesses() {
         when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
-        subscriber.reportLocalProcesses(new ReportLocalProcessesEvent("foo_instance_id", "foo_task_id"));
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.ADDED));
         verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).reportLocalProcesses("foo_instance_id", "foo_task_id");
     }
     
     @Test
-    void assertCompleteToReportLocalProcesses() {
-        subscriber.completeToReportLocalProcesses(new ReportLocalProcessesCompletedEvent("foo_task_id"));
+    void assertHandleCompleteToReportLocalProcesses() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.DELETED));
         verify(ProcessOperationLockRegistry.getInstance()).notify("foo_task_id");
     }
 }

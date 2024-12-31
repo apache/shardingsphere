@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.state.compute.ReportLocalProcessesEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Show process list dispatch event builder.
+ * Show process list handler.
  */
-public final class ShowProcessListDispatchEventBuilder implements DispatchEventBuilder<DispatchEvent> {
+public final class ShowProcessListHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -47,22 +45,20 @@ public final class ShowProcessListDispatchEventBuilder implements DispatchEventB
     }
     
     @Override
-    public Optional<DispatchEvent> build(final DataChangedEvent event) {
-        return createReportLocalProcessesEvent(event);
-    }
-    
-    private Optional<DispatchEvent> createReportLocalProcessesEvent(final DataChangedEvent event) {
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         Matcher matcher = getShowProcessListTriggerMatcher(event);
         if (!matcher.find()) {
-            return Optional.empty();
+            return;
         }
+        String instanceId = matcher.group(1);
+        String taskId = matcher.group(2);
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new ReportLocalProcessesEvent(matcher.group(1), matcher.group(2)));
+            if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().reportLocalProcesses(instanceId, taskId);
+            }
+        } else if (Type.DELETED == event.getType()) {
+            ProcessOperationLockRegistry.getInstance().notify(taskId);
         }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new ReportLocalProcessesCompletedEvent(matcher.group(2)));
-        }
-        return Optional.empty();
     }
     
     private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {

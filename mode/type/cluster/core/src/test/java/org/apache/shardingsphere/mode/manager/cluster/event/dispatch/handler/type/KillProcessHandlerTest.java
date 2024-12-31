@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
+@StaticMockSettings(ProcessOperationLockRegistry.class)
 class KillProcessHandlerTest {
     
     private DataChangedEventHandler handler;
@@ -60,8 +59,7 @@ class KillProcessHandlerTest {
     
     @Test
     void assertHandleWithInvalidKillProcessListTriggerEventKey() throws SQLException {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", "", Type.ADDED));
-        verify(ProcessRegistry.getInstance(), times(0)).kill(any());
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", "", Type.DELETED));
         verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
     }
     
