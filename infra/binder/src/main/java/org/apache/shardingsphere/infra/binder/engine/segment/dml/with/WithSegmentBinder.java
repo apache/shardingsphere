@@ -26,8 +26,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UniqueCommonTableExpressionException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -63,18 +61,12 @@ public final class WithSegmentBinder {
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
             CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, segment.isRecursive());
             boundCommonTableExpressions.add(boundCommonTableExpression);
-            if (each.getAliasName().isPresent()) {
-                ShardingSpherePreconditions.checkNotContains(binderContext.getCommonTableExpressionsSegmentsUniqueAliases(), each.getAliasName(),
-                        () -> new UniqueCommonTableExpressionException(each.getAliasName().get()));
-                binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(new CaseInsensitiveString(each.getAliasName().get()));
-            }
             if (segment.isRecursive() && each.getAliasName().isPresent()) {
                 externalTableBinderContexts.removeAll(new CaseInsensitiveString(each.getAliasName().get()));
             }
             bindWithColumns(each.getColumns(), boundCommonTableExpression);
             each.getAliasName().ifPresent(optional -> externalTableBinderContexts.put(new CaseInsensitiveString(optional), createWithTableBinderContext(boundCommonTableExpression)));
         }
-        
         return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions);
     }
     

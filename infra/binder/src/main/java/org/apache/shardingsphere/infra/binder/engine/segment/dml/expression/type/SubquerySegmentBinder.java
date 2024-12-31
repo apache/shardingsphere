@@ -24,8 +24,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UniqueCommonTableExpressionException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
@@ -50,11 +48,6 @@ public final class SubquerySegmentBinder {
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);
-        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
-        selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().forEach(each -> {
-            ShardingSpherePreconditions.checkNotContains(binderContext.getCommonTableExpressionsSegmentsUniqueAliases(), each, () -> new UniqueCommonTableExpressionException(each.toString()));
-            binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(each);
-        });
-        return result;
+        return new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundSelectStatement, segment.getText());
     }
 }
