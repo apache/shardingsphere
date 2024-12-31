@@ -89,7 +89,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
      * @return transaction manager
      */
     public Optional<TransactionManager> getTransactionManager() {
-        return Optional.ofNullable(transactionManager.get());
+        return null == transactionManager ? Optional.empty() : Optional.ofNullable(transactionManager.get());
     }
     
     @Override
