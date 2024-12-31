@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.CreateDatabaseListenerAssistedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,31 +33,38 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ListenerAssistedSubscriberTest {
+class ListenerAssistedChangedHandlerTest {
     
-    private ListenerAssistedSubscriber subscriber;
+    private DataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
-    @Mock
-    private ClusterPersistRepository repository;
-    
     @BeforeEach
     void setUp() {
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
-        subscriber = new ListenerAssistedSubscriber(contextManager);
+        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+                .filter(each -> each.getSubscribedKey().equals("/states/listener_assisted")).findFirst().orElse(null);
     }
     
     @Test
+    void assertHandleWithoutDatabase() {
+        handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted", "", Type.ADDED));
+        verify(contextManager.getPersistServiceFacade(), times(0)).getListenerAssistedPersistService();
+    }
+    
+    @Mock
+    private ClusterPersistRepository repository;
+    
+    @Test
     void assertRenewWithCreateDatabaseListenerAssistedEvent() {
-        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.JDBC);
-        subscriber.renew(new CreateDatabaseListenerAssistedEvent("foo_db"));
+        handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "CREATE_DATABASE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addDatabase("foo_db");
         verify(contextManager.getPersistServiceFacade().getListenerAssistedPersistService()).deleteDatabaseNameListenerAssisted("foo_db");
@@ -63,9 +72,8 @@ class ListenerAssistedSubscriberTest {
     
     @Test
     void assertRenewWithDropDatabaseListenerAssistedEvent() {
-        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
-        subscriber.renew(new DropDatabaseListenerAssistedEvent("foo_db"));
+        handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "DROP_DATABASE", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropDatabase("foo_db");
         verify(contextManager.getPersistServiceFacade().getListenerAssistedPersistService()).deleteDatabaseNameListenerAssisted("foo_db");
