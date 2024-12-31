@@ -101,7 +101,7 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
         
         private final CommonSQLCommand commonSQL;
         
-        @SneakyThrows({SQLException.class, InterruptedException.class})
+        @SneakyThrows(SQLException.class)
         @Override
         public void run() {
             while (!IS_FINISHED.get()) {
