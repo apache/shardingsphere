@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;

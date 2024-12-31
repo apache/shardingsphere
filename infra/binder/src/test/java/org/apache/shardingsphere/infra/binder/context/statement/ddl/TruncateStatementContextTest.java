@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
@@ -58,10 +59,14 @@ class TruncateStatementContextTest {
     }
     
     private void assertNewInstance(final TruncateStatement truncateStatement) {
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
+        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
+        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
         truncateStatement.getTables().addAll(Arrays.asList(table1, table2));
-        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement, "foo_db");
+        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(truncateStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

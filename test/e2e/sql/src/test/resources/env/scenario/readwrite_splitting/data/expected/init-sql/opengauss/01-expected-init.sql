@@ -16,7 +16,7 @@
 --
 
 DROP DATABASE IF EXISTS write_dataset;
-CREATE DATABASE write_dataset;
+CREATE DATABASE write_dataset DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE write_dataset TO test_user;
 
@@ -32,7 +32,7 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 
 
 DROP DATABASE IF EXISTS read_dataset;
-CREATE DATABASE read_dataset;
+CREATE DATABASE read_dataset DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE read_dataset TO test_user;
 

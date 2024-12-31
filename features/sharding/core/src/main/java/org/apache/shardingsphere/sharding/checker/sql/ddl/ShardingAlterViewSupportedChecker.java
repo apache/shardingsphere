@@ -47,7 +47,7 @@ public final class ShardingAlterViewSupportedChecker implements SupportedSQLChec
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final AlterViewStatementContext sqlStatementContext) {
         AlterViewStatement alterViewStatement = sqlStatementContext.getSqlStatement();
-        Optional<SelectStatement> selectStatement = alterViewStatement.getSelectStatement();
+        Optional<SelectStatement> selectStatement = alterViewStatement.getSelect();
         String originView = alterViewStatement.getView().getTableName().getIdentifier().getValue();
         selectStatement.ifPresent(optional -> checkAlterViewShardingTables(rule, optional, originView));
         alterViewStatement.getRenameView().ifPresent(optional -> checkBroadcastShardingView(rule, originView, optional.getTableName().getIdentifier().getValue()));
@@ -62,6 +62,6 @@ public final class ShardingAlterViewSupportedChecker implements SupportedSQLChec
     
     private void checkBroadcastShardingView(final ShardingRule shardingRule, final String originView, final String targetView) {
         ShardingSpherePreconditions.checkState(!shardingRule.isShardingTable(originView) && !shardingRule.isShardingTable(targetView)
-                || shardingRule.isAllBindingTables(Arrays.asList(originView, targetView)), () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
+                || shardingRule.isAllConfigBindingTables(Arrays.asList(originView, targetView)), () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
     }
 }

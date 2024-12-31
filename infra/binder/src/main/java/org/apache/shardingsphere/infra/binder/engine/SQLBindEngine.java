@@ -61,10 +61,10 @@ public final class SQLBindEngine {
     
     private SQLStatement bindSQLStatement(final SQLStatement statement) {
         if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName).bind((DMLStatement) statement);
+            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DMLStatement) statement);
         }
         if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine(metaData, currentDatabaseName).bind((DDLStatement) statement);
+            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DDLStatement) statement);
         }
         return statement;
     }

@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     
     public CursorStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final CursorStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(getSimpleTableSegments());
         selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
         whereSegments.addAll(selectStatementContext.getWhereSegments());
         columnSegments.addAll(selectStatementContext.getColumnSegments());

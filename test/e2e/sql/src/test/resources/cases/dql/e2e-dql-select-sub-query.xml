@@ -86,4 +86,12 @@
                scenario-comments="Test join contains some encrypt columns in multi tables when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT u.* FROM t_user u WHERE u.telephone = (SELECT DISTINCT telephone FROM t_merchant WHERE telephone = ?)" scenario-types="encrypt" db-types="MySQL,PostgreSQL,openGauss">
+        <assertion parameters="86100000001:String" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_user WHERE telephone = (SELECT DISTINCT telephone FROM t_merchant WHERE telephone = ?)" scenario-types="encrypt" db-types="MySQL,PostgreSQL,openGauss">
+        <assertion parameters="86100000001:String" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

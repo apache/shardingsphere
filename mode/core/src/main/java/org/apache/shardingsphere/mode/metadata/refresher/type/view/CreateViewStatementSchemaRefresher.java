@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 
 import java.sql.SQLException;
@@ -54,10 +54,9 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
         if (TableRefreshUtils.isSingleTable(viewName, database)) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
         alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());

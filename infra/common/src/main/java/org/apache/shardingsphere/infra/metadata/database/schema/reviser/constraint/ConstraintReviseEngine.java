@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,7 @@ public final class ConstraintReviseEngine<T extends ShardingSphereRule> {
         Optional<? extends ConstraintReviser<T>> reviser = reviseEntry.getConstraintReviser(rule, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
-                        .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new))
+                        .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList())
                 : originalMetaDataList;
     }
 }

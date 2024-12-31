@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLDecorator;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
 import javax.sql.DataSource;
@@ -85,7 +89,8 @@ public final class PipelineJobDataSourcePreparer {
         }
     }
     
-    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager,
+                                     final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
         log.info("Prepare target schemas SQL: {}", sql);
         try (
                 Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
@@ -110,24 +115,35 @@ public final class PipelineJobDataSourcePreparer {
         final long startTimeMillis = System.currentTimeMillis();
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
+                List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager);
                 for (String sql : createTargetTableSQL) {
-                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
+                    ShardingSphereMetaData metaData = ((ShardingSphereConnection) targetConnection).getContextManager().getMetaDataContexts().getMetaData();
+                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), metaData, param.getTargetDatabaseName(), sql);
+                    if (decoratedSQL.isPresent()) {
+                        executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(decoratedSQL.get()));
+                    }
                 }
             }
         }
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig,
-                                                 final PipelineDataSourceManager dataSourceManager, final SQLParserEngine sqlParserEngine) throws SQLException {
+    private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
         String schemaName = createTableConfig.getSourceName().getSchemaName();
         String sourceTableName = createTableConfig.getSourceName().getTableName();
         String targetTableName = createTableConfig.getTargetName().getTableName();
-        return new PipelineDDLGenerator().generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
+        return PipelineDDLGenerator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName);
+    }
+    
+    private Optional<String> decorateTargetTableSQL(final CreateTableConfiguration createTableConfig, final SQLParserEngine sqlParserEngine,
+                                                    final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
+        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String targetTableName = createTableConfig.getTargetName().getTableName();
+        Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, sql);
+        return decoratedSQL.map(String::trim).filter(trimmedSql -> !Strings.isNullOrEmpty(trimmedSql));
     }
     
     private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

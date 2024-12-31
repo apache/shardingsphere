@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -60,13 +58,12 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
         Collection<BinaryOperationExpression> joinConditions = SQLStatementContextExtractor.getJoinConditions((WhereAvailable) sqlStatementContext, allSubqueryContexts);
         ShardingSpherePreconditions.checkState(JoinConditionsEncryptorComparator.isSame(joinConditions, rule),
                 () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
-        check(rule, currentSchema, (WhereAvailable) sqlStatementContext);
+        check(rule, (WhereAvailable) sqlStatementContext);
     }
     
-    private void check(final EncryptRule rule, final ShardingSphereSchema schema, final WhereAvailable sqlStatementContext) {
-        Map<String, String> columnExpressionTableNames = ((TableAvailable) sqlStatementContext).getTablesContext().findTableNames(sqlStatementContext.getColumnSegments(), schema);
+    private void check(final EncryptRule rule, final WhereAvailable sqlStatementContext) {
         for (ColumnSegment each : sqlStatementContext.getColumnSegments()) {
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnExpressionTableNames.getOrDefault(each.getExpression(), ""));
+            Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnName) && includesLike(sqlStatementContext.getWhereSegments(), each)) {
                 String tableName = encryptTable.get().getTable();

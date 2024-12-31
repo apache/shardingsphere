@@ -41,6 +41,7 @@ public final class CursorStatementBinder implements SQLStatementBinder<CursorSta
         result.setCursorName(sqlStatement.getCursorName());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }
 }

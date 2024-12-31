@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -56,11 +56,11 @@ class ShadowAlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("bar_algo");
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        when(alterNamedRuleItem.getItemName()).thenReturn("bar_algo");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getShadowAlgorithms().size(), is(2));
         assertThat(currentRuleConfig.getShadowAlgorithms().get("foo_algo").getType(), is("FOO_FIXTURE"));
         assertThat(currentRuleConfig.getShadowAlgorithms().get("bar_algo").getType(), is("BAR_FIXTURE"));
@@ -68,10 +68,10 @@ class ShadowAlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_algo");
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
+        when(dropNamedRuleItem.getItemName()).thenReturn("foo_algo");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getShadowAlgorithms().isEmpty());
     }
     

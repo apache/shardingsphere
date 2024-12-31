@@ -73,8 +73,9 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PrestoCreateTableStatement result = new PrestoCreateTableStatement(null != ctx.ifNotExists());
+        PrestoCreateTableStatement result = new PrestoCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -118,7 +119,8 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PrestoDropTableStatement result = new PrestoDropTableStatement(null != ctx.ifExists());
+        PrestoDropTableStatement result = new PrestoDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

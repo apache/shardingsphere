@@ -21,12 +21,12 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.exception.NotLockedClusterException;
-import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.lock.exception.NotLockedClusterException;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.ClusterLock;
 
 /**
  * Unlock cluster executor.
@@ -35,12 +35,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<UnlockClusterStatement> {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
+        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
+        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
                 contextManager.getPersistServiceFacade().getStatePersistService().update(ClusterState.OK);
@@ -52,7 +52,7 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     }
     
     private void checkState(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(ClusterState.OK != contextManager.getStateContext().getClusterState(), NotLockedClusterException::new);
+        ShardingSpherePreconditions.checkState(ClusterState.OK != contextManager.getStateContext().getState(), NotLockedClusterException::new);
     }
     
     @Override

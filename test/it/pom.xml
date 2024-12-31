@@ -35,5 +35,6 @@
         <module>optimizer</module>
         <module>rewriter</module>
         <module>pipeline</module>
+        <module>binder</module>
     </modules>
 </project>

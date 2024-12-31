@@ -20,11 +20,12 @@ package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -36,7 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -53,16 +54,22 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         when(whereSegment.getExpr()).thenReturn(expressionSegment);
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("foo"))));
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
+        when(columnSegment.getColumnBoundInfo().getOriginalTable().getValue()).thenReturn("foo_tbl");
+        OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("foo"));
+        ownerSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
         when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
-        when(sqlStatementContext.getTablesContext().getTableAliasNameMap().get("foo")).thenReturn("foo_tbl");
         ShadowSelectStatementDataSourceMappingsRetriever retriever = new ShadowSelectStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
-        Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singleton("foo")));
-        assertThat(actual, deepEqual(expected));
+        assertThat(actual.size(), is(1));
+        ShadowColumnCondition actualCondition = actual.iterator().next();
+        assertThat(actualCondition.getTable(), is("foo_tbl"));
+        assertThat(actualCondition.getColumn(), is("foo_col"));
+        assertThat(actualCondition.getValues(), is(Collections.singleton("foo")));
+        
     }
     
     @Test
@@ -72,14 +79,18 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         ExpressionSegment expressionSegment = mock(ExpressionSegment.class);
         when(whereSegment.getExpr()).thenReturn(expressionSegment);
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
+        when(columnSegment.getColumnBoundInfo().getOriginalTable().getValue()).thenReturn("foo_tbl");
         when(columnSegment.getOwner()).thenReturn(Optional.empty());
         when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         ShadowSelectStatementDataSourceMappingsRetriever retriever = new ShadowSelectStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
-        Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singleton("foo")));
-        assertThat(actual, deepEqual(expected));
+        assertThat(actual.size(), is(1));
+        ShadowColumnCondition actualCondition = actual.iterator().next();
+        assertThat(actualCondition.getTable(), is("foo_tbl"));
+        assertThat(actualCondition.getColumn(), is("foo_col"));
+        assertThat(actualCondition.getValues(), is(Collections.singleton("foo")));
     }
 }

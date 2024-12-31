@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -32,7 +31,6 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 public final class IndexMetaData {
     

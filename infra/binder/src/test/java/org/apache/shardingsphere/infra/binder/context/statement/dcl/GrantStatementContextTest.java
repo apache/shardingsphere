@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
@@ -64,10 +65,14 @@ class GrantStatementContextTest {
     }
     
     private void assertNewInstance(final GrantStatement grantStatement) {
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
+        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
+        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"));
+        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
+        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
         grantStatement.getTables().addAll(Arrays.asList(table1, table2));
-        GrantStatementContext actual = new GrantStatementContext(grantStatement, "foo_db");
+        GrantStatementContext actual = new GrantStatementContext(grantStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(grantStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

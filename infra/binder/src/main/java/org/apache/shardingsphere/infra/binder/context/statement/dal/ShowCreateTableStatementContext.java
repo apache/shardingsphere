@@ -31,9 +31,9 @@ public final class ShowCreateTableStatementContext extends CommonSQLStatementCon
     
     private final TablesContext tablesContext;
     
-    public ShowCreateTableStatementContext(final ShowCreateTableStatement sqlStatement, final String currentDatabaseName) {
+    public ShowCreateTableStatementContext(final ShowCreateTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

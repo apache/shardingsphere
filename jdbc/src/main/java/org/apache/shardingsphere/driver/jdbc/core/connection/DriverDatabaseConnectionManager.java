@@ -118,7 +118,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             close();
             connectionTransaction.begin();
         }
-        connectionContext.getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()));
+        connectionContext.getTransactionContext().beginTransaction(String.valueOf(connectionTransaction.getTransactionType()), connectionTransaction.getDistributedTransactionManager());
     }
     
     /**

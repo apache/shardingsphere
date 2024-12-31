@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDa
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -57,38 +58,41 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(MetaDataLoader.class)
 class GenericSchemaBuilderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private GenericSchemaBuilderMaterial material;
     
     @BeforeEach
     void setUp() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        material = new GenericSchemaBuilderMaterial(databaseType, Collections.singletonMap("foo_db", databaseType),
-                Collections.singletonMap("foo_db", new MockedDataSource()), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_db");
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        material = new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
     }
     
     @Test
     void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertFalse(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
+        assertFalse(GenericSchemaBuilder.build(tableNames, databaseType, material).get("foo_schema").getAllTables().isEmpty());
     }
     
     @Test
     void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        assertTrue(GenericSchemaBuilder.build(tableNames, material).get("foo_db").getAllTables().isEmpty());
+        assertTrue(GenericSchemaBuilder.build(tableNames, databaseType, material).get("foo_schema").getAllTables().isEmpty());
     }
     
     @Test
     void assertLoadAllTables() throws SQLException {
         Collection<String> tableNames = Arrays.asList("data_node_routed_table1", "data_node_routed_table2");
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
-        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema("foo_db", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+        assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

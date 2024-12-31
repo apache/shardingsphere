@@ -63,18 +63,18 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        String databaseName = connectionSession.getCurrentDatabaseName();
-        String sql = String.format(SQL, packet.getTable(), databaseName);
+        String currentDatabaseName = connectionSession.getCurrentDatabaseName();
+        String sql = String.format(SQL, packet.getTable(), currentDatabaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
         databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
         databaseConnector.execute();
-        return createColumnDefinition41Packets(databaseName);
+        return createColumnDefinition41Packets(currentDatabaseName);
     }
     
     private Collection<DatabasePacket> createColumnDefinition41Packets(final String databaseName) throws SQLException {

@@ -60,9 +60,14 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = databaseConnectionManager;
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        TransactionConnectionContext transactionContext = getTransactionContext();
         transactionType = transactionRule.getDefaultType();
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
-        distributedTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        if (transactionContext.getTransactionManager().isPresent()) {
+            distributedTransactionManager = (ShardingSphereDistributedTransactionManager) transactionContext.getTransactionManager().get();
+        } else {
+            distributedTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        }
         transactionHooks = OrderedSPILoader.getServices(TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     }
     
@@ -70,7 +75,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            getTransactionContext().beginTransaction(String.valueOf(transactionType));
+            getTransactionContext().beginTransaction(transactionType.name(), distributedTransactionManager);
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }

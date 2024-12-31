@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 
@@ -76,10 +76,9 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         if (TableRefreshUtils.isSingleTable(viewName, database)) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
+        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         ShardingSphereSchema result = new ShardingSphereSchema(schemaName);
         actualViewMetaData.ifPresent(result::putTable);
         result.putView(new ShardingSphereView(viewName, viewDefinition));

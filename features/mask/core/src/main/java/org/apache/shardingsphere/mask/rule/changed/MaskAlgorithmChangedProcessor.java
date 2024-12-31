@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

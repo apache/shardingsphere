@@ -48,7 +48,7 @@ class ExplainStatementContextTest {
     private void assertNewInstance(final ExplainStatement explainStatement) {
         SQLStatement statement = mock(SQLStatement.class);
         when(explainStatement.getSqlStatement()).thenReturn(Optional.of(statement));
-        ExplainStatementContext actual = new ExplainStatementContext(explainStatement, "foo_db");
+        ExplainStatementContext actual = new ExplainStatementContext(explainStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getSqlStatement().getSqlStatement().orElse(null), is(statement));

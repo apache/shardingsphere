@@ -253,8 +253,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        DorisCreateTableStatement result = new DorisCreateTableStatement(null != ctx.ifNotExists());
+        DorisCreateTableStatement result = new DorisCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -663,7 +664,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DorisDropTableStatement result = new DorisDropTableStatement(null != ctx.ifExists());
+        DorisDropTableStatement result = new DorisDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

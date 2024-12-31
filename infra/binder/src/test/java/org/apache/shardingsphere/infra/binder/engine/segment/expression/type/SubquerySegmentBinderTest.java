@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.type.SimpleTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -36,8 +36,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
@@ -68,11 +70,10 @@ class SubquerySegmentBinderTest {
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
         mysqlSelectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, mysqlSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(
-                createMetaData(), "foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mock(SQLStatement.class));
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
-        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(
-                new IdentifierValue("foo_db"), new IdentifierValue("foo_db"), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
+        boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(
+                new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_order_item"), new IdentifierValue("user_id")));
         sqlStatementBinderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundNameColumn))));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.exception.LockedClusterException;
+import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.lock.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,14 +46,21 @@ class LockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.UNAVAILABLE);
-        assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.UNAVAILABLE);
+        assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithUsingTimeout() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
+        assertDoesNotThrow(() -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L), contextManager));
     }
 }

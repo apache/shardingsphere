@@ -339,8 +339,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement(null != ctx.ifNotExists());
+        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -626,7 +627,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
-        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.ifExists(), containsCascade);
+        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
+        result.setContainsCascade(containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
@@ -667,7 +670,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        PostgreSQLCreateIndexStatement result = new PostgreSQLCreateIndexStatement(null != ctx.ifNotExists());
+        PostgreSQLCreateIndexStatement result = new PostgreSQLCreateIndexStatement();
+        result.setIfNotExists(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null != ctx.indexName()) {

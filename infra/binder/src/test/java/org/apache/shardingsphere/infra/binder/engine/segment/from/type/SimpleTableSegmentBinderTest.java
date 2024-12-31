@@ -20,22 +20,24 @@ package org.apache.shardingsphere.infra.binder.engine.segment.from.type;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -51,8 +53,10 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(
-                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", databaseType, Collections.emptySet()), tableBinderContexts));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
+        assertThrows(TableNotFoundException.class,
+                () -> SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts));
     }
     
     private ShardingSphereMetaData createMetaData() {

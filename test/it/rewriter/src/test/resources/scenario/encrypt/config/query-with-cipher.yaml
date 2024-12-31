@@ -76,6 +76,32 @@ rules:
           cipher: 
             name: cipher_amount
             encryptorName: rewrite_normal_fixture
+    t_account_bak_for_create:
+      columns:
+        certificate_number:
+          cipher:
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery:
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
+        password:
+          cipher:
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery:
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery:
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
+        amount:
+          cipher:
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
         certificate_number:

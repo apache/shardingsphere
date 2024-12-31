@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,9 @@ class TransactionBackendHandlerTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class))));
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
         return result;
     }
 }

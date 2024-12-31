@@ -35,7 +35,7 @@ import java.util.Optional;
 @Setter
 public final class PrestoCreateTableStatement extends CreateTableStatement implements PrestoStatement {
     
-    private final boolean ifNotExists;
+    private boolean ifNotExists;
     
     private SimpleTableSegment likeTable;
     

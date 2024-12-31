@@ -35,6 +35,7 @@ public final class ConnectionTransaction {
     @Getter
     private final TransactionType transactionType;
     
+    @Getter
     private final ShardingSphereDistributedTransactionManager distributedTransactionManager;
     
     private final TransactionConnectionContext transactionContext;
@@ -42,7 +43,11 @@ public final class ConnectionTransaction {
     public ConnectionTransaction(final TransactionRule rule, final TransactionConnectionContext transactionContext) {
         transactionType = transactionContext.getTransactionType().isPresent() ? TransactionType.valueOf(transactionContext.getTransactionType().get()) : rule.getDefaultType();
         this.transactionContext = transactionContext;
-        distributedTransactionManager = TransactionType.LOCAL == transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
+        if (transactionContext.getTransactionManager().isPresent()) {
+            distributedTransactionManager = (ShardingSphereDistributedTransactionManager) transactionContext.getTransactionManager().get();
+        } else {
+            distributedTransactionManager = TransactionType.LOCAL == this.transactionType ? null : rule.getResource().getTransactionManager(rule.getDefaultType());
+        }
     }
     
     /**

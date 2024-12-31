@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabas
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -59,9 +58,8 @@ class ShardingSphereStatisticsRefreshEngineTest {
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
-        GlobalLockContext globalLockContext = mock(GlobalLockContext.class);
-        when(globalLockContext.tryLock(any(), anyLong())).thenReturn(true);
-        new ShardingSphereStatisticsRefreshEngine(contextManager, globalLockContext).refresh();
+        when(contextManager.getComputeNodeInstanceContext().getLockContext().tryLock(any(), anyLong())).thenReturn(true);
+        new ShardingSphereStatisticsRefreshEngine(contextManager).refresh();
         verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService()).update(any());
     }
     

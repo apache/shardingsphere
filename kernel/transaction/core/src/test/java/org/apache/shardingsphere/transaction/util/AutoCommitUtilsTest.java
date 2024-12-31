@@ -41,7 +41,9 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForDDLOrDMLStatement() {
-        assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLCreateTableStatement(true)));
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(true);
+        assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
         assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLInsertStatement()));
     }
     

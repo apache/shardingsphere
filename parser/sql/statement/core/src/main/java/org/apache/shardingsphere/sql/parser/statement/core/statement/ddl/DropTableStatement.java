@@ -33,12 +33,28 @@ public abstract class DropTableStatement extends AbstractSQLStatement implements
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     
     /**
+     * Set if exists.
+     *
+     * @param ifExists if exists or not
+     */
+    public void setIfExists(final boolean ifExists) {
+    }
+    
+    /**
      * Judge whether contains if exists.
      *
      * @return contains contains if exists or not
      */
     public boolean isIfExists() {
         return false;
+    }
+    
+    /**
+     * Set contains cascade.
+     *
+     * @param containsCascade contains cascade or not
+     */
+    public void setContainsCascade(final boolean containsCascade) {
     }
     
     /**

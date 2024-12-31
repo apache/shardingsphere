@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
@@ -80,8 +81,12 @@ class AlterTableStatementContextTest {
     }
     
     private void assertNewInstance(final AlterTableStatement alterTableStatement) {
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1")));
+        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1"));
+        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment table = new SimpleTableSegment(tableNameSegment1);
+        SimpleTableSegment renameTable = new SimpleTableSegment(tableNameSegment2);
         alterTableStatement.setTable(table);
         alterTableStatement.setRenameTable(renameTable);
         Collection<SimpleTableSegment> referencedTables = Collections.singletonList(table);
@@ -110,7 +115,7 @@ class AlterTableStatementContextTest {
         DropIndexDefinitionSegment dropIndexDefinitionSegment = mock(DropIndexDefinitionSegment.class);
         when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("drop_index"))));
         alterTableStatement.getDropIndexDefinitions().add(dropIndexDefinitionSegment);
-        AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement, "foo_db");
+        AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

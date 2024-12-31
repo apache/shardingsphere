@@ -64,7 +64,8 @@ class ShardingCreateTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -72,29 +73,31 @@ class ShardingCreateTableRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertThrows(ShardingDDLRouteException.class,
                 () -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
     void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement, "foo_db"));
+        when(queryContext.getSqlStatementContext()).thenReturn(new CreateTableStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
 }

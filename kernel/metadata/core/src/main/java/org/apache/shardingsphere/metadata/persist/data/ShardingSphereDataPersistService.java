@@ -69,7 +69,7 @@ public final class ShardingSphereDataPersistService {
     private ShardingSphereDatabaseData load(final String databaseName, final ShardingSphereDatabase database) {
         ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
         for (String each : repository.getChildrenKeys(ShardingSphereDataNode.getSchemasPath(databaseName)).stream().filter(database::containsSchema).collect(Collectors.toList())) {
-            result.getSchemaData().put(each, load(databaseName, each, database.getSchema(each)));
+            result.putSchema(each, load(databaseName, each, database.getSchema(each)));
         }
         return result;
     }

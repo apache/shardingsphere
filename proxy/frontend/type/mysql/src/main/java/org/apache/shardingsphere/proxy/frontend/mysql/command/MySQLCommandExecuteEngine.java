@@ -74,7 +74,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
         int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             count++;
-            databaseConnectionManager.getResourceLock().doAwait(context);
+            databaseConnectionManager.getConnectionResourceLock().doAwait(context);
             DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);
             if (flushThreshold == count) {

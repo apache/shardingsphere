@@ -23,13 +23,13 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStat
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
-import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.exception.LockedClusterException;
-import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.lock.exception.LockedClusterException;
+import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.ClusterLock;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
 /**
@@ -39,13 +39,13 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
         LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
+        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
+        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
                 TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
@@ -56,7 +56,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     }
     
     private void checkState(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getStateContext().getClusterState(), LockedClusterException::new);
+        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getStateContext().getState(), LockedClusterException::new);
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {

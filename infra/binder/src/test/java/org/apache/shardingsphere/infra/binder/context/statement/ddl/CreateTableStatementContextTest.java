@@ -73,7 +73,7 @@ class CreateTableStatementContextTest {
     }
     
     private void assertNewInstance(final CreateTableStatement createTableStatement) {
-        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement, "foo_db");
+        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(createTableStatement.getTable()).thenReturn(table);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));

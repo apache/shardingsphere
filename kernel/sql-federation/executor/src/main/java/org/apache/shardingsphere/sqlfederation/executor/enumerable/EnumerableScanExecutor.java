@@ -104,7 +104,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     @Override
     public Enumerable<Object> execute(final ShardingSphereTable table, final ScanExecutorContext scanContext) {
-        String databaseName = executorContext.getDatabaseName();
+        String databaseName = executorContext.getCurrentDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
         if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
@@ -206,7 +206,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache()).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName(), hintValueContext).bind(sqlStatement, params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, params);
         return new QueryContext(sqlStatementContext, sql, params, hintValueContext, federationContext.getQueryContext().getConnectionContext(), metaData, useCache);
     }
     

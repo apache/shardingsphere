@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.single.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
@@ -35,7 +35,7 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     
     @SuppressWarnings("unchecked")
     @Override
-    public SingleRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public SingleRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         return new SingleRuleConfiguration(YamlEngine.unmarshal(yamlContent, LinkedHashSet.class), null);
     }
     
@@ -45,13 +45,13 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final SingleRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final SingleRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -30,7 +29,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class TableMetaData {
     
@@ -46,9 +44,9 @@ public final class TableMetaData {
     
     public TableMetaData(final String name, final Collection<ColumnMetaData> columns, final Collection<IndexMetaData> indexes, final Collection<ConstraintMetaData> constraints) {
         this.name = name;
-        type = TableType.TABLE;
         this.columns = columns;
         this.indexes = indexes;
         this.constraints = constraints;
+        type = TableType.TABLE;
     }
 }

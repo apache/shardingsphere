@@ -84,11 +84,12 @@ class MySQLComStmtPrepareCheckerTest {
     
     @Test
     void assertIsStatementAllowed() {
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         Collection<SQLStatement> sqlStatements = Arrays.asList(
                 new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
                 new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(),
-                new MySQLDropIndexStatement(), new MySQLCreateDatabaseStatement(), new MySQLDropDatabaseStatement(), new MySQLCreateTableStatement(false),
-                new MySQLDropTableStatement(false), new MySQLCreateUserStatement(), new MySQLRenameUserStatement(), new MySQLDropUserStatement(),
+                new MySQLDropIndexStatement(), new MySQLCreateDatabaseStatement(), new MySQLDropDatabaseStatement(), createTableStatement,
+                new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new MySQLRenameUserStatement(), new MySQLDropUserStatement(),
                 new MySQLCreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new MySQLDoStatement(), new MySQLFlushStatement(),
                 new MySQLGrantStatement(), new MySQLInsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(),
                 new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new MySQLRenameTableStatement(), new MySQLRepairTableStatement(),

@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Load data statement.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public abstract class LoadDataStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private final SimpleTableSegment tableSegment;
+    private SimpleTableSegment tableSegment;
 }

@@ -108,8 +108,7 @@ class ProxySQLExecutorTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        ContextManager contextManager = new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext,
-                mock(PersistRepository.class));
+        ContextManager contextManager = new ContextManager(MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData), computeNodeInstanceContext, mock(PersistRepository.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
@@ -238,21 +237,22 @@ class ProxySQLExecutorTest {
     }
     
     private CreateTableStatementContext createMySQLCreateTableStatementContext() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement, "foo_db");
+        return new CreateTableStatementContext(sqlStatement);
     }
     
     private TruncateStatementContext createMySQLTruncateStatementContext() {
         MySQLTruncateStatement sqlStatement = new MySQLTruncateStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new TruncateStatementContext(sqlStatement, "foo_db");
+        return new TruncateStatementContext(sqlStatement);
     }
     
     private SQLStatementContext createPostgreSQLTruncateStatementContext() {
         PostgreSQLTruncateStatement sqlStatement = new PostgreSQLTruncateStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new TruncateStatementContext(sqlStatement, "foo_db");
+        return new TruncateStatementContext(sqlStatement);
     }
     
     private CursorStatementContext createCursorStatementContext() {
@@ -274,9 +274,10 @@ class ProxySQLExecutorTest {
     }
     
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setIfNotExists(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement, "foo_db");
+        return new CreateTableStatementContext(sqlStatement);
     }
     
     private InsertStatementContext createPostgreSQLInsertStatementContext() {

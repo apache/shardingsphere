@@ -36,9 +36,9 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public RenameTableStatementContext(final RenameTableStatement sqlStatement, final String currentDatabaseName) {
+    public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getTables(sqlStatement), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(getTables(sqlStatement));
     }
     
     private Collection<SimpleTableSegment> getTables(final RenameTableStatement sqlStatement) {

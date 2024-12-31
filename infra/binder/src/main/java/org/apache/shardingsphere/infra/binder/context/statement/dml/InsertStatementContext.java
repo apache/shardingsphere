@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -47,9 +49,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +67,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Insert SQL statement context.
  */
-public final class InsertStatementContext extends CommonSQLStatementContext implements TableAvailable, ParameterAware, WhereAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext implements TableAvailable, ParameterAware, WhereAvailable, WithAvailable {
     
     private final ShardingSphereMetaData metaData;
     
@@ -101,10 +103,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
-        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         List<String> insertColumnNames = getInsertColumnNames();
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
-        columnNames = containsInsertColumns() ? insertColumnNames
+        columnNames = containsInsertColumns()
+                ? insertColumnNames
                 : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
         insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
@@ -329,5 +332,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return null == insertSelectContext ? Collections.emptyList() : insertSelectContext.getSelectStatementContext().getJoinConditions();
+    }
+    
+    @Override
+    public Optional<WithSegment> getWith() {
+        return getSqlStatement().getWithSegment();
     }
 }

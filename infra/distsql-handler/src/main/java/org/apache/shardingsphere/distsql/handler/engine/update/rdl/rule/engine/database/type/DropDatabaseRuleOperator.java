@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
 
 import java.sql.SQLException;

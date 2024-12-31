@@ -24,10 +24,10 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 
 import java.util.LinkedHashMap;
@@ -39,7 +39,7 @@ import java.util.LinkedList;
 public final class EncryptTableChangedProcessor implements RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, EncryptTableRuleConfiguration> {
     
     @Override
-    public EncryptTableRuleConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public EncryptTableRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         return new YamlEncryptTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlEncryptTableRuleConfiguration.class));
     }
     
@@ -50,15 +50,15 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig, final EncryptTableRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final EncryptRuleConfiguration currentRuleConfig, final EncryptTableRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
         currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
         currentRuleConfig.getTables().add(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItemEvent) event).getItemName()));
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final EncryptRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItem) dropRuleItem).getItemName()));
     }
     
     @Override

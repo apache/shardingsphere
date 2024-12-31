@@ -28,9 +28,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.type.DecorateSQLRouter;
-import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
@@ -46,7 +45,7 @@ import java.util.LinkedList;
  * Single SQL router.
  */
 @HighFrequencyInvocation
-public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, DecorateSQLRouter<SingleRule>, TableSQLRouter<SingleRule> {
+public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, DecorateSQLRouter<SingleRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
@@ -111,6 +110,11 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
             result.addAll(each.getDistributedTableNames());
         }
         return result;
+    }
+    
+    @Override
+    public Type getType() {
+        return Type.DATA_NODE;
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
@@ -43,7 +44,9 @@ class AlterViewStatementContextTest {
     
     @BeforeEach
     void setUp() {
-        view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("view"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        view = new SimpleTableSegment(tableNameSegment);
     }
     
     @Test
@@ -60,12 +63,14 @@ class AlterViewStatementContextTest {
     void assertPostgreSQLNewInstance() {
         PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
         alterViewStatement.setView(view);
-        alterViewStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("view"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        alterViewStatement.setRenameView(new SimpleTableSegment(tableNameSegment));
         assertNewInstance(alterViewStatement);
     }
     
     private void assertNewInstance(final AlterViewStatement alterViewStatement) {
-        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement, "foo_db");
+        AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
         assertThat(actual.getTablesContext().getSimpleTables().size(), is(2));

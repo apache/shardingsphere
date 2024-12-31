@@ -30,6 +30,6 @@ public final class OKDriverState implements DriverState {
     
     @Override
     public Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        return new ShardingSphereConnection(databaseName, contextManager, null);
+        return new ShardingSphereConnection(databaseName, contextManager);
     }
 }

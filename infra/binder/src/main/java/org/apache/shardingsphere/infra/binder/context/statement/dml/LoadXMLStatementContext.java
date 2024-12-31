@@ -31,9 +31,9 @@ public final class LoadXMLStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public LoadXMLStatementContext(final LoadXMLStatement sqlStatement, final String currentDatabaseName) {
+    public LoadXMLStatementContext(final LoadXMLStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType(), currentDatabaseName);
+        tablesContext = new TablesContext(sqlStatement.getTableSegment());
     }
     
     @Override

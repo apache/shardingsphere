@@ -641,3 +641,15 @@ public class CustomWebMvcConfigurer implements WebMvcConfigurer {
 5. Both microservice instances `a-service` and `b-service` are Spring Boot microservices, but the components used are Spring WebFlux instead of Spring WebMVC.
 ShardingSphere JDBC cannot handle R2DBC DataSource under the reactive programming API, only JDBC DataSource.
 Avoid creating ShardingSphere JDBC DataSource in Spring Boot microservices using WebFlux components.
+
+### Log Configuration
+
+After starting Seata Client in a business project, you may see the following Error Log.
+
+```shell
+[ERROR] 2024-12-20 11:46:43.878 [ForkJoinPool.commonPool-worker-1] o.a.s.config.ConfigurationFactory - failed to load non-spring configuration :not found service provider for : org.apache.seata.config.ConfigurationProvider
+org.apache.seata.common.loader.EnhancedServiceNotFoundException: not found service provider for : org.apache.seata.config.ConfigurationProvider
+```
+
+According to https://github.com/apache/incubator-seata/issues/6886 , throwing this exception is the expected behavior of Seata Client.
+Users can configure the log of Seata Client by placing `logback.xml` in the classpath of the business project.

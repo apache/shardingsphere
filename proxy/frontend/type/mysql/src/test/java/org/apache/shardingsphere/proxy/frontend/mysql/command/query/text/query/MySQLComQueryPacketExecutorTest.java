@@ -124,7 +124,7 @@ class MySQLComQueryPacketExecutorTest {
     void assertExecuteMultiUpdateStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         when(packet.getSQL()).thenReturn("update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3");
         ContextManager contextManager = mock(ContextManager.class);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
@@ -142,7 +142,7 @@ class MySQLComQueryPacketExecutorTest {
     void assertExecuteMultiInsertOnDuplicateKeyStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get()).thenReturn(0);
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         when(packet.getSQL()).thenReturn("insert into t (id, v) values(1,1) on duplicate key update v=2;insert into t (id, v) values(2,1) on duplicate key update v=3");
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
