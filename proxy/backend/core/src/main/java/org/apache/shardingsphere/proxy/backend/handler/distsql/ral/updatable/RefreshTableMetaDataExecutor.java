@@ -19,12 +19,14 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,8 +45,8 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
     
     @Override
     public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
         String schemaName = getSchemaName(sqlStatement);
+        checkBeforeUpdate(sqlStatement, schemaName);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
                 contextManager.reloadTable(database, schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
@@ -60,6 +62,16 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         }
     }
     
+    private String getSchemaName(final RefreshTableMetaDataStatement sqlStatement) {
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+    }
+    
+    private void checkBeforeUpdate(final RefreshTableMetaDataStatement sqlStatement, final String schemaName) {
+        checkStorageUnit(database.getResourceMetaData().getStorageUnits(), sqlStatement);
+        checkSchema(schemaName);
+        checkTable(sqlStatement, schemaName);
+    }
+    
     private void checkStorageUnit(final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
         ShardingSpherePreconditions.checkNotEmpty(storageUnits, () -> new EmptyStorageUnitException(database.getName()));
         if (sqlStatement.getStorageUnitName().isPresent()) {
@@ -68,8 +80,15 @@ public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor
         }
     }
     
-    private String getSchemaName(final RefreshTableMetaDataStatement sqlStatement) {
-        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+    private void checkSchema(final String schemaName) {
+        ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
+    }
+    
+    private void checkTable(final RefreshTableMetaDataStatement sqlStatement, final String schemaName) {
+        if (sqlStatement.getTableName().isPresent()) {
+            String tableName = sqlStatement.getTableName().get();
+            ShardingSpherePreconditions.checkState(database.getSchema(schemaName).containsTable(tableName), () -> new TableNotFoundException(tableName));
+        }
     }
     
     @Override
