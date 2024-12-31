@@ -32,11 +32,16 @@ import java.util.Optional;
 @Setter
 public final class MySQLUpdateStatement extends UpdateStatement implements MySQLStatement {
     
+    private WithSegment withSegment;
+
     private OrderBySegment orderBy;
     
     private LimitSegment limit;
     
-    private WithSegment withSegment;
+    @Override
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
     
     @Override
     public Optional<OrderBySegment> getOrderBy() {
@@ -46,10 +51,5 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     @Override
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
-    }
-    
-    @Override
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
     }
 }
