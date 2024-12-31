@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ComputeNodeStateSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.DatabaseDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.MetaDataChangedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.ProcessListChangedSubscriber;
@@ -45,7 +44,6 @@ public final class ClusterDispatchEventSubscriberRegistry {
                 new DatabaseDataChangedSubscriber(contextManager),
                 new ProcessListChangedSubscriber(contextManager),
                 new CacheEvictedSubscriber(),
-                new ComputeNodeStateSubscriber(contextManager),
                 new StorageUnitEventSubscriber(contextManager));
     }
 }
