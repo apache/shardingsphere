@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.config.AlterPropertiesEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Properties dispatch event builder.
+ * Properties changed handler.
  */
-public final class PropertiesDispatchEventBuilder implements DispatchEventBuilder<AlterPropertiesEvent> {
+public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -44,7 +44,13 @@ public final class PropertiesDispatchEventBuilder implements DispatchEventBuilde
     }
     
     @Override
-    public Optional<AlterPropertiesEvent> build(final DataChangedEvent event) {
-        return GlobalNodePath.isPropsActiveVersionPath(event.getKey()) ? Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue())) : Optional.empty();
+    public void handle(final ContextManager contextManager, final DataChangedEvent event) {
+        if (!GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
+            return;
+        }
+        Preconditions.checkArgument(event.getValue().equals(
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }
