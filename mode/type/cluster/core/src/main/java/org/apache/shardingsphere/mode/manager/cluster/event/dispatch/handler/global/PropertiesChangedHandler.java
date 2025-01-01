@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.path.GlobalNodePath;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Global rule changed handler.
+ * Properties changed handler.
  */
-public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
+public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return GlobalNode.getGlobalRuleRootNode();
+        return GlobalNode.getPropsRootNode();
     }
     
     @Override
@@ -47,22 +43,14 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
-            return;
-        }
-        Optional<String> ruleName = GlobalNodePath.getRuleName(event.getKey());
-        if (!ruleName.isPresent()) {
+        if (!GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return;
         }
         Preconditions.checkArgument(event.getValue().equals(
                 contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
-        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
-        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());
-        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
-                TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }

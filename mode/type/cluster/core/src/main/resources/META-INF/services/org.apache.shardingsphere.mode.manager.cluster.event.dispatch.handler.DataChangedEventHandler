@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ClusterStateChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.QualifiedDataSourceChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ComputeNodeOnlineHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ComputeNodeStateChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ShardingSphereDataChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.GlobalRuleChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.PropertiesChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ListenerAssistedChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.ShowProcessListHandler
-org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type.KillProcessHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ClusterStateChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.QualifiedDataSourceChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ComputeNodeOnlineHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ComputeNodeStateChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ShardingSphereDataChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.GlobalRuleChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.PropertiesChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ListenerAssistedChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.ShowProcessListHandler
+org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global.KillProcessHandler
