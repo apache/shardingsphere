@@ -81,6 +81,7 @@ public final class MetaDataChangedHandler {
                 return;
             case DELETED:
                 handleSchemaDropped(databaseName, schemaName);
+                return;
             default:
         }
     }
