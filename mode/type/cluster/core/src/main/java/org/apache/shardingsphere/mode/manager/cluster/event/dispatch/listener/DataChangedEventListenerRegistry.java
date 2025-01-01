@@ -21,11 +21,9 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.DispatchEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.GlobalMetaDataChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.GlobalMetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -55,16 +53,11 @@ public final class DataChangedEventListenerRegistry {
      */
     public void register() {
         databaseNames.forEach(this::registerDatabaseListeners);
-        ShardingSphereServiceLoader.getServiceInstances(DispatchEventBuilder.class).forEach(this::registerGlobalListeners);
         ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).forEach(this::registerGlobalHandlers);
     }
     
     private void registerDatabaseListeners(final String databaseName) {
         repository.watch(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), new DatabaseMetaDataChangedListener(eventBusContext));
-    }
-    
-    private void registerGlobalListeners(final DispatchEventBuilder<?> builder) {
-        repository.watch(builder.getSubscribedKey(), new GlobalMetaDataChangedListener(eventBusContext, builder));
     }
     
     private void registerGlobalHandlers(final DataChangedEventHandler handler) {
