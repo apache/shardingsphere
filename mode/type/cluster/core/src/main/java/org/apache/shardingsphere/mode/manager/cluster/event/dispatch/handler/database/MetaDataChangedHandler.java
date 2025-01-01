@@ -51,22 +51,22 @@ public final class MetaDataChangedHandler {
      * @return handle completed or not
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
-        String key = event.getKey();
-        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(key);
+        String eventKey = event.getKey();
+        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(eventKey);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event.getType());
             return true;
         }
-        schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(key);
-        if (schemaName.isPresent() && isTableMetaDataChanged(event.getKey())) {
+        schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(eventKey);
+        if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (schemaName.isPresent() && isViewMetaDataChanged(event.getKey())) {
+        if (schemaName.isPresent() && isViewMetaDataChanged(eventKey)) {
             handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (DataSourceMetaDataNode.isDataSourcesNode(key)) {
+        if (DataSourceMetaDataNode.isDataSourcesNode(eventKey)) {
             handleDataSourceChanged(databaseName, event);
             return true;
         }
