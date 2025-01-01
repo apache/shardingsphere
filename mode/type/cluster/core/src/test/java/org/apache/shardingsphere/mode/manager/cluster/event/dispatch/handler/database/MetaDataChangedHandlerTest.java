@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database;
 
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableCreatedOrAlteredEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.table.TableDroppedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewCreatedOrAlteredEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.metadata.schema.view.ViewDroppedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,15 +33,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class MetaDataChangedSubscriberTest {
+class MetaDataChangedHandlerTest {
     
-    private MetaDataChangedSubscriber subscriber;
+    private MetaDataChangedHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -54,52 +51,73 @@ class MetaDataChangedSubscriberTest {
     void setUp() {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)).thenReturn(false);
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
-        subscriber = new MetaDataChangedSubscriber(contextManager);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(any())).thenReturn("0");
+        handler = new MetaDataChangedHandler(contextManager);
     }
     
     @Test
-    void assertRenewWithSchemaAddedEvent() {
+    void assertHandleSchemaCreated() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
-        subscriber.renew(new SchemaAddedEvent("foo_db", "foo_schema"));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addSchema("foo_db", "foo_schema");
     }
     
     @Test
-    void assertRenewWithSchemaDeletedEvent() {
+    void assertHandleSchemaDropped() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
-        subscriber.renew(new SchemaDeletedEvent("foo_db", "foo_schema"));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropSchema("foo_db", "foo_schema");
     }
     
     @Test
-    void assertRenewWithCreateOrAlterTableEvent() {
+    void assertHandleTableCreated() {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
-        subscriber.renew(new TableCreatedOrAlteredEvent("foo_db", "foo_schema", "foo_tbl", "key", "value"));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
     }
     
     @Test
-    void assertRenewWithDropTableEvent() {
-        subscriber.renew(new TableDroppedEvent("foo_db", "foo_schema", "foo_tbl"));
+    void assertHandleTableAltered() {
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
+                .thenReturn(table);
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.UPDATED));
+        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
+    }
+    
+    @Test
+    void assertHandleTableDropped() {
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", "foo_tbl", null);
     }
     
     @Test
-    void assertRenewWithCreateOrAlterViewEvent() {
+    void assertHandleViewCreated() {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
-        subscriber.renew(new ViewCreatedOrAlteredEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
     }
     
     @Test
-    void assertRenewWithDropViewEvent() {
-        subscriber.renew(new ViewDroppedEvent("foo_db", "foo_schema", "foo_view", "key", "value"));
+    void assertHandleViewAltered() {
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        ShardingSphereView view = mock(ShardingSphereView.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
+                .thenReturn(view);
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.UPDATED));
+        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
+    }
+    
+    @Test
+    void assertHandleViewDropped() {
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view", "", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, "foo_view");
     }
 }
