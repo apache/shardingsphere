@@ -56,7 +56,7 @@ public final class TableChangedHandler {
     }
     
     /**
-     * Handle table altered.
+     * Handle table dropped.
      *
      * @param databaseName database name
      * @param schemaName schema name

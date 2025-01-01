@@ -52,7 +52,7 @@ public final class ViewChangedHandler {
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, view);
-        new ShardingSphereStatisticsRefreshEngine(contextManager).asyncRefresh();
+        statisticsRefreshEngine.asyncRefresh();
     }
     
     /**
@@ -65,6 +65,6 @@ public final class ViewChangedHandler {
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = ViewMetaDataNode.getViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, viewName);
-        new ShardingSphereStatisticsRefreshEngine(contextManager).asyncRefresh();
+        statisticsRefreshEngine.asyncRefresh();
     }
 }
