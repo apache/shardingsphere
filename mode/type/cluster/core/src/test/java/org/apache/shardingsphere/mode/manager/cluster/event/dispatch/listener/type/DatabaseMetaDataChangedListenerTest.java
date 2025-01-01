@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -35,29 +36,29 @@ class DatabaseMetaDataChangedListenerTest {
     
     private DatabaseMetaDataChangedListener listener;
     
-    @Mock
-    private EventBusContext eventBusContext;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        listener = new DatabaseMetaDataChangedListener(eventBusContext);
+        listener = new DatabaseMetaDataChangedListener(contextManager);
     }
     
     @Test
     void assertOnChangeWithoutDatabase() {
         listener.onChange(new DataChangedEvent("/metadata", "value", Type.IGNORED));
-        verify(eventBusContext, times(0)).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
     }
     
     @Test
     void assertOnChangeWithMetaDataChanged() {
         listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "value", Type.ADDED));
-        verify(eventBusContext).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
     }
     
     @Test
     void assertOnChangeWithRuleConfigurationChanged() {
         listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/rule/", "value", Type.ADDED));
-        verify(eventBusContext, times(0)).post(any());
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
     }
 }

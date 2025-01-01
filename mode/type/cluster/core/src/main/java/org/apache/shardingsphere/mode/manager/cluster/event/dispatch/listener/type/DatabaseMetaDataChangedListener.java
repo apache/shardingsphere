@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.MetaDataChangedEventBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.MetaDataChangedHandler;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Optional;
@@ -34,11 +34,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
     
-    private final EventBusContext eventBusContext;
+    private final ContextManager contextManager;
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        createDispatchEvent(event).ifPresent(eventBusContext::post);
+        createDispatchEvent(event).ifPresent(contextManager.getComputeNodeInstanceContext().getEventBusContext()::post);
     }
     
     private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
@@ -47,7 +47,10 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         if (!databaseName.isPresent()) {
             return Optional.empty();
         }
-        Optional<DispatchEvent> metaDataChangedEvent = new MetaDataChangedEventBuilder().build(databaseName.get(), event);
-        return metaDataChangedEvent.isPresent() ? metaDataChangedEvent : new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
+        boolean handleCompleted = new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event);
+        if (handleCompleted) {
+            return Optional.empty();
+        }
+        return new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
     }
 }
