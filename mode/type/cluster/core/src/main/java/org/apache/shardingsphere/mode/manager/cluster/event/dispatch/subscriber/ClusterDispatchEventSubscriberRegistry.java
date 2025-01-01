@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.StorageUnitEventSubscriber;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +35,6 @@ public final class ClusterDispatchEventSubscriberRegistry {
     private final Collection<EventSubscriber> subscribers;
     
     public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
-        subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager),
-                new CacheEvictedSubscriber(),
-                new StorageUnitEventSubscriber(contextManager));
+        subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager), new CacheEvictedSubscriber());
     }
 }

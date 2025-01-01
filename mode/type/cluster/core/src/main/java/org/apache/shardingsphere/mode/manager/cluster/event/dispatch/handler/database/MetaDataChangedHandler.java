@@ -110,7 +110,7 @@ public final class MetaDataChangedHandler {
     private void handleTableCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, table, null);
@@ -138,7 +138,7 @@ public final class MetaDataChangedHandler {
     private void handleViewCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, view);
@@ -177,7 +177,7 @@ public final class MetaDataChangedHandler {
     
     private void handleStorageUnitRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
@@ -185,7 +185,7 @@ public final class MetaDataChangedHandler {
     
     private void handleStorageUnitAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
