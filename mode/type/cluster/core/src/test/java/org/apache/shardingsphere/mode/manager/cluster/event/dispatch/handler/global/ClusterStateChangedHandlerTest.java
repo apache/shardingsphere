@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.state.ClusterState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,15 +30,10 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GlobalRuleChangedHandlerTest {
+class ClusterStateChangedHandlerTest {
     
     private DataChangedEventHandler handler;
     
@@ -48,28 +43,18 @@ class GlobalRuleChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
-                .filter(each -> each.getSubscribedKey().equals("/rules")).findFirst().orElse(null);
+                .filter(each -> each.getSubscribedKey().equals("/states/cluster_state")).findFirst().orElse(null);
     }
     
     @Test
-    void assertHandleWithInvalidEventKey() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+    void assertHandleWithValidClusterState() {
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", ClusterState.READ_ONLY.name(), Type.UPDATED));
+        verify(contextManager.getStateContext()).switchState(ClusterState.READ_ONLY);
     }
     
     @Test
-    void assertHandleWithEmptyRuleName() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
-    }
-    
-    @Test
-    void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("/rules/foo_rule/active_version"))
-                .thenReturn("rule_value");
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
+    void assertHandleWithInvalidClusterState() {
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
+        verify(contextManager.getStateContext()).switchState(ClusterState.OK);
     }
 }

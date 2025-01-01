@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -26,20 +24,19 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Kill process handler.
+ * Show process list handler.
  */
-public final class KillProcessHandler implements DataChangedEventHandler {
+public final class ShowProcessListHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNode.getKillProcessTriggerNodePath();
+        return ComputeNode.getShowProcessListTriggerNodePath();
     }
     
     @Override
@@ -49,28 +46,22 @@ public final class KillProcessHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Matcher matcher = getKillProcessTriggerMatcher(event);
+        Matcher matcher = getShowProcessListTriggerMatcher(event);
         if (!matcher.find()) {
             return;
         }
         String instanceId = matcher.group(1);
-        String processId = matcher.group(2);
+        String taskId = matcher.group(2);
         if (Type.ADDED == event.getType()) {
-            if (!instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                return;
+            if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().reportLocalProcesses(instanceId, taskId);
             }
-            try {
-                ProcessRegistry.getInstance().kill(processId);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            }
-            contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().cleanProcess(instanceId, processId);
         } else if (Type.DELETED == event.getType()) {
-            ProcessOperationLockRegistry.getInstance().notify(processId);
+            ProcessOperationLockRegistry.getInstance().notify(taskId);
         }
     }
     
-    private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(ComputeNode.getKillProcessTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+    private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
+        return Pattern.compile(ComputeNode.getShowProcessListTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

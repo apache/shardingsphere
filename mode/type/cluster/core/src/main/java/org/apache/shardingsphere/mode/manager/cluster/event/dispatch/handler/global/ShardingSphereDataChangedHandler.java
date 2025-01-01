@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

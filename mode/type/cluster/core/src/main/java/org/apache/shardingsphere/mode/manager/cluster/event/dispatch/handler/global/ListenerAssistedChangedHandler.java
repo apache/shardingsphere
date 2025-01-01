@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
