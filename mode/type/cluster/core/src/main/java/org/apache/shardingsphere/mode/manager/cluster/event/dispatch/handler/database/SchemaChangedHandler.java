@@ -36,7 +36,7 @@ public final class SchemaChangedHandler {
     
     /**
      * Handle schema created.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      */
@@ -47,7 +47,7 @@ public final class SchemaChangedHandler {
     
     /**
      * Handle schema dropped.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      */

@@ -42,7 +42,7 @@ public final class StorageUnitChangedHandler {
      */
     public void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
@@ -57,7 +57,7 @@ public final class StorageUnitChangedHandler {
      */
     public void handleAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));

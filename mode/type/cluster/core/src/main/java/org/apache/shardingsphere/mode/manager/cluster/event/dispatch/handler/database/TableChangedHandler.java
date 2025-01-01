@@ -40,7 +40,7 @@ public final class TableChangedHandler {
     
     /**
      * Handle table created or altered.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param event data changed event
@@ -48,7 +48,7 @@ public final class TableChangedHandler {
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         Preconditions.checkArgument(event.getValue().equals(
-                        contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, table, null);
@@ -57,7 +57,7 @@ public final class TableChangedHandler {
     
     /**
      * Handle table altered.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param event data changed event
