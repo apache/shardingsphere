@@ -37,7 +37,7 @@ public final class UniqueRuleItemChangedHandler {
     
     /**
      * Handle unique rule item changed.
-     * 
+     *
      * @param ruleNodePath rule node path
      * @param databaseName database name
      * @param path path

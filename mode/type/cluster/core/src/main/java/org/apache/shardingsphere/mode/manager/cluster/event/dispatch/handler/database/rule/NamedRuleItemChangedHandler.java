@@ -37,7 +37,7 @@ public final class NamedRuleItemChangedHandler {
     
     /**
      * Handle named rule item changed.
-     * 
+     *
      * @param ruleNodePath rule node path
      * @param databaseName database name
      * @param itemName item name
