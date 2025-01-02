@@ -15,26 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Cluster dispatch event subscriber registry.
+ * Data changed event handler.
  */
-@Getter
-public final class ClusterDispatchEventSubscriberRegistry {
+@SingletonSPI
+public interface DataChangedEventHandler {
     
-    private final Collection<EventSubscriber> subscribers;
+    /**
+     * Get subscribed key.
+     *
+     * @return subscribed key
+     */
+    String getSubscribedKey();
     
-    public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
-        subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager), new CacheEvictedSubscriber());
-    }
+    /**
+     * Get subscribed types.
+     *
+     * @return subscribed types
+     */
+    Collection<Type> getSubscribedTypes();
+    
+    /**
+     * Handle data changed event.
+     *
+     * @param contextManager context manager
+     * @param event data changed event
+     */
+    void handle(ContextManager contextManager, DataChangedEvent event);
 }

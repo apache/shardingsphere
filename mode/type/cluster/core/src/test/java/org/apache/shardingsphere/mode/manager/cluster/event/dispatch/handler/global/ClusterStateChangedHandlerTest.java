@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.state.ClusterState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,38 +30,31 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class DatabaseMetaDataChangedListenerTest {
+class ClusterStateChangedHandlerTest {
     
-    private DatabaseMetaDataChangedListener listener;
+    private DataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        listener = new DatabaseMetaDataChangedListener(contextManager);
+        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+                .filter(each -> each.getSubscribedKey().equals("/states/cluster_state")).findFirst().orElse(null);
     }
     
     @Test
-    void assertOnChangeWithoutDatabase() {
-        listener.onChange(new DataChangedEvent("/metadata", "value", Type.IGNORED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+    void assertHandleWithValidClusterState() {
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", ClusterState.READ_ONLY.name(), Type.UPDATED));
+        verify(contextManager.getStateContext()).switchState(ClusterState.READ_ONLY);
     }
     
     @Test
-    void assertOnChangeWithMetaDataChanged() {
-        listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
-    }
-    
-    @Test
-    void assertOnChangeWithRuleConfigurationChanged() {
-        listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/rule/", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+    void assertHandleWithInvalidClusterState() {
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
+        verify(contextManager.getStateContext()).switchState(ClusterState.OK);
     }
 }

@@ -141,6 +141,7 @@
 1. Pipeline: Use case-insensitive identifiers to enhance the table metadata loader
 1. Pipeline: Support primary key columns ordering for standard pipeline table metadata loader
 1. Sharding: Optimize sharding table index name rewriting rules and remove unnecessary suffix rewriting - [#31171](https://github.com/apache/shardingsphere/issues/31171)
+1. Metadata: Support postgresql and opengauss CHARACTER VARYING type metadata load - [#34221](https://github.com/apache/shardingsphere/pull/34221)
 
 ### Bug Fixes
 
