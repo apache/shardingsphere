@@ -61,6 +61,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
         result.put("NUMERIC", Types.NUMERIC);
         result.put("REAL", Types.REAL);
         result.put("BOOL", Types.BOOLEAN);
+        result.put("CHARACTER VARYING", Types.VARCHAR);
         return result;
     }
     
