@@ -131,6 +131,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -704,7 +705,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         PostgreSQLInsertStatement result = (PostgreSQLInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnConflict()) {
-            result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
+            result.setOnConflictKeyColumnsSegment((OnConflictKeyColumnsSegment) visit(ctx.optOnConflict()));
         }
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
@@ -719,7 +720,11 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.setClauseList()) {
             assignments = ((SetAssignmentSegment) visit(ctx.setClauseList())).getAssignments();
         }
-        return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
+        WhereSegment whereSegment =
+                ctx.whereClause() != null
+                        ? new WhereSegment(ctx.whereClause().getStart().getStartIndex(), ctx.whereClause().getStop().getStopIndex(), (ExpressionSegment) visit(ctx.whereClause().aExpr()))
+                        : null;
+        return new OnConflictKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments, whereSegment);
     }
     
     @Override

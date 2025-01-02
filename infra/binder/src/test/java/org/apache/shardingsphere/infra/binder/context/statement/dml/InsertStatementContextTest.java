@@ -26,11 +26,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -167,6 +169,31 @@ class InsertStatementContextTest {
     }
     
     @Test
+    void assertGetGroupedParametersWithoutOnConflictParameter() {
+        InsertStatement insertStatement = new PostgreSQLInsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        setUpInsertValues(insertStatement);
+        InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
+        assertThat(actual.getGroupedParameters().size(), is(2));
+        assertNull(actual.getOnConflictKeyUpdateValueContext());
+        assertTrue(actual.getOnConflictKeyUpdateParameters().isEmpty());
+    }
+    
+    @Test
+    void assertGetGroupedParametersWithOnConflictParameters() {
+        PostgreSQLInsertStatement insertStatement = new PostgreSQLInsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        setUpInsertValues(insertStatement);
+        setUpOnConflictValues(insertStatement);
+        InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", "onConflictKeyUpdateColumnValue"), insertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", "onConflictKeyUpdateColumnValue"));
+        assertThat(actual.getGroupedParameters().size(), is(2));
+        assertThat(actual.getOnConflictKeyUpdateValueContext().getColumnSegments().size(), is(2));
+        assertThat(actual.getOnConflictKeyUpdateParameters().size(), is(1));
+    }
+    
+    @Test
     void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
@@ -202,6 +229,23 @@ class InsertStatementContextTest {
                 new LiteralExpressionSegment(0, 0, 5));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(parameterMarkerExpressionAssignment, literalExpressionAssignment));
         insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
+    }
+    
+    private void setUpOnConflictValues(final PostgreSQLInsertStatement insertStatement) {
+        List<ColumnSegment> parameterMarkerExpressionAssignmentColumns = new LinkedList<>();
+        parameterMarkerExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_conflict_key_update_column_1")));
+        ColumnAssignmentSegment parameterMarkerExpressionAssignment = new ColumnAssignmentSegment(0, 0, parameterMarkerExpressionAssignmentColumns,
+                new ParameterMarkerExpressionSegment(0, 0, 4));
+        List<ColumnSegment> literalExpressionAssignmentColumns = new LinkedList<>();
+        literalExpressionAssignmentColumns.add(new ColumnSegment(0, 0, new IdentifierValue("on_conflict_key_update_column_2")));
+        ColumnAssignmentSegment literalExpressionAssignment = new ColumnAssignmentSegment(0, 0, literalExpressionAssignmentColumns,
+                new LiteralExpressionSegment(0, 0, 5));
+        List<ColumnAssignmentSegment> columnAssignmentSegments = new LinkedList<>();
+        columnAssignmentSegments.add(parameterMarkerExpressionAssignment);
+        columnAssignmentSegments.add(literalExpressionAssignment);
+        WhereSegment whereSegment = new WhereSegment(0, 0, null);
+        OnConflictKeyColumnsSegment onConflictKeyColumnsSegment = new OnConflictKeyColumnsSegment(0, 0, columnAssignmentSegments, whereSegment);
+        insertStatement.setOnConflictKeyColumnsSegment(onConflictKeyColumnsSegment);
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {

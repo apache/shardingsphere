@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builde
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -68,9 +69,17 @@ public final class SQLRewriteContext {
         if (!queryContext.getHintValueContext().isSkipSQLRewrite()) {
             addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         }
-        parameterBuilder = containsInsertValues(sqlStatementContext)
-                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
-                : new StandardParameterBuilder(parameters);
+        if (sqlStatementContext.getSqlStatement() instanceof PostgreSQLInsertStatement) {
+            parameterBuilder = containsInsertValues(sqlStatementContext)
+                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
+                    ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters())
+                    : new StandardParameterBuilder(parameters);
+        } else{
+            parameterBuilder = containsInsertValues(sqlStatementContext)
+                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
+                    ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+                    : new StandardParameterBuilder(parameters);
+        }
     }
     
     private boolean containsInsertValues(final SQLStatementContext sqlStatementContext) {
