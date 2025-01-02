@@ -69,26 +69,17 @@ public final class SQLRewriteContext {
         if (!queryContext.getHintValueContext().isSkipSQLRewrite()) {
             addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         }
-        List<Object> genericParams =
-                (sqlStatementContext.getSqlStatement() instanceof PostgreSQLInsertStatement)
-                        ? ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters()
-                        : ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters();
-        parameterBuilder = containsInsertValues(sqlStatementContext)
-                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
-                genericParams)
-                : new StandardParameterBuilder(parameters);
-        
-        //        if (sqlStatementContext.getSqlStatement() instanceof PostgreSQLInsertStatement) {
-        //            parameterBuilder = containsInsertValues(sqlStatementContext)
-        //                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
-        //                    ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters())
-        //                    : new StandardParameterBuilder(parameters);
-        //        } else {
-        //            parameterBuilder = containsInsertValues(sqlStatementContext)
-        //                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
-        //                    ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
-        //                    : new StandardParameterBuilder(parameters);
-        //        }
+        if (sqlStatementContext.getSqlStatement() instanceof PostgreSQLInsertStatement) {
+            parameterBuilder = containsInsertValues(sqlStatementContext)
+                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
+                    ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters())
+                    : new StandardParameterBuilder(parameters);
+        } else{
+            parameterBuilder = containsInsertValues(sqlStatementContext)
+                    ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
+                    ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+                    : new StandardParameterBuilder(parameters);
+        }
     }
     
     private boolean containsInsertValues(final SQLStatementContext sqlStatementContext) {
