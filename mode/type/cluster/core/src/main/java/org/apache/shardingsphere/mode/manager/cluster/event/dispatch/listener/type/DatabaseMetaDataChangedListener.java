@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.t
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,6 +44,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         if (!databaseName.isPresent()) {
             return;
         }
+        OrderedServicesCache.clearCache();
         if (new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event)) {
             return;
         }
