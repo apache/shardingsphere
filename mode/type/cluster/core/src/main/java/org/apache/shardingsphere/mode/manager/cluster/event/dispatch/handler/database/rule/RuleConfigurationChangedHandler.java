@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.rule;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -27,10 +26,6 @@ import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
-import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.AlterUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropUniqueRuleItem;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
@@ -39,10 +34,16 @@ import java.util.Optional;
 /**
  * Rule configuration changed handler.
  */
-@RequiredArgsConstructor
 public final class RuleConfigurationChangedHandler {
     
-    private final ContextManager contextManager;
+    private final NamedRuleItemChangedHandler namedRuleItemChangedHandler;
+    
+    private final UniqueRuleItemChangedHandler uniqueRuleItemChangedHandler;
+    
+    public RuleConfigurationChangedHandler(final ContextManager contextManager) {
+        namedRuleItemChangedHandler = new NamedRuleItemChangedHandler(contextManager);
+        uniqueRuleItemChangedHandler = new UniqueRuleItemChangedHandler(contextManager);
+    }
     
     /**
      * Handle rule changed.
@@ -70,39 +71,21 @@ public final class RuleConfigurationChangedHandler {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = getItemName(event, entry.getValue());
             if (itemName.isPresent()) {
-                handleNamedRuleItem(ruleNodePath, databaseName, itemName.get(), entry.getKey(), event);
+                namedRuleItemChangedHandler.handle(ruleNodePath, databaseName, itemName.get(), entry.getKey(), event);
                 return true;
             }
         }
         return false;
-    }
-    
-    private void handleNamedRuleItem(final RuleNodePath ruleNodePath, final String databaseName, final String itemName, final String path, final DataChangedEvent event) throws SQLException {
-        String type = ruleNodePath.getRoot().getRuleType() + "." + path;
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(new AlterNamedRuleItem(databaseName, itemName, event.getKey(), event.getValue(), type));
-        } else if (Type.DELETED == event.getType()) {
-            contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(new DropNamedRuleItem(databaseName, itemName, type));
-        }
     }
     
     private boolean handleUniqueRuleItems(final RuleNodePath ruleNodePath, final String databaseName, final DataChangedEvent event) throws SQLException {
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().isActiveVersionPath(event.getKey())) {
-                handleUniqueRuleItem(ruleNodePath, databaseName, entry.getKey(), event);
+                uniqueRuleItemChangedHandler.handle(ruleNodePath, databaseName, entry.getKey(), event);
                 return true;
             }
         }
         return false;
-    }
-    
-    private void handleUniqueRuleItem(final RuleNodePath ruleNodePath, final String databaseName, final String path, final DataChangedEvent event) throws SQLException {
-        String type = ruleNodePath.getRoot().getRuleType() + "." + path;
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            contextManager.getMetaDataContextManager().getRuleItemManager().alterRuleItem(new AlterUniqueRuleItem(databaseName, event.getKey(), event.getValue(), type));
-        } else if (Type.DELETED == event.getType()) {
-            contextManager.getMetaDataContextManager().getRuleItemManager().dropRuleItem(new DropUniqueRuleItem(databaseName, type));
-        }
     }
     
     private Optional<String> getItemName(final DataChangedEvent event, final NamedRuleItemNodePath ruleItemNodePath) {
