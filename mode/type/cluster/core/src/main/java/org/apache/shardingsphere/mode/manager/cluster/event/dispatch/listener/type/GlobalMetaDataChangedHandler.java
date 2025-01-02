@@ -18,39 +18,25 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.MetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.Optional;
-
 /**
- * Database meta data changed listener.
+ * Global meta data changed handler.
  */
 @RequiredArgsConstructor
-public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
+public final class GlobalMetaDataChangedHandler implements DataChangedEventListener {
     
     private final ContextManager contextManager;
     
+    private final DataChangedEventHandler handler;
+    
     @Override
     public void onChange(final DataChangedEvent event) {
-        createDispatchEvent(event).ifPresent(contextManager.getComputeNodeInstanceContext().getEventBusContext()::post);
-    }
-    
-    private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
-        String key = event.getKey();
-        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
-        if (!databaseName.isPresent()) {
-            return Optional.empty();
+        if (handler.getSubscribedTypes().contains(event.getType())) {
+            handler.handle(contextManager, event);
         }
-        boolean handleCompleted = new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event);
-        if (handleCompleted) {
-            return Optional.empty();
-        }
-        return new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
     }
 }

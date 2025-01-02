@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
+package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.global;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,38 +29,39 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Properties;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DatabaseMetaDataChangedListenerTest {
+class PropertiesChangedHandlerTest {
     
-    private DatabaseMetaDataChangedListener listener;
+    private DataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        listener = new DatabaseMetaDataChangedListener(contextManager);
+        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+                .filter(each -> each.getSubscribedKey().equals("/props")).findFirst().orElse(null);
     }
     
     @Test
-    void assertOnChangeWithoutDatabase() {
-        listener.onChange(new DataChangedEvent("/metadata", "value", Type.IGNORED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+    void assertHandleWithInvalidEventKey() {
+        handler.handle(contextManager, new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
+        verify(contextManager, times(0)).getPersistServiceFacade();
     }
     
     @Test
-    void assertOnChangeWithMetaDataChanged() {
-        listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
-    }
-    
-    @Test
-    void assertOnChangeWithRuleConfigurationChanged() {
-        listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/rule/", "value", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+    void assertHandle() {
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("/props/active_version")).thenReturn("key=value");
+        Properties props = mock(Properties.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load()).thenReturn(props);
+        handler.handle(contextManager, new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));
+        verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterProperties(props);
     }
 }

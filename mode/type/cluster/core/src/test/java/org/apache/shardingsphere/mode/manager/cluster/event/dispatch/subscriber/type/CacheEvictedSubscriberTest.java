@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.assisted.DropDatabaseListenerAssistedEvent;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
 
 class CacheEvictedSubscriberTest {
     
@@ -33,7 +34,7 @@ class CacheEvictedSubscriberTest {
         EventBusContext eventBusContext = new EventBusContext();
         eventBusContext.register(new CacheEvictedSubscriber());
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());
-        eventBusContext.post(new DropDatabaseListenerAssistedEvent("db"));
+        eventBusContext.post(mock(DispatchEvent.class));
         assertFalse(OrderedServicesCache.findCachedServices(getClass(), Collections.emptyList()).isPresent());
     }
 }
