@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.event.ClusterEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.DataChangedEventListenerRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.ClusterDispatchEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
 import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
@@ -83,7 +82,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         ClusterEventSubscriberRegistry eventSubscriberRegistry = new ClusterEventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
         eventSubscriberRegistry.register(createDeliverEventSubscribers(repository));
-        eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry().getSubscribers());
     }
     
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
