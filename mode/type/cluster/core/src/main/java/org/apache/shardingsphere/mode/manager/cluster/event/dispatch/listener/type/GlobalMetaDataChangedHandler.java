@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.DataChangedEventHandler;
@@ -36,6 +37,7 @@ public final class GlobalMetaDataChangedHandler implements DataChangedEventListe
     @Override
     public void onChange(final DataChangedEvent event) {
         if (handler.getSubscribedTypes().contains(event.getType())) {
+            OrderedServicesCache.clearCache();
             handler.handle(contextManager, event);
         }
     }
