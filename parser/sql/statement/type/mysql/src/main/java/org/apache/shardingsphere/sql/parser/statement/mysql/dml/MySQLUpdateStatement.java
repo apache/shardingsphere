@@ -33,7 +33,7 @@ import java.util.Optional;
 public final class MySQLUpdateStatement extends UpdateStatement implements MySQLStatement {
     
     private WithSegment withSegment;
-
+    
     private OrderBySegment orderBy;
     
     private LimitSegment limit;

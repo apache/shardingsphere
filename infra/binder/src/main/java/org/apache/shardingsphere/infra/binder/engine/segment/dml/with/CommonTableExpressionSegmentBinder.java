@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UniqueCommonTableExpressionException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTableExpressionAliasException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -49,7 +49,7 @@ public final class CommonTableExpressionSegmentBinder {
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext, final boolean recursive) {
         if (segment.getAliasName().isPresent()) {
             ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()),
-                    () -> new UniqueCommonTableExpressionException(segment.getAliasName().get()));
+                    () -> new DuplicateCommonTableExpressionAliasException(segment.getAliasName().get()));
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(segment.getAliasName().get());
         }
         if (recursive && segment.getAliasName().isPresent()) {
