@@ -58,7 +58,7 @@ public final class OnConflictUpdateContext implements WhereAvailable {
     
     private final List<Object> parameters;
     
-    public OnConflictUpdateContext(final Collection<ColumnAssignmentSegment> assignments, final List<Object> params, final int parametersOffset, Optional<WhereSegment> segment) {
+    public OnConflictUpdateContext(final Collection<ColumnAssignmentSegment> assignments, final List<Object> params, final int parametersOffset, final Optional<WhereSegment> segment) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(ColumnAssignmentSegment::getValue).collect(Collectors.toList());
         segment.ifPresent(whereSegments::add);
         for (WhereSegment whereSegment : whereSegments) {

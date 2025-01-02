@@ -50,6 +50,7 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumnsSegment);
     }
+    
     @Override
     public Optional<OnConflictKeyColumnsSegment> getOnConflictKeyColumns() {
         return Optional.ofNullable(onConflictKeyColumnsSegment);

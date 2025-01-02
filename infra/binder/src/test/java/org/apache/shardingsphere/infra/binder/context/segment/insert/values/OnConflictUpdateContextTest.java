@@ -71,7 +71,7 @@ public class OnConflictUpdateContextTest {
         OnConflictUpdateContext context = new OnConflictUpdateContext(assignments, Arrays.asList("param1", "param2"), 0, Optional.empty());
         
         assertThat(context.getValueExpressions().size(), is(2));
-        assertThat(context.getParameters().size(), is(1)); // Only one parameter marker
+        assertThat(context.getParameters().size(), is(1));
         assertThat(context.getParameters().get(0), is("param1"));
     }
     

@@ -104,6 +104,7 @@ class SQLRewriteContextTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(GroupedParameterBuilder.class));
     }
+    
     @Test
     void assertInsertStatementContextWithPostgresSQLInsertStatement() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
@@ -145,7 +146,7 @@ class SQLRewriteContextTest {
         assertThat(sqlRewriteContext.getSqlTokens().get(0), instanceOf(SQLToken.class));
     }
     
-    private QueryContext createMockQueryContext(SQLStatementContext statementContext, List<Object> parameters) {
+    private QueryContext createMockQueryContext(final SQLStatementContext statementContext, final List<Object> parameters) {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
         when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");

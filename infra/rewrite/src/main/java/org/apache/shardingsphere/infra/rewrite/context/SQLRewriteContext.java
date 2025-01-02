@@ -72,12 +72,12 @@ public final class SQLRewriteContext {
         if (sqlStatementContext.getSqlStatement() instanceof PostgreSQLInsertStatement) {
             parameterBuilder = containsInsertValues(sqlStatementContext)
                     ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
-                    ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters())
+                            ((InsertStatementContext) sqlStatementContext).getOnConflictKeyUpdateParameters())
                     : new StandardParameterBuilder(parameters);
-        } else{
+        } else {
             parameterBuilder = containsInsertValues(sqlStatementContext)
                     ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(),
-                    ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+                            ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
                     : new StandardParameterBuilder(parameters);
         }
     }
