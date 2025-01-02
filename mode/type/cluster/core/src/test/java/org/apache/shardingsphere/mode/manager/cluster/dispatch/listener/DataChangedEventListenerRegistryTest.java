@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.GlobalMetaDataChangedHandler;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
