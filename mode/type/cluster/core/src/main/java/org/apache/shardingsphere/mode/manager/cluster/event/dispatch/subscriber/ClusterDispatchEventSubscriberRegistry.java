@@ -19,12 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.CacheEvictedSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.RuleItemChangedSubscriber;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Cluster dispatch event subscriber registry.
@@ -34,7 +32,7 @@ public final class ClusterDispatchEventSubscriberRegistry {
     
     private final Collection<EventSubscriber> subscribers;
     
-    public ClusterDispatchEventSubscriberRegistry(final ContextManager contextManager) {
-        subscribers = Arrays.asList(new RuleItemChangedSubscriber(contextManager), new CacheEvictedSubscriber());
+    public ClusterDispatchEventSubscriberRegistry() {
+        subscribers = Collections.singleton(new CacheEvictedSubscriber());
     }
 }

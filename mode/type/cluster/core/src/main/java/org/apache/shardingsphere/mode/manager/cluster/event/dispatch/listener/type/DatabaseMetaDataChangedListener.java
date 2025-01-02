@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.builder.RuleConfigurationChangedEventBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.event.DispatchEvent;
-import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.MetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.metadata.MetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.event.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -38,19 +39,17 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        createDispatchEvent(event).ifPresent(contextManager.getComputeNodeInstanceContext().getEventBusContext()::post);
-    }
-    
-    private Optional<DispatchEvent> createDispatchEvent(final DataChangedEvent event) {
-        String key = event.getKey();
-        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(key);
+        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(event.getKey());
         if (!databaseName.isPresent()) {
-            return Optional.empty();
+            return;
         }
-        boolean handleCompleted = new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event);
-        if (handleCompleted) {
-            return Optional.empty();
+        if (new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event)) {
+            return;
         }
-        return new RuleConfigurationChangedEventBuilder().build(databaseName.get(), event);
+        try {
+            new RuleConfigurationChangedHandler(contextManager).handle(databaseName.get(), event);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
     }
 }
