@@ -83,7 +83,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         ClusterEventSubscriberRegistry eventSubscriberRegistry = new ClusterEventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
         eventSubscriberRegistry.register(createDeliverEventSubscribers(repository));
-        eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry(contextManager).getSubscribers());
+        eventSubscriberRegistry.register(new ClusterDispatchEventSubscriberRegistry().getSubscribers());
     }
     
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
