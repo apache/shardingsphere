@@ -215,9 +215,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        metaDataPersistService.persistReloadDatabaseByAlter(
-                databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContextHolder().getMetaDataContextsAsync();
+        if (!reloadMetaDataContexts.equals(originalMetaDataContexts)) {
+            metaDataPersistService.persistReloadDatabaseByAlter(
+                    databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        }
     }
     
     @Override
@@ -235,9 +237,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     private void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
-        metaDataPersistService.persistReloadDatabaseByDrop(
-                databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContextHolder().getMetaDataContextsAsync();
+        if (!reloadMetaDataContexts.equals(originalMetaDataContexts)) {
+            metaDataPersistService.persistReloadDatabaseByDrop(
+                    databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        }
     }
     
     @Override

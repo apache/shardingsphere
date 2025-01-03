@@ -74,13 +74,16 @@ public class MetaDataContextManager {
     
     private final RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine;
     
+    private final MetaDataContextHolder metaDataContextHolder;
+    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
+        metaDataContextHolder = new MetaDataContextHolder(metaDataContexts);
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
-        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
+        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContextHolder, computeNodeInstanceContext, repository);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, repository);
