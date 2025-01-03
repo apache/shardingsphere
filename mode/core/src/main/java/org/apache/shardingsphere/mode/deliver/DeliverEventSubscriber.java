@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.deliver;
+package org.apache.shardingsphere.mode.deliver;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Deliver event subscriber factory.
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 public interface DeliverEventSubscriber extends EventSubscriber {
     
     /**
-     * Set persist repository.
+     * Set context manager.
      *
-     * @param repository persist repository
+     * @param contextManager context manager
      */
-    void setRepository(PersistRepository repository);
+    void setContextManager(ContextManager contextManager);
 }

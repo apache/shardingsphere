@@ -18,19 +18,25 @@
 package org.apache.shardingsphere.readwritesplitting.cluster;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberTest {
     
     private ReadwriteSplittingQualifiedDataSourceDeletedSubscriber subscriber;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager contextManager;
     
     @Mock
     private PersistRepository repository;
@@ -38,7 +44,8 @@ class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberTest {
     @BeforeEach
     void setUp() {
         subscriber = new ReadwriteSplittingQualifiedDataSourceDeletedSubscriber();
-        subscriber.setRepository(repository);
+        when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
+        subscriber.setContextManager(contextManager);
     }
     
     @Test

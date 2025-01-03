@@ -20,8 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.cluster;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Readwrite-splitting qualified data source deleted subscriber.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 @Setter
 public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriber implements DeliverEventSubscriber {
     
-    private PersistRepository repository;
+    private ContextManager contextManager;
     
     /**
      * Delete qualified data source.
@@ -38,6 +38,6 @@ public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriber implem
      */
     @Subscribe
     public void delete(final QualifiedDataSourceDeletedEvent event) {
-        repository.delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
+        contextManager.getPersistServiceFacade().getRepository().delete(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(event.getQualifiedDataSource()));
     }
 }
