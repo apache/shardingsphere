@@ -40,7 +40,6 @@ public class ReadwriteSplittingContextManagerLifecycleListener implements Contex
     
     @Override
     public void onDestroyed(final ContextManager contextManager) {
-    
     }
     
     private void updateQualifiedDataSourceState(final ContextManager contextManager) {
