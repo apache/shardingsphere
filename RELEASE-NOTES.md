@@ -25,6 +25,7 @@
 1. SQL Parser: Support MySQL update with statement parse - [#34126](https://github.com/apache/shardingsphere/pull/34126)
 1. SQL Binder: Remove TablesContext#findTableNames method and implement select order by, group by bind logic - [#34123](https://github.com/apache/shardingsphere/pull/34123)
 1. SQL Binder: Support select with statement sql bind and add bind test case - [#34141](https://github.com/apache/shardingsphere/pull/34141)
+1. SQL Parser: Add SQLStatementParserCacheHook to Provide Extension Point for Application SQL Parse  Cache Warm-up , Referred to as Preheat - [#34155](https://github.com/apache/shardingsphere/pull/34156)
 1. SQL Binder: Support sql bind for select with current select projection reference - [#34151](https://github.com/apache/shardingsphere/pull/34151)
 1. SQL Binder: Support alter table, drop table sql bind and add test case - [#34154](https://github.com/apache/shardingsphere/pull/34154)
 1. SQL Binder: Support rename table statement sql bind and split segment bind to ddl and dml package - [#34158](https://github.com/apache/shardingsphere/pull/34158)
