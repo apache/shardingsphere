@@ -63,6 +63,6 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
-                TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
+                TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.get().getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
     }
 }
