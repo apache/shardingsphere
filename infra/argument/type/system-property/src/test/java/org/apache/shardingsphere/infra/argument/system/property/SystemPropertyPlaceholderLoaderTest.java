@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core.arg;
+package org.apache.shardingsphere.infra.argument.system.property;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * URL argument placeholder type factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class URLArgumentPlaceholderTypeFactory {
+class SystemPropertyPlaceholderLoaderTest {
     
-    private static final String KEY = "placeholder-type";
+    @Test
+    void assertGetArgumentValue() {
+        System.setProperty("test", "value");
+        assertEquals("value", new SystemPropertyPlaceholderLoader().getArgumentValue("test"));
+        System.clearProperty("test");
+    }
     
-    /**
-     * Get the value of placeholder type.
-     *
-     * @param queryProps query properties
-     * @return placeholder type
-     */
-    public static String valueOf(final Properties queryProps) {
-        return queryProps.getProperty(KEY, "none").toLowerCase();
+    @Test
+    void assertGetType() {
+        assertEquals("system_props", new SystemPropertyPlaceholderLoader().getType());
     }
 }

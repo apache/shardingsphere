@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.url.core.arg;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.argument.core.ShardingSpherePlaceholderLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -55,7 +57,7 @@ public final class URLArgumentLine {
      * @param type placeholder type
      * @return replaced argument
      */
-    public String replaceArgument(final URLArgumentPlaceholderType type) {
+    public String replaceArgument(final String type) {
         placeholderMatcher.reset();
         StringBuffer result = new StringBuffer();
         while (placeholderMatcher.find()) {
@@ -78,13 +80,11 @@ public final class URLArgumentLine {
         return buffer.toString();
     }
     
-    private String getArgumentValue(final String argName, final URLArgumentPlaceholderType type) {
-        if (URLArgumentPlaceholderType.ENVIRONMENT == type) {
-            return System.getenv(argName);
+    private String getArgumentValue(final String argName, final String type) {
+        if (Strings.isNullOrEmpty(type) || "none".equalsIgnoreCase(type)) {
+            return null;
         }
-        if (URLArgumentPlaceholderType.SYSTEM_PROPS == type) {
-            return System.getProperty(argName);
-        }
-        return null;
+        ShardingSpherePlaceholderLoader shardingSpherePlaceholderLoader = TypedSPILoader.getService(ShardingSpherePlaceholderLoader.class, type);
+        return shardingSpherePlaceholderLoader.getArgumentValue(argName);
     }
 }

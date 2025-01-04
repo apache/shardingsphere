@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core.arg;
+package org.apache.shardingsphere.infra.argument.environment.property;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.argument.core.ShardingSpherePlaceholderLoader;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * URL argument placeholder type factory.
+ * Environment property placeholder loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class URLArgumentPlaceholderTypeFactory {
+@SingletonSPI
+public final class EnvironmentPropertyPlaceholderLoader implements ShardingSpherePlaceholderLoader {
     
-    private static final String KEY = "placeholder-type";
+    @Override
+    public String getArgumentValue(String argName) {
+        return System.getenv(argName);
+    }
     
-    /**
-     * Get the value of placeholder type.
-     *
-     * @param queryProps query properties
-     * @return placeholder type
-     */
-    public static String valueOf(final Properties queryProps) {
-        return queryProps.getProperty(KEY, "none").toLowerCase();
+    @Override
+    public String getType() {
+        return "environment";
     }
 }

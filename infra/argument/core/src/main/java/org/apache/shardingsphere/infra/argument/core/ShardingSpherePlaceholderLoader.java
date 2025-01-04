@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.core.arg;
+package org.apache.shardingsphere.infra.argument.core;
+
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * URL argument placeholder type.
+ * ShardingSphere placeholder loader.
  */
-public enum URLArgumentPlaceholderType {
+@SingletonSPI
+public interface ShardingSpherePlaceholderLoader extends TypedSPI {
     
-    NONE, ENVIRONMENT, SYSTEM_PROPS
+    /**
+     * Render configuration argument.
+     *
+     * @param argName configuration content
+     * @return argument value
+     */
+    String getArgumentValue(String argName);
 }

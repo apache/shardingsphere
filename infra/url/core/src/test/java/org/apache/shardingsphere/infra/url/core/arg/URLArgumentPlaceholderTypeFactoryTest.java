@@ -23,23 +23,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 class URLArgumentPlaceholderTypeFactoryTest {
     
     @Test
     void assertValueOfWithValidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "environment"))), is(URLArgumentPlaceholderType.ENVIRONMENT));
-    }
-    
-    @Test
-    void assertValueOfWithInvalidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "invalid"))), is(URLArgumentPlaceholderType.NONE));
+        assertEquals("environment", URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "environment"))));
     }
     
     @Test
     void assertValueOfWithEmptyQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(new Properties()), is(URLArgumentPlaceholderType.NONE));
+        assertEquals("none", URLArgumentPlaceholderTypeFactory.valueOf(new Properties()));
     }
 }

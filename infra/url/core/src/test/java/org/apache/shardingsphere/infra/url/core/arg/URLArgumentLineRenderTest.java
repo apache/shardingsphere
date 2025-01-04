@@ -52,19 +52,19 @@ class URLArgumentLineRenderTest {
     
     @Test
     void assertReadWithNonePlaceholder() throws IOException, URISyntaxException {
-        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
-        byte[] expected = readContent("config/to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
+        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", "none");
+        byte[] expected = readContent("config/to-be-replaced-fixture.yaml", "none");
         assertThat(new String(actual), is(new String(expected)));
     }
     
     @Test
     void assertReadWithSystemPropertiesPlaceholder() throws IOException, URISyntaxException {
-        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
-        byte[] expected = readContent("config/replaced-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
+        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", "system_props");
+        byte[] expected = readContent("config/replaced-fixture.yaml", "system_props");
         assertThat(new String(actual), is(new String(expected)));
     }
     
-    private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException, URISyntaxException {
+    private byte[] readContent(final String name, final String placeholderType) throws IOException, URISyntaxException {
         File file = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).toURI().getPath());
         return URLArgumentLineRender.render(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList()), placeholderType);
     }

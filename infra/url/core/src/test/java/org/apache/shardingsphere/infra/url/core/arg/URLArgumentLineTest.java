@@ -47,9 +47,9 @@ class URLArgumentLineTest {
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
-        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key=default_value"));
-        assertThat(argLineMultiple1.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key1=default_value1:key2=default_value2:tail"));
-        assertThat(argLineMultiple2.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key1=:key2=:tail"));
+        assertThat(argLine.get().replaceArgument("none"), is("key=default_value"));
+        assertThat(argLineMultiple1.get().replaceArgument("none"), is("key1=default_value1:key2=default_value2:tail"));
+        assertThat(argLineMultiple2.get().replaceArgument("none"), is("key1=:key2=:tail"));
     }
     
     @Test
@@ -60,9 +60,9 @@ class URLArgumentLineTest {
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
-        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key=default_value"));
-        assertThat(argLineMultiple1.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key1=default_value1:key2=default_value2:tail"));
-        assertThat(argLineMultiple2.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key1=:key2=:tail"));
+        assertThat(argLine.get().replaceArgument("environment"), is("key=default_value"));
+        assertThat(argLineMultiple1.get().replaceArgument("environment"), is("key1=default_value1:key2=default_value2:tail"));
+        assertThat(argLineMultiple2.get().replaceArgument("environment"), is("key1=:key2=:tail"));
     }
     
     @Test
@@ -76,8 +76,8 @@ class URLArgumentLineTest {
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
-        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS), is("key=props_value"));
-        assertThat(argLineMultiple1.get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS), is("key1=props_value1:key2=props_value2:tail"));
-        assertThat(argLineMultiple2.get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS), is("key1=props_value1:key2=props_value2:tail"));
+        assertThat(argLine.get().replaceArgument("system_props"), is("key=props_value"));
+        assertThat(argLineMultiple1.get().replaceArgument("system_props"), is("key1=props_value1:key2=props_value2:tail"));
+        assertThat(argLineMultiple2.get().replaceArgument("system_props"), is("key1=props_value1:key2=props_value2:tail"));
     }
 }

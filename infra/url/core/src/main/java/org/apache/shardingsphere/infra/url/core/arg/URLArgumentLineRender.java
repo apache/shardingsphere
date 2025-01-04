@@ -37,10 +37,10 @@ public final class URLArgumentLineRender {
      * @param placeholderType configuration content placeholder type
      * @return rendered content
      */
-    public static byte[] render(final Collection<String> lines, final URLArgumentPlaceholderType placeholderType) {
+    public static byte[] render(final Collection<String> lines, final String placeholderType) {
         StringBuilder result = new StringBuilder();
         for (String each : lines) {
-            Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(each);
+            Optional<URLArgumentLine> argLine = "none".equalsIgnoreCase(placeholderType) ? Optional.empty() : URLArgumentLine.parse(each);
             result.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(each)).append(System.lineSeparator());
         }
         return result.toString().getBytes(StandardCharsets.UTF_8);
