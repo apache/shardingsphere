@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.GlobalMetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.GlobalMetaDataChangedListener;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +44,6 @@ class DataChangedEventListenerRegistryTest {
         DataChangedEventListenerRegistry registry = new DataChangedEventListenerRegistry(contextManager, Collections.singleton("foo_db"));
         registry.register();
         verify(repository).watch(eq("/metadata/foo_db"), any(DatabaseMetaDataChangedListener.class));
-        verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedHandler.class));
+        verify(repository, atLeastOnce()).watch(anyString(), any(GlobalMetaDataChangedListener.class));
     }
 }

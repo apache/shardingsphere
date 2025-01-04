@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChang
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
- * Global meta data changed handler.
+ * Global meta data changed listener.
  */
 @RequiredArgsConstructor
-public final class GlobalMetaDataChangedHandler implements DataChangedEventListener {
+public final class GlobalMetaDataChangedListener implements DataChangedEventListener {
     
     private final ContextManager contextManager;
     
