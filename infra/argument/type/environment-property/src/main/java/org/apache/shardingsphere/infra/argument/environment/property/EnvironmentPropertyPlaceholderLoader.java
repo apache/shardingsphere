@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 public final class EnvironmentPropertyPlaceholderLoader implements ShardingSpherePlaceholderLoader {
     
     @Override
-    public String getArgumentValue(String argName) {
+    public String getArgumentValue(final String argName) {
         return System.getenv(argName);
     }
     
