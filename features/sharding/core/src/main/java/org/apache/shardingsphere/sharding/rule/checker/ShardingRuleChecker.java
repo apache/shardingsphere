@@ -191,8 +191,8 @@ public class ShardingRuleChecker {
             if (isAlteration && toBeAddedDataNodes.containsKey(key)) {
                 return;
             }
-            checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.getActualDataNodes().iterator().next());
+            value.getActualDataNodes().forEach(each -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, each));
         });
-        toBeAddedDataNodes.forEach((key, value) -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.iterator().next()));
+        toBeAddedDataNodes.forEach((key, value) -> value.forEach(each -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, each)));
     }
 }
