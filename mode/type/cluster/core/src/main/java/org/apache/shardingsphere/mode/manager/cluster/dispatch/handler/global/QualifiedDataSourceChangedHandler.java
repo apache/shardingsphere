@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChang
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Qualified data source changed handler.
@@ -52,13 +53,18 @@ public final class QualifiedDataSourceChangedHandler implements DataChangedEvent
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!Strings.isNullOrEmpty(event.getValue())) {
-            QualifiedDataSourceState state = new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceState.class));
-            QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey()).ifPresent(optional -> handle(contextManager.getMetaDataContexts().getMetaData(), optional, state));
+        if (Strings.isNullOrEmpty(event.getValue())) {
+            return;
         }
+        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey());
+        if (!qualifiedDataSource.isPresent()) {
+            return;
+        }
+        QualifiedDataSourceState state = new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlQualifiedDataSourceState.class));
+        handleQualifiedDataSourceStateChanged(contextManager.getMetaDataContexts().getMetaData(), qualifiedDataSource.get(), state);
     }
     
-    private void handle(final ShardingSphereMetaData metaData, final QualifiedDataSource qualifiedDataSource, final QualifiedDataSourceState state) {
+    private void handleQualifiedDataSourceStateChanged(final ShardingSphereMetaData metaData, final QualifiedDataSource qualifiedDataSource, final QualifiedDataSourceState state) {
         Preconditions.checkState(metaData.containsDatabase(qualifiedDataSource.getDatabaseName()), "No database '%s' exists.", qualifiedDataSource.getDatabaseName());
         metaData.getDatabase(qualifiedDataSource.getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)
                 .forEach(each -> each.updateStatus(qualifiedDataSource, state.getState()));

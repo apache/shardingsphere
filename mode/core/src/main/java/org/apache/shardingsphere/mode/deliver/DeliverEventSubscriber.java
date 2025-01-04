@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.deliver;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Deliver event subscriber factory.
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 public interface DeliverEventSubscriber extends EventSubscriber {
     
     /**
-     * Set context manager.
+     * Set persist repository.
      *
-     * @param contextManager context manager
+     * @param repository persist repository
      */
-    void setContextManager(ContextManager contextManager);
+    void setRepository(PersistRepository repository);
 }
