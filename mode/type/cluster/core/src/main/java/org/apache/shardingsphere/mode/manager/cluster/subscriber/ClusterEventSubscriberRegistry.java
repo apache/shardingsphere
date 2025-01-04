@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.subscriber;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 
 import java.util.Collection;
 
@@ -36,7 +36,7 @@ public final class ClusterEventSubscriberRegistry {
      *
      * @param subscribers to be registered subscribers
      */
-    public void register(final Collection<EventSubscriber> subscribers) {
+    public void register(final Collection<DeliverEventSubscriber> subscribers) {
         subscribers.forEach(eventBusContext::register);
     }
 }
