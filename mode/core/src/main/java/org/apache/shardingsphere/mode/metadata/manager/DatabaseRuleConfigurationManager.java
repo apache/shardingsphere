@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextHolder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -36,6 +35,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -43,15 +43,15 @@ import java.util.stream.Collectors;
  */
 public final class DatabaseRuleConfigurationManager {
     
-    private final MetaDataContextHolder metaDataContextHolder;
+    private final AtomicReference<MetaDataContexts> metaDataContexts;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public DatabaseRuleConfigurationManager(final MetaDataContextHolder metaDataContextHolder, final ComputeNodeInstanceContext computeNodeInstanceContext,
+    public DatabaseRuleConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                             final PersistRepository repository) {
-        this.metaDataContextHolder = metaDataContextHolder;
+        this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
@@ -65,7 +65,7 @@ public final class DatabaseRuleConfigurationManager {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public synchronized void alterRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
-        ShardingSphereDatabase database = metaDataContextHolder.getMetaDataContexts().get().getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
         if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
@@ -87,7 +87,7 @@ public final class DatabaseRuleConfigurationManager {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public synchronized void dropRuleConfiguration(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
-        ShardingSphereDatabase database = metaDataContextHolder.getMetaDataContexts().get().getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
         if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
@@ -104,8 +104,8 @@ public final class DatabaseRuleConfigurationManager {
     
     private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createByAlterRule(databaseName, false,
-                ruleConfigurations, metaDataContextHolder.getMetaDataContexts().get(), metaDataPersistService, computeNodeInstanceContext);
-        metaDataContextHolder.updateMetaDataContextsAsync(reloadMetaDataContexts);
+                ruleConfigurations, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+        metaDataContexts.set(reloadMetaDataContexts);
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final Collection<ShardingSphereRule> rules) {
