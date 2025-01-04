@@ -64,7 +64,7 @@ public class ShardingRuleChecker {
     
     private void checkUniqueActualDataNodesInTableRules() {
         Collection<DataNode> uniqueActualDataNodes = new HashSet<>(shardingRule.getShardingTables().size(), 1F);
-        shardingRule.getShardingTables().forEach((key, value) -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, value.getActualDataNodes().iterator().next()));
+        shardingRule.getShardingTables().forEach((key, value) -> value.getActualDataNodes().forEach(each -> checkUniqueActualDataNodes(uniqueActualDataNodes, key, each)));
     }
     
     private void checkUniqueActualDataNodes(final Collection<DataNode> uniqueActualDataNodes, final String logicTable, final DataNode sampleActualDataNode) {
