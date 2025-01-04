@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.subscriber;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
+import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ class ClusterEventSubscriberRegistryTest {
     void assertRegister() {
         EventBusContext eventBusContext = mock(EventBusContext.class);
         ClusterEventSubscriberRegistry registry = new ClusterEventSubscriberRegistry(eventBusContext);
-        EventSubscriber subscriber = mock(EventSubscriber.class);
+        DeliverEventSubscriber subscriber = mock(DeliverEventSubscriber.class);
         registry.register(Collections.singleton(subscriber));
         verify(eventBusContext).register(subscriber);
     }

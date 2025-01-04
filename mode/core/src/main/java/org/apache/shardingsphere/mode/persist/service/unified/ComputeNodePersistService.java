@@ -65,7 +65,7 @@ public final class ComputeNodePersistService {
     /**
      * Persist instance labels.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @param labels instance labels
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
@@ -73,10 +73,10 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Persist instance worker id.
+     * Persist instance worker ID.
      *
-     * @param instanceId instance id
-     * @param workerId worker id
+     * @param instanceId instance ID
+     * @param workerId worker ID
      */
     public void persistInstanceWorkerId(final String instanceId, final int workerId) {
         repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
@@ -85,7 +85,7 @@ public final class ComputeNodePersistService {
     /**
      * Load instance labels.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @return labels
      */
     @SuppressWarnings("unchecked")
@@ -97,7 +97,7 @@ public final class ComputeNodePersistService {
     /**
      * Load compute node state.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @return state
      */
     public String loadComputeNodeState(final String instanceId) {
@@ -105,10 +105,10 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load instance worker id.
+     * Load instance worker ID.
      *
-     * @param instanceId instance id
-     * @return worker id
+     * @param instanceId instance ID
+     * @return worker ID
      */
     public Optional<Integer> loadInstanceWorkerId(final String instanceId) {
         try {
@@ -143,9 +143,9 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Load compute node instance by instance definition.
+     * Load compute node instance by instance meta data.
      *
-     * @param instanceMetaData instance definition
+     * @param instanceMetaData instance meta data
      * @return compute node instance
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
@@ -157,9 +157,9 @@ public final class ComputeNodePersistService {
     }
     
     /**
-     * Get assigned worker ids.
+     * Get assigned worker IDs.
      *
-     * @return assigned worker ids
+     * @return assigned worker IDs
      */
     public Collection<Integer> getAssignedWorkerIds() {
         Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
@@ -176,7 +176,7 @@ public final class ComputeNodePersistService {
     /**
      * Update compute node state.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @param instanceState instance state
      */
     public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
