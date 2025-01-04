@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data context holder.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public final class MetaDataContextHolder {
     
@@ -44,8 +46,8 @@ public final class MetaDataContextHolder {
      */
     public MetaDataContexts getMetaDataContextsAsync() {
         try {
-            return future.get(5, TimeUnit.SECONDS);
-        } catch (final InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException ex) {
+            return future.get(5L, TimeUnit.SECONDS);
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
             return metaDataContexts.get();
         }
     }
