@@ -41,6 +41,15 @@ public final class DatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
+     * Get meta data node.
+     *
+     * @return meta data node
+     */
+    public static String getMetaDataNode() {
+        return String.join("/", "", ROOT_NODE);
+    }
+    
+    /**
      * Get database name path.
      *
      * @param databaseName database name
@@ -48,6 +57,16 @@ public final class DatabaseMetaDataNode {
      */
     public static String getDatabaseNamePath(final String databaseName) {
         return String.join("/", getMetaDataNode(), databaseName);
+    }
+    
+    /**
+     * Get meta data schemas path.
+     *
+     * @param databaseName database name
+     * @return schemas path
+     */
+    public static String getMetaDataSchemasPath(final String databaseName) {
+        return String.join("/", getDatabaseNamePath(databaseName), SCHEMAS_NODE);
     }
     
     /**
@@ -62,16 +81,6 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get meta data schemas path.
-     *
-     * @param databaseName database name
-     * @return schemas path
-     */
-    public static String getMetaDataSchemasPath(final String databaseName) {
-        return String.join("/", getDatabaseNamePath(databaseName), SCHEMAS_NODE);
-    }
-    
-    /**
      * Get meta data tables path.
      *
      * @param databaseName database name
@@ -80,6 +89,17 @@ public final class DatabaseMetaDataNode {
      */
     public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
         return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), TABLES_NODE);
+    }
+    
+    /**
+     * Get version node by active version path.
+     *
+     * @param rulePath rule path
+     * @param activeVersion active version
+     * @return active version node
+     */
+    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
     }
     
     /**
@@ -106,25 +126,5 @@ public final class DatabaseMetaDataNode {
         Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get version node by active version path.
-     *
-     * @param rulePath rule path
-     * @param activeVersion active version
-     * @return active version node
-     */
-    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
-        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
-    }
-    
-    /**
-     * Get meta data node.
-     *
-     * @return meta data node
-     */
-    public static String getMetaDataNode() {
-        return String.join("/", "", ROOT_NODE);
     }
 }

@@ -29,13 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DatabaseMetaDataNodeTest {
     
     @Test
-    void assertGetDatabaseNamePath() {
-        assertThat(DatabaseMetaDataNode.getDatabaseNamePath("foo_db"), is("/metadata/foo_db"));
+    void assertGetMetaDataNode() {
+        assertThat(DatabaseMetaDataNode.getMetaDataNode(), is("/metadata"));
     }
     
     @Test
-    void assertGetMetaDataSchemaPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+    void assertGetDatabaseNamePath() {
+        assertThat(DatabaseMetaDataNode.getDatabaseNamePath("foo_db"), is("/metadata/foo_db"));
     }
     
     @Test
@@ -44,8 +44,18 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
+    void assertGetMetaDataSchemaPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+    }
+    
+    @Test
     void assertGetMetaDataTablesPath() {
         assertThat(DatabaseMetaDataNode.getMetaDataTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    }
+    
+    @Test
+    void assertGetVersionNodeByActiveVersionPath() {
+        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
     }
     
     @Test
@@ -98,15 +108,5 @@ class DatabaseMetaDataNodeTest {
     void assertNotFindSchemaNameWithContainsChildPath() {
         Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
         assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertGetVersionNodeByActiveVersionPath() {
-        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
-    }
-    
-    @Test
-    void assertGetMetaDataNode() {
-        assertThat(DatabaseMetaDataNode.getMetaDataNode(), is("/metadata"));
     }
 }
