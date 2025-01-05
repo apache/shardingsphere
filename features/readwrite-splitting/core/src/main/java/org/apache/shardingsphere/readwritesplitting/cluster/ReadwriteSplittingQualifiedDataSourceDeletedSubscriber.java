@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.cluster;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
-import org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber;
+import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**

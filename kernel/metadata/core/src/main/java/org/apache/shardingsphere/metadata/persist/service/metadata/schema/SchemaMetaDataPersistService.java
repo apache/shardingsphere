@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metadata.persist.service.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.TableMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
@@ -53,7 +53,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
+        repository.persist(DatabaseMetaDataNodePath.getTablesPath(databaseName, schemaName), "");
     }
     
     /**
@@ -63,7 +63,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
+        repository.delete(DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName));
     }
     
     /**
@@ -113,7 +113,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName)).stream()
+        return repository.getChildrenKeys(DatabaseMetaDataNodePath.getSchemasPath(databaseName)).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }
