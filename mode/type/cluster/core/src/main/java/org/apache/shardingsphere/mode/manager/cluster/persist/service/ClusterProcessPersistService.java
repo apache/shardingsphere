@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -71,7 +71,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessTriggerInstanceNodePath(onlinePath, taskId)))
+                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(instanceId -> ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId)))
                 .collect(Collectors.toList());
     }
     
@@ -91,7 +91,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessKillInstanceIdNodePath(onlinePath, processId)))
+                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(onlinePath -> ComputeNodePath.getKillProcessTriggerPath(onlinePath, processId)))
                 .collect(Collectors.toList());
     }
     

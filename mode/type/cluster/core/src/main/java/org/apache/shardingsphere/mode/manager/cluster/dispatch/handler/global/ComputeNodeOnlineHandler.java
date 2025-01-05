@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +43,7 @@ public final class ComputeNodeOnlineHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNode.getOnlineInstanceNodePath();
+        return ComputeNodePath.getOnlineRootPath();
     }
     
     @Override
@@ -69,6 +69,6 @@ public final class ComputeNodeOnlineHandler implements DataChangedEventHandler {
     }
     
     private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
-        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+        return Pattern.compile(ComputeNodePath.getOnlineRootPath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

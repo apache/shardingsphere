@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -45,11 +45,11 @@ public final class ClusterProcessPersistCoordinator implements ProcessPersistCoo
         if (!processes.isEmpty()) {
             repository.persist(ProcessNode.getProcessListInstancePath(taskId, instanceId), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        repository.delete(ComputeNode.getProcessTriggerInstanceNodePath(instanceId, taskId));
+        repository.delete(ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId));
     }
     
     @Override
     public void cleanProcess(final String instanceId, final String processId) {
-        repository.delete(ComputeNode.getProcessKillInstanceIdNodePath(instanceId, processId));
+        repository.delete(ComputeNodePath.getKillProcessTriggerPath(instanceId, processId));
     }
 }

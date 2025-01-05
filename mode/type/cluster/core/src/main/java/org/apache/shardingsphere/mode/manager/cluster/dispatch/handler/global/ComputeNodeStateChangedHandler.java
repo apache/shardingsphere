@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -37,7 +37,7 @@ public final class ComputeNodeStateChangedHandler implements DataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNode.getComputeNodePath();
+        return ComputeNodePath.getRootPath();
     }
     
     @Override
@@ -45,20 +45,20 @@ public final class ComputeNodeStateChangedHandler implements DataChangedEventHan
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
-        if (Strings.isNullOrEmpty(instanceId)) {
-            return;
-        }
+        ComputeNodePath.findInstanceId(event.getKey()).ifPresent(optional -> handle(contextManager, event, optional));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        if (event.getKey().equals(ComputeNode.getComputeNodeStateNodePath(instanceId)) && Type.DELETED != event.getType()) {
+        if (event.getKey().equals(ComputeNodePath.getStatePath(instanceId)) && Type.DELETED != event.getType()) {
             computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
-        } else if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId)) && Type.DELETED != event.getType()) {
+        } else if (event.getKey().equals(ComputeNodePath.getLabelsPath(instanceId)) && Type.DELETED != event.getType()) {
             // TODO labels may be empty
             computeNodeInstanceContext.updateLabels(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
-        } else if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
+        } else if (event.getKey().equals(ComputeNodePath.getWorkerIdPath(instanceId))) {
             computeNodeInstanceContext.updateWorkerId(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue()));
         }
     }
