@@ -54,8 +54,8 @@ class DatabaseMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetVersionNodeByActiveVersionPath() {
-        assertThat(DatabaseMetaDataNodePath.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
+    void assertGetVersionPath() {
+        assertThat(DatabaseMetaDataNodePath.getVersionPath("foo_rule", "1"), is("foo_rule/1"));
     }
     
     @Test

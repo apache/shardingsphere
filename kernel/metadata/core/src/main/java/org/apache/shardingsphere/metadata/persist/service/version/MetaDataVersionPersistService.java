@@ -55,7 +55,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
-        return repository.query(DatabaseMetaDataNodePath.getVersionNodeByActiveVersionPath(path, activeVersion));
+        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
     }
     
     @Override

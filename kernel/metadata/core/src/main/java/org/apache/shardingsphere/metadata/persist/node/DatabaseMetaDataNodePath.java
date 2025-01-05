@@ -40,6 +40,8 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String VERSIONS = "versions";
     
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
+    
     /**
      * Get meta data root path.
      *
@@ -92,13 +94,13 @@ public final class DatabaseMetaDataNodePath {
     }
     
     /**
-     * Get version node by active version path.
+     * Get version path.
      *
      * @param rulePath rule path
      * @param activeVersion active version
-     * @return active version path
+     * @return version path
      */
-    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+    public static String getVersionPath(final String rulePath, final String activeVersion) {
         return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
     }
     
@@ -110,7 +112,8 @@ public final class DatabaseMetaDataNodePath {
      * @return found database name
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
-        Pattern pattern = Pattern.compile(getRootPath() + "/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getDatabasePath(IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -123,7 +126,8 @@ public final class DatabaseMetaDataNodePath {
      * @return found schema name
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
-        Pattern pattern = Pattern.compile(getRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getSchemaPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
