@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.url.core.arg;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,20 +55,20 @@ class URLArgumentLineRenderTest {
     
     @Test
     void assertReadWithNonePlaceholder() throws IOException, URISyntaxException {
-        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", "none");
-        byte[] expected = readContent("config/to-be-replaced-fixture.yaml", "none");
+        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", PropertiesBuilder.build(new Property("placeholder-type", "none")));
+        byte[] expected = readContent("config/to-be-replaced-fixture.yaml", PropertiesBuilder.build(new Property("placeholder-type", "none")));
         assertThat(new String(actual), is(new String(expected)));
     }
     
     @Test
     void assertReadWithSystemPropertiesPlaceholder() throws IOException, URISyntaxException {
-        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", "system_props");
-        byte[] expected = readContent("config/replaced-fixture.yaml", "system_props");
+        byte[] actual = readContent("config/to-be-replaced-fixture.yaml", PropertiesBuilder.build(new Property("placeholder-type", "system_props")));
+        byte[] expected = readContent("config/replaced-fixture.yaml", PropertiesBuilder.build(new Property("placeholder-type", "system_props")));
         assertThat(new String(actual), is(new String(expected)));
     }
     
-    private byte[] readContent(final String name, final String placeholderType) throws IOException, URISyntaxException {
+    private byte[] readContent(final String name, final Properties prop) throws IOException, URISyntaxException {
         File file = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).toURI().getPath());
-        return URLArgumentLineRender.render(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList()), placeholderType);
+        return URLArgumentLineRender.render(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList()), prop);
     }
 }

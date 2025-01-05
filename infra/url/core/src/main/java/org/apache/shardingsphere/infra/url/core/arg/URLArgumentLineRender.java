@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * URL argument line render.
@@ -34,13 +35,14 @@ public final class URLArgumentLineRender {
      * Render argument.
      *
      * @param lines lines to be rendered
-     * @param placeholderType configuration content placeholder type
+     * @param props properties
      * @return rendered content
      */
-    public static byte[] render(final Collection<String> lines, final String placeholderType) {
+    public static byte[] render(final Collection<String> lines, final Properties props) {
+        String placeholderType = URLArgumentPlaceholderTypeFactory.valueOf(props);
         StringBuilder result = new StringBuilder();
         for (String each : lines) {
-            Optional<URLArgumentLine> argLine = "none".equalsIgnoreCase(placeholderType) ? Optional.empty() : URLArgumentLine.parse(each);
+            Optional<URLArgumentLine> argLine = "none".equalsIgnoreCase(placeholderType) ? Optional.empty() : URLArgumentLine.parse(each, props);
             result.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(each)).append(System.lineSeparator());
         }
         return result.toString().getBytes(StandardCharsets.UTF_8);

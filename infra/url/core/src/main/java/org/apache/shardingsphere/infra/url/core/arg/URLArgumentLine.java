@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.argument.core.ShardingSpherePlaceholderLo
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,18 +38,21 @@ public final class URLArgumentLine {
     
     private final Matcher placeholderMatcher;
     
+    private final Properties props;
+    
     /**
      * Parse URL argument line.
      *
      * @param line line
+     * @param props properties
      * @return parsed URL argument line
      */
-    public static Optional<URLArgumentLine> parse(final String line) {
+    public static Optional<URLArgumentLine> parse(final String line, final Properties props) {
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return Optional.empty();
         }
-        return Optional.of(new URLArgumentLine(matcher));
+        return Optional.of(new URLArgumentLine(matcher, props));
     }
     
     /**
@@ -84,7 +88,7 @@ public final class URLArgumentLine {
         if (Strings.isNullOrEmpty(type) || "none".equalsIgnoreCase(type)) {
             return null;
         }
-        ShardingSpherePlaceholderLoader shardingSpherePlaceholderLoader = TypedSPILoader.getService(ShardingSpherePlaceholderLoader.class, type);
+        ShardingSpherePlaceholderLoader shardingSpherePlaceholderLoader = TypedSPILoader.getService(ShardingSpherePlaceholderLoader.class, type, props);
         return shardingSpherePlaceholderLoader.getArgumentValue(argName);
     }
 }

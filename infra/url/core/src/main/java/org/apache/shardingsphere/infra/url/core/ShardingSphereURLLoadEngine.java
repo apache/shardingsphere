@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.url.core;
 
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
-import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 
@@ -46,6 +45,6 @@ public final class ShardingSphereURLLoadEngine {
      */
     public byte[] loadContent() {
         Collection<String> lines = Arrays.asList(urlLoader.load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
-        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
+        return URLArgumentLineRender.render(lines, url.getQueryProps());
     }
 }

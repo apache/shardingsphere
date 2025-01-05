@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.url.core.arg;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,14 +37,14 @@ class URLArgumentLineTest {
     
     @Test
     void assertParseWithInvalidPattern() {
-        assertFalse(URLArgumentLine.parse("invalid").isPresent());
+        assertFalse(URLArgumentLine.parse("invalid", new Properties()).isPresent());
     }
     
     @Test
     void assertReplaceArgumentWithNone() {
-        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
-        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1);
-        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2);
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line, new Properties());
+        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1, new Properties());
+        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2, new Properties());
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
@@ -54,9 +55,9 @@ class URLArgumentLineTest {
     
     @Test
     void assertReplaceArgumentWithEnvironment() {
-        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
-        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1);
-        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2);
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line, new Properties());
+        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1, new Properties());
+        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2, new Properties());
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
@@ -70,9 +71,9 @@ class URLArgumentLineTest {
         System.setProperty("value", "props_value");
         System.setProperty("value1", "props_value1");
         System.setProperty("value2", "props_value2");
-        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
-        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1);
-        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2);
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line, new Properties());
+        Optional<URLArgumentLine> argLineMultiple1 = URLArgumentLine.parse(lineMultiple1, new Properties());
+        Optional<URLArgumentLine> argLineMultiple2 = URLArgumentLine.parse(lineMultiple2, new Properties());
         assertTrue(argLine.isPresent());
         assertTrue(argLineMultiple1.isPresent());
         assertTrue(argLineMultiple2.isPresent());
