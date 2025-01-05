@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
@@ -59,12 +59,12 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(eventKey);
+        Optional<String> schemaName = DatabaseMetaDataNodePath.findSchemaName(eventKey, false);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(eventKey);
+        schemaName = DatabaseMetaDataNodePath.findSchemaName(eventKey, true);
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;
