@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +34,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return GlobalNode.getPropsRootNode();
+        return GlobalNodePath.getPropsRootPath();
     }
     
     @Override
@@ -45,7 +44,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
+        if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return;
         }
         Preconditions.checkArgument(event.getValue().equals(

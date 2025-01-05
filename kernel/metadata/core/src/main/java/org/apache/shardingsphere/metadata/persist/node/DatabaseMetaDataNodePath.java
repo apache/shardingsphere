@@ -36,9 +36,9 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
     
-    private static final String ACTIVE_VERSION = "active_version";
+    private static final String VERSIONS_NODE = "versions";
     
-    private static final String VERSIONS = "versions";
+    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
@@ -101,7 +101,7 @@ public final class DatabaseMetaDataNodePath {
      * @return version path
      */
     public static String getVersionPath(final String rulePath, final String activeVersion) {
-        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
+        return rulePath.replace(ACTIVE_VERSION_NODE, VERSIONS_NODE) + "/" + activeVersion;
     }
     
     /**
