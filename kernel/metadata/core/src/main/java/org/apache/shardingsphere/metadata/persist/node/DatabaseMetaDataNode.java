@@ -83,50 +83,28 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get database name.
+     * Find database name.
      *
      * @param path path
-     * @return database name
+     * @param containsChildPath whether contains child path
+     * @return found database name
      */
-    public static Optional<String> getDatabaseName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
-     * Get database name by schema path.
-     *
-     * @param schemaPath database path
-     * @return database name
-     */
-    public static Optional<String> getDatabaseNameBySchemaNode(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(schemaPath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Get schema name.
+     * Find schema name.
      *
      * @param path path
-     * @return schema name
+     * @param containsChildPath whether contains child path
+     * @return found schema name
      */
-    public static Optional<String> getSchemaName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get schema name by table path.
-     *
-     * @param tablePath table path
-     * @return schema name
-     */
-    public static Optional<String> getSchemaNameByTableNode(final String tablePath) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(tablePath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     

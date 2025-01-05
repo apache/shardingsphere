@@ -59,12 +59,12 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = DatabaseMetaDataNode.getSchemaName(eventKey);
+        Optional<String> schemaName = DatabaseMetaDataNode.findSchemaName(eventKey, false);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        schemaName = DatabaseMetaDataNode.getSchemaNameByTableNode(eventKey);
+        schemaName = DatabaseMetaDataNode.findSchemaName(eventKey, true);
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;

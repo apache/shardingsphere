@@ -49,51 +49,55 @@ class DatabaseMetaDataNodeTest {
     }
     
     @Test
-    void assertGetDatabaseName() {
-        Optional<String> actual = DatabaseMetaDataNode.getDatabaseName("/metadata/foo_db");
+    void assertFindDatabaseNameWithNotContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db", false);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
-    void assertGetDatabaseNameIfNotFound() {
-        assertFalse(DatabaseMetaDataNode.getDatabaseName("/metadata").isPresent());
+    void assertNotFindDatabaseNameWithNotContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db/schemas/foo_schema", false);
+        assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertGetDatabaseNameBySchemaNode() {
-        Optional<String> actual = DatabaseMetaDataNode.getDatabaseNameBySchemaNode("/metadata/foo_db/schemas/foo_schema");
+    void assertFindDatabaseNameWithContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db/schemas/foo_schema", true);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
-    void assertGetDatabaseNameBySchemaNodeIfNotFound() {
-        assertFalse(DatabaseMetaDataNode.getDatabaseNameBySchemaNode("/xxx/foo_db").isPresent());
+    void assertNotFindDatabaseNameWithContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/xxx/foo_db/schemas/foo_schema", true);
+        assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertGetSchemaName() {
-        Optional<String> actual = DatabaseMetaDataNode.getSchemaName("/metadata/foo_db/schemas/foo_schema");
+    void assertFindSchemaNameWithNotContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema", false);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
-    void assertGetSchemaNameIfNotFound() {
-        assertFalse(DatabaseMetaDataNode.getSchemaName("/metadata/foo_db/xxx/foo_schema").isPresent());
+    void assertNotFindSchemaNameWithNotContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", false);
+        assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertGetSchemaNameByTableNode() {
-        Optional<String> actual = DatabaseMetaDataNode.getSchemaNameByTableNode("/metadata/foo_db/schemas/foo_schema/tables");
+    void assertFindSchemaNameWithContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", true);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
-    void assertGetSchemaNameByTableNodeIfNotFound() {
-        assertFalse(DatabaseMetaDataNode.getSchemaNameByTableNode("/xxx/foo_db/schemas/foo_schema/tables").isPresent());
+    void assertNotFindSchemaNameWithContainsChildPath() {
+        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
+        assertFalse(actual.isPresent());
     }
     
     @Test

@@ -40,7 +40,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameBySchemaNode(event.getKey());
+        Optional<String> databaseName = DatabaseMetaDataNode.findDatabaseName(event.getKey(), true);
         if (!databaseName.isPresent()) {
             return;
         }
