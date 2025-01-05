@@ -26,87 +26,87 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DatabaseMetaDataNodeTest {
+class DatabaseMetaDataNodePathTest {
     
     @Test
-    void assertGetMetaDataNode() {
-        assertThat(DatabaseMetaDataNode.getMetaDataNode(), is("/metadata"));
+    void assertGetRootPath() {
+        assertThat(DatabaseMetaDataNodePath.getRootPath(), is("/metadata"));
     }
     
     @Test
-    void assertGetDatabaseNamePath() {
-        assertThat(DatabaseMetaDataNode.getDatabaseNamePath("foo_db"), is("/metadata/foo_db"));
+    void assertGetDatabasePath() {
+        assertThat(DatabaseMetaDataNodePath.getDatabasePath("foo_db"), is("/metadata/foo_db"));
     }
     
     @Test
-    void assertGetMetaDataSchemasPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataSchemasPath("foo_db"), is("/metadata/foo_db/schemas"));
+    void assertGetSchemasPath() {
+        assertThat(DatabaseMetaDataNodePath.getSchemasPath("foo_db"), is("/metadata/foo_db/schemas"));
     }
     
     @Test
-    void assertGetMetaDataSchemaPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+    void assertGetSchemaPath() {
+        assertThat(DatabaseMetaDataNodePath.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
     
     @Test
-    void assertGetMetaDataTablesPath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    void assertGetTablesPath() {
+        assertThat(DatabaseMetaDataNodePath.getTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test
     void assertGetVersionNodeByActiveVersionPath() {
-        assertThat(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
+        assertThat(DatabaseMetaDataNodePath.getVersionNodeByActiveVersionPath("foo_rule", "1"), is("foo_rule/1"));
     }
     
     @Test
     void assertFindDatabaseNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db", false);
+        Optional<String> actual = DatabaseMetaDataNodePath.findDatabaseName("/metadata/foo_db", false);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
     void assertNotFindDatabaseNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db/schemas/foo_schema", false);
+        Optional<String> actual = DatabaseMetaDataNodePath.findDatabaseName("/metadata/foo_db/schemas/foo_schema", false);
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertFindDatabaseNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/metadata/foo_db/schemas/foo_schema", true);
+        Optional<String> actual = DatabaseMetaDataNodePath.findDatabaseName("/metadata/foo_db/schemas/foo_schema", true);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_db"));
     }
     
     @Test
     void assertNotFindDatabaseNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findDatabaseName("/xxx/foo_db/schemas/foo_schema", true);
+        Optional<String> actual = DatabaseMetaDataNodePath.findDatabaseName("/xxx/foo_db/schemas/foo_schema", true);
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertFindSchemaNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema", false);
+        Optional<String> actual = DatabaseMetaDataNodePath.findSchemaName("/metadata/foo_db/schemas/foo_schema", false);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
     void assertNotFindSchemaNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", false);
+        Optional<String> actual = DatabaseMetaDataNodePath.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", false);
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertFindSchemaNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", true);
+        Optional<String> actual = DatabaseMetaDataNodePath.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", true);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
     void assertNotFindSchemaNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNode.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
+        Optional<String> actual = DatabaseMetaDataNodePath.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
         assertFalse(actual.isPresent());
     }
 }

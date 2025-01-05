@@ -25,10 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database meta data node.
+ * Database meta data node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseMetaDataNode {
+public final class DatabaseMetaDataNodePath {
     
     private static final String ROOT_NODE = "metadata";
     
@@ -41,32 +41,32 @@ public final class DatabaseMetaDataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get meta data node.
+     * Get meta data root path.
      *
-     * @return meta data node
+     * @return meta data root path
      */
-    public static String getMetaDataNode() {
+    public static String getRootPath() {
         return String.join("/", "", ROOT_NODE);
     }
     
     /**
-     * Get database name path.
+     * Get database path.
      *
      * @param databaseName database name
-     * @return database name path
+     * @return database path
      */
-    public static String getDatabaseNamePath(final String databaseName) {
-        return String.join("/", getMetaDataNode(), databaseName);
+    public static String getDatabasePath(final String databaseName) {
+        return String.join("/", getRootPath(), databaseName);
     }
     
     /**
-     * Get meta data schemas path.
+     * Get schemas path.
      *
      * @param databaseName database name
      * @return schemas path
      */
-    public static String getMetaDataSchemasPath(final String databaseName) {
-        return String.join("/", getDatabaseNamePath(databaseName), SCHEMAS_NODE);
+    public static String getSchemasPath(final String databaseName) {
+        return String.join("/", getDatabasePath(databaseName), SCHEMAS_NODE);
     }
     
     /**
@@ -74,21 +74,21 @@ public final class DatabaseMetaDataNode {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return tables path
+     * @return schema path
      */
-    public static String getMetaDataSchemaPath(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataSchemasPath(databaseName), schemaName);
+    public static String getSchemaPath(final String databaseName, final String schemaName) {
+        return String.join("/", getSchemasPath(databaseName), schemaName);
     }
     
     /**
-     * Get meta data tables path.
+     * Get tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @return tables path
      */
-    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), TABLES_NODE);
+    public static String getTablesPath(final String databaseName, final String schemaName) {
+        return String.join("/", getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
     /**
@@ -96,7 +96,7 @@ public final class DatabaseMetaDataNode {
      *
      * @param rulePath rule path
      * @param activeVersion active version
-     * @return active version node
+     * @return active version path
      */
     public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
         return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
@@ -110,7 +110,7 @@ public final class DatabaseMetaDataNode {
      * @return found database name
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRootPath() + "/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -123,7 +123,7 @@ public final class DatabaseMetaDataNode {
      * @return found schema name
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)" + (containsChildPath ? "?" : "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
