@@ -20,12 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return GlobalNode.getGlobalRuleRootNode();
+        return GlobalNodePath.getRuleRootPath();
     }
     
     @Override
@@ -50,10 +49,10 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
     @SuppressWarnings("unchecked")
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
+        if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
             return;
         }
-        Optional<String> ruleName = GlobalNodePath.getRuleName(event.getKey());
+        Optional<String> ruleName = org.apache.shardingsphere.mode.path.GlobalNodePath.getRuleName(event.getKey());
         if (!ruleName.isPresent()) {
             return;
         }
