@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
-import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
+import org.apache.shardingsphere.metadata.persist.node.ProcessNodePath;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -43,7 +43,7 @@ public final class ClusterProcessPersistCoordinator implements ProcessPersistCoo
     public void reportLocalProcesses(final String instanceId, final String taskId) {
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            repository.persist(ProcessNode.getProcessListInstancePath(taskId, instanceId), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
+            repository.persist(ProcessNodePath.getInstanceProcessList(taskId, instanceId), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
         repository.delete(ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId));
     }

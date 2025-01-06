@@ -22,16 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ProcessNodeTest {
+class ProcessNodePathTest {
     
     @Test
-    void assertGetProcessIdPath() {
-        assertThat(ProcessNodePath.getRootPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
+    void assertGetRootPath() {
+        assertThat(ProcessNodePath.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
     }
     
     @Test
-    void assertGetProcessListInstancePath() {
-        assertThat(ProcessNodePath.getInstanceProcessList("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
-                is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
+    void assertGetInstanceProcessList() {
+        assertThat(ProcessNodePath.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }
 }
