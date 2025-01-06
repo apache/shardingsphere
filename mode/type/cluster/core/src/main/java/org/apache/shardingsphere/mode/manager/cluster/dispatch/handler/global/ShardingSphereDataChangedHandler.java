@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
+import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -38,7 +38,7 @@ public final class ShardingSphereDataChangedHandler implements DataChangedEventH
     
     @Override
     public String getSubscribedKey() {
-        return ShardingSphereDataNode.getShardingSphereDataNodePath();
+        return ShardingSphereDataNodePath.getDatabasesRootPath();
     }
     
     @Override
@@ -49,34 +49,34 @@ public final class ShardingSphereDataChangedHandler implements DataChangedEventH
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         ShardingSphereDatabaseDataManager databaseManager = contextManager.getMetaDataContextManager().getDatabaseManager();
-        Optional<String> databaseName = ShardingSphereDataNode.getDatabaseName(event.getKey());
+        Optional<String> databaseName = ShardingSphereDataNodePath.findDatabaseName(event.getKey());
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
             return;
         }
-        databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
+        databaseName = ShardingSphereDataNodePath.getDatabaseNameByDatabasePath(event.getKey());
         if (!databaseName.isPresent()) {
             return;
         }
-        Optional<String> schemaName = ShardingSphereDataNode.getSchemaName(event.getKey());
+        Optional<String> schemaName = ShardingSphereDataNodePath.findSchemaName(event.getKey());
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get());
             return;
         }
-        schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
+        schemaName = ShardingSphereDataNodePath.getSchemaNameBySchemaPath(event.getKey());
         if (!schemaName.isPresent()) {
             return;
         }
-        Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
+        Optional<String> tableName = ShardingSphereDataNodePath.getTableName(event.getKey());
         if (tableName.isPresent()) {
             handleTableChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get(), tableName.get());
             return;
         }
-        tableName = ShardingSphereDataNode.getTableNameByRowPath(event.getKey());
+        tableName = ShardingSphereDataNodePath.getTableNameByRowPath(event.getKey());
         if (!tableName.isPresent()) {
             return;
         }
-        Optional<String> rowPath = ShardingSphereDataNode.getRowUniqueKey(event.getKey());
+        Optional<String> rowPath = ShardingSphereDataNodePath.getRowUniqueKey(event.getKey());
         if (rowPath.isPresent()) {
             handleRowDataChanged(databaseManager, event.getType(), event.getValue(), databaseName.get(), schemaName.get(), tableName.get(), rowPath.get());
         }
