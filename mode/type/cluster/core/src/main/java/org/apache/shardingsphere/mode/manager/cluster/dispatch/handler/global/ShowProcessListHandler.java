@@ -47,9 +47,12 @@ public final class ShowProcessListHandler implements DataChangedEventHandler {
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         Matcher matcher = getShowProcessListTriggerMatcher(event);
-        if (!matcher.find()) {
-            return;
+        if (matcher.find()) {
+            handle(contextManager, event, matcher);
         }
+    }
+    
+    private void handle(final ContextManager contextManager, final DataChangedEvent event, final Matcher matcher) {
         String instanceId = matcher.group(1);
         String taskId = matcher.group(2);
         if (Type.ADDED == event.getType()) {

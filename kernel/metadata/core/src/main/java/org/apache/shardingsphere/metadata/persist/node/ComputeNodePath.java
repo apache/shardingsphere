@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ComputeNodePath {
     
-    private static final String ROOT_NODE = "nodes/compute_nodes";
+    private static final String ROOT_NODE = "/nodes/compute_nodes";
     
     private static final String ONLINE_NODE = "online";
     
@@ -53,7 +53,7 @@ public final class ComputeNodePath {
      * @return compute node root path
      */
     public static String getRootPath() {
-        return String.join("/", "", ROOT_NODE);
+        return ROOT_NODE;
     }
     
     /**
@@ -62,7 +62,7 @@ public final class ComputeNodePath {
      * @return online root path
      */
     public static String getOnlineRootPath() {
-        return String.join("/", "", ROOT_NODE, ONLINE_NODE);
+        return String.join("/", getRootPath(), ONLINE_NODE);
     }
     
     /**
@@ -92,7 +92,7 @@ public final class ComputeNodePath {
      * @return show process list trigger root path
      */
     public static String getShowProcessListTriggerRootPath() {
-        return String.join("/", "", ROOT_NODE, SHOW_PROCESS_LIST_TRIGGER_NODE);
+        return String.join("/", ROOT_NODE, SHOW_PROCESS_LIST_TRIGGER_NODE);
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ComputeNodePath {
      * @return kill process trigger root path
      */
     public static String getKillProcessTriggerRootPath() {
-        return String.join("/", "", ROOT_NODE, KILL_PROCESS_TRIGGER_NODE);
+        return String.join("/", ROOT_NODE, KILL_PROCESS_TRIGGER_NODE);
     }
     
     /**
@@ -133,7 +133,7 @@ public final class ComputeNodePath {
      * @return state path
      */
     public static String getStatePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, STATUS_NODE, instanceId);
+        return String.join("/", ROOT_NODE, STATUS_NODE, instanceId);
     }
     
     /**
@@ -142,7 +142,7 @@ public final class ComputeNodePath {
      * @return worker ID root path
      */
     public static String getWorkerIdRootPath() {
-        return String.join("/", "", ROOT_NODE, WORKER_ID_NODE);
+        return String.join("/", ROOT_NODE, WORKER_ID_NODE);
     }
     
     /**
@@ -162,7 +162,7 @@ public final class ComputeNodePath {
      * @return labels path
      */
     public static String getLabelsPath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, LABELS_NODE, instanceId);
+        return String.join("/", ROOT_NODE, LABELS_NODE, instanceId);
     }
     
     /**
