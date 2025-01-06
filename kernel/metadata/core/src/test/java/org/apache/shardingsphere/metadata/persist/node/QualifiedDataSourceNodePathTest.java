@@ -24,27 +24,34 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QualifiedDataSourceNodeTest {
+class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(QualifiedDataSourceNode.getRootPath(), is("/nodes/qualified_data_sources"));
+        assertThat(QualifiedDataSourceNodePath.getRootPath(), is("/nodes/qualified_data_sources"));
     }
     
     @Test
-    void assertGetQualifiedDataSourceNodePath() {
-        assertThat(QualifiedDataSourceNode.getQualifiedDataSourceNodePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
+    void assertGetQualifiedDataSourcePath() {
+        assertThat(QualifiedDataSourceNodePath.getQualifiedDataSourcePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
                 is("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0"));
     }
     
     @Test
-    void assertExtractQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = QualifiedDataSourceNode.extractQualifiedDataSource("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0");
+    void assertFindQualifiedDataSource() {
+        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePath.findQualifiedDataSource("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
         assertThat(actual.get().getGroupName(), is("readwrite_ds"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
+    }
+    
+    @Test
+    void assertNotFindQualifiedDataSource() {
+        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePath.findQualifiedDataSource("/nodes/xxx/");
+        assertFalse(actual.isPresent());
     }
 }

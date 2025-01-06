@@ -26,22 +26,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Qualified data source node.
+ * Qualified data source node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QualifiedDataSourceNode {
+public final class QualifiedDataSourceNodePath {
     
     private static final String ROOT_NODE = "nodes";
     
-    private static final String QUALIFIED_DATA_SOURCES = "qualified_data_sources";
+    private static final String QUALIFIED_DATA_SOURCES_NODE = "qualified_data_sources";
+    
+    private static final String QUALIFIED_DATA_SOURCE_PATTERN = "(\\S+)";
     
     /**
      * Get qualified data source root path.
      *
-     * @return root path of qualified data source
+     * @return qualified data source root path
      */
     public static String getRootPath() {
-        return String.join("/", "", ROOT_NODE, QUALIFIED_DATA_SOURCES);
+        return String.join("/", "", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
     }
     
     /**
@@ -50,18 +52,18 @@ public final class QualifiedDataSourceNode {
      * @param qualifiedDataSource qualified data source
      * @return qualified data source path
      */
-    public static String getQualifiedDataSourceNodePath(final QualifiedDataSource qualifiedDataSource) {
+    public static String getQualifiedDataSourcePath(final QualifiedDataSource qualifiedDataSource) {
         return String.join("/", getRootPath(), qualifiedDataSource.toString());
     }
     
     /**
-     * Extract qualified data source.
+     * Find qualified data source.
      *
      * @param qualifiedDataSourcePath qualified data source path
-     * @return extracted qualified data source
+     * @return found qualified data source
      */
-    public static Optional<QualifiedDataSource> extractQualifiedDataSource(final String qualifiedDataSourcePath) {
-        Pattern pattern = Pattern.compile(getRootPath() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<QualifiedDataSource> findQualifiedDataSource(final String qualifiedDataSourcePath) {
+        Pattern pattern = Pattern.compile(String.join("/", getRootPath(), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
         return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
