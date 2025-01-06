@@ -133,6 +133,6 @@ class ShardingSphereDataNodePathTest {
     
     @Test
     void assertGetJobPath() {
-        assertThat(ShardingSphereDataNodePath.getJobPath(), is("statistics/job"));
+        assertThat(ShardingSphereDataNodePath.getJobPath(), is("/statistics/job"));
     }
 }

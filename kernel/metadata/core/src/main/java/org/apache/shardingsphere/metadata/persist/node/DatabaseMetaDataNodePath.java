@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseMetaDataNodePath {
     
-    private static final String ROOT_NODE = "metadata";
+    private static final String ROOT_NODE = "/metadata";
     
     private static final String SCHEMAS_NODE = "schemas";
     
@@ -48,7 +48,7 @@ public final class DatabaseMetaDataNodePath {
      * @return meta data root path
      */
     public static String getRootPath() {
-        return String.join("/", "", ROOT_NODE);
+        return ROOT_NODE;
     }
     
     /**

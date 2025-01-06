@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalNodePath {
     
-    private static final String RULE_NODE = "rules";
+    private static final String RULE_NODE = "/rules";
     
-    private static final String PROPS_NODE = "props";
+    private static final String PROPS_NODE = "/props";
     
     private static final String VERSIONS_NODE = "versions";
     
@@ -40,7 +40,7 @@ public final class GlobalNodePath {
      * @return global rule root path
      */
     public static String getRuleRootPath() {
-        return String.join("/", "", RULE_NODE);
+        return RULE_NODE;
     }
     
     /**
@@ -90,7 +90,7 @@ public final class GlobalNodePath {
      * @return properties path
      */
     public static String getPropsRootPath() {
-        return String.join("/", "", PROPS_NODE);
+        return PROPS_NODE;
     }
     
     /**

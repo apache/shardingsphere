@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReservationNodePath {
     
-    private static final String ROOT_NODE = "reservation";
+    private static final String ROOT_NODE = "/reservation";
     
     private static final String WORKER_ID_NODE = "worker_id";
     
@@ -37,6 +37,6 @@ public final class ReservationNodePath {
      * @return worker id reservation path
      */
     public static String getWorkerIdReservationPath(final int workerId) {
-        return String.join("/", "", ROOT_NODE, WORKER_ID_NODE, String.valueOf(workerId));
+        return String.join("/", ROOT_NODE, WORKER_ID_NODE, String.valueOf(workerId));
     }
 }
