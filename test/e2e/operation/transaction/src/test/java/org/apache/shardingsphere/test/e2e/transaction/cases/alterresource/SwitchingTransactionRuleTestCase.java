@@ -113,7 +113,6 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
                     IS_FINISHED.set(true);
                     break;
                 }
-                Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
             }
         }
         
