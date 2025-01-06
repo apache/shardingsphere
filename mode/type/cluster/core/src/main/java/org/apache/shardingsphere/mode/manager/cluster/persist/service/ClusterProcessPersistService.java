@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
-import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
+import org.apache.shardingsphere.metadata.persist.node.ProcessNodePath;
 import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -53,7 +53,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
             isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
-            repository.delete(ProcessNode.getProcessIdPath(taskId));
+            repository.delete(ProcessNodePath.getRootPath(taskId));
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -62,8 +62,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
-        for (String each : repository.getChildrenKeys(ProcessNode.getProcessIdPath(taskId)).stream()
-                .map(each -> repository.query(ProcessNode.getProcessListInstancePath(taskId, each))).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(ProcessNodePath.getRootPath(taskId)).stream()
+                .map(each -> repository.query(ProcessNodePath.getInstanceProcessList(taskId, each))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);
