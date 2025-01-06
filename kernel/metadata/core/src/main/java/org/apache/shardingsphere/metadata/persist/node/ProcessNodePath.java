@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessNodePath {
     
-    private static final String ROOT_NODE = "execution_nodes";
+    private static final String ROOT_NODE = "/execution_nodes";
     
     /**
      * Get process ID root path.
@@ -35,7 +35,7 @@ public final class ProcessNodePath {
      * @return process ID root path
      */
     public static String getRootPath(final String processId) {
-        return String.join("/", "", ROOT_NODE, processId);
+        return String.join("/", ROOT_NODE, processId);
     }
     
     /**

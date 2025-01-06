@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataNodePath {
     
-    private static final String ROOT_NODE = "statistics";
+    private static final String ROOT_NODE = "/statistics";
     
     private static final String DATABASES_NODE = "databases";
     
@@ -46,7 +46,7 @@ public final class ShardingSphereDataNodePath {
      * @return database root path
      */
     public static String getDatabasesRootPath() {
-        return String.join("/", "", ROOT_NODE, DATABASES_NODE);
+        return String.join("/", ROOT_NODE, DATABASES_NODE);
     }
     
     /**

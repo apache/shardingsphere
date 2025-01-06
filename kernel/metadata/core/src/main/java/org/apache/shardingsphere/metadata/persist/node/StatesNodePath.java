@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatesNodePath {
     
-    private static final String ROOT_NODE = "states";
+    private static final String ROOT_NODE = "/states";
     
     private static final String CLUSTER_STATE_NODE = "cluster_state";
     
@@ -42,7 +42,7 @@ public final class StatesNodePath {
      * @return cluster state path
      */
     public static String getClusterStatePath() {
-        return String.join("/", "", ROOT_NODE, CLUSTER_STATE_NODE);
+        return String.join("/", ROOT_NODE, CLUSTER_STATE_NODE);
     }
     
     /**
@@ -51,7 +51,7 @@ public final class StatesNodePath {
      * @return listener assisted node path
      */
     public static String getListenerAssistedNodePath() {
-        return String.join("/", "", ROOT_NODE, LISTENER_ASSISTED_NODE);
+        return String.join("/", ROOT_NODE, LISTENER_ASSISTED_NODE);
     }
     
     /**
@@ -73,6 +73,6 @@ public final class StatesNodePath {
      * @return database name listener assisted node path
      */
     public static String getDatabaseNameListenerAssistedNodePath(final String databaseName) {
-        return String.join("/", "", ROOT_NODE, LISTENER_ASSISTED_NODE, databaseName);
+        return String.join("/", ROOT_NODE, LISTENER_ASSISTED_NODE, databaseName);
     }
 }

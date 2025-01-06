@@ -68,7 +68,7 @@ public final class StatisticsCollectJobWorker {
     
     private CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        String namespace = String.join("/", repositoryConfig.getNamespace(), ShardingSphereDataNodePath.getJobPath());
+        String namespace = repositoryConfig.getNamespace() + ShardingSphereDataNodePath.getJobPath();
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfiguration(repositoryConfig, namespace));
         result.init();
         return result;

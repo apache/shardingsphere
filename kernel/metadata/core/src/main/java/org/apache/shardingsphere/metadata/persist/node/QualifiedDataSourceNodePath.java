@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QualifiedDataSourceNodePath {
     
-    private static final String ROOT_NODE = "nodes";
+    private static final String ROOT_NODE = "/nodes";
     
     private static final String QUALIFIED_DATA_SOURCES_NODE = "qualified_data_sources";
     
@@ -43,7 +43,7 @@ public final class QualifiedDataSourceNodePath {
      * @return qualified data source root path
      */
     public static String getRootPath() {
-        return String.join("/", "", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
+        return String.join("/", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
     }
     
     /**
