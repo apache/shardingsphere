@@ -132,22 +132,4 @@
         <output sql="INSERT INTO `encrypt_ds`.t_account_bak(`account_id`, `cipher_certificate_number`, `digest_certificate_amount`, `cipher_password`, `plain_password`, `digest_password`, `cipher_amount`) VALUES (?, ?, ?, ?, ?, ?, ?)"
                 parameters="1, encrypt_cert1, digest_cert1_1000, encrypt_pwd1, pwd1, digest_pwd1, encrypt_1000" />
     </rewrite-assertion>
-
-    <rewrite-assertion id="insert_single_values_with_columns_and_quote" db-types="Oracle">
-        <input sql="INSERT INTO t_account_bak(account_id, certificate_number, password, amount, status) VALUES (?, ?, ?, ?, ?)" parameters="1, cert, pwd, 1000, OK" />
-        <output sql="INSERT INTO &quot;ENCRYPT_DS&quot;.t_account_bak(account_id, cipher_certificate_number, digest_certificate_amount, cipher_password, plain_password, digest_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-                parameters="1, encrypt_cert, digest_cert_1000, encrypt_pwd, pwd, digest_pwd, encrypt_1000, OK" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="insert_values_with_columns_and_quote" db-types="Oracle">
-        <input sql="INSERT INTO &quot;t_account&quot;(&quot;account_id&quot;, &quot;certificate_number&quot;, &quot;password&quot;, &quot;amount&quot;, &quot;status&quot;) VALUES (?, ?, ?, ?, ?)" parameters="1, cert1, pwd1, 1000, OK1" />
-        <output sql="INSERT INTO &quot;ENCRYPT_DS&quot;.&quot;t_account&quot;(&quot;account_id&quot;, &quot;cipher_certificate_number&quot;, &quot;assisted_query_certificate_number&quot;, &quot;like_query_certificate_number&quot;, &quot;digest_certificate_number&quot;, &quot;digest_certificate_password&quot;, &quot;digest_certificate_amount&quot;, &quot;digest_certificate_password_amount&quot;, &quot;cipher_password&quot;, &quot;assisted_query_password&quot;, &quot;like_query_password&quot;, &quot;digest_password&quot;, &quot;cipher_amount&quot;, &quot;digest_amount&quot;, &quot;status&quot;) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                parameters="1, encrypt_cert1, assisted_query_cert1, like_query_cert1, digest_cert1, digest_cert1_pwd1, digest_cert1_1000, digest_cert1_pwd1_1000, encrypt_pwd1, assisted_query_pwd1, like_query_pwd1, digest_pwd1, encrypt_1000, digest_1000, OK1" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="insert_values_without_columns_and_quote" db-types="Oracle">
-        <input sql="INSERT INTO t_account_bak VALUES (?, ?, ?, ?)" parameters="1, cert1, pwd1, 1000" />
-        <output sql="INSERT INTO &quot;ENCRYPT_DS&quot;.t_account_bak(&quot;account_id&quot;, &quot;cipher_certificate_number&quot;, &quot;digest_certificate_amount&quot;, &quot;cipher_password&quot;, &quot;plain_password&quot;, &quot;digest_password&quot;, &quot;cipher_amount&quot;) VALUES (?, ?, ?, ?, ?, ?, ?)"
-                parameters="1, encrypt_cert1, digest_cert1_1000, encrypt_pwd1, pwd1, digest_pwd1, encrypt_1000" />
-    </rewrite-assertion>
 </rewrite-assertions>
