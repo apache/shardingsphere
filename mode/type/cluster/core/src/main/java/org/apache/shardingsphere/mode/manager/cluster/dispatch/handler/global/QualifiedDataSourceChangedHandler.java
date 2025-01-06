@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataS
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNode;
+import org.apache.shardingsphere.metadata.persist.node.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +43,7 @@ public final class QualifiedDataSourceChangedHandler implements DataChangedEvent
     
     @Override
     public String getSubscribedKey() {
-        return QualifiedDataSourceNode.getRootPath();
+        return QualifiedDataSourceNodePath.getRootPath();
     }
     
     @Override
@@ -56,7 +56,7 @@ public final class QualifiedDataSourceChangedHandler implements DataChangedEvent
         if (Strings.isNullOrEmpty(event.getValue())) {
             return;
         }
-        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNode.extractQualifiedDataSource(event.getKey());
+        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNodePath.findQualifiedDataSource(event.getKey());
         if (!qualifiedDataSource.isPresent()) {
             return;
         }

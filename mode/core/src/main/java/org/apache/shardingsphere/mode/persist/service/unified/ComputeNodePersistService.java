@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Arrays;
@@ -55,10 +55,10 @@ public final class ComputeNodePersistService {
      */
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
         String instanceId = computeNodeInstance.getMetaData().getId();
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceId, computeNodeInstance.getMetaData().getType()), YamlEngine.marshal(
+        repository.persistEphemeral(ComputeNodePath.getOnlinePath(instanceId, computeNodeInstance.getMetaData().getType()), YamlEngine.marshal(
                 new YamlComputeNodeDataSwapper().swapToYamlConfiguration(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(),
                         computeNodeInstance.getMetaData().getVersion(), computeNodeInstance.getMetaData().getDatabaseName()))));
-        repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
+        repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
         persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
     
@@ -69,7 +69,7 @@ public final class ComputeNodePersistService {
      * @param labels instance labels
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
+        repository.persistEphemeral(ComputeNodePath.getLabelsPath(instanceId), YamlEngine.marshal(labels));
     }
     
     /**
@@ -79,7 +79,7 @@ public final class ComputeNodePersistService {
      * @param workerId worker ID
      */
     public void persistInstanceWorkerId(final String instanceId, final int workerId) {
-        repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
+        repository.persistEphemeral(ComputeNodePath.getWorkerIdPath(instanceId), String.valueOf(workerId));
     }
     
     /**
@@ -90,7 +90,7 @@ public final class ComputeNodePersistService {
      */
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.query(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        String yamlContent = repository.query(ComputeNodePath.getLabelsPath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -101,7 +101,7 @@ public final class ComputeNodePersistService {
      * @return state
      */
     public String loadComputeNodeState(final String instanceId) {
-        return repository.query(ComputeNode.getComputeNodeStateNodePath(instanceId));
+        return repository.query(ComputeNodePath.getStatePath(instanceId));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ComputeNodePersistService {
      */
     public Optional<Integer> loadInstanceWorkerId(final String instanceId) {
         try {
-            String workerId = repository.query(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+            String workerId = repository.query(ComputeNodePath.getWorkerIdPath(instanceId));
             return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
@@ -131,8 +131,8 @@ public final class ComputeNodePersistService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (String each : repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType))) {
-            String value = repository.query(ComputeNode.getOnlineInstanceNodePath(each, instanceType));
+        for (String each : repository.getChildrenKeys(ComputeNodePath.getOnlinePath(instanceType))) {
+            String value = repository.query(ComputeNodePath.getOnlinePath(each, instanceType));
             if (Strings.isNullOrEmpty(value)) {
                 continue;
             }
@@ -162,10 +162,10 @@ public final class ComputeNodePersistService {
      * @return assigned worker IDs
      */
     public Collection<Integer> getAssignedWorkerIds() {
-        Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+        Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNodePath.getWorkerIdRootPath());
         Collection<Integer> result = new LinkedHashSet<>(childrenKeys.size(), 1F);
         for (String each : childrenKeys) {
-            String workerId = repository.query(ComputeNode.getInstanceWorkerIdNodePath(each));
+            String workerId = repository.query(ComputeNodePath.getWorkerIdPath(each));
             if (null != workerId) {
                 result.add(Integer.parseInt(workerId));
             }
@@ -180,7 +180,7 @@ public final class ComputeNodePersistService {
      * @param instanceState instance state
      */
     public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
-        repository.persistEphemeral(ComputeNode.getComputeNodeStateNodePath(instanceId), instanceState.name());
+        repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), instanceState.name());
     }
     
     /**
@@ -189,6 +189,6 @@ public final class ComputeNodePersistService {
      * @param computeNodeInstance compute node instance
      */
     public void offline(final ComputeNodeInstance computeNodeInstance) {
-        repository.delete(ComputeNode.getOnlineInstanceNodePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()));
+        repository.delete(ComputeNodePath.getOnlinePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()));
     }
 }

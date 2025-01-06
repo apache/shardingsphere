@@ -21,22 +21,31 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Reservation node.
+ * Process node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReservationNode {
+public final class ProcessNodePath {
     
-    private static final String ROOT_NODE = "reservation";
-    
-    private static final String WORKER_ID_NODE = "worker_id";
+    private static final String ROOT_NODE = "execution_nodes";
     
     /**
-     * Get worker id reservation path.
+     * Get process ID root path.
      *
-     * @param workerId worker id
-     * @return worker id reservation path
+     * @param processId process ID
+     * @return process ID root path
      */
-    public static String getWorkerIdReservationPath(final int workerId) {
-        return String.join("/", "", ROOT_NODE, WORKER_ID_NODE, String.valueOf(workerId));
+    public static String getRootPath(final String processId) {
+        return String.join("/", "", ROOT_NODE, processId);
+    }
+    
+    /**
+     * Get instance process list.
+     *
+     * @param processId process ID
+     * @param instanceId instance ID
+     * @return instance process list
+     */
+    public static String getInstanceProcessList(final String processId, final String instanceId) {
+        return String.join("/", getRootPath(processId), instanceId);
     }
 }

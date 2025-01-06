@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
@@ -96,8 +98,9 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
             ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(derivedInsertColumns, projections, rule),
                     () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
         }
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         return new UseDefaultInsertColumnsToken(
-                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), insertStatementContext.getColumnNames()));
+                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), insertStatementContext.getColumnNames()), quoteCharacter);
     }
     
     private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {

@@ -25,10 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * States node.
+ * States node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatesNode {
+public final class StatesNodePath {
     
     private static final String ROOT_NODE = "states";
     
@@ -37,11 +37,11 @@ public final class StatesNode {
     private static final String LISTENER_ASSISTED_NODE = "listener_assisted";
     
     /**
-     * Get cluster state node path.
+     * Get cluster state path.
      *
-     * @return cluster state node path
+     * @return cluster state path
      */
-    public static String getClusterStateNodePath() {
+    public static String getClusterStatePath() {
         return String.join("/", "", ROOT_NODE, CLUSTER_STATE_NODE);
     }
     
@@ -57,10 +57,10 @@ public final class StatesNode {
     /**
      * Get database name by listener assisted node path.
      *
-     * @param nodePath node path
+     * @param nodePath path
      * @return database name
      */
-    public static Optional<String> getDatabaseNameByListenerAssistedNodePath(final String nodePath) {
+    public static Optional<String> findDatabaseNameByListenerAssistedNodePath(final String nodePath) {
         Pattern pattern = Pattern.compile(getListenerAssistedNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();

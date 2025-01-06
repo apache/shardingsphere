@@ -19,13 +19,29 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ReservationNodeTest {
+class StatesNodePathTest {
     
     @Test
-    void assertGetWorkerIdReservationPath() {
-        assertThat(ReservationNode.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
+    void assertGetClusterStatePath() {
+        assertThat(StatesNodePath.getClusterStatePath(), is("/states/cluster_state"));
+    }
+    
+    @Test
+    void assertGetListenerAssistedNodePath() {
+        assertThat(StatesNodePath.getListenerAssistedNodePath(), is("/states/listener_assisted"));
+    }
+    
+    @Test
+    void assertFindDatabaseNameByListenerAssistedNodePath() {
+        assertTrue(StatesNodePath.findDatabaseNameByListenerAssistedNodePath("/states/listener_assisted/foo_db").isPresent());
+    }
+    
+    @Test
+    void assertGetDatabaseNameListenerAssistedNodePath() {
+        assertThat(StatesNodePath.getDatabaseNameListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
     }
 }
