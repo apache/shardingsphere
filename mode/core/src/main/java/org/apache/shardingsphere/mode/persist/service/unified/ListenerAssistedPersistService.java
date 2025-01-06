@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.persist.service.unified;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.StatesNode;
+import org.apache.shardingsphere.metadata.persist.node.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -36,7 +36,7 @@ public final class ListenerAssistedPersistService {
      * @param listenerAssistedType listener assisted type
      */
     public void persistDatabaseNameListenerAssisted(final String databaseName, final ListenerAssistedType listenerAssistedType) {
-        repository.persistEphemeral(StatesNode.getDatabaseNameListenerAssistedNodePath(databaseName), listenerAssistedType.name());
+        repository.persistEphemeral(StatesNodePath.getDatabaseNameListenerAssistedNodePath(databaseName), listenerAssistedType.name());
     }
     
     /**
@@ -45,6 +45,6 @@ public final class ListenerAssistedPersistService {
      * @param databaseName database name
      */
     public void deleteDatabaseNameListenerAssisted(final String databaseName) {
-        repository.delete(StatesNode.getDatabaseNameListenerAssistedNodePath(databaseName));
+        repository.delete(StatesNodePath.getDatabaseNameListenerAssistedNodePath(databaseName));
     }
 }

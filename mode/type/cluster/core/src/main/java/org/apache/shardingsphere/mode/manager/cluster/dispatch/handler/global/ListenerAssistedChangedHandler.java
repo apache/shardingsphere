@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.metadata.persist.node.StatesNode;
+import org.apache.shardingsphere.metadata.persist.node.StatesNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -39,7 +39,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return StatesNode.getListenerAssistedNodePath();
+        return StatesNodePath.getListenerAssistedNodePath();
     }
     
     @Override
@@ -49,7 +49,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatesNode.getDatabaseNameByListenerAssistedNodePath(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ListenerAssistedType.valueOf(event.getValue())));
+        StatesNodePath.findDatabaseNameByListenerAssistedNodePath(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ListenerAssistedType.valueOf(event.getValue())));
     }
     
     private static void handle(final ContextManager contextManager, final String databaseName, final ListenerAssistedType listenerAssistedType) {
