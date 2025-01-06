@@ -20,10 +20,16 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.OptimizeTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowColumnsStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowCreateTableStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowIndexStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 
 /**
  * DAL statement bind engine.
@@ -47,6 +53,15 @@ public final class DALStatementBindEngine {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
         if (statement instanceof OptimizeTableStatement) {
             return new OptimizeTableStatementBinder().bind((OptimizeTableStatement) statement, binderContext);
+        }
+        if (statement instanceof ShowCreateTableStatement) {
+            return new ShowCreateTableStatementBinder().bind((ShowCreateTableStatement) statement, binderContext);
+        }
+        if (statement instanceof ShowColumnsStatement) {
+            return new ShowColumnsStatementBinder().bind((ShowColumnsStatement) statement, binderContext);
+        }
+        if (statement instanceof ShowIndexStatement) {
+            return new ShowIndexStatementBinder().bind((ShowIndexStatement) statement, binderContext);
         }
         return statement;
     }
