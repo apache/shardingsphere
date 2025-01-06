@@ -23,25 +23,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StatesNodeTest {
+class StatesNodePathTest {
     
     @Test
-    void assertGetClusterStateNodePath() {
-        assertThat(StatesNode.getClusterStateNodePath(), is("/states/cluster_state"));
+    void assertGetClusterStatePath() {
+        assertThat(StatesNodePath.getClusterStatePath(), is("/states/cluster_state"));
     }
     
     @Test
     void assertGetListenerAssistedNodePath() {
-        assertThat(StatesNode.getListenerAssistedNodePath(), is("/states/listener_assisted"));
+        assertThat(StatesNodePath.getListenerAssistedNodePath(), is("/states/listener_assisted"));
     }
     
     @Test
-    void assertGetDatabaseNameByListenerAssistedNodePath() {
-        assertTrue(StatesNode.getDatabaseNameByListenerAssistedNodePath("/states/listener_assisted/foo_db").isPresent());
+    void assertFindDatabaseNameByListenerAssistedNodePath() {
+        assertTrue(StatesNodePath.findDatabaseNameByListenerAssistedNodePath("/states/listener_assisted/foo_db").isPresent());
     }
     
     @Test
     void assertGetDatabaseNameListenerAssistedNodePath() {
-        assertThat(StatesNode.getDatabaseNameListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
+        assertThat(StatesNodePath.getDatabaseNameListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
     }
 }
