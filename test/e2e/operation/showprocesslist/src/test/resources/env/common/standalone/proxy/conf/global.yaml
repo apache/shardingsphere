@@ -19,6 +19,7 @@ authority:
   users:
     - user: proxy
       password: Proxy@123
+      admin: true
   privilege:
     type: ALL_PERMITTED
 

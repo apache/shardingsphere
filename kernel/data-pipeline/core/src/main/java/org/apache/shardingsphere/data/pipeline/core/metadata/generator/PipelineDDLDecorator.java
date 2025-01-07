@@ -154,22 +154,23 @@ public final class PipelineDDLDecorator {
         if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName + ".", databaseName, parserEngine));
+        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine));
     }
     
-    private String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName, final SQLParserEngine parserEngine) {
+    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine) {
         SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
             if (((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
                 return sql;
             }
-            if (((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().isPresent()) {
+            Optional<String> sqlSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName();
+            if (sqlSchemaName.isPresent() && sqlSchemaName.get().equals(schemaName)) {
                 return sql;
             }
             Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
             TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
-            replaceMap.put(tableNameSegment, prefix + tableNameSegment.getIdentifier().getValue());
+            replaceMap.put(tableNameSegment, schemaName + "." + tableNameSegment.getIdentifier().getValue());
             return doDecorateActualTable(replaceMap, sql);
         }
         return sql;

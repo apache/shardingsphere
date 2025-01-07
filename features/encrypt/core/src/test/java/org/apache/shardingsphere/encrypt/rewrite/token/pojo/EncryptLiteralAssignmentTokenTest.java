@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +27,7 @@ class EncryptLiteralAssignmentTokenTest {
     
     @Test
     void assertToString() {
-        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
+        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1, QuoteCharacter.NONE);
         actual.addAssignment("c1", "c1");
         actual.addAssignment("c2", 1);
         assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));

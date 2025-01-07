@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.metadata.persist.service.metadata.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be added database name
      */
     public void add(final String databaseName) {
-        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
+        repository.persist(DatabaseMetaDataNodePath.getDatabasePath(databaseName), "");
     }
     
     /**
@@ -46,7 +46,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be dropped database name
      */
     public void drop(final String databaseName) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
+        repository.delete(DatabaseMetaDataNodePath.getDatabasePath(databaseName));
     }
     
     /**
@@ -55,6 +55,6 @@ public final class DatabaseMetaDataPersistService {
      * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNode());
+        return repository.getChildrenKeys(DatabaseMetaDataNodePath.getRootPath());
     }
 }
