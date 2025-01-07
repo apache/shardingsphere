@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Database rule meta data node.
+ * Database rule meta data node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseRuleMetaDataNode {
+public final class DatabaseRuleMetaDataNodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
