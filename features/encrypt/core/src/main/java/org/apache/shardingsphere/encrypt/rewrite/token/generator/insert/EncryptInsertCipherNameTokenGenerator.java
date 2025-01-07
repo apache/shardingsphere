@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +76,8 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
                 Collection<Projection> projections =
-                        Collections.singleton(new ColumnProjection(null, encryptTable.getEncryptColumn(columnName).getCipher().getName(), null, insertStatementContext.getDatabaseType()));
+                        Collections.singleton(new ColumnProjection(null, new IdentifierValue(encryptTable.getEncryptColumn(columnName).getCipher().getName(), each.getIdentifier().getQuoteCharacter()),
+                                null, insertStatementContext.getDatabaseType()));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections, insertStatementContext.getDatabaseType()));
             }
         }

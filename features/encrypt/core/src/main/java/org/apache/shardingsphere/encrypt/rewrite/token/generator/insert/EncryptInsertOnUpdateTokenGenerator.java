@@ -115,7 +115,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     }
     
     private EncryptAssignmentToken generateParameterSQLToken(final EncryptTable encryptTable, final ColumnAssignmentSegment assignmentSegment) {
-        EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
+        EncryptParameterAssignmentToken result = new EncryptParameterAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex(),
+                assignmentSegment.getColumns().get(0).getIdentifier().getQuoteCharacter());
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         result.addColumnName(encryptColumn.getCipher().getName());
@@ -126,7 +127,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     
     private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final String tableName,
                                                            final EncryptColumn encryptColumn, final ColumnAssignmentSegment assignmentSegment) {
-        EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
+        EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex(),
+                assignmentSegment.getColumns().get(0).getIdentifier().getQuoteCharacter());
         addCipherAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
         addLikeAssignment(schemaName, tableName, encryptColumn, assignmentSegment, result);
@@ -139,7 +141,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         Optional<ExpressionSegment> valueColumnSegment = functionSegment.getParameters().stream().findFirst();
         Preconditions.checkState(valueColumnSegment.isPresent());
         String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
-        EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
+        EncryptFunctionAssignmentToken result =
+                new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex(), assignmentSegment.getColumns().get(0).getIdentifier().getQuoteCharacter());
         boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
         boolean isEncryptValueColumn = encryptTable.isEncryptColumn(valueColumn);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(column);

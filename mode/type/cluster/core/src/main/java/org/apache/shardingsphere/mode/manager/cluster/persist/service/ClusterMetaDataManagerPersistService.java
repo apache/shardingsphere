@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -214,7 +215,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         metaDataPersistService.persistReloadDatabaseByAlter(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
@@ -234,7 +237,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         afterRuleConfigurationDropped(databaseName, originalMetaDataContexts);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         metaDataPersistService.persistReloadDatabaseByDrop(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
