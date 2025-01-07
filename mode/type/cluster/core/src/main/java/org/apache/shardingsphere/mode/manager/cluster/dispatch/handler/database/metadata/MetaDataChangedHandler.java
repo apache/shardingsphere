@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNodePath;
 import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -73,7 +73,7 @@ public final class MetaDataChangedHandler {
             handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (DataSourceMetaDataNode.isDataSourcesNode(eventKey)) {
+        if (DataSourceMetaDataNodePath.isDataSourcesPath(eventKey)) {
             handleDataSourceChanged(databaseName, event);
             return true;
         }
@@ -113,15 +113,15 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        if (DataSourceMetaDataNode.isDataSourceUnitActiveVersionNode(event.getKey()) || DataSourceMetaDataNode.isDataSourceUnitNode(event.getKey())) {
+        if (DataSourceMetaDataNodePath.isDataSourceUnitActiveVersionPath(event.getKey()) || DataSourceMetaDataNodePath.isDataSourceUnitPath(event.getKey())) {
             handleStorageUnitChanged(databaseName, event);
-        } else if (DataSourceMetaDataNode.isDataSourceNodeActiveVersionNode(event.getKey()) || DataSourceMetaDataNode.isDataSourceNodeNode(event.getKey())) {
+        } else if (DataSourceMetaDataNodePath.isDataSourceNodeActiveVersionPath(event.getKey()) || DataSourceMetaDataNodePath.isDataSourceNodePath(event.getKey())) {
             handleStorageNodeChanged(databaseName, event);
         }
     }
     
     private void handleStorageUnitChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitActiveVersionNode(event.getKey());
+        Optional<String> dataSourceUnitName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitActiveVersionPath(event.getKey());
         if (dataSourceUnitName.isPresent()) {
             if (Type.ADDED == event.getType()) {
                 storageUnitChangedHandler.handleRegistered(databaseName, dataSourceUnitName.get(), event);
@@ -130,14 +130,14 @@ public final class MetaDataChangedHandler {
             }
             return;
         }
-        dataSourceUnitName = DataSourceMetaDataNode.getDataSourceNameByDataSourceUnitNode(event.getKey());
+        dataSourceUnitName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitPath(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceUnitName.isPresent()) {
             storageUnitChangedHandler.handleUnregistered(databaseName, dataSourceUnitName.get());
         }
     }
     
     private void handleStorageNodeChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeActiveVersionNode(event.getKey());
+        Optional<String> dataSourceNodeName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodeActiveVersionPath(event.getKey());
         if (dataSourceNodeName.isPresent()) {
             if (Type.ADDED == event.getType()) {
                 storageNodeChangedHandler.handleRegistered(databaseName, dataSourceNodeName.get(), event);
@@ -146,7 +146,7 @@ public final class MetaDataChangedHandler {
             }
             return;
         }
-        dataSourceNodeName = DataSourceMetaDataNode.getDataSourceNameByDataSourceNodeNode(event.getKey());
+        dataSourceNodeName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodePath(event.getKey());
         if (Type.DELETED == event.getType() && dataSourceNodeName.isPresent()) {
             storageNodeChangedHandler.handleUnregistered(databaseName, dataSourceNodeName.get());
         }
