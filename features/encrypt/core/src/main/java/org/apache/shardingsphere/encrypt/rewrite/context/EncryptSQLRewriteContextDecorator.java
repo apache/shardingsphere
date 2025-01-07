@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,8 +69,8 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return false;
         }
-        for (String each : ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()) {
-            if (rule.findEncryptTable(each).isPresent()) {
+        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+            if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
                 return true;
             }
         }

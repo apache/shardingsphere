@@ -26,12 +26,12 @@ class ProcessNodeTest {
     
     @Test
     void assertGetProcessIdPath() {
-        assertThat(ProcessNode.getProcessIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
+        assertThat(ProcessNodePath.getRootPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
     }
     
     @Test
     void assertGetProcessListInstancePath() {
-        assertThat(ProcessNode.getProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
+        assertThat(ProcessNodePath.getInstanceProcessList("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
                 is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
     }
 }

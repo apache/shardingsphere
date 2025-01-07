@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Switching transaction rule test case.
  */
 @Slf4j
-@TransactionTestCase(adapters = TransactionTestConstants.PROXY, dbTypes = TransactionTestConstants.MYSQL)
+@TransactionTestCase(adapters = TransactionTestConstants.PROXY, dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.LOCAL)
 public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestCase {
     
     private static final int THREAD_SIZE = 1;
@@ -107,11 +107,12 @@ public final class SwitchingTransactionRuleTestCase extends BaseTransactionTestC
                 alterLocalTransactionRule();
                 Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
                 alterXaTransactionRule("Narayana");
+                Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
                 if (SWITCH_COUNT.incrementAndGet() >= MAX_SWITCH_COUNT) {
+                    alterLocalTransactionRule();
                     IS_FINISHED.set(true);
                     break;
                 }
-                Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(19L, TimeUnit.SECONDS).until(() -> true);
             }
         }
         
