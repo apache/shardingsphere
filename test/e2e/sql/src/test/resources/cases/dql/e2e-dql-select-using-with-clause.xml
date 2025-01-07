@@ -17,6 +17,6 @@
 
 <e2e-test-cases>
     <test-case sql="WITH users AS (SELECT * FROM t_user) SELECT * FROM users" db-types="MySQL" scenario-types="db,tbl">
-        <assertion/>
+        <assertion expected-data-source-name="read_dataset"/>
     </test-case>
 </e2e-test-cases>
