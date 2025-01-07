@@ -34,8 +34,8 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -162,15 +162,8 @@ public final class ComputeNodePersistService {
      * @return assigned worker IDs
      */
     public Collection<Integer> getAssignedWorkerIds() {
-        Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNodePath.getWorkerIdRootPath());
-        Collection<Integer> result = new LinkedHashSet<>(childrenKeys.size(), 1F);
-        for (String each : childrenKeys) {
-            String workerId = repository.query(ComputeNodePath.getWorkerIdPath(each));
-            if (null != workerId) {
-                result.add(Integer.parseInt(workerId));
-            }
-        }
-        return result;
+        Collection<String> instanceIds = repository.getChildrenKeys(ComputeNodePath.getWorkerIdRootPath());
+        return instanceIds.stream().map(each -> repository.query(ComputeNodePath.getWorkerIdPath(each))).filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toSet());
     }
     
     /**

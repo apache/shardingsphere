@@ -46,42 +46,42 @@ public final class GlobalNodePath {
     /**
      * Get global rule path.
      *
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      * @return global rule path
      */
-    public static String getRulePath(final String ruleName) {
-        return String.join("/", getRuleRootPath(), ruleName);
+    public static String getRulePath(final String ruleTypeName) {
+        return String.join("/", getRuleRootPath(), ruleTypeName);
     }
     
     /**
      * Get global rule versions path.
      *
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      * @return global rule versions path
      */
-    public static String getRuleVersionsPath(final String ruleName) {
-        return String.join("/", getRulePath(ruleName), VERSIONS_NODE);
+    public static String getRuleVersionsPath(final String ruleTypeName) {
+        return String.join("/", getRulePath(ruleTypeName), VERSIONS_NODE);
     }
     
     /**
      * Get global rule version path.
      *
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      * @param version version
      * @return global rule version path
      */
-    public static String getRuleVersionPath(final String ruleName, final String version) {
-        return String.join("/", getRuleVersionsPath(ruleName), version);
+    public static String getRuleVersionPath(final String ruleTypeName, final String version) {
+        return String.join("/", getRuleVersionsPath(ruleTypeName), version);
     }
     
     /**
      * Get global rule active version path.
      *
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      * @return global rule active version path
      */
-    public static String getRuleActiveVersionPath(final String ruleName) {
-        return String.join("/", getRulePath(ruleName), ACTIVE_VERSION_NODE);
+    public static String getRuleActiveVersionPath(final String ruleTypeName) {
+        return String.join("/", getRulePath(ruleTypeName), ACTIVE_VERSION_NODE);
     }
     
     /**

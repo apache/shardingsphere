@@ -53,7 +53,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(DatabaseMetaDataNodePath.getTablesPath(databaseName, schemaName), "");
+        repository.persist(DatabaseMetaDataNodePath.getTableRootPath(databaseName, schemaName), "");
     }
     
     /**
@@ -113,7 +113,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(DatabaseMetaDataNodePath.getSchemasPath(databaseName)).stream()
+        return repository.getChildrenKeys(DatabaseMetaDataNodePath.getSchemaRootPath(databaseName)).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }

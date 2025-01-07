@@ -90,10 +90,11 @@ public final class GlobalRulePersistService {
             List<String> versions = metaDataVersionPersistService.getVersions(GlobalNodePath.getRuleVersionsPath(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(GlobalNodePath.getRuleVersionPath(each.getKey(), nextActiveVersion), each.getValue());
-            if (Strings.isNullOrEmpty(repository.query(GlobalNodePath.getRuleActiveVersionPath(each.getKey())))) {
-                repository.persist(GlobalNodePath.getRuleActiveVersionPath(each.getKey()), MetaDataVersion.DEFAULT_VERSION);
+            String ruleActiveVersionPath = GlobalNodePath.getRuleActiveVersionPath(each.getKey());
+            if (Strings.isNullOrEmpty(repository.query(ruleActiveVersionPath))) {
+                repository.persist(ruleActiveVersionPath, MetaDataVersion.DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(GlobalNodePath.getRulePath(each.getKey()), repository.query(GlobalNodePath.getRuleActiveVersionPath(each.getKey())), nextActiveVersion));
+            result.add(new MetaDataVersion(GlobalNodePath.getRulePath(each.getKey()), repository.query(ruleActiveVersionPath), nextActiveVersion));
         }
         return result;
     }

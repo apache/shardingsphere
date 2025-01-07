@@ -39,8 +39,8 @@ class DatabaseMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetSchemasPath() {
-        assertThat(DatabaseMetaDataNodePath.getSchemasPath("foo_db"), is("/metadata/foo_db/schemas"));
+    void assertGetSchemaRootPath() {
+        assertThat(DatabaseMetaDataNodePath.getSchemaRootPath("foo_db"), is("/metadata/foo_db/schemas"));
     }
     
     @Test
@@ -49,8 +49,8 @@ class DatabaseMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetTablesPath() {
-        assertThat(DatabaseMetaDataNodePath.getTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    void assertGetTableRootPath() {
+        assertThat(DatabaseMetaDataNodePath.getTableRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test

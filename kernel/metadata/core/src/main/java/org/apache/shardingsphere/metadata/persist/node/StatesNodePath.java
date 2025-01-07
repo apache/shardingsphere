@@ -36,6 +36,8 @@ public final class StatesNodePath {
     
     private static final String LISTENER_ASSISTED_NODE = "listener_assisted";
     
+    private static final String DATABASE_PATTERN = "(\\w+)";
+    
     /**
      * Get cluster state path.
      *
@@ -46,24 +48,12 @@ public final class StatesNodePath {
     }
     
     /**
-     * Get listener assisted node path.
+     * Get listener assisted node root path.
      *
-     * @return listener assisted node path
+     * @return listener assisted node root path
      */
-    public static String getListenerAssistedNodePath() {
+    public static String getListenerAssistedNodeRootPath() {
         return String.join("/", ROOT_NODE, LISTENER_ASSISTED_NODE);
-    }
-    
-    /**
-     * Get database name by listener assisted node path.
-     *
-     * @param nodePath path
-     * @return database name
-     */
-    public static Optional<String> findDatabaseNameByListenerAssistedNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getListenerAssistedNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(nodePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
@@ -72,7 +62,19 @@ public final class StatesNodePath {
      * @param databaseName database name
      * @return database name listener assisted node path
      */
-    public static String getDatabaseNameListenerAssistedNodePath(final String databaseName) {
-        return String.join("/", ROOT_NODE, LISTENER_ASSISTED_NODE, databaseName);
+    public static String getListenerAssistedNodePath(final String databaseName) {
+        return String.join("/", getListenerAssistedNodeRootPath(), databaseName);
+    }
+    
+    /**
+     * Find database name by listener assisted node path.
+     *
+     * @param listenerAssistedNodePath listener assisted node path
+     * @return found database name
+     */
+    public static Optional<String> findDatabaseName(final String listenerAssistedNodePath) {
+        Pattern pattern = Pattern.compile(getListenerAssistedNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(listenerAssistedNodePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }
