@@ -24,22 +24,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DatabaseRuleMetaDataNodeTest {
     
     @Test
-    void assertGetDatabaseRuleActiveVersionNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleActiveVersionNode("foo_db", "foo_rule", "foo_tbl"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/active_version"));
+    void assertGetRootPath() {
+        assertThat(DatabaseRuleMetaDataNode.getRootPath("foo_db"), is("/metadata/foo_db/rules"));
     }
     
     @Test
-    void assertGetDatabaseRuleVersionsNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleVersionsNode("foo_db", "sharding", "foo_key"), is("/metadata/foo_db/rules/sharding/foo_key/versions"));
+    void assertGetRulePath() {
+        assertThat(DatabaseRuleMetaDataNode.getRulePath("foo_db", "foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
     }
     
     @Test
-    void assertGetDatabaseRuleVersionNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleVersionNode("foo_db", "foo_rule", "foo_tbl", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/versions/1"));
+    void assertGetRulePathWithKey() {
+        assertThat(DatabaseRuleMetaDataNode.getRulePath("foo_db", "foo_rule", "sharding"), is("/metadata/foo_db/rules/foo_rule/sharding"));
     }
     
     @Test
-    void assertGetDatabaseRuleNode() {
-        assertThat(DatabaseRuleMetaDataNode.getDatabaseRuleNode("foo_db", "foo_rule", "sharding"), is("/metadata/foo_db/rules/foo_rule/sharding"));
+    void assertGetVersionsPath() {
+        assertThat(DatabaseRuleMetaDataNode.getVersionsPath("foo_db", "sharding", "foo_key"), is("/metadata/foo_db/rules/sharding/foo_key/versions"));
+    }
+    
+    @Test
+    void assertGetVersionPath() {
+        assertThat(DatabaseRuleMetaDataNode.getVersionPath("foo_db", "foo_rule", "foo_tbl", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/versions/1"));
+    }
+    
+    @Test
+    void assertGetActiveVersionPath() {
+        assertThat(DatabaseRuleMetaDataNode.getActiveVersionPath("foo_db", "foo_rule", "foo_tbl"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/active_version"));
     }
 }

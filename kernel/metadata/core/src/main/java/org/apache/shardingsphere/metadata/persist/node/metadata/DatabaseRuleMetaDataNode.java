@@ -26,85 +26,81 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseRuleMetaDataNode {
     
-    private static final String ROOT_NODE = "metadata";
+    private static final String ROOT_NODE = "/metadata";
     
     private static final String RULE_NODE = "rules";
     
-    private static final String ACTIVE_VERSION = "active_version";
+    private static final String VERSIONS_NODE = "versions";
     
-    private static final String VERSIONS = "versions";
+    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     /**
-     * Get database rule active version node.
+     * Get database root path.
      *
      * @param databaseName database name
-     * @param ruleName rule name
-     * @param key key
-     * @return database rule active version node
+     * @return database root path
      */
-    public static String getDatabaseRuleActiveVersionNode(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, ACTIVE_VERSION);
+    public static String getRootPath(final String databaseName) {
+        return String.join("/", ROOT_NODE, databaseName, RULE_NODE);
     }
     
     /**
-     * Get database rule versions node.
+     * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleName rule name
-     * @param key key
-     * @return database rule versions node
+     * @param ruleTypeName rule type name
+     * @return database rule path
      */
-    public static String getDatabaseRuleVersionsNode(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS);
+    public static String getRulePath(final String databaseName, final String ruleTypeName) {
+        return String.join("/", getRootPath(databaseName), ruleTypeName);
     }
     
     /**
-     * Get database rule version node.
+     * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
+     * @param key key
+     * @return database rule path without version
+     */
+    public static String getRulePath(final String databaseName, final String ruleTypeName, final String key) {
+        return String.join("/", getRulePath(databaseName, ruleTypeName), key);
+    }
+    
+    /**
+     * Get database rule versions path.
+     *
+     * @param databaseName database name
+     * @param ruleTypeName rule type name
+     * @param key key
+     * @return database rule versions path
+     */
+    public static String getVersionsPath(final String databaseName, final String ruleTypeName, final String key) {
+        return String.join("/", getRulePath(databaseName, ruleTypeName, key), VERSIONS_NODE);
+    }
+    
+    /**
+     * Get database rule version path.
+     *
+     * @param databaseName database name
+     * @param ruleTypeName rule type name
      * @param key key
      * @param version version
      * @return database rule next version
      */
-    public static String getDatabaseRuleVersionNode(final String databaseName, final String ruleName, final String key, final String version) {
-        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS, version);
+    public static String getVersionPath(final String databaseName, final String ruleTypeName, final String key, final String version) {
+        return String.join("/", getVersionsPath(databaseName, ruleTypeName, key), version);
     }
     
     /**
-     * Get database rule node.
+     * Get database rule active version path.
      *
      * @param databaseName database name
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      * @param key key
-     * @return database rule node without version
+     * @return database rule active version path
      */
-    public static String getDatabaseRuleNode(final String databaseName, final String ruleName, final String key) {
-        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key);
-    }
-    
-    /**
-     * Get database rule root node.
-     *
-     * @param databaseName database name
-     * @param ruleName rule name
-     * @return database rule root node
-     */
-    public static String getDatabaseRuleNode(final String databaseName, final String ruleName) {
-        return String.join("/", getRulesNode(databaseName), ruleName);
-    }
-    
-    /**
-     * Get database rules node.
-     *
-     * @param databaseName database name
-     * @return database rules node
-     */
-    public static String getRulesNode(final String databaseName) {
-        return String.join("/", getMetaDataNode(), databaseName, RULE_NODE);
-    }
-    
-    private static String getMetaDataNode() {
-        return String.join("/", "", ROOT_NODE);
+    public static String getActiveVersionPath(final String databaseName, final String ruleTypeName, final String key) {
+        return String.join("/", getRulePath(databaseName, ruleTypeName, key), ACTIVE_VERSION_NODE);
     }
 }
