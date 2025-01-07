@@ -49,6 +49,9 @@
 1. Sharding: Support GroupConcat function for aggregating multiple shards in MySQL, OpenGauss, Doris - [#33808](https://github.com/apache/shardingsphere/pull/33808)
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
+1. Encrypt: Support insert statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
+1. SQL Binder: Support optimize table sql bind and add test case - [#34242](https://github.com/apache/shardingsphere/pull/34242)
+1. SQL Binder: Support show create table, show columns, show index statement bind - [#34271](https://github.com/apache/shardingsphere/pull/34271)
 
 ### Bug Fixes
 
@@ -142,6 +145,7 @@
 1. Pipeline: Use case-insensitive identifiers to enhance the table metadata loader
 1. Pipeline: Support primary key columns ordering for standard pipeline table metadata loader
 1. Sharding: Optimize sharding table index name rewriting rules and remove unnecessary suffix rewriting - [#31171](https://github.com/apache/shardingsphere/issues/31171)
+1. Metadata: Support postgresql and opengauss CHARACTER VARYING type metadata load - [#34221](https://github.com/apache/shardingsphere/pull/34221)
 
 ### Bug Fixes
 

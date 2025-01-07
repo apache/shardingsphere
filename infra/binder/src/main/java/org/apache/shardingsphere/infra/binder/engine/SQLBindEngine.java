@@ -20,12 +20,14 @@ package org.apache.shardingsphere.infra.binder.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 
@@ -65,6 +67,9 @@ public final class SQLBindEngine {
         }
         if (statement instanceof DDLStatement) {
             return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DDLStatement) statement);
+        }
+        if (statement instanceof DALStatement) {
+            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DALStatement) statement);
         }
         return statement;
     }

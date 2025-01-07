@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -73,8 +73,8 @@ class ClusterProcessPersistServiceTest {
     }
     
     private void assertGetProcessList() {
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.getChildrenKeys(contains("/execution_nodes/"))).thenReturn(Collections.singletonList("abc"));
         when(repository.query(contains("/execution_nodes/"))).thenReturn(YamlEngine.marshal(createYamlProcessList()));
         Collection<Process> actual = processPersistService.getProcessList();
@@ -107,8 +107,8 @@ class ClusterProcessPersistServiceTest {
     }
     
     private void assertKillProcess() {
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys(ComputeNodePath.getOnlinePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         processPersistService.killProcess("foo_process_id");
         verify(repository).persist("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id", "");
     }

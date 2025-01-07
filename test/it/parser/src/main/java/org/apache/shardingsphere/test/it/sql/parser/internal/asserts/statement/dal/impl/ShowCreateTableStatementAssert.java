@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTableStatementTestCase;
 
 /**
@@ -37,5 +38,8 @@ public final class ShowCreateTableStatementAssert {
      * @param expected expected show create table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowCreateTableStatement actual, final ShowCreateTableStatementTestCase expected) {
+        if (null != actual.getTable()) {
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        }
     }
 }

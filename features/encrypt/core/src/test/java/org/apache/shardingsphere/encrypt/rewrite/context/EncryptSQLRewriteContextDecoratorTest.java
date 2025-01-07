@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -67,7 +66,6 @@ class EncryptSQLRewriteContextDecoratorTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.empty());
         decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }

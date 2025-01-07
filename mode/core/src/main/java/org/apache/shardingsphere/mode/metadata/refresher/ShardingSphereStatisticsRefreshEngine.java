@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.refresher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,7 +69,9 @@ public final class ShardingSphereStatisticsRefreshEngine {
      * Async refresh.
      */
     public void asyncRefresh() {
-        EXECUTOR_SERVICE.execute(this::refresh);
+        if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+            EXECUTOR_SERVICE.execute(this::refresh);
+        }
     }
     
     /**

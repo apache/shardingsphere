@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -153,7 +153,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         ShardingSphereDatabase database = mockDatabase();
         contextManager.reloadSchema(database, "foo_schema", "foo_ds");
-        verify(contextManager.getPersistServiceFacade().getRepository()).delete(DatabaseMetaDataNode.getMetaDataSchemaPath("foo_db", "foo_schema"));
+        verify(contextManager.getPersistServiceFacade().getRepository()).delete(DatabaseMetaDataNodePath.getSchemaPath("foo_db", "foo_schema"));
     }
     
     @Test
