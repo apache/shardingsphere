@@ -40,6 +40,10 @@ public final class ShardingSphereDataNodePath {
     
     private static final String JOB_NODE = "job";
     
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
+    
+    private static final String UNIQUE_KEY_PATTERN = "(\\w+)";
+    
     /**
      * Get database root path.
      *
@@ -76,7 +80,7 @@ public final class ShardingSphereDataNodePath {
      * @param schemaName schema name
      * @return schema path
      */
-    public static String getSchemaDataPath(final String databaseName, final String schemaName) {
+    public static String getSchemaPath(final String databaseName, final String schemaName) {
         return String.join("/", getSchemaRootPath(databaseName), schemaName);
     }
     
@@ -88,7 +92,7 @@ public final class ShardingSphereDataNodePath {
      * @return table root path
      */
     public static String getTableRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", getSchemaDataPath(databaseName, schemaName), TABLES_NODE);
+        return String.join("/", getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
     /**
@@ -96,11 +100,11 @@ public final class ShardingSphereDataNodePath {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param table table name
+     * @param tableName table name
      * @return table path
      */
-    public static String getTablePath(final String databaseName, final String schemaName, final String table) {
-        return String.join("/", getTableRootPath(databaseName, schemaName), table);
+    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
     }
     
     /**
@@ -108,95 +112,65 @@ public final class ShardingSphereDataNodePath {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param table table name
+     * @param tableName table name
      * @param uniqueKey unique key
      * @return table row path
      */
-    public static String getTableRowPath(final String databaseName, final String schemaName, final String table, final String uniqueKey) {
-        return String.join("/", getTablePath(databaseName, schemaName, table), uniqueKey);
+    public static String getTableRowPath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), uniqueKey);
     }
     
     /**
      * Find database name.
      *
-     * @param configNodeFullPath config node full path
+     * @param path path
+     * @param containsChildPath whether contains child path
      * @return found database name
      */
-    public static Optional<String> findDatabaseName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(configNodeFullPath);
+    public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getDatabasePath(IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
      * Find schema name.
      *
-     * @param configNodeFullPath config node full path
+     * @param path path
+     * @param containsChildPath whether contains child path
      * @return found schema name
      */
-    public static Optional<String> findSchemaName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(configNodeFullPath);
+    public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getSchemaPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
-     * Get database name by database path.
+     * Find table name.
      *
-     * @param databasePath database path
-     * @return database name
+     * @param path path
+     * @param containsChildPath whether contains child path
+     * @return found table name
      */
-    public static Optional<String> getDatabaseNameByDatabasePath(final String databasePath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(databasePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param schemaPath schema path
-     * @return schema name
-     */
-    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(schemaPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get table data path.
-     *
-     * @param tableMetaDataPath table data path
-     * @return table name
-     */
-    public static Optional<String> getTableName(final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(tableMetaDataPath);
+    public static Optional<String> findTableName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getTablePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get table name by row path.
+     * Find row unique key.
      *
-     * @param rowPath row data path
-     * @return table name
+     * @param path path
+     * @return found row unique key
      */
-    public static Optional<String> getTableNameByRowPath(final String rowPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rowPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Get row unique key.
-     *
-     * @param rowPath row data path
-     * @return row unique key
-     */
-    public static Optional<String> getRowUniqueKey(final String rowPath) {
-        Pattern pattern = Pattern.compile(getDatabasesRootPath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rowPath);
+    public static Optional<String> findRowUniqueKey(final String path) {
+        Pattern pattern = Pattern.compile(getTableRowPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
     
