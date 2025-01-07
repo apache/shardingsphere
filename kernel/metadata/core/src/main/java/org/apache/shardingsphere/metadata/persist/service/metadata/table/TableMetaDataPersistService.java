@@ -51,7 +51,8 @@ public final class TableMetaDataPersistService {
      * @return loaded tables
      */
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
-        return repository.getChildrenKeys(TableMetaDataNodePath.getMetaDataTablesPath(databaseName, schemaName)).stream().map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
+        return repository.getChildrenKeys(TableMetaDataNodePath.getMetaDataTablesPath(databaseName, schemaName)).stream()
+                .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     
     /**
@@ -86,7 +87,8 @@ public final class TableMetaDataPersistService {
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
                 repository.persist(TableMetaDataNodePath.getTableActiveVersionPath(databaseName, schemaName, tableName), MetaDataVersion.DEFAULT_VERSION);
             }
-            metaDataVersions.add(new MetaDataVersion(TableMetaDataNodePath.getTablePath(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
+            metaDataVersions
+                    .add(new MetaDataVersion(TableMetaDataNodePath.getTablePath(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
         }
         metaDataVersionPersistService.switchActiveVersion(metaDataVersions);
     }
