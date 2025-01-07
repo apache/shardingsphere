@@ -39,7 +39,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return StatesNodePath.getListenerAssistedNodePath();
+        return StatesNodePath.getListenerAssistedNodeRootPath();
     }
     
     @Override
@@ -49,7 +49,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatesNodePath.findDatabaseNameByListenerAssistedNodePath(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ListenerAssistedType.valueOf(event.getValue())));
+        StatesNodePath.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ListenerAssistedType.valueOf(event.getValue())));
     }
     
     private static void handle(final ContextManager contextManager, final String databaseName, final ListenerAssistedType listenerAssistedType) {

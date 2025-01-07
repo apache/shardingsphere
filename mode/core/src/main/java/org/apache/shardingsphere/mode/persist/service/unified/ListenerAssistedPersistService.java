@@ -36,7 +36,7 @@ public final class ListenerAssistedPersistService {
      * @param listenerAssistedType listener assisted type
      */
     public void persistDatabaseNameListenerAssisted(final String databaseName, final ListenerAssistedType listenerAssistedType) {
-        repository.persistEphemeral(StatesNodePath.getDatabaseNameListenerAssistedNodePath(databaseName), listenerAssistedType.name());
+        repository.persistEphemeral(StatesNodePath.getListenerAssistedNodePath(databaseName), listenerAssistedType.name());
     }
     
     /**
@@ -45,6 +45,6 @@ public final class ListenerAssistedPersistService {
      * @param databaseName database name
      */
     public void deleteDatabaseNameListenerAssisted(final String databaseName) {
-        repository.delete(StatesNodePath.getDatabaseNameListenerAssistedNodePath(databaseName));
+        repository.delete(StatesNodePath.getListenerAssistedNodePath(databaseName));
     }
 }

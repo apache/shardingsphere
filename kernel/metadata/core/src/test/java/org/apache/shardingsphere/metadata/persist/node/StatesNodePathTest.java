@@ -19,9 +19,11 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StatesNodePathTest {
     
@@ -31,17 +33,18 @@ class StatesNodePathTest {
     }
     
     @Test
+    void assertGetListenerAssistedNodeRootPath() {
+        assertThat(StatesNodePath.getListenerAssistedNodeRootPath(), is("/states/listener_assisted"));
+    }
+    
+    @Test
     void assertGetListenerAssistedNodePath() {
-        assertThat(StatesNodePath.getListenerAssistedNodePath(), is("/states/listener_assisted"));
+        assertThat(StatesNodePath.getListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
     }
     
     @Test
-    void assertFindDatabaseNameByListenerAssistedNodePath() {
-        assertTrue(StatesNodePath.findDatabaseNameByListenerAssistedNodePath("/states/listener_assisted/foo_db").isPresent());
-    }
-    
-    @Test
-    void assertGetDatabaseNameListenerAssistedNodePath() {
-        assertThat(StatesNodePath.getDatabaseNameListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
+    void assertFindDatabaseName() {
+        assertThat(StatesNodePath.findDatabaseName("/states/listener_assisted/foo_db"), is(Optional.of("foo_db")));
+        assertFalse(StatesNodePath.findDatabaseName("/states/listener_assisted").isPresent());
     }
 }
