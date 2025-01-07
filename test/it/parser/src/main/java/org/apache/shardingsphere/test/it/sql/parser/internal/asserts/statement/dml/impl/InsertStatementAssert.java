@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableConditionalIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableInsertIntoClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnConflictKeyColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
@@ -77,6 +79,7 @@ public final class InsertStatementAssert {
         assertSetClause(assertContext, actual, expected);
         assertInsertSelectClause(assertContext, actual, expected);
         assertOnDuplicateKeyColumns(assertContext, actual, expected);
+        assertOnConflictKeyColumns(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
         assertMultiTableInsertType(assertContext, actual, expected);
@@ -146,11 +149,26 @@ public final class InsertStatementAssert {
     
     private static void assertOnDuplicateKeyColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = actual.getOnDuplicateKeyColumns();
-        if (null == expected.getOnDuplicateKeyColumns()) {
-            assertFalse(onDuplicateKeyColumnsSegment.isPresent(), assertContext.getText("Actual on duplicate key columns segment should not exist."));
-        } else {
-            assertTrue(onDuplicateKeyColumnsSegment.isPresent(), assertContext.getText("Actual on duplicate key columns segment should exist."));
-            OnDuplicateKeyColumnsAssert.assertIs(assertContext, onDuplicateKeyColumnsSegment.get(), expected.getOnDuplicateKeyColumns());
+        
+        if (onDuplicateKeyColumnsSegment.isPresent()) {
+            if (null == expected.getOnDuplicateKeyColumns()) {
+                assertFalse(false, assertContext.getText("Actual on duplicate key columns segment should not exist."));
+            } else {
+                assertTrue(true, assertContext.getText("Actual on duplicate key columns segment should exist."));
+                OnDuplicateKeyColumnsAssert.assertIs(assertContext, onDuplicateKeyColumnsSegment.get(), expected.getOnDuplicateKeyColumns());
+            }
+        }
+    }
+    
+    private static void assertOnConflictKeyColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<OnConflictKeyColumnsSegment> onConflictKeyColumnsSegment = actual.getOnConflictKeyColumns();
+        if (onConflictKeyColumnsSegment.isPresent()) {
+            if (null == expected.getOnConflictKeyColumns()) {
+                assertFalse(false, assertContext.getText("Actual on conflict key columns segment should not exist."));
+            } else {
+                assertTrue(true, assertContext.getText("Actual on conflict key columns segment should exist."));
+                OnConflictKeyColumnAssert.assertIs(assertContext, onConflictKeyColumnsSegment.get(), expected.getOnConflictKeyColumns());
+            }
         }
     }
     
