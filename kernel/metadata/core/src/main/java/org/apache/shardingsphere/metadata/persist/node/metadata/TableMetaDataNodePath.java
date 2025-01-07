@@ -25,20 +25,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Table meta data node.
+ * Table meta data node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaDataNode {
+public final class TableMetaDataNodePath {
     
-    private static final String ROOT_NODE = "metadata";
+    private static final String ROOT_NODE = "/metadata";
     
     private static final String SCHEMAS_NODE = "schemas";
     
     private static final String TABLES_NODE = "tables";
     
-    private static final String ACTIVE_VERSION = "active_version";
+    private static final String VERSIONS_NODE = "versions";
     
-    private static final String VERSIONS = "versions";
+    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String TABLES_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables";
     
@@ -47,110 +47,106 @@ public final class TableMetaDataNode {
     private static final String TABLE_SUFFIX = "/([\\w\\-]+)$";
     
     /**
-     * Get meta data tables node.
+     * Get meta data tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @return tables path
      */
-    public static String getMetaDataTablesNode(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE);
+    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE);
     }
     
     /**
-     * Get table active version node.
+     * Get table active version path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @return tables active version node
+     * @return tables active version path
      */
-    public static String getTableActiveVersionNode(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, ACTIVE_VERSION);
+    public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, ACTIVE_VERSION_NODE);
     }
     
     /**
-     * Get table versions node.
+     * Get table versions path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @return tables versions node
+     * @return tables versions path
      */
-    public static String getTableVersionsNode(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, VERSIONS);
+    public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, VERSIONS_NODE);
     }
     
     /**
-     * Get table version node.
+     * Get table version path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
      * @param version version
-     * @return table version node
+     * @return table version path
      */
-    public static String getTableVersionNode(final String databaseName, final String schemaName, final String tableName, final String version) {
-        return String.join("/", getTableVersionsNode(databaseName, schemaName, tableName), version);
+    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final String version) {
+        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), version);
     }
     
     /**
-     * Get table node.
+     * Get table path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @return table node
+     * @return table path
      */
-    public static String getTableNode(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
+    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
     }
     
     /**
-     * Get table name by active version node.
+     * Get table name by active version path.
      *
      * @param path path
      * @return table name
      */
-    public static Optional<String> getTableNameByActiveVersionNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getTableNameByActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get table name.
+     * Find table name.
      *
      * @param path path
-     * @return table name
+     * @return found table name
      */
-    public static Optional<String> getTableName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + TABLES_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findTableName(final String path) {
+        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Is table active version node.
+     * Is table active version path.
      *
      * @param path path
      * @return true or false
      */
-    public static boolean isTableActiveVersionNode(final String path) {
-        return Pattern.compile(getMetaDataNode() + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    public static boolean isTableActiveVersionPath(final String path) {
+        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
-     * Is table node.
+     * Is table path.
      *
      * @param path path
      * @return true or false
      */
-    public static boolean isTableNode(final String path) {
-        return Pattern.compile(getMetaDataNode() + TABLES_PATTERN + TABLE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
-    }
-    
-    private static String getMetaDataNode() {
-        return String.join("/", "", ROOT_NODE);
+    public static boolean isTablePath(final String path) {
+        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + TABLE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceMetaDataNodePath;
-import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNodePath;
+import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -89,25 +89,25 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return TableMetaDataNode.isTableActiveVersionNode(key) || TableMetaDataNode.isTableNode(key);
+        return TableMetaDataNodePath.isTableActiveVersionPath(key) || TableMetaDataNodePath.isTablePath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNode.isTableActiveVersionNode(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePath.isTableActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && TableMetaDataNode.isTableNode(event.getKey())) {
+        } else if (Type.DELETED == event.getType() && TableMetaDataNodePath.isTablePath(event.getKey())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return ViewMetaDataNode.isViewActiveVersionNode(key) || ViewMetaDataNode.isViewNode(key);
+        return ViewMetaDataNodePath.isViewActiveVersionPath(key) || ViewMetaDataNodePath.isViewPath(key);
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNode.isViewActiveVersionNode(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePath.isViewActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && ViewMetaDataNode.isViewNode(event.getKey())) {
+        } else if (Type.DELETED == event.getType() && ViewMetaDataNodePath.isViewPath(event.getKey())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }
