@@ -98,7 +98,7 @@ public final class ShardingSphereDataPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(ShardingSphereDataNodePath.getSchemaDataPath(databaseName, schemaName), "");
+        repository.persist(ShardingSphereDataNodePath.getSchemaPath(databaseName, schemaName), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
