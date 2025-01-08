@@ -20,9 +20,15 @@ package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Create view statement context.
@@ -32,11 +38,15 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     private final TablesContext tablesContext;
     
-    public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
+    private final SelectStatementContext selectStatementContext;
+    
+    public CreateViewStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final CreateViewStatement sqlStatement, final String currentDatabaseName) {
         super(sqlStatement);
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());
+        selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
+        selectStatementContext.setSubqueryType(SubqueryType.VIEW_DEFINITION);
     }
     
     @Override

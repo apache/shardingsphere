@@ -25,20 +25,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * View meta data node.
+ * View meta data path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ViewMetaDataNode {
+public final class ViewMetaDataNodePath {
     
-    private static final String ROOT_NODE = "metadata";
+    private static final String ROOT_NODE = "/metadata";
     
     private static final String SCHEMAS_NODE = "schemas";
     
     private static final String VIEWS_NODE = "views";
     
-    private static final String ACTIVE_VERSION = "active_version";
+    private static final String VERSIONS_NODE = "versions";
     
-    private static final String VERSIONS = "versions";
+    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String VIEWS_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/views";
     
@@ -47,73 +47,73 @@ public final class ViewMetaDataNode {
     private static final String VIEW_SUFFIX = "/([\\w\\-]+)$";
     
     /**
-     * Get meta data views node.
+     * Get meta data views path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @return views path
      */
-    public static String getMetaDataViewsNode(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE);
+    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE);
     }
     
     /**
-     * Get view active version node.
+     * Get view active version path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view active version node
+     * @return view active version path
      */
-    public static String getViewActiveVersionNode(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, ACTIVE_VERSION);
+    public static String getViewActiveVersionPath(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, ACTIVE_VERSION_NODE);
     }
     
     /**
-     * Get view versions node.
+     * Get view versions path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view versions node
+     * @return view versions path
      */
-    public static String getViewVersionsNode(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getMetaDataNode(), databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, VERSIONS);
+    public static String getViewVersionsPath(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, VERSIONS_NODE);
     }
     
     /**
-     * Get view version node.
+     * Get view version path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
      * @param version version
-     * @return view version node
+     * @return view version path
      */
-    public static String getViewVersionNode(final String databaseName, final String schemaName, final String viewName, final String version) {
-        return String.join("/", getViewVersionsNode(databaseName, schemaName, viewName), version);
+    public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final String version) {
+        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), version);
     }
     
     /**
-     * Get view node.
+     * Get view path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view node
+     * @return view path
      */
-    public static String getViewNode(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", "", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName);
+    public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName);
     }
     
     /**
-     * Get view name by active version node.
+     * Get view name by active version path.
      *
      * @param path path
      * @return view name
      */
-    public static Optional<String> getViewNameByActiveVersionNode(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getViewNameByActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -124,33 +124,29 @@ public final class ViewMetaDataNode {
      * @param path path
      * @return view name
      */
-    public static Optional<String> getViewName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findViewName(final String path) {
+        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Is view active version node.
+     * Is view active version path.
      *
      * @param path path
      * @return true or false
      */
-    public static boolean isViewActiveVersionNode(final String path) {
-        return Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    public static boolean isViewActiveVersionPath(final String path) {
+        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
-     * Is view node.
+     * Is view path.
      *
      * @param path path
      * @return true or false
      */
-    public static boolean isViewNode(final String path) {
-        return Pattern.compile(getMetaDataNode() + VIEWS_PATTERN + VIEW_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
-    }
-    
-    private static String getMetaDataNode() {
-        return String.join("/", "", ROOT_NODE);
+    public static boolean isViewPath(final String path) {
+        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + VIEW_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
 }
