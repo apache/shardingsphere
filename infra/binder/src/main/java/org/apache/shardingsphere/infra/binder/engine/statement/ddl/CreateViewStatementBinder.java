@@ -37,6 +37,7 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
     public CreateViewStatement bind(final CreateViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         CreateViewStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        result.setReplaceView(sqlStatement.isReplaceView());
         result.setView(SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts));
         result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
         return result;

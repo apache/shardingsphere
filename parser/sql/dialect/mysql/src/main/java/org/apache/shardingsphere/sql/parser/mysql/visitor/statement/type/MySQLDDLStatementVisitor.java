@@ -207,6 +207,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
@@ -226,6 +227,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         MySQLDropViewStatement result = new MySQLDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }

@@ -31,4 +31,21 @@ import java.util.LinkedList;
 public abstract class DropViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<SimpleTableSegment> views = new LinkedList<>();
+    
+    /**
+     * Set if exists.
+     *
+     * @param ifExists if exists or not
+     */
+    public void setIfExists(final boolean ifExists) {
+    }
+    
+    /**
+     * Judge whether contains if exists.
+     *
+     * @return contains contains if exists or not
+     */
+    public boolean isIfExists() {
+        return false;
+    }
 }

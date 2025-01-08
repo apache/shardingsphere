@@ -205,10 +205,10 @@ public final class SQLStatementContextFactory {
             return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext((CreateViewStatement) sqlStatement);
+            return new CreateViewStatementContext(metaData, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext((AlterViewStatement) sqlStatement);
+            return new AlterViewStatementContext(metaData, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropViewStatement) {
             return new DropViewStatementContext((DropViewStatement) sqlStatement);
