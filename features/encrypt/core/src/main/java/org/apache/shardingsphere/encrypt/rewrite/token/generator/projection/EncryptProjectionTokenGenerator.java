@@ -162,7 +162,7 @@ public final class EncryptProjectionTokenGenerator {
         if (SubqueryType.PREDICATE == subqueryType) {
             return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection));
         }
-        if (SubqueryType.INSERT_SELECT == subqueryType) {
+        if (SubqueryType.INSERT_SELECT == subqueryType || SubqueryType.VIEW_DEFINITION == subqueryType) {
             return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection);
         }
         throw new UnsupportedSQLOperationException(

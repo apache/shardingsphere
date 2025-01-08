@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterVi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -150,11 +151,16 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         if (binderContext.getSqlStatement() instanceof CreateViewStatement && isCreateTable(((CreateViewStatement) binderContext.getSqlStatement()).getView(), tableName)) {
-            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate()
+                    || ((CreateViewStatement) binderContext.getSqlStatement()).isReplaceView() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
             return;
         }
         if (binderContext.getSqlStatement() instanceof AlterViewStatement && isRenameView((AlterViewStatement) binderContext.getSqlStatement(), tableName)) {
             ShardingSpherePreconditions.checkState(binderContext.getHintValueContext().isSkipMetadataValidate() || !schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            return;
+        }
+        if (binderContext.getSqlStatement() instanceof DropViewStatement) {
+            ShardingSpherePreconditions.checkState(((DropViewStatement) binderContext.getSqlStatement()).isIfExists() || schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
             return;
         }
         if ("DUAL".equalsIgnoreCase(tableName)) {
