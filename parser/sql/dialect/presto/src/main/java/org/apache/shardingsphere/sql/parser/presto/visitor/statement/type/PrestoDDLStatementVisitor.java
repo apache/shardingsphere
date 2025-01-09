@@ -67,6 +67,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         PrestoDropViewStatement result = new PrestoDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }
