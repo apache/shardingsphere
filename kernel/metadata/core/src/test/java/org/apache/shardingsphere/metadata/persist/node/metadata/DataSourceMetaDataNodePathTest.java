@@ -29,125 +29,110 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DataSourceMetaDataNodePathTest {
     
     @Test
-    void assertGetDataSourceUnitsPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceUnitsPath("foo_db"), is("/metadata/foo_db/data_sources/units"));
+    void assertGetDataSourceRootPath() {
+        assertThat(DataSourceMetaDataNodePath.getDataSourceRootPath("foo_db"), is("/metadata/foo_db/data_sources"));
     }
     
     @Test
-    void assertGetDataSourceNodesPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceNodesPath("foo_db"), is("/metadata/foo_db/data_sources/nodes"));
+    void assertGetStorageUnitsPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitsPath("foo_db"), is("/metadata/foo_db/data_sources/units"));
     }
     
     @Test
-    void assertGetDataSourceUnitPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceUnitPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+    void assertGetStorageNodesPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodesPath("foo_db"), is("/metadata/foo_db/data_sources/nodes"));
     }
     
     @Test
-    void assertGetDataSourceNodePath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceNodePath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds"));
+    void assertGetStorageUnitPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
     }
     
     @Test
-    void assertGetDataSourceUnitVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceUnitVersionPath("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+    void assertGetStorageNodePath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodePath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds"));
     }
     
     @Test
-    void assertGetDataSourceUnitVersionsPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceUnitVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+    void assertGetStorageUnitVersionPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionPath("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
-    void assertGetDataSourceUnitActiveVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceUnitActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+    void assertGetStorageUnitVersionsPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
     }
     
     @Test
-    void assertGetDataSourceNodeVersionsPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceNodeVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
+    void assertGetStorageUnitActiveVersionPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
     }
     
     @Test
-    void assertGetDataSourceNodeVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceNodeVersionPath("foo_db", "foo_ds", "1"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/1"));
+    void assertGetStorageNodeVersionsPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
     }
     
     @Test
-    void assertGetDataSourceNodeActiveVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getDataSourceNodeActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));
+    void assertGetStorageNodeVersionPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionPath("foo_db", "foo_ds", "1"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/1"));
     }
     
     @Test
-    void assertIsDataSourcesPath() {
-        assertTrue(DataSourceMetaDataNodePath.isDataSourcesPath("/metadata/logic_db/data_sources/foo_ds"));
+    void assertGetStorageNodeActiveVersionPath() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceUnitActiveVersionPath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitActiveVersionPath("/metadata/logic_db/data_sources/units/foo_ds/active_version");
+    void assertFindStorageUnitNameByActiveVersionPath() {
+        Optional<String> actual = DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath("/metadata/foo_db/data_sources/units/foo_ds/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceUnitActiveVersionPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitActiveVersionPath("/xxx/logic_db/data_sources/units/foo_ds/active_version").isPresent());
+    void assertFindStorageUnitNameByActiveVersionPathIfNotFound() {
+        assertFalse(DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath("/xxx/foo_db/data_sources/units/foo_ds/active_version").isPresent());
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceUnitPath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitPath("/metadata/logic_db/data_sources/units/foo_ds");
+    void assertFindStorageUnitNameByStorageUnitPath() {
+        Optional<String> actual = DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath("/metadata/foo_db/data_sources/units/foo_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceUnitPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitPath("/xxx/logic_db/data_sources/units/foo_ds").isPresent());
+    void assertFindStorageUnitNameByStorageUnitPathIfNotFound() {
+        assertFalse(DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath("/xxx/foo_db/data_sources/units/foo_ds").isPresent());
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceNodeActiveVersionPath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodeActiveVersionPath("/metadata/logic_db/data_sources/nodes/foo_ds/active_version");
+    void assertFindStorageNodeNameByActiveVersionPath() {
+        Optional<String> actual = DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath("/metadata/foo_db/data_sources/nodes/foo_ds/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceNodeActiveVersionPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodeActiveVersionPath("/xxx/logic_db/data_sources/nodes/foo_ds/active_version").isPresent());
+    void assertFindStorageNodeNameByActiveVersionPathIfNotFound() {
+        assertFalse(DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath("/xxx/foo_db/data_sources/nodes/foo_ds/active_version").isPresent());
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceNodePath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodePath("/metadata/logic_db/data_sources/nodes/foo_ds");
+    void assertFindStorageNodeNameByStorageNodePath() {
+        Optional<String> actual = DataSourceMetaDataNodePath.findStorageNodeNameByStorageNodePath("/metadata/foo_db/data_sources/nodes/foo_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
-    void assertFindDataSourceNameByDataSourceNodePathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodePath("/xxx/logic_db/data_sources/nodes/foo_ds").isPresent());
+    void assertFindStorageNodeNameByStorageNodePathIfNotFound() {
+        assertFalse(DataSourceMetaDataNodePath.findStorageNodeNameByStorageNodePath("/xxx/foo_db/data_sources/nodes/foo_ds").isPresent());
     }
     
     @Test
-    void assertIsDataSourceUnitActiveVersionPath() {
-        assertTrue(DataSourceMetaDataNodePath.isDataSourceUnitActiveVersionPath("/metadata/logic_db/data_sources/units/foo_ds/active_version"));
-    }
-    
-    @Test
-    void assertIsDataSourceUnitPath() {
-        assertTrue(DataSourceMetaDataNodePath.isDataSourceUnitPath("/metadata/logic_db/data_sources/units/foo_ds"));
-    }
-    
-    @Test
-    void assertIsDataSourceNodeActiveVersionPath() {
-        assertTrue(DataSourceMetaDataNodePath.isDataSourceNodeActiveVersionPath("/metadata/logic_db/data_sources/nodes/foo_ds/active_version"));
-    }
-    
-    @Test
-    void assertIsDataSourceNodePath() {
-        assertTrue(DataSourceMetaDataNodePath.isDataSourceNodePath("/metadata/logic_db/data_sources/nodes/foo_ds"));
+    void assertIsDataSourceRootPath() {
+        assertTrue(DataSourceMetaDataNodePath.isDataSourceRootPath("/metadata/foo_db/data_sources/foo_ds"));
     }
 }
