@@ -54,6 +54,7 @@
 1. SQL Binder: Support show create table, show columns, show index statement bind - [#34271](https://github.com/apache/shardingsphere/pull/34271)
 1. SQL Parser: Enhance create view, alter view, drop view sql parser - [#34283](https://github.com/apache/shardingsphere/pull/34283)
 1. SQL Binder: Support deny user sql bind and add test case - [#34279](https://github.com/apache/shardingsphere/pull/34279)
+1. SQL Binder: Support with segment bind check with UniqueCommonTableExpressionException - [#34163](https://github.com/apache/shardingsphere/pull/34163)
 
 ### Bug Fixes
 
