@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 /**
  * Doris recover table statement.
  */
-
 @Getter
 @Setter
 public final class DorisRecoverTableStatement extends AbstractSQLStatement implements DorisStatement {
