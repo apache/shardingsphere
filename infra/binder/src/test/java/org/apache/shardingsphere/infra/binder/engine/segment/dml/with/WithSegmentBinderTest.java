@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.with;
+package org.apache.shardingsphere.infra.binder.engine.segment.dml.with;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,22 +47,20 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
-public class WithSegmentBinderTest {
+class WithSegmentBinderTest {
     
     @Test
     void assertBind() {
-        
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
         ProjectionsSegment projectionSegment = new ProjectionsSegment(42, 48);
         ColumnSegment columnSegment = new ColumnSegment(42, 48, new IdentifierValue("user_id"));
         projectionSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
         mySQLSelectStatement.setProjections(projectionSegment);
         mySQLSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(55, 57, new IdentifierValue("cte"))));
-        
         MySQLSelectStatement subqueryMySQLSelectStatement = new MySQLSelectStatement();
         ProjectionsSegment subqueryProjectionSegment = new ProjectionsSegment(20, 20);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(20, 20);
@@ -75,10 +72,8 @@ public class WithSegmentBinderTest {
         commonTableExpressionSegments.add(new CommonTableExpressionSegment(5, 33, new AliasSegment(5, 7, new IdentifierValue("cte")), subquerySegment));
         WithSegment withSegment = new WithSegment(0, 33, commonTableExpressionSegments);
         mySQLSelectStatement.setWithSegment(withSegment);
-        
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mySQLSelectStatement);
         WithSegment actual = WithSegmentBinder.bind(withSegment, binderContext, binderContext.getExternalTableBinderContexts());
-        
         assertThat(binderContext.getExternalTableBinderContexts().size(), is(1));
         assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().size(), is(1));
         assertThat(actual.getStartIndex(), is(0));
@@ -86,11 +81,9 @@ public class WithSegmentBinderTest {
         assertTrue(actual.getCommonTableExpressions().iterator().next().getAliasName().isPresent());
         assertThat(actual.getCommonTableExpressions().iterator().next().getAliasName().get(), is("cte"));
         assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().iterator().next(), is("cte"));
-        
         SimpleTableSegmentBinderContext simpleTableSegment = (SimpleTableSegmentBinderContext) binderContext.getExternalTableBinderContexts().get(new CaseInsensitiveString("cte")).iterator().next();
         ArrayList<ColumnProjectionSegment> columnProjectionSegments = new ArrayList<>();
         simpleTableSegment.getProjectionSegments().forEach(each -> columnProjectionSegments.add((ColumnProjectionSegment) each));
-        
         assertThat(columnProjectionSegments.get(0).getColumn().getIdentifier().getValue(), is("user_id"));
         assertThat(columnProjectionSegments.get(1).getColumn().getIdentifier().getValue(), is("name"));
         assertTrue(columnProjectionSegments.get(1).getColumn().getOwner().isPresent());
@@ -108,7 +101,6 @@ public class WithSegmentBinderTest {
         when(schema.getTable("t_user").getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false)));
-        
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
         when(result.containsDatabase("foo_db")).thenReturn(true);
@@ -116,5 +108,4 @@ public class WithSegmentBinderTest {
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_user")).thenReturn(true);
         return result;
     }
-    
 }

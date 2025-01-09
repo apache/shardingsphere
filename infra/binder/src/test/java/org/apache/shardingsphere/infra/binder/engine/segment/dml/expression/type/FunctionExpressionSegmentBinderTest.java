@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.segment.expression.type;
+package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.FunctionExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
