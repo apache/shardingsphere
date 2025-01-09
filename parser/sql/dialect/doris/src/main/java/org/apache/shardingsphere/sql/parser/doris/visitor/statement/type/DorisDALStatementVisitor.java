@@ -1094,7 +1094,6 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
                 ctx.databaseName().stop.getStopIndex(),
                 new IdentifierValue(ctx.databaseName().identifier().getText()));
         result.setDatabaseName(databaseName);
-        
         if (null != ctx.databaseId()) {
             DatabaseIdSegment databaseIdSegment = new DatabaseIdSegment(
                     ctx.databaseId().start.getStartIndex(),
