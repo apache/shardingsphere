@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere statistics refresh engine.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class ShardingSphereStatisticsRefreshEngine {
     
@@ -61,11 +60,18 @@ public final class ShardingSphereStatisticsRefreshEngine {
     
     private final LockContext lockContext;
     
+    public ShardingSphereStatisticsRefreshEngine(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
+    }
+    
     /**
      * Async refresh.
      */
     public void asyncRefresh() {
-        EXECUTOR_SERVICE.execute(this::refresh);
+        if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
+            EXECUTOR_SERVICE.execute(this::refresh);
+        }
     }
     
     /**

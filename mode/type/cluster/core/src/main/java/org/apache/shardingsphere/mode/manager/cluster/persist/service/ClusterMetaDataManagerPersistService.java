@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -33,10 +34,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssisted;
-import org.apache.shardingsphere.mode.persist.pojo.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
@@ -70,13 +70,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
-        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssisted(databaseName, ListenerAssistedType.CREATE_DATABASE));
+        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(databaseName, ListenerAssistedType.CREATE_DATABASE);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName();
-        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(new ListenerAssisted(droppedDatabaseName, ListenerAssistedType.DROP_DATABASE));
+        listenerAssistedPersistService.persistDatabaseNameListenerAssisted(droppedDatabaseName, ListenerAssistedType.DROP_DATABASE);
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(droppedDatabaseName);
     }
     
@@ -125,7 +125,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
                     switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
-            afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+            afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.close();
         } finally {
             closeNewDataSources(newDataSources);
@@ -179,18 +179,12 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         return toBeDroppedResourceNames.stream().filter(propsMap::containsKey).collect(Collectors.toList());
     }
     
-    private void afterStorageUnitsRegistered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
+    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseData().get(databaseName))
                 .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> metaDataPersistService.getShardingSphereDataPersistService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaData)));
         metaDataPersistService.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
-    }
-    
-    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
-        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getAllSchemas().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade()
-                .getSchema().alterByRuleAltered(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
-        afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
     }
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
@@ -221,7 +215,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         metaDataPersistService.persistReloadDatabaseByAlter(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
@@ -241,7 +237,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         afterRuleConfigurationDropped(databaseName, originalMetaDataContexts);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
         metaDataPersistService.persistReloadDatabaseByDrop(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));

@@ -71,12 +71,16 @@ public final class DatabaseExportMetaDataGenerator {
     private void appendDataSourceConfiguration(final String dataSourceName, final DataSourcePoolProperties props, final StringBuilder stringBuilder) {
         stringBuilder.append(createIndentation(2)).append(dataSourceName).append(':').append(System.lineSeparator());
         for (Entry<String, Object> entry : props.getConnectionPropertySynonyms().getStandardProperties().entrySet()) {
-            String value = null == entry.getValue() ? "" : entry.getValue().toString();
-            stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+            if (null != entry.getValue()) {
+                String value = entry.getValue().toString();
+                stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+            }
         }
         for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
-            String value = null == entry.getValue() ? "" : entry.getValue().toString();
-            stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+            if (null != entry.getValue()) {
+                String value = entry.getValue().toString();
+                stringBuilder.append(createIndentation(4)).append(entry.getKey()).append(": ").append(value).append(System.lineSeparator());
+            }
         }
     }
     

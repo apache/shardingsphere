@@ -20,7 +20,7 @@ package org.apache.shardingsphere.metadata.persist.service.version;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
             }
             repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
             getVersions(each.getVersionsPath()).stream()
-                    .filter(version -> !version.equals(each.getNextActiveVersion()))
+                    .filter(version -> Integer.parseInt(version) < Integer.parseInt(each.getNextActiveVersion()))
                     .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
         }
     }
@@ -55,7 +55,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
-        return repository.query(DatabaseMetaDataNode.getVersionNodeByActiveVersionPath(path, activeVersion));
+        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
     }
     
     @Override

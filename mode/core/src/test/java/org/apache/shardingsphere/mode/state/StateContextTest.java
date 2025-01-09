@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,17 +24,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class StateContextTest {
     
-    private final StateContext stateContext = new StateContext(ClusterState.OK);
+    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
     
     @Test
     void assertGetClusterState() {
-        assertThat(stateContext.getClusterState(), is(ClusterState.OK));
+        assertThat(stateContext.getState(), is(ClusterState.OK));
     }
     
     @Test
     void assertSwitchClusterState() {
-        assertThat(stateContext.getClusterState(), is(ClusterState.OK));
-        stateContext.switchClusterState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getClusterState(), is(ClusterState.UNAVAILABLE));
+        assertThat(stateContext.getState(), is(ClusterState.OK));
+        stateContext.switchState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
     }
 }

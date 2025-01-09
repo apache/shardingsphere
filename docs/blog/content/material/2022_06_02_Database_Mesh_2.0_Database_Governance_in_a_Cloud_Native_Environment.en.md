@@ -68,7 +68,7 @@ Database Mesh 2.0 focuses on how to achieve the following goals in a cloud nativ
 
 > **Developer experience**
 
-As mentioned above, business developers are mainly concerned about business logic and implementation instead of infrastructure, operation and maintenance features. Developement experience will move towards [Serverless](https://www.redhat.com/en/topics/cloud-native-apps/what-is-serverless), which means it will become more and more transparent and intuitive when accessing databases. Developers only need to understand the type of data storage required by their business, and then use preset or dynamic ID credential information to access corresponding database services.
+As mentioned above, business developers are mainly concerned about business logic and implementation instead of infrastructure, operation and maintenance features. Development experience will move towards [Serverless](https://www.redhat.com/en/topics/cloud-native-apps/what-is-serverless), which means it will become more and more transparent and intuitive when accessing databases. Developers only need to understand the type of data storage required by their business, and then use preset or dynamic ID credential information to access corresponding database services.
 
 > **Programmable**
 

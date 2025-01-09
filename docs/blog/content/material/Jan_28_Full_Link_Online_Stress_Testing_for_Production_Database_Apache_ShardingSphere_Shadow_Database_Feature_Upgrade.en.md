@@ -104,7 +104,7 @@ The data generated from test user order creation will be routed to shadow databa
 
 As mentioned in the introduction, full-link online stress testing is a complicated task that requires collaboration between microservices and middlewares to meet the needs of different traffic and stress testing tag transmissions.
 
-Additonally, the testing service should be stateless and immediately available. [CyborgFlow](https://github.com/SphereEx/CyborgFlow), which is jointly maintained by Apache ShardingSphere, Apache APISIX and Apache SkyWalking provides out-of-the-box (OoTB) solution to run load test in your online system.
+Additionally, the testing service should be stateless and immediately available. [CyborgFlow](https://github.com/SphereEx/CyborgFlow), which is jointly maintained by Apache ShardingSphere, Apache APISIX and Apache SkyWalking provides out-of-the-box (OoTB) solution to run load test in your online system.
 
 [Apache APISIX](https://apisix.apache.org/) is responsible for making tags on testing data at the gateway layer, while [Apache SkyWalking](https://skywalking.apache.org/) is responsible for transmission through the whole scheduling link, and finally, Apache ShardingSphere-Proxy will isolate data and route testing data to the shadow database.
 

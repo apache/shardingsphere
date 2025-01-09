@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
@@ -66,6 +67,8 @@ class TransactionBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         ContextManager contextManager = mockContextManager();
@@ -82,6 +85,9 @@ class TransactionBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
+        when(connectionSession.getDatabaseConnectionManager().getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
         SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         ContextManager contextManager = mockContextManager();

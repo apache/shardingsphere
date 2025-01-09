@@ -56,4 +56,14 @@
         <input sql="INSERT INTO t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = ?, status = 'OK'" parameters="1000" />
         <output sql="INSERT INTO t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = ?, status = 'OK'" parameters="encrypt_1000" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="insert_account_bak_set_for_parameters_and_quote" db-types="MySQL">
+        <input sql="INSERT INTO `t_account_bak` SET `account_id` = ?, `certificate_number` = ?, `password` = ?, `amount` = ?, `status` = ?" parameters="1, cert, pwd, 1000, OK" />
+        <output sql="INSERT INTO `t_account_bak` SET `account_id` = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, `status` = ?" parameters="1, encrypt_cert, assisted_query_cert, like_query_cert, encrypt_pwd, assisted_query_pwd, like_query_pwd, encrypt_1000, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_set_with_quote" db-types="MySQL">
+        <input sql="INSERT INTO `t_account_bak` SET `account_id` = 1, `certificate_number` = '111X', `password` = ?, `amount` = IFNULL(`amount`, ?)" parameters="aaa, 1000" />
+        <output sql="INSERT INTO `t_account_bak` SET `account_id` = 1, `cipher_certificate_number` = 'encrypt_111X', `assisted_query_certificate_number` = 'assisted_query_111X', `like_query_certificate_number` = 'like_query_111X', `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `amount` = IFNULL(`amount`, ?)" parameters="encrypt_aaa, assisted_query_aaa, like_query_aaa, 1000" />
+    </rewrite-assertion>
 </rewrite-assertions>

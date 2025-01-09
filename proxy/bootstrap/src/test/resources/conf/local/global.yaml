@@ -31,6 +31,7 @@ authority:
   users:
     - user: root
       password: root
+      admin: true
     - user: sharding
       password: sharding
   privilege:

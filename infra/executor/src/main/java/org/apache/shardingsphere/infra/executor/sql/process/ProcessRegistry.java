@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.connection.SQLExecutionInterruptedException;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,11 +95,24 @@ public final class ProcessRegistry {
     }
     
     /**
-     * List all process.
+     * List all processes.
      *
      * @return all processes
      */
     public Collection<Process> listAll() {
         return processes.values();
+    }
+    
+    /**
+     * Kill process.
+     *
+     * @param processId process ID
+     * @throws SQLException SQL exception
+     */
+    public void kill(final String processId) throws SQLException {
+        Process process = ProcessRegistry.getInstance().get(processId);
+        if (null != process) {
+            process.kill();
+        }
     }
 }

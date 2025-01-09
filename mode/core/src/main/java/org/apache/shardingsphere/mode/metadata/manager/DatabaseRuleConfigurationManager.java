@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Database rule configuration manager.
@@ -74,7 +75,7 @@ public final class DatabaseRuleConfigurationManager {
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
         rules.addAll(DatabaseRulesBuilder.build(
                 databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-        refreshMetadata(databaseName, database, rules);
+        refreshMetadata(databaseName, getRuleConfigurations(rules));
     }
     
     /**
@@ -98,14 +99,16 @@ public final class DatabaseRuleConfigurationManager {
             rules.addAll(DatabaseRulesBuilder.build(
                     databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }
-        refreshMetadata(databaseName, database, rules);
+        refreshMetadata(databaseName, getRuleConfigurations(rules));
     }
     
-    private void refreshMetadata(final String databaseName, final ShardingSphereDatabase database, final Collection<ShardingSphereRule> rules) throws SQLException {
-        database.getRuleMetaData().getRules().clear();
-        database.getRuleMetaData().getRules().addAll(rules);
+    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createByAlterRule(databaseName, false,
-                database.getRuleMetaData().getConfigurations(), metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
+                ruleConfigurations, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         metaDataContexts.set(reloadMetaDataContexts);
+    }
+    
+    private Collection<RuleConfiguration> getRuleConfigurations(final Collection<ShardingSphereRule> rules) {
+        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
 }

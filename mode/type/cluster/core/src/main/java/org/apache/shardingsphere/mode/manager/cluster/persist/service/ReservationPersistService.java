@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.ReservationNode;
+import org.apache.shardingsphere.metadata.persist.node.ReservationNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 
@@ -41,7 +41,7 @@ public final class ReservationPersistService {
      */
     public Optional<Integer> reserveWorkerId(final Integer preselectedWorkerId, final String instanceId) {
         try {
-            return repository.persistExclusiveEphemeral(ReservationNode.getWorkerIdReservationPath(preselectedWorkerId), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
+            return repository.persistExclusiveEphemeral(ReservationNodePath.getWorkerIdReservationPath(preselectedWorkerId), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
         } catch (final ClusterRepositoryPersistException ignore) {
             return Optional.empty();
         }

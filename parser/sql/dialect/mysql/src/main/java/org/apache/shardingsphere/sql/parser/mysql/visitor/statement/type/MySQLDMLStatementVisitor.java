@@ -100,12 +100,16 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new MySQLLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement();
+        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        return new MySQLLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
+        MySQLLoadXMLStatement result = new MySQLLoadXMLStatement();
+        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @Override

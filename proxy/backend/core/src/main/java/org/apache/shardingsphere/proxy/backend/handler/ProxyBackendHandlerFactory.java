@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.mode.state.ClusterState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
@@ -188,7 +188,7 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void checkClusterState(final SQLStatement sqlStatement) {
-        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getStateContext().getClusterState();
+        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
         if (ClusterState.OK != clusterCurrentState) {
             TypedSPILoader.getService(ProxyClusterState.class, clusterCurrentState.name()).check(sqlStatement);
         }

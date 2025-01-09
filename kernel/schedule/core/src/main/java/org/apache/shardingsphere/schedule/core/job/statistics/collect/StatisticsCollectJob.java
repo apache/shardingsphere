@@ -21,11 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
  * Statistics collect job.
@@ -37,9 +33,8 @@ public final class StatisticsCollectJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        PersistRepository repository = contextManager.getPersistServiceFacade().getRepository();
-        if (repository instanceof ClusterPersistRepository) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager, new ClusterLockContext(new GlobalLockPersistService((ClusterPersistRepository) repository))).refresh();
+        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
+            new ShardingSphereStatisticsRefreshEngine(contextManager).refresh();
         }
     }
 }

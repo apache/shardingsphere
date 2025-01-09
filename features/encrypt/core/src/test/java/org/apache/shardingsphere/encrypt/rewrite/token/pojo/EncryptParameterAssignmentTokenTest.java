@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +27,7 @@ class EncryptParameterAssignmentTokenTest {
     
     @Test
     void assertToString() {
-        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1, QuoteCharacter.NONE);
         actual.addColumnName("c1");
         actual.addColumnName("c2");
         assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
