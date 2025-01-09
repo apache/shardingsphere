@@ -70,6 +70,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
 | 12200       | 42000     | Hint data source '%s' does not exist.    |
 | 12300       | 0A000     | DROP TABLE ... CASCADE is not supported. |
+| 12500       | 42000     | Not unique table/alias: '%s'             |
 
 ### Connection
 

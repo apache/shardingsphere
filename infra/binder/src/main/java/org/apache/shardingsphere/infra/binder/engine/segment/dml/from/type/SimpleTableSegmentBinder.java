@@ -172,6 +172,9 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
             return;
         }
+        if (binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(tableName)) {
+            return;
+        }
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
     }
     

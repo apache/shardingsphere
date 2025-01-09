@@ -54,7 +54,9 @@ public final class CombineSegmentBinder {
         SQLStatementBinderContext subqueryBinderContext =
                 new SQLStatementBinderContext(binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
+        subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         result.setSelect(new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), subqueryBinderContext));
+        binderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         return result;
     }
 }
