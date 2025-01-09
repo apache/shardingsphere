@@ -47,6 +47,8 @@ public final class SQLStatementBinderContext {
     
     private final SQLStatement sqlStatement;
     
+    private final Collection<String> commonTableExpressionsSegmentsUniqueAliases = new CaseInsensitiveSet<>();
+    
     private final Collection<String> usingColumnNames = new CaseInsensitiveSet<>();
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();

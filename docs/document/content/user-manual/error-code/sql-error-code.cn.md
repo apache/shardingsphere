@@ -70,6 +70,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
 | 12200       | 42000     | Hint data source '%s' does not exist.    |
 | 12300       | 0A000     | DROP TABLE ... CASCADE is not supported. |
+| 12500       | 42000     | Not unique table/alias: '%s'             |
 
 ### 连接
 
