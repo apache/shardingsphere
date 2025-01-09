@@ -73,7 +73,7 @@ public final class MetaDataChangedHandler {
             handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (DataSourceMetaDataNodePath.isDataSourcesPath(eventKey)) {
+        if (DataSourceMetaDataNodePath.isDataSourceRootPath(eventKey)) {
             handleDataSourceChanged(databaseName, event);
             return true;
         }
@@ -113,42 +113,52 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        if (DataSourceMetaDataNodePath.isDataSourceUnitActiveVersionPath(event.getKey()) || DataSourceMetaDataNodePath.isDataSourceUnitPath(event.getKey())) {
-            handleStorageUnitChanged(databaseName, event);
-        } else if (DataSourceMetaDataNodePath.isDataSourceNodeActiveVersionPath(event.getKey()) || DataSourceMetaDataNodePath.isDataSourceNodePath(event.getKey())) {
-            handleStorageNodeChanged(databaseName, event);
+        Optional<String> storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath(event.getKey());
+        boolean isActiveVersion = true;
+        if (!storageUnitName.isPresent()) {
+            storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath(event.getKey());
+            isActiveVersion = false;
+        }
+        if (storageUnitName.isPresent()) {
+            handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
+            return;
+        }
+        Optional<String> storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath(event.getKey());
+        isActiveVersion = true;
+        if (!storageNodeName.isPresent()) {
+            storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByStorageNodePath(event.getKey());
+            isActiveVersion = false;
+        }
+        if (storageNodeName.isPresent()) {
+            handleStorageNodeChanged(databaseName, event, storageNodeName.get(), isActiveVersion);
         }
     }
     
-    private void handleStorageUnitChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceUnitName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitActiveVersionPath(event.getKey());
-        if (dataSourceUnitName.isPresent()) {
+    private void handleStorageUnitChanged(final String databaseName, final DataChangedEvent event, final String storageUnitName, final boolean isActiveVersion) {
+        if (isActiveVersion) {
             if (Type.ADDED == event.getType()) {
-                storageUnitChangedHandler.handleRegistered(databaseName, dataSourceUnitName.get(), event);
+                storageUnitChangedHandler.handleRegistered(databaseName, storageUnitName, event);
             } else if (Type.UPDATED == event.getType()) {
-                storageUnitChangedHandler.handleAltered(databaseName, dataSourceUnitName.get(), event);
+                storageUnitChangedHandler.handleAltered(databaseName, storageUnitName, event);
             }
             return;
         }
-        dataSourceUnitName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceUnitPath(event.getKey());
-        if (Type.DELETED == event.getType() && dataSourceUnitName.isPresent()) {
-            storageUnitChangedHandler.handleUnregistered(databaseName, dataSourceUnitName.get());
+        if (Type.DELETED == event.getType()) {
+            storageUnitChangedHandler.handleUnregistered(databaseName, storageUnitName);
         }
     }
     
-    private void handleStorageNodeChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> dataSourceNodeName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodeActiveVersionPath(event.getKey());
-        if (dataSourceNodeName.isPresent()) {
+    private void handleStorageNodeChanged(final String databaseName, final DataChangedEvent event, final String storageNodeName, final boolean isActiveVersion) {
+        if (isActiveVersion) {
             if (Type.ADDED == event.getType()) {
-                storageNodeChangedHandler.handleRegistered(databaseName, dataSourceNodeName.get(), event);
+                storageNodeChangedHandler.handleRegistered(databaseName, storageNodeName, event);
             } else if (Type.UPDATED == event.getType()) {
-                storageNodeChangedHandler.handleAltered(databaseName, dataSourceNodeName.get(), event);
+                storageNodeChangedHandler.handleAltered(databaseName, storageNodeName, event);
             }
             return;
         }
-        dataSourceNodeName = DataSourceMetaDataNodePath.findDataSourceNameByDataSourceNodePath(event.getKey());
-        if (Type.DELETED == event.getType() && dataSourceNodeName.isPresent()) {
-            storageNodeChangedHandler.handleUnregistered(databaseName, dataSourceNodeName.get());
+        if (Type.DELETED == event.getType()) {
+            storageNodeChangedHandler.handleUnregistered(databaseName, storageNodeName);
         }
     }
 }

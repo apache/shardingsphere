@@ -54,10 +54,10 @@ public final class DataSourceNodePersistService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        Collection<String> childrenKeys = repository.getChildrenKeys(DataSourceMetaDataNodePath.getDataSourceNodesPath(databaseName));
+        Collection<String> childrenKeys = repository.getChildrenKeys(DataSourceMetaDataNodePath.getStorageNodesPath(databaseName));
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
         for (String each : childrenKeys) {
-            String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getDataSourceNodeVersionPath(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
+            String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getStorageNodeVersionPath(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
             if (!Strings.isNullOrEmpty(dataSourceValue)) {
                 result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
             }
@@ -74,7 +74,7 @@ public final class DataSourceNodePersistService {
      */
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
-        String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getDataSourceNodeVersionPath(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
+        String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getStorageNodeVersionPath(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
         return new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
@@ -87,18 +87,18 @@ public final class DataSourceNodePersistService {
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
             String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getDataSourceNodeVersionsPath(databaseName, entry.getKey()));
-            repository.persist(DataSourceMetaDataNodePath.getDataSourceNodeVersionPath(databaseName, entry.getKey(), versions.isEmpty()
+            List<String> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getStorageNodeVersionsPath(databaseName, entry.getKey()));
+            repository.persist(DataSourceMetaDataNodePath.getStorageNodeVersionPath(databaseName, entry.getKey(), versions.isEmpty()
                     ? MetaDataVersion.DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
             if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(DataSourceMetaDataNodePath.getDataSourceNodeActiveVersionPath(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
+                repository.persist(DataSourceMetaDataNodePath.getStorageNodeActiveVersionPath(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
             }
         }
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.query(DataSourceMetaDataNodePath.getDataSourceNodeActiveVersionPath(databaseName, dataSourceName));
+        return repository.query(DataSourceMetaDataNodePath.getStorageNodeActiveVersionPath(databaseName, dataSourceName));
     }
     
     /**
@@ -108,6 +108,6 @@ public final class DataSourceNodePersistService {
      * @param dataSourceName data source name
      */
     public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(DataSourceMetaDataNodePath.getDataSourceNodePath(databaseName, dataSourceName));
+        repository.delete(DataSourceMetaDataNodePath.getStorageNodePath(databaseName, dataSourceName));
     }
 }
