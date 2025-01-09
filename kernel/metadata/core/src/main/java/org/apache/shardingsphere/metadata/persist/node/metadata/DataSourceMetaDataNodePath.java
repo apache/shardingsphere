@@ -50,7 +50,7 @@ public final class DataSourceMetaDataNodePath {
      * @param databaseName database name
      * @return data source root path
      */
-    public static String  getDataSourceRootPath(final String databaseName) {
+    public static String getDataSourceRootPath(final String databaseName) {
         return String.join("/", ROOT_NODE, databaseName, DATA_SOURCES_NODE);
     }
     
