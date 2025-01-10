@@ -31,7 +31,7 @@ public final class ActiveVersionChecker {
     
     /**
      * Check active version.
-     * 
+     *
      * @param contextManager context manager
      * @param event data changed event
      */
