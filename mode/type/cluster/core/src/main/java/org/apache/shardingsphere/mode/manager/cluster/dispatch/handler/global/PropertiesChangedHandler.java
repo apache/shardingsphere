@@ -47,8 +47,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
         if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return;
         }
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }

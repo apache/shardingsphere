@@ -53,7 +53,7 @@ class MetaDataChangedHandlerTest {
     void setUp() {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)).thenReturn(false);
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(any())).thenReturn("0");
+        when(contextManager.getPersistServiceFacade().getRepository().query(any())).thenReturn("0");
         handler = new MetaDataChangedHandler(contextManager);
     }
     
@@ -73,7 +73,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleTableCreated() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
@@ -83,7 +83,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleTableAltered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
@@ -99,7 +99,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleViewCreated() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
@@ -109,7 +109,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleViewAltered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
@@ -125,7 +125,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleStorageUnitRegistered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version/0", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).registerStorageUnit(eq("foo_db"), any());
@@ -133,7 +133,7 @@ class MetaDataChangedHandlerTest {
     
     @Test
     void assertHandleStorageUnitAltered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("key")).thenReturn("value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version/0", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alterStorageUnit(eq("foo_db"), any());
