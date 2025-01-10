@@ -33,7 +33,7 @@ public final class InstanceMetaDataFactory {
      * Create instance meta data.
      *
      * @param instanceId instance ID
-     * @param instanceType instance type 
+     * @param instanceType instance type
      * @param computeNodeData compute node data
      * @return created instance meta data
      */

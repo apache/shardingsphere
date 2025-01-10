@@ -44,7 +44,7 @@ public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<Lab
             if (!sqlStatement.isOverwrite()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
-            contextManager.getPersistServiceFacade().getComputeNodePersistService().persistInstanceLabels(instanceId, new LinkedList<>(labels));
+            contextManager.getPersistServiceFacade().getComputeNodePersistService().persistLabels(instanceId, new LinkedList<>(labels));
         }
     }
     

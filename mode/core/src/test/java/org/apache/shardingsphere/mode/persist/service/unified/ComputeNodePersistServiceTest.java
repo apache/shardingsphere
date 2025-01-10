@@ -68,66 +68,71 @@ class ComputeNodePersistServiceTest {
     }
     
     @Test
-    void assertPersistInstanceLabels() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        computeNodePersistService.persistInstanceLabels(instanceId, Collections.singletonList("test"));
-        verify(repository).persistEphemeral("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Collections.singletonList("test")));
+    void assertOffline() {
+        computeNodePersistService.offline(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307)));
+        verify(repository).delete("/nodes/compute_nodes/online/proxy/foo_instance_id");
     }
     
     @Test
-    void assertPersistInstanceWorkerId() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        computeNodePersistService.persistInstanceWorkerId(instanceId, 100);
-        verify(repository).persistEphemeral("/nodes/compute_nodes/worker_id/foo_instance_id", String.valueOf(100));
-    }
-    
-    @Test
-    void assertLoadComputeNodeState() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/status/foo_instance_id")).thenReturn("OK");
-        assertThat(computeNodePersistService.loadComputeNodeState(instanceId), is("OK"));
-    }
-    
-    @Test
-    void assertLoadInstanceWorkerId() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("1");
-        assertThat(computeNodePersistService.loadInstanceWorkerId(instanceId), is(Optional.of(1)));
-    }
-    
-    @Test
-    void assertLoadWithEmptyInstanceWorkerId() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("");
-        assertFalse(computeNodePersistService.loadInstanceWorkerId(instanceId).isPresent());
-    }
-    
-    @Test
-    void assertLoadInstanceWorkerIdWithInvalidFormat() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("a");
-        assertFalse(computeNodePersistService.loadInstanceWorkerId(instanceId).isPresent());
-    }
-    
-    @Test
-    void assertLoadAllComputeNodeInstances() {
+    void assertLoadAllInstances() {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3307"));
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3308"));
         YamlComputeNodeData yamlComputeNodeData0 = new YamlComputeNodeData();
         yamlComputeNodeData0.setAttribute("127.0.0.1");
         yamlComputeNodeData0.setVersion("foo_version");
         when(repository.query("/nodes/compute_nodes/online/jdbc/foo_instance_3307")).thenReturn(YamlEngine.marshal(yamlComputeNodeData0));
-        List<ComputeNodeInstance> actual = new ArrayList<>(computeNodePersistService.loadAllComputeNodeInstances());
+        List<ComputeNodeInstance> actual = new ArrayList<>(computeNodePersistService.loadAllInstances());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));
         assertThat(actual.get(0).getMetaData().getIp(), is("127.0.0.1"));
     }
     
     @Test
-    void assertLoadComputeNodeInstance() {
+    void assertLoadInstance() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        ComputeNodeInstance actual = computeNodePersistService.loadComputeNodeInstance(instanceMetaData);
+        ComputeNodeInstance actual = computeNodePersistService.loadInstance(instanceMetaData);
         assertThat(actual.getMetaData(), is(instanceMetaData));
+    }
+    
+    @Test
+    void assertUpdateState() {
+        computeNodePersistService.updateState("foo_instance_id", InstanceState.OK);
+        verify(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
+    }
+    
+    @Test
+    void assertPersistLabels() {
+        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
+        computeNodePersistService.persistLabels(instanceId, Collections.singletonList("test"));
+        verify(repository).persistEphemeral("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Collections.singletonList("test")));
+    }
+    
+    @Test
+    void assertPersistWorkerId() {
+        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
+        computeNodePersistService.persistWorkerId(instanceId, 100);
+        verify(repository).persistEphemeral("/nodes/compute_nodes/worker_id/foo_instance_id", String.valueOf(100));
+    }
+    
+    @Test
+    void assertLoadWorkerId() {
+        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
+        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("1");
+        assertThat(computeNodePersistService.loadWorkerId(instanceId), is(Optional.of(1)));
+    }
+    
+    @Test
+    void assertLoadWithEmptyWorkerId() {
+        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
+        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("");
+        assertFalse(computeNodePersistService.loadWorkerId(instanceId).isPresent());
+    }
+    
+    @Test
+    void assertLoadWorkerIdWithInvalidFormat() {
+        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
+        when(repository.query("/nodes/compute_nodes/worker_id/foo_instance_id")).thenReturn("a");
+        assertFalse(computeNodePersistService.loadWorkerId(instanceId).isPresent());
     }
     
     @Test
@@ -136,17 +141,5 @@ class ComputeNodePersistServiceTest {
         when(repository.query("/nodes/compute_nodes/worker_id/1")).thenReturn(null);
         when(repository.query("/nodes/compute_nodes/worker_id/2")).thenReturn("2");
         assertThat(computeNodePersistService.getAssignedWorkerIds(), is(Collections.singleton(2)));
-    }
-    
-    @Test
-    void assertUpdateComputeNodeState() {
-        computeNodePersistService.updateComputeNodeState("foo_instance_id", InstanceState.OK);
-        verify(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
-    }
-    
-    @Test
-    void assertOffline() {
-        computeNodePersistService.offline(new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307)));
-        verify(repository).delete("/nodes/compute_nodes/online/proxy/foo_instance_id");
     }
 }
