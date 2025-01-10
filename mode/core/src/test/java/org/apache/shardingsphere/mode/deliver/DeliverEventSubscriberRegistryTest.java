@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.subscriber;
+package org.apache.shardingsphere.mode.deliver;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.Collections;
 
-/**
- * Cluster event subscriber registry.
- */
-@RequiredArgsConstructor
-public final class ClusterEventSubscriberRegistry {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+class DeliverEventSubscriberRegistryTest {
     
-    private final EventBusContext eventBusContext;
-    
-    /**
-     * Register subscribers.
-     *
-     * @param subscribers to be registered subscribers
-     */
-    public void register(final Collection<DeliverEventSubscriber> subscribers) {
-        subscribers.forEach(eventBusContext::register);
+    @Test
+    void assertRegister() {
+        EventBusContext eventBusContext = mock(EventBusContext.class);
+        DeliverEventSubscriberRegistry registry = new DeliverEventSubscriberRegistry(eventBusContext);
+        DeliverEventSubscriber subscriber = mock(DeliverEventSubscriber.class);
+        registry.register(Collections.singleton(subscriber));
+        verify(eventBusContext).register(subscriber);
     }
 }
