@@ -73,7 +73,7 @@ class ClusterContextManagerBuilderTest {
     
     private void assertBuild(final InstanceMetaData instanceMetaData) throws SQLException {
         ContextManager actual = builder.build(new ContextManagerBuilderParameter(createModeConfiguration(),
-                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData, false), mock(EventBusContext.class));
+                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData), mock(EventBusContext.class));
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
     }
     
