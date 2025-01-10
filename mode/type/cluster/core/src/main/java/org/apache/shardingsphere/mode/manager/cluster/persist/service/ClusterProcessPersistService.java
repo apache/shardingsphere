@@ -60,6 +60,12 @@ public final class ClusterProcessPersistService implements ProcessPersistService
         }
     }
     
+    private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
+        return Stream.of(InstanceType.values())
+                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(instanceId -> ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId)))
+                .collect(Collectors.toList());
+    }
+    
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
         for (String each : repository.getChildrenKeys(ProcessNodePath.getRootPath(taskId)).stream()
@@ -67,12 +73,6 @@ public final class ClusterProcessPersistService implements ProcessPersistService
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);
-    }
-    
-    private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
-        return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream().map(instanceId -> ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId)))
-                .collect(Collectors.toList());
     }
     
     @Override
