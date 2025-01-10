@@ -134,7 +134,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
         for (int index = 0; index < parameterMarkerSegments.size(); index++) {
             ShardingSphereColumn column = null;
-            // Determine whether the number of parameters is greater than the number of inserted fields
             if (!columnsOfParameterMarkers.isEmpty() && index < columnsOfParameterMarkers.size()) {
                 column = columnsOfParameterMarkers.get(index);
             }
