@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.natived.proxy.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
+import org.apache.seata.config.ConfigurationFactory;
+import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
+import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
 import org.awaitility.Awaitility;
@@ -86,9 +89,22 @@ class SeataTest {
         });
     }
     
+    /**
+     * TODO Executing this unit test in the GraalVM Native Image of the Github Actions device results in a connection leak
+     *  in {@code org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest}.
+     *  This requires further investigation.
+     *  <pre>
+     *  TmNettyRemotingClient.getInstance().destroy();
+     *  RmNettyRemotingClient.getInstance().destroy();
+     *  ConfigurationFactory.reload();
+     *  </pre>
+     */
     @AfterAll
     static void afterAll() {
         proxyTestingServer.close();
+        TmNettyRemotingClient.getInstance().destroy();
+        RmNettyRemotingClient.getInstance().destroy();
+        ConfigurationFactory.reload();
         System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
     }
     

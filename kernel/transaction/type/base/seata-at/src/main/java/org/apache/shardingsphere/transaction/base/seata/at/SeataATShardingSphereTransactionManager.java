@@ -155,8 +155,8 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     public void close() {
         dataSourceMap.clear();
         SeataTransactionHolder.clear();
-        RmNettyRemotingClient.getInstance().destroy();
         TmNettyRemotingClient.getInstance().destroy();
+        RmNettyRemotingClient.getInstance().destroy();
         ConfigurationFactory.reload();
     }
     
