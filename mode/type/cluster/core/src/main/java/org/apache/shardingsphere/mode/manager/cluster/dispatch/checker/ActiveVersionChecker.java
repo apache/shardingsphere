@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.checker;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -24,10 +26,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 /**
  * Active version checker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ActiveVersionChecker {
     
     /**
      * Check active version.
+     * 
+     * @param contextManager context manager
+     * @param event data changed event
      */
     public static void checkActiveVersion(final ContextManager contextManager, final DataChangedEvent event) {
         ShardingSpherePreconditions.checkState(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
