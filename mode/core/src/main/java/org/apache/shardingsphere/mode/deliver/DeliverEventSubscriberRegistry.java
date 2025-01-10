@@ -31,7 +31,7 @@ public final class DeliverEventSubscriberRegistry {
     private final EventBusContext eventBusContext;
     
     /**
-     * Register subscribers.
+     * Register deliver event subscribers.
      *
      * @param subscribers to be registered subscribers
      */
