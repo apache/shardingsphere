@@ -130,6 +130,6 @@ class MetaDataContextsFactoryTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo", new MockedDataSource()), Collections.emptyList());
         return new ContextManagerBuilderParameter(null, Collections.singletonMap("foo_db", databaseConfig), Collections.emptyMap(),
-                Collections.emptyList(), new Properties(), Collections.emptyList(), null, false);
+                Collections.emptyList(), new Properties(), Collections.emptyList(), null);
     }
 }
