@@ -78,7 +78,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final ContextManager contextManager, final PersistRepository repository) {
         contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances()
-                .addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllComputeNodeInstances());
+                .addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistService())).register();
         DeliverEventSubscriberRegistry deliverEventSubscriberRegistry = new DeliverEventSubscriberRegistry(contextManager.getComputeNodeInstanceContext().getEventBusContext());
         deliverEventSubscriberRegistry.register(createDeliverEventSubscribers(repository));

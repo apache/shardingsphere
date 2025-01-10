@@ -56,7 +56,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public int generate(final Properties props) {
-        int result = computeNodePersistService.loadInstanceWorkerId(instanceId).orElseGet(this::generateNewWorkerId);
+        int result = computeNodePersistService.loadWorkerId(instanceId).orElseGet(this::generateNewWorkerId);
         logWarning(result, props);
         return result;
     }
@@ -67,7 +67,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             generatedWorkId = generateAvailableWorkerId();
         } while (!generatedWorkId.isPresent());
         int result = generatedWorkId.get();
-        computeNodePersistService.persistInstanceWorkerId(instanceId, result);
+        computeNodePersistService.persistWorkerId(instanceId, result);
         return result;
     }
     

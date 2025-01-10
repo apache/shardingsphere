@@ -55,101 +55,116 @@ public final class ComputeNodePersistService {
      * @param computeNodeInstance compute node instance
      */
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
-        String instanceId = computeNodeInstance.getMetaData().getId();
+        persistOnline(computeNodeInstance);
+        updateState(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getState().getCurrentState());
+        persistLabels(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getLabels());
+    }
+    
+    private void persistOnline(final ComputeNodeInstance computeNodeInstance) {
         ComputeNodeData computeNodeData = new ComputeNodeData(
                 computeNodeInstance.getMetaData().getDatabaseName(), computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion());
-        repository.persistEphemeral(ComputeNodePath.getOnlinePath(instanceId, computeNodeInstance.getMetaData().getType()),
+        repository.persistEphemeral(ComputeNodePath.getOnlinePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()),
                 YamlEngine.marshal(new YamlComputeNodeDataSwapper().swapToYamlConfiguration(computeNodeData)));
-        repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
-        persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
     
     /**
-     * Persist instance labels.
+     * Compute node offline.
      *
-     * @param instanceId instance ID
-     * @param labels instance labels
+     * @param computeNodeInstance compute node instance
      */
-    public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        repository.persistEphemeral(ComputeNodePath.getLabelsPath(instanceId), YamlEngine.marshal(labels));
-    }
-    
-    /**
-     * Persist instance worker ID.
-     *
-     * @param instanceId instance ID
-     * @param workerId worker ID
-     */
-    public void persistInstanceWorkerId(final String instanceId, final int workerId) {
-        repository.persistEphemeral(ComputeNodePath.getWorkerIdPath(instanceId), String.valueOf(workerId));
-    }
-    
-    /**
-     * Load compute node state.
-     *
-     * @param instanceId instance ID
-     * @return state
-     */
-    public String loadComputeNodeState(final String instanceId) {
-        return repository.query(ComputeNodePath.getStatePath(instanceId));
-    }
-    
-    /**
-     * Load instance worker ID.
-     *
-     * @param instanceId instance ID
-     * @return worker ID
-     */
-    public Optional<Integer> loadInstanceWorkerId(final String instanceId) {
-        try {
-            String workerId = repository.query(ComputeNodePath.getWorkerIdPath(instanceId));
-            return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
-        } catch (final NumberFormatException ex) {
-            log.error("Invalid worker id for instance: {}", instanceId);
-        }
-        return Optional.empty();
+    public void offline(final ComputeNodeInstance computeNodeInstance) {
+        repository.delete(ComputeNodePath.getOnlinePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()));
     }
     
     /**
      * Load all compute node instances.
      *
-     * @return loaded compute node instances
+     * @return loaded instances
      */
-    public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        return Arrays.stream(InstanceType.values()).flatMap(each -> loadComputeNodeInstances(each).stream()).collect(Collectors.toList());
+    public Collection<ComputeNodeInstance> loadAllInstances() {
+        return Arrays.stream(InstanceType.values()).flatMap(each -> loadInstances(each).stream()).collect(Collectors.toList());
     }
     
-    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
+    private Collection<ComputeNodeInstance> loadInstances(final InstanceType instanceType) {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
         for (String each : repository.getChildrenKeys(ComputeNodePath.getOnlinePath(instanceType))) {
             String value = repository.query(ComputeNodePath.getOnlinePath(each, instanceType));
-            if (Strings.isNullOrEmpty(value)) {
-                continue;
+            if (!Strings.isNullOrEmpty(value)) {
+                result.add(loadInstance(
+                        InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
             }
-            result.add(loadComputeNodeInstance(
-                    InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
         }
         return result;
     }
     
     /**
-     * Load compute node instance by instance meta data.
+     * Load compute node instance.
      *
      * @param instanceMetaData instance meta data
-     * @return compute node instance
+     * @return loaded instance
      */
-    public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
+    public ComputeNodeInstance loadInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
-        result.getLabels().addAll(loadInstanceLabels(instanceMetaData.getId()));
-        InstanceState.get(loadComputeNodeState(instanceMetaData.getId())).ifPresent(result::switchState);
-        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
+        InstanceState.get(loadState(instanceMetaData.getId())).ifPresent(result::switchState);
+        result.getLabels().addAll(loadLabels(instanceMetaData.getId()));
+        loadWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
     
+    private String loadState(final String instanceId) {
+        return repository.query(ComputeNodePath.getStatePath(instanceId));
+    }
+    
     @SuppressWarnings("unchecked")
-    private Collection<String> loadInstanceLabels(final String instanceId) {
+    private Collection<String> loadLabels(final String instanceId) {
         String yamlContent = repository.query(ComputeNodePath.getLabelsPath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? Collections.emptyList() : YamlEngine.unmarshal(yamlContent, Collection.class);
+    }
+    
+    /**
+     * Update state.
+     *
+     * @param instanceId instance ID
+     * @param instanceState instance state
+     */
+    public void updateState(final String instanceId, final InstanceState instanceState) {
+        repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), instanceState.name());
+    }
+    
+    /**
+     * Persist labels.
+     *
+     * @param instanceId instance ID
+     * @param labels instance labels
+     */
+    public void persistLabels(final String instanceId, final Collection<String> labels) {
+        repository.persistEphemeral(ComputeNodePath.getLabelsPath(instanceId), YamlEngine.marshal(labels));
+    }
+    
+    /**
+     * Persist worker ID.
+     *
+     * @param instanceId instance ID
+     * @param workerId worker ID
+     */
+    public void persistWorkerId(final String instanceId, final int workerId) {
+        repository.persistEphemeral(ComputeNodePath.getWorkerIdPath(instanceId), String.valueOf(workerId));
+    }
+    
+    /**
+     * Load worker ID.
+     *
+     * @param instanceId instance ID
+     * @return worker ID
+     */
+    public Optional<Integer> loadWorkerId(final String instanceId) {
+        try {
+            String workerId = repository.query(ComputeNodePath.getWorkerIdPath(instanceId));
+            return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
+        } catch (final NumberFormatException ex) {
+            log.error("Invalid worker id for instance: {}", instanceId);
+            return Optional.empty();
+        }
     }
     
     /**
@@ -160,24 +175,5 @@ public final class ComputeNodePersistService {
     public Collection<Integer> getAssignedWorkerIds() {
         Collection<String> instanceIds = repository.getChildrenKeys(ComputeNodePath.getWorkerIdRootPath());
         return instanceIds.stream().map(each -> repository.query(ComputeNodePath.getWorkerIdPath(each))).filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toSet());
-    }
-    
-    /**
-     * Update compute node state.
-     *
-     * @param instanceId instance ID
-     * @param instanceState instance state
-     */
-    public void updateComputeNodeState(final String instanceId, final InstanceState instanceState) {
-        repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), instanceState.name());
-    }
-    
-    /**
-     * Compute node offline.
-     *
-     * @param computeNodeInstance compute node instance
-     */
-    public void offline(final ComputeNodeInstance computeNodeInstance) {
-        repository.delete(ComputeNodePath.getOnlinePath(computeNodeInstance.getMetaData().getId(), computeNodeInstance.getMetaData().getType()));
     }
 }
