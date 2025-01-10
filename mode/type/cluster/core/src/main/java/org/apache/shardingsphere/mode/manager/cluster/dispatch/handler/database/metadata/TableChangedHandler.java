@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 
 /**
@@ -47,8 +47,7 @@ public final class TableChangedHandler {
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = TableMetaDataNodePath.getTableNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
-        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, table, null);
         statisticsRefreshEngine.asyncRefresh();

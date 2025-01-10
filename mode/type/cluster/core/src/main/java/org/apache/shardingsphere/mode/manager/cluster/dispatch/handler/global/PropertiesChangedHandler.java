@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 
 import java.util.Arrays;
@@ -47,8 +47,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
         if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
             return;
         }
-        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }
