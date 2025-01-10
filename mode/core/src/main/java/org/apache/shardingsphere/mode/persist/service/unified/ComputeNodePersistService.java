@@ -55,9 +55,10 @@ public final class ComputeNodePersistService {
      */
     public void registerOnline(final ComputeNodeInstance computeNodeInstance) {
         String instanceId = computeNodeInstance.getMetaData().getId();
-        repository.persistEphemeral(ComputeNodePath.getOnlinePath(instanceId, computeNodeInstance.getMetaData().getType()), YamlEngine.marshal(
-                new YamlComputeNodeDataSwapper().swapToYamlConfiguration(new ComputeNodeData(computeNodeInstance.getMetaData().getAttributes(),
-                        computeNodeInstance.getMetaData().getVersion(), computeNodeInstance.getMetaData().getDatabaseName()))));
+        ComputeNodeData computeNodeData = new ComputeNodeData(
+                computeNodeInstance.getMetaData().getDatabaseName(), computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion());
+        repository.persistEphemeral(ComputeNodePath.getOnlinePath(instanceId, computeNodeInstance.getMetaData().getType()),
+                YamlEngine.marshal(new YamlComputeNodeDataSwapper().swapToYamlConfiguration(computeNodeData)));
         repository.persistEphemeral(ComputeNodePath.getStatePath(instanceId), computeNodeInstance.getState().getCurrentState().name());
         persistInstanceLabels(instanceId, computeNodeInstance.getLabels());
     }
@@ -136,8 +137,8 @@ public final class ComputeNodePersistService {
             if (Strings.isNullOrEmpty(value)) {
                 continue;
             }
-            ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class));
-            result.add(loadComputeNodeInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName())));
+            result.add(loadComputeNodeInstance(
+                    InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
         }
         return result;
     }
