@@ -24,6 +24,7 @@ import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
@@ -56,8 +57,7 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         if (!ruleName.isPresent()) {
             return;
         }
-        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
