@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.cluster.ReadwriteSplittingQualifiedDataSourceDeletedSubscriber
+org.apache.shardingsphere.readwritesplitting.deliver.ReadwriteSplittingQualifiedDataSourceChangedSubscriber

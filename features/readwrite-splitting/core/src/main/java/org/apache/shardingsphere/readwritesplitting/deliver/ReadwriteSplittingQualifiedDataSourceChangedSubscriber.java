@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.cluster;
+package org.apache.shardingsphere.readwritesplitting.deliver;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
- * Readwrite-splitting qualified data source deleted subscriber.
+ * Readwrite-splitting qualified data source changed subscriber.
  */
 @Setter
-public final class ReadwriteSplittingQualifiedDataSourceDeletedSubscriber implements DeliverEventSubscriber {
+public final class ReadwriteSplittingQualifiedDataSourceChangedSubscriber implements DeliverEventSubscriber {
     
     private PersistRepository repository;
     
