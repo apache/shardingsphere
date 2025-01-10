@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.cluster;
+package org.apache.shardingsphere.readwritesplitting.deliver;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
@@ -28,16 +28,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ReadwriteSplittingQualifiedDataSourceDeletedSubscriberTest {
+class ReadwriteSplittingQualifiedDataSourceChangedSubscriberTest {
     
-    private ReadwriteSplittingQualifiedDataSourceDeletedSubscriber subscriber;
+    private ReadwriteSplittingQualifiedDataSourceChangedSubscriber subscriber;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        subscriber = new ReadwriteSplittingQualifiedDataSourceDeletedSubscriber();
+        subscriber = new ReadwriteSplittingQualifiedDataSourceChangedSubscriber();
         subscriber.setRepository(repository);
     }
     
