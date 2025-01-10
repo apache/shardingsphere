@@ -39,7 +39,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -80,20 +79,6 @@ class ComputeNodePersistServiceTest {
         String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
         computeNodePersistService.persistInstanceWorkerId(instanceId, 100);
         verify(repository).persistEphemeral("/nodes/compute_nodes/worker_id/foo_instance_id", String.valueOf(100));
-    }
-    
-    @Test
-    void assertLoadEmptyInstanceLabels() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/labels/foo_instance_id")).thenReturn("");
-        assertTrue(computeNodePersistService.loadInstanceLabels(instanceId).isEmpty());
-    }
-    
-    @Test
-    void assertLoadInstanceLabels() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        when(repository.query("/nodes/compute_nodes/labels/foo_instance_id")).thenReturn("{xxx:xxx}");
-        assertFalse(computeNodePersistService.loadInstanceLabels(instanceId).isEmpty());
     }
     
     @Test
