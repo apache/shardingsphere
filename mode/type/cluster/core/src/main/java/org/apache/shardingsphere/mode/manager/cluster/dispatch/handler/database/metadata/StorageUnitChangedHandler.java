@@ -41,7 +41,7 @@ public final class StorageUnitChangedHandler {
      * @param event data changed event
      */
     public void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
-        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())), 
+        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
