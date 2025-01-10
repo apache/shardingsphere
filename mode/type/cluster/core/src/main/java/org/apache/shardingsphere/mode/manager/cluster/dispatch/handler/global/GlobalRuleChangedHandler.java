@@ -56,8 +56,7 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         if (!ruleName.isPresent()) {
             return;
         }
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());

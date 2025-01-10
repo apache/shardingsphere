@@ -47,8 +47,7 @@ public final class ViewChangedHandler {
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = ViewMetaDataNodePath.getViewNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
+        Preconditions.checkArgument(event.getValue().equals(contextManager.getPersistServiceFacade().getRepository().query(event.getKey())),
                 "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, view);

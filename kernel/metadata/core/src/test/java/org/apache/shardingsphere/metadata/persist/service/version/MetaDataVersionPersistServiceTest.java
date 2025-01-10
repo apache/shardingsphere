@@ -54,12 +54,6 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertGetActiveVersionByFullPath() {
-        when(repository.query("foo_db/active_version")).thenReturn("1");
-        assertThat(persistService.getActiveVersionByFullPath("foo_db/active_version"), is("1"));
-    }
-    
-    @Test
     void assertGetVersionPathByActiveVersion() {
         when(repository.query("foo_db/versions/1")).thenReturn("foo_path");
         assertThat(persistService.getVersionPathByActiveVersion("foo_db/active_version", "1"), is("foo_path"));
