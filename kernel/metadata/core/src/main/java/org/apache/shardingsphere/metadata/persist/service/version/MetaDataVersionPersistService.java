@@ -31,11 +31,15 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
+public final class MetaDataVersionPersistService {
     
     private final PersistRepository repository;
     
-    @Override
+    /**
+     * Switch active version.
+     *
+     * @param metaDataVersions meta data versions
+     */
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
@@ -48,12 +52,23 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
         }
     }
     
-    @Override
+    /**
+     * Get version path by active version.
+     *
+     * @param path path
+     * @param activeVersion active version
+     * @return version path
+     */
     public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
         return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
     }
     
-    @Override
+    /**
+     * Get versions.
+     *
+     * @param path path
+     * @return versions
+     */
     public List<String> getVersions(final String path) {
         List<String> result = repository.getChildrenKeys(path);
         if (result.size() > 2) {
