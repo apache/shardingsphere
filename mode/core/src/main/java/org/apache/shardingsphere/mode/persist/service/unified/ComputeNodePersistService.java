@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
@@ -81,18 +82,6 @@ public final class ComputeNodePersistService {
      */
     public void persistInstanceWorkerId(final String instanceId, final int workerId) {
         repository.persistEphemeral(ComputeNodePath.getWorkerIdPath(instanceId), String.valueOf(workerId));
-    }
-    
-    /**
-     * Load instance labels.
-     *
-     * @param instanceId instance ID
-     * @return labels
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.query(ComputeNodePath.getLabelsPath(instanceId));
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**
@@ -155,6 +144,12 @@ public final class ComputeNodePersistService {
         InstanceState.get(loadComputeNodeState(instanceMetaData.getId())).ifPresent(result::switchState);
         loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<String> loadInstanceLabels(final String instanceId) {
+        String yamlContent = repository.query(ComputeNodePath.getLabelsPath(instanceId));
+        return Strings.isNullOrEmpty(yamlContent) ? Collections.emptyList() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**
