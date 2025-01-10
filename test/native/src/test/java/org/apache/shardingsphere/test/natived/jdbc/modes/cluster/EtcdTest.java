@@ -61,27 +61,28 @@ class EtcdTest {
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
     }
     
-    /**
-     * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
-     *  So that we need to wait for a period of time after executing `CREATE TABLE` related SQLs before executing `INSERT` related SQLs.
-     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository} needs optimization.
-     *
-     * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
-     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         DataSource dataSource = createDataSource(CLUSTER.clientEndpoints());
         testShardingService = new TestShardingService(dataSource);
         initEnvironment();
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
     }
     
+    /**
+     * TODO On low-performance devices in Github Actions, `TRUNCATE TABLE` related SQLs may throw a `java.sql.SQLException: Table or view 't_address' does not exist.` error under nativeTest.
+     *  So that we need to wait for a period of time after executing `CREATE TABLE` related SQLs before executing `TRUNCATE TABLE` related SQLs.
+     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository} needs optimization.
+     *
+     * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
+     * @throws SQLException SQL exception
+     */
     private void initEnvironment() throws SQLException {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
+        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
