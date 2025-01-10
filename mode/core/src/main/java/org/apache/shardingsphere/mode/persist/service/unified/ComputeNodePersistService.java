@@ -137,8 +137,8 @@ public final class ComputeNodePersistService {
             if (Strings.isNullOrEmpty(value)) {
                 continue;
             }
-            ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class));
-            result.add(loadComputeNodeInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName())));
+            result.add(loadComputeNodeInstance(
+                    InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
         }
         return result;
     }

@@ -58,8 +58,7 @@ public final class ComputeNodeOnlineHandler implements DataChangedEventHandler {
             return;
         }
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
-        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(
-                matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName());
+        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData);
         if (Type.ADDED == event.getType()) {
             contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()
                     .add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadComputeNodeInstance(instanceMetaData));
