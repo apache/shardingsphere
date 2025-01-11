@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNodePath;
+import org.apache.shardingsphere.mode.metadata.persist.node.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;

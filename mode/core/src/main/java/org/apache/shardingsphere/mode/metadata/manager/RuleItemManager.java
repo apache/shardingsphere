@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.manager;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.item.DropRuleItem;

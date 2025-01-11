@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.persist.service.unified;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.StatesNodePath;
+import org.apache.shardingsphere.mode.metadata.persist.node.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
