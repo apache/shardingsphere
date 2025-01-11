@@ -169,7 +169,7 @@ public final class MetaDataContextsFactory {
     
     /**
      * Create statistics.
-     * 
+     *
      * @param persistService meta data persist service
      * @param metaData meta data
      * @return created statistics
