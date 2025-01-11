@@ -165,9 +165,10 @@ class SelectInformationSchemataExecutorTest {
         ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
         when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
         when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData(
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Arrays.stream(databases).collect(Collectors.toList()), mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)),
-                new ConfigurationProperties(new Properties())));
+                new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         for (ShardingSphereDatabase each : databases) {
             when(result.getDatabase(each.getName())).thenReturn(each);

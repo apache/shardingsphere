@@ -145,7 +145,7 @@ public final class PipelineContextUtils {
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         tables.forEach(each -> old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putTable(each));
-        return MetaDataContextsFactory.create(persistService, old.getMetaData());
+        return new MetaDataContexts(old.getMetaData(), MetaDataContextsFactory.createStatistics(persistService, old.getMetaData()));
     }
     
     /**

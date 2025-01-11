@@ -75,6 +75,17 @@ public final class MetaDataContextsFactory {
     /**
      * Create meta data contexts.
      *
+     * @param persistService meta data persist service
+     * @param metaData shardingsphere meta data
+     * @return meta data contexts
+     */
+    public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        return new MetaDataContexts(metaData, createStatistics(persistService, metaData));
+    }
+    
+    /**
+     * Create meta data contexts.
+     *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext compute node instance context
@@ -84,17 +95,6 @@ public final class MetaDataContextsFactory {
     public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final ComputeNodeInstanceContext instanceContext) throws SQLException {
         return isCreateByLocal(persistService) ? createByLocal(persistService, param, instanceContext) : createByRepository(persistService, param, instanceContext);
-    }
-    
-    /**
-     * Create meta data contexts.
-     *
-     * @param persistService meta data persist service
-     * @param metaData shardingsphere meta data
-     * @return meta data contexts
-     */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
     }
     
     private static boolean isCreateByLocal(final MetaDataPersistService persistService) {
@@ -137,9 +137,8 @@ public final class MetaDataContextsFactory {
         // TODO load global data sources from persist service
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
-        ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
-        return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
+        return new MetaDataContexts(metaData, createStatistics(persistService, metaData));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext instanceContext,
@@ -168,7 +167,14 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static ShardingSphereStatistics initStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+    /**
+     * Create statistics.
+     *
+     * @param persistService meta data persist service
+     * @param metaData meta data
+     * @return created statistics
+     */
+    public static ShardingSphereStatistics createStatistics(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
         if (metaData.getAllDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -181,8 +187,7 @@ public final class MetaDataContextsFactory {
             return new ShardingSphereStatistics();
         }
         ShardingSphereStatistics result = statisticsBuilder.get().build(metaData);
-        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
-        loadedStatistics.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
+        persistService.getShardingSphereDataPersistService().load(metaData).ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
     }
     

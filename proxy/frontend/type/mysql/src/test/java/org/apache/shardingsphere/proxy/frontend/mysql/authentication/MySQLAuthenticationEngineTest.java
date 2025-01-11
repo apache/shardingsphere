@@ -286,8 +286,8 @@ class MySQLAuthenticationEngineTest {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getShardingSphereDataPersistService().load(any())).thenReturn(Optional.empty());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(), mock(), Collections.emptyList());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
-                metaDataPersistService, new ShardingSphereMetaData(Collections.singleton(database), mock(), new RuleMetaData(Collections.singleton(rule)), mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), new RuleMetaData(Collections.singleton(rule)), mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

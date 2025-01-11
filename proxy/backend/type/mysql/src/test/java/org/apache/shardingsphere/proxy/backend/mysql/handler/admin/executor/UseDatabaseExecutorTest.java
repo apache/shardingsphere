@@ -84,8 +84,8 @@ class UseDatabaseExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(
-                mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

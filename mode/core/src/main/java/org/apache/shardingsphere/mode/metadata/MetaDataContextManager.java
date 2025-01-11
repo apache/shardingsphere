@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.sql.SQLException;
@@ -156,8 +157,10 @@ public class MetaDataContextManager {
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(
                 ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), metaDataContexts.get().getMetaData().getAllDatabases(), props));
-        MetaDataContexts result = MetaDataContextsFactory.create(metaDataPersistService,
-                new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+        ShardingSphereStatistics statistics = MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData);
+        MetaDataContexts result = new MetaDataContexts(metaData, statistics);
         switchingResource.closeStaleDataSources();
         return result;
     }

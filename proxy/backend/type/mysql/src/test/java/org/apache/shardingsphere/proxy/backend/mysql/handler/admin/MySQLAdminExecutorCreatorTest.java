@@ -351,8 +351,8 @@ class MySQLAdminExecutorCreatorTest {
     
     private void initProxyContext(final Collection<ShardingSphereDatabase> databases) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
