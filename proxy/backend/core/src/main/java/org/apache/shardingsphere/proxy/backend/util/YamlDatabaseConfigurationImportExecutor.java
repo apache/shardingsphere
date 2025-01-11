@@ -97,7 +97,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotEmpty(databaseName, MissingRequiredDatabaseException::new);
-        ShardingSpherePreconditions.checkNotEmpty(databaseName, MissingRequiredDatabaseException::new);
         ShardingSpherePreconditions.checkState(!contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     
