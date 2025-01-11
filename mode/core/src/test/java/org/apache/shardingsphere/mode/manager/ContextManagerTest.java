@@ -185,6 +185,6 @@ class ContextManagerTest {
     @Test
     void assertClose() {
         contextManager.close();
-        verify(metaDataContexts).close();
+        verify(metaDataContexts.getMetaData()).close();
     }
 }
