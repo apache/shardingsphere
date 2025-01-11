@@ -18,42 +18,18 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Meta data contexts.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MetaDataContexts implements AutoCloseable {
+public final class MetaDataContexts {
     
     private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereStatistics statistics;
-    
-    public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        this.metaData = metaData;
-        this.statistics = statistics;
-    }
-    
-    @SneakyThrows(Exception.class)
-    @Override
-    public void close() {
-        for (ShardingSphereRule each : getAllRules()) {
-            if (each instanceof AutoCloseable) {
-                ((AutoCloseable) each).close();
-            }
-        }
-    }
-    
-    private Collection<ShardingSphereRule> getAllRules() {
-        Collection<ShardingSphereRule> result = new LinkedList<>(metaData.getGlobalRuleMetaData().getRules());
-        metaData.getAllDatabases().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
-        return result;
-    }
 }

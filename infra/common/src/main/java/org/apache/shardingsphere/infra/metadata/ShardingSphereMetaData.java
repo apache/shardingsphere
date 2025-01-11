@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedTy
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
  * ShardingSphere meta data.
  */
 @Getter
-public final class ShardingSphereMetaData {
+public final class ShardingSphereMetaData implements AutoCloseable {
     
     @Getter(AccessLevel.NONE)
     private final Map<ShardingSphereIdentifier, ShardingSphereDatabase> databases;
@@ -142,5 +143,21 @@ public final class ShardingSphereMetaData {
         database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(StaticDataSourceRuleAttribute::cleanStorageNodeDataSources);
         Optional.ofNullable(database.getResourceMetaData())
                 .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));
+    }
+    
+    @SneakyThrows(Exception.class)
+    @Override
+    public void close() {
+        for (ShardingSphereRule each : getAllRules()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
+    }
+    
+    private Collection<ShardingSphereRule> getAllRules() {
+        Collection<ShardingSphereRule> result = new LinkedList<>(globalRuleMetaData.getRules());
+        getAllDatabases().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
+        return result;
     }
 }
