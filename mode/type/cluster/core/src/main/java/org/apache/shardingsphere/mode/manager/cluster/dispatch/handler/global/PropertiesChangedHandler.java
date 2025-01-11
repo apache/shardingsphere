@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
-import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
