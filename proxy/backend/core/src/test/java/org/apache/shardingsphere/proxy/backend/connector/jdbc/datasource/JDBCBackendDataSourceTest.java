@@ -84,8 +84,9 @@ class JDBCBackendDataSourceTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singleton(mockDatabase()),
-                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))), new ConfigurationProperties(new Properties())));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(mockDatabase()),
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

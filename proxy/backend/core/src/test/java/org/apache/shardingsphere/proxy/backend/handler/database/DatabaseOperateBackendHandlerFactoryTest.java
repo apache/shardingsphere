@@ -79,8 +79,9 @@ class DatabaseOperateBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getConnectionContext().getGrantee()).thenReturn(null);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
@@ -153,7 +154,10 @@ class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        MetaDataContexts metaDataContexts = isGovernance
+                ? mockMetaDataContexts()
+                : new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     

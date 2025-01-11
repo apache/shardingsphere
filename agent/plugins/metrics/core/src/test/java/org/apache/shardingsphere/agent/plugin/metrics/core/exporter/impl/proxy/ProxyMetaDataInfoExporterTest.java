@@ -82,7 +82,7 @@ class ProxyMetaDataInfoExporterTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), metaData);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

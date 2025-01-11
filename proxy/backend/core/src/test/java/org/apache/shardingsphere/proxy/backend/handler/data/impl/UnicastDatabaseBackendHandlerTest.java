@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -132,7 +133,8 @@ class UnicastDatabaseBackendHandlerTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(), new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

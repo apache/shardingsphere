@@ -73,7 +73,8 @@ class ProxyStateExporterTest {
     }
     
     private ContextManager mockContextManager() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

@@ -67,7 +67,8 @@ class ShowProcedureStatusExecutorTest {
     private ContextManager mockContextManager() {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getShardingSphereDataPersistService().load(any())).thenReturn(Optional.empty());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

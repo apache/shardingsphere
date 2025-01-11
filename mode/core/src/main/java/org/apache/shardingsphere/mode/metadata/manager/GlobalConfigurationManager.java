@@ -96,6 +96,6 @@ public final class GlobalConfigurationManager {
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return MetaDataContextsFactory.create(metaDataPersistService, metaData);
+        return new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
     }
 }

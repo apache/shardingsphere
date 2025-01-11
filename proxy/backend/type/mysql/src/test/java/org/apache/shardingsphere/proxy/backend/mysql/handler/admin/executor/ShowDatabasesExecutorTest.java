@@ -184,7 +184,8 @@ class ShowDatabasesExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(mockAuthorityRule()));
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getShardingSphereDataPersistService().load(any())).thenReturn(Optional.empty());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData(createDatabases(), mock(), globalRuleMetaData, mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), globalRuleMetaData, mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

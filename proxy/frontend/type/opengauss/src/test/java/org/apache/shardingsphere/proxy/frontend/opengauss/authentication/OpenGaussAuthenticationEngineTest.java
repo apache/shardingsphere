@@ -132,8 +132,9 @@ class OpenGaussAuthenticationEngineTest {
     }
     
     private ContextManager mockContextManager() {
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
-                Collections.emptyList(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(new UserConfiguration("root", "sharding", "", null, false)), mock(ConfigurationProperties.class)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyList(), mock(ResourceMetaData.class),
+                buildGlobalRuleMetaData(new UserConfiguration("root", "sharding", "", null, false)), mock(ConfigurationProperties.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
