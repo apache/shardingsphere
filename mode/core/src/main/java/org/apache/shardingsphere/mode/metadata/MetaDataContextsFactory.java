@@ -137,9 +137,8 @@ public final class MetaDataContextsFactory {
         // TODO load global data sources from persist service
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
-        ShardingSphereStatistics shardingSphereStatistics = initStatistics(persistService, shardingSphereMetaData);
-        return new MetaDataContexts(shardingSphereMetaData, shardingSphereStatistics);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
+        return new MetaDataContexts(metaData, initStatistics(persistService, metaData));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext instanceContext,
