@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.Arrays;

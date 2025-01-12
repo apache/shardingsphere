@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 

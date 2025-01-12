@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.spi.item.AlterUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.item.DropUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.item.RuleItemChanged;
-import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
 
 import java.util.Map.Entry;
 import java.util.Optional;

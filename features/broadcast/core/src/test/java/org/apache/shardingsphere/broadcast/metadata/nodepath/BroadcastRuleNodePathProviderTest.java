@@ -20,7 +20,7 @@ package org.apache.shardingsphere.broadcast.metadata.nodepath;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
