@@ -38,6 +38,6 @@ class MetaDataContextsTest {
     void assertGetDefaultMetaData() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(), mock(), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        assertThat(new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(mock(MetaDataPersistService.class), metaData)).getMetaData().getDatabase("foo_db"), is(database));
+        assertThat(new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData)).getMetaData().getDatabase("foo_db"), is(database));
     }
 }
