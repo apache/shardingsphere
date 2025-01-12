@@ -41,7 +41,7 @@ public final class PipelineSQLSegmentBuilder {
      * @return escaped identifier
      */
     public String getEscapedIdentifier(final String identifier) {
-        return dialectDatabaseMetaData.isReservedWord(identifier) ? dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier) : identifier;
+        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier);
     }
     
     /**
