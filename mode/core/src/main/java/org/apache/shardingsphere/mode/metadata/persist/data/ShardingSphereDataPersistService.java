@@ -49,10 +49,10 @@ public final class ShardingSphereDataPersistService {
     }
     
     /**
-     * Load ShardingSphere statistics data.
+     * Load statistics.
      *
      * @param metaData meta data
-     * @return ShardingSphere statistics data
+     * @return statistics
      */
     public Optional<ShardingSphereStatistics> load(final ShardingSphereMetaData metaData) {
         Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNodePath.getDatabasesRootPath());
@@ -61,23 +61,24 @@ public final class ShardingSphereDataPersistService {
         }
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (String each : databaseNames.stream().filter(metaData::containsDatabase).collect(Collectors.toList())) {
-            result.getDatabaseData().put(each, load(each, metaData.getDatabase(each)));
+            result.getDatabaseData().put(each, load(metaData.getDatabase(each)));
         }
         return Optional.of(result);
     }
     
-    private ShardingSphereDatabaseData load(final String databaseName, final ShardingSphereDatabase database) {
+    private ShardingSphereDatabaseData load(final ShardingSphereDatabase database) {
         ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
-        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getSchemaRootPath(databaseName)).stream().filter(database::containsSchema).collect(Collectors.toList())) {
-            result.putSchema(each, load(databaseName, each, database.getSchema(each)));
+        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getSchemaRootPath(database.getName())).stream().filter(database::containsSchema).collect(Collectors.toList())) {
+            result.putSchema(each, load(database.getName(), database.getSchema(each)));
         }
         return result;
     }
     
-    private ShardingSphereSchemaData load(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    private ShardingSphereSchemaData load(final String databaseName, final ShardingSphereSchema schema) {
         ShardingSphereSchemaData result = new ShardingSphereSchemaData();
-        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getTableRootPath(databaseName, schemaName)).stream().filter(schema::containsTable).collect(Collectors.toList())) {
-            result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schemaName, each, schema.getTable(each)));
+        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
+                .collect(Collectors.toList())) {
+            result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
         }
         return result;
