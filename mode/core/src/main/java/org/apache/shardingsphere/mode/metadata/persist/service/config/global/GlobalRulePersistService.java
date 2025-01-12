@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.path.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
@@ -57,7 +57,7 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.load(GlobalNodePath.getRuleRootPath()));
+        return new RepositoryTupleSwapperEngine().swapToRuleConfigurations(repositoryTuplePersistService.load(GlobalRuleNodePath.getRootPath()));
     }
     
     /**
@@ -67,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public Optional<RuleConfiguration> load(final String ruleTypeName) {
-        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.load(GlobalNodePath.getRulePath(ruleTypeName)));
+        return new RepositoryTupleSwapperEngine().swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.load(GlobalRuleNodePath.getRulePath(ruleTypeName)));
     }
     
     /**
@@ -87,14 +87,14 @@ public final class GlobalRulePersistService {
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = metaDataVersionPersistService.getVersions(GlobalNodePath.getRuleVersionsPath(each.getKey()));
+            List<String> versions = metaDataVersionPersistService.getVersions(GlobalRuleNodePath.getVersionRootPath(each.getKey()));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(GlobalNodePath.getRuleVersionPath(each.getKey(), nextActiveVersion), each.getValue());
-            String ruleActiveVersionPath = GlobalNodePath.getRuleActiveVersionPath(each.getKey());
+            repository.persist(GlobalRuleNodePath.getVersionPath(each.getKey(), nextActiveVersion), each.getValue());
+            String ruleActiveVersionPath = GlobalRuleNodePath.getActiveVersionPath(each.getKey());
             if (Strings.isNullOrEmpty(repository.query(ruleActiveVersionPath))) {
                 repository.persist(ruleActiveVersionPath, MetaDataVersion.DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(GlobalNodePath.getRulePath(each.getKey()), repository.query(ruleActiveVersionPath), nextActiveVersion));
+            result.add(new MetaDataVersion(GlobalRuleNodePath.getRulePath(each.getKey()), repository.query(ruleActiveVersionPath), nextActiveVersion));
         }
         return result;
     }

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
@@ -45,7 +45,7 @@ public final class PropertiesPersistService {
      * @return properties
      */
     public Properties load() {
-        String yamlContent = repository.query(GlobalNodePath.getPropsVersionPath(getActiveVersion()));
+        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionPath(getActiveVersion()));
         return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
@@ -55,16 +55,16 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        List<String> versions = metaDataVersionPersistService.getVersions(GlobalNodePath.getPropsVersionsPath());
+        List<String> versions = metaDataVersionPersistService.getVersions(GlobalPropertiesNodePath.getVersionRootPath());
         String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-        repository.persist(GlobalNodePath.getPropsVersionPath(nextActiveVersion), YamlEngine.marshal(props));
+        repository.persist(GlobalPropertiesNodePath.getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
         if (Strings.isNullOrEmpty(getActiveVersion())) {
-            repository.persist(GlobalNodePath.getPropsActiveVersionPath(), MetaDataVersion.DEFAULT_VERSION);
+            repository.persist(GlobalPropertiesNodePath.getActiveVersionPath(), MetaDataVersion.DEFAULT_VERSION);
         }
-        metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalNodePath.getPropsRootPath(), getActiveVersion(), nextActiveVersion)));
+        metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(), nextActiveVersion)));
     }
     
     private String getActiveVersion() {
-        return repository.query(GlobalNodePath.getPropsActiveVersionPath());
+        return repository.query(GlobalPropertiesNodePath.getActiveVersionPath());
     }
 }
