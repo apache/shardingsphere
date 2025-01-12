@@ -72,8 +72,8 @@ public final class MetaDataContextsFactory {
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                          final ComputeNodeInstanceContext instanceContext) throws SQLException {
+    public static MetaDataContexts create(final MetaDataPersistService persistService,
+                                          final ContextManagerBuilderParameter param, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         return isCreateByLocal(persistService) ? createByLocal(persistService, param, instanceContext) : createByRepository(persistService, param, instanceContext);
     }
     
@@ -81,19 +81,11 @@ public final class MetaDataContextsFactory {
         return persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty();
     }
     
-    private static MetaDataContexts createByLocal(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
-                                                  final ComputeNodeInstanceContext instanceContext) throws SQLException {
-        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = param.getDatabaseConfigs();
-        Collection<RuleConfiguration> globalRuleConfigs;
-        if (instanceContext.getModeConfiguration().isCluster()) {
-            globalRuleConfigs = new RuleConfigurationPersistDecorateEngine(instanceContext).tryRestore(param.getGlobalRuleConfigs());
-            param.getGlobalRuleConfigs().clear();
-            param.getGlobalRuleConfigs().addAll(globalRuleConfigs);
-        } else {
-            globalRuleConfigs = param.getGlobalRuleConfigs();
-        }
+    private static MetaDataContexts createByLocal(final MetaDataPersistService persistService,
+                                                  final ContextManagerBuilderParameter param, final ComputeNodeInstanceContext instanceContext) throws SQLException {
+        Collection<RuleConfiguration> globalRuleConfigs = param.getGlobalRuleConfigs();
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
-        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(param.getDatabaseConfigs(), props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
         persistDatabaseConfigurations(result, param, persistService, instanceContext);
         persistMetaData(result, persistService);
