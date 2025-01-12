@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,30 +25,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database meta data node path.
+ * ShardingSphere data node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseMetaDataNodePath {
+public final class ShardingSphereDataNodePath {
     
-    private static final String ROOT_NODE = "/metadata";
+    private static final String ROOT_NODE = "/statistics";
+    
+    private static final String DATABASES_NODE = "databases";
     
     private static final String SCHEMAS_NODE = "schemas";
     
     private static final String TABLES_NODE = "tables";
     
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
+    private static final String JOB_NODE = "job";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
+    private static final String UNIQUE_KEY_PATTERN = "(\\w+)";
+    
     /**
-     * Get meta data root path.
+     * Get database root path.
      *
-     * @return meta data root path
+     * @return database root path
      */
-    public static String getRootPath() {
-        return ROOT_NODE;
+    public static String getDatabasesRootPath() {
+        return String.join("/", ROOT_NODE, DATABASES_NODE);
     }
     
     /**
@@ -58,7 +60,7 @@ public final class DatabaseMetaDataNodePath {
      * @return database path
      */
     public static String getDatabasePath(final String databaseName) {
-        return String.join("/", getRootPath(), databaseName);
+        return String.join("/", getDatabasesRootPath(), databaseName);
     }
     
     /**
@@ -94,14 +96,28 @@ public final class DatabaseMetaDataNodePath {
     }
     
     /**
-     * Get version path.
+     * Get table path.
      *
-     * @param rulePath rule path
-     * @param activeVersion active version
-     * @return version path
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table path
      */
-    public static String getVersionPath(final String rulePath, final String activeVersion) {
-        return rulePath.replace(ACTIVE_VERSION_NODE, VERSIONS_NODE) + "/" + activeVersion;
+    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
+    }
+    
+    /**
+     * Get table row path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return table row path
+     */
+    public static String getTableRowPath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), uniqueKey);
     }
     
     /**
@@ -130,5 +146,40 @@ public final class DatabaseMetaDataNodePath {
         Pattern pattern = Pattern.compile(getSchemaPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Find table name.
+     *
+     * @param path path
+     * @param containsChildPath whether contains child path
+     * @return found table name
+     */
+    public static Optional<String> findTableName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(getTablePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Find row unique key.
+     *
+     * @param path path
+     * @return found row unique key
+     */
+    public static Optional<String> findRowUniqueKey(final String path) {
+        Pattern pattern = Pattern.compile(getTableRowPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get job path.
+     *
+     * @return job path
+     */
+    public static String getJobPath() {
+        return String.join("/", ROOT_NODE, JOB_NODE);
     }
 }

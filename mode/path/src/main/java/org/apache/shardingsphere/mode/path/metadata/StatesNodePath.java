@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

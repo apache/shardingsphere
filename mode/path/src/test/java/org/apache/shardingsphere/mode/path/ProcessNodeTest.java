@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path;
 
+import org.apache.shardingsphere.mode.path.metadata.ProcessNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReservationNodePathTest {
+class ProcessNodeTest {
     
     @Test
-    void assertGetWorkerIdReservationPath() {
-        assertThat(ReservationNodePath.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
+    void assertGetProcessIdPath() {
+        assertThat(ProcessNodePath.getRootPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
+    }
+    
+    @Test
+    void assertGetProcessListInstancePath() {
+        assertThat(ProcessNodePath.getInstanceProcessList("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
+                is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
     }
 }

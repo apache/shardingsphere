@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node.metadata;
+package org.apache.shardingsphere.mode.path.metadata;
 
 import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class DatabaseRuleMetaDataNodePathTest {
     

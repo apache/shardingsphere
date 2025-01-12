@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path;
 
+import org.apache.shardingsphere.mode.path.metadata.ReservationNodePath;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
-class ProcessNodePathTest {
+class ReservationNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(ProcessNodePath.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
-    }
-    
-    @Test
-    void assertGetInstanceProcessList() {
-        assertThat(ProcessNodePath.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
+    void assertGetWorkerIdReservationPath() {
+        MatcherAssert.assertThat(ReservationNodePath.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
     }
 }

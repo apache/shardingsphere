@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.path.metadata.QualifiedDataSourceNodePath;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,7 +33,7 @@ class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(QualifiedDataSourceNodePath.getRootPath(), is("/nodes/qualified_data_sources"));
+        MatcherAssert.assertThat(QualifiedDataSourceNodePath.getRootPath(), is("/nodes/qualified_data_sources"));
     }
     
     @Test

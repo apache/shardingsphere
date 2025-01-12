@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path;
 
+import org.apache.shardingsphere.mode.path.metadata.ProcessNodePath;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class StatesNodePathTest {
+class ProcessNodePathTest {
     
     @Test
-    void assertGetClusterStatePath() {
-        assertThat(StatesNodePath.getClusterStatePath(), is("/states/cluster_state"));
+    void assertGetRootPath() {
+        assertThat(ProcessNodePath.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
     }
     
     @Test
-    void assertGetListenerAssistedNodeRootPath() {
-        assertThat(StatesNodePath.getListenerAssistedNodeRootPath(), is("/states/listener_assisted"));
-    }
-    
-    @Test
-    void assertGetListenerAssistedNodePath() {
-        assertThat(StatesNodePath.getListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
-    }
-    
-    @Test
-    void assertFindDatabaseName() {
-        assertThat(StatesNodePath.findDatabaseName("/states/listener_assisted/foo_db"), is(Optional.of("foo_db")));
-        assertFalse(StatesNodePath.findDatabaseName("/states/listener_assisted").isPresent());
+    void assertGetInstanceProcessList() {
+        assertThat(ProcessNodePath.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.node;
+package org.apache.shardingsphere.mode.path;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.mode.path.metadata.ComputeNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
