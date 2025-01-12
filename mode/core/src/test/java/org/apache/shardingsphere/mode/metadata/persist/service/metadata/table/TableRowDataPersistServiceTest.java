@@ -76,7 +76,8 @@ class TableRowDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl")).thenReturn(Collections.singletonList("foo_tbl"));
         when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("uniqueKey: foo_key" + System.lineSeparator());
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", "foo_tbl", table);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", table);
         assertThat(actual.getName(), is("foo_tbl"));
         assertThat(actual.getRows().size(), is(1));
         assertThat(actual.getRows().iterator().next().getUniqueKey(), is("foo_key"));
@@ -87,7 +88,8 @@ class TableRowDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl")).thenReturn(Collections.singletonList("foo_tbl"));
         when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", "foo_tbl", table);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", table);
         assertThat(actual.getName(), is("foo_tbl"));
         assertTrue(actual.getRows().isEmpty());
     }
