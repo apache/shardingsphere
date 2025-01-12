@@ -15,17 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.spi.item;
+package org.apache.shardingsphere.mode.node.spi.item.alter;
+
+import org.apache.shardingsphere.mode.node.spi.item.RuleChangedItem;
 
 /**
- * Rule item changed.
+ * Alter rule item.
  */
-public interface RuleItemChanged {
+public interface AlterRuleItem extends RuleChangedItem {
     
     /**
-     * Get rule item type.
+     * Get database name.
      *
-     * @return rule item type
+     * @return database name
      */
-    String getType();
+    String getDatabaseName();
+    
+    /**
+     * Get active version key.
+     *
+     * @return active version key
+     */
+    String getActiveVersionKey();
+    
+    /**
+     * Get active version.
+     *
+     * @return active version
+     */
+    String getActiveVersion();
 }
