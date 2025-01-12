@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,16 +47,13 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
-            return;
-        }
-        Optional<String> ruleName = org.apache.shardingsphere.mode.path.GlobalNodePath.getRuleName(event.getKey());
-        if (!ruleName.isPresent()) {
+        Optional<String> ruleTypeName = GlobalNodePath.findRuleTypeNameFromActiveVersion(event.getKey());
+        if (!ruleTypeName.isPresent()) {
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
-        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());
+        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleTypeName.get());
+        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleTypeName.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig.get());
     }
 }
