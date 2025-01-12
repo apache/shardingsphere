@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml;
 
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;

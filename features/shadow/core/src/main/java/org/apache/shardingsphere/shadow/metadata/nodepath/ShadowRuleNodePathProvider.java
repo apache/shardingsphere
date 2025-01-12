@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.path.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 
 import java.util.Arrays;

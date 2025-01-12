@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Collection;
