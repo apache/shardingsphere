@@ -37,21 +37,16 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.mode.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -98,9 +93,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, instanceContext);
-        MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
-        restoreRules(result, instanceContext);
-        return result;
+        return newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
     }
     
     private static MetaDataContexts newMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
@@ -139,25 +132,10 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void restoreRules(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext instanceContext) {
-        if (!instanceContext.getModeConfiguration().isCluster()) {
-            return;
-        }
-        for (RuleConfigurationPersistDecorator each : ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationPersistDecorator.class)) {
-            ShardingSphereRule rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(each.getRuleType());
-            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().removeIf(eachRule -> each.getRuleType() == eachRule.getClass());
-            RuleConfiguration restoredRuleConfig = each.restore(rule.getConfiguration());
-            ShardingSphereRule rebuiltRule = GlobalRulesBuilder.buildRules(
-                    Collections.singleton(restoredRuleConfig), metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()).iterator().next();
-            metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().add(rebuiltRule);
-        }
-    }
-    
-    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService,
-                                                      final ComputeNodeInstanceContext instanceContext) {
-        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(instanceContext);
-        persistService.persistGlobalRuleConfiguration(ruleConfigPersistDecorateEngine.decorate(metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations()), param.getProps());
+    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts,
+                                                      final ContextManagerBuilderParameter param, final MetaDataPersistService persistService, final ComputeNodeInstanceContext instanceContext) {
+        Collection<RuleConfiguration> globalRuleConfigs = metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
+        persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             persistService.persistConfigurations(entry.getKey(), entry.getValue(),
