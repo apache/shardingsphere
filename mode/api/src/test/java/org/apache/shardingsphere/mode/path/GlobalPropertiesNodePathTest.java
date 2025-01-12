@@ -46,7 +46,7 @@ class GlobalPropertiesNodePathTest {
     }
     
     @Test
-    void assertIssActiveVersionPath() {
-        assertTrue(GlobalPropertiesNodePath.issActiveVersionPath("/props/active_version"));
+    void assertIsActiveVersionPath() {
+        assertTrue(GlobalPropertiesNodePath.isActiveVersionPath("/props/active_version"));
     }
 }

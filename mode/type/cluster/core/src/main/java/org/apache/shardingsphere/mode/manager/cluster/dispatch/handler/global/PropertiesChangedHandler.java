@@ -44,7 +44,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalPropertiesNodePath.issActiveVersionPath(event.getKey())) {
+        if (!GlobalPropertiesNodePath.isActiveVersionPath(event.getKey())) {
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);

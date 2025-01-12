@@ -78,7 +78,7 @@ public final class GlobalPropertiesNodePath {
      * @param path path
      * @return true or false
      */
-    public static boolean issActiveVersionPath(final String path) {
+    public static boolean isActiveVersionPath(final String path) {
         Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find();
