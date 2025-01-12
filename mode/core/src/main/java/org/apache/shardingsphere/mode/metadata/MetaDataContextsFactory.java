@@ -75,17 +75,6 @@ public final class MetaDataContextsFactory {
     /**
      * Create meta data contexts.
      *
-     * @param persistService meta data persist service
-     * @param metaData shardingsphere meta data
-     * @return meta data contexts
-     */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaData, createStatistics(persistService, metaData));
-    }
-    
-    /**
-     * Create meta data contexts.
-     *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext compute node instance context
@@ -265,22 +254,23 @@ public final class MetaDataContextsFactory {
      * @param internalLoadMetaData internal load meta data
      * @param switchingResource switching resource
      * @param originalMetaDataContexts original meta data contexts
-     * @param metaDataPersistService meta data persist service
+     * @param persistService meta data persist service
      * @param instanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createBySwitchResource(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                          final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
+                                                          final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService persistService,
                                                           final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ShardingSphereDatabase changedDatabase = createChangedDatabase(
-                databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, metaDataPersistService, instanceContext);
+                databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts, persistService, instanceContext);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
-        return create(
-                metaDataPersistService, new ShardingSphereMetaData(clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+        return new MetaDataContexts(metaData, createStatistics(persistService, metaData));
     }
     
     /**
@@ -290,22 +280,23 @@ public final class MetaDataContextsFactory {
      * @param internalLoadMetaData internal load meta data
      * @param ruleConfigs rule configs
      * @param originalMetaDataContexts original meta data contexts
-     * @param metaDataPersistService meta data persist service
+     * @param persistService meta data persist service
      * @param instanceContext compute node instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts createByAlterRule(final String databaseName, final boolean internalLoadMetaData, final Collection<RuleConfiguration> ruleConfigs,
-                                                     final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService metaDataPersistService,
+                                                     final MetaDataContexts originalMetaDataContexts, final MetaDataPersistService persistService,
                                                      final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ShardingSphereDatabase changedDatabase = createChangedDatabase(
-                databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, metaDataPersistService, instanceContext);
+                databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts, persistService, instanceContext);
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
-        return create(metaDataPersistService, new ShardingSphereMetaData(
-                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+        return new MetaDataContexts(metaData, createStatistics(persistService, metaData));
     }
     
     private static ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
@@ -323,15 +314,14 @@ public final class MetaDataContextsFactory {
      * @param switchingResource switching resource
      * @param ruleConfigs rule configurations
      * @param originalMetaDataContext original meta data contexts
-     * @param metaDataPersistService meta data persist service
+     * @param persistService meta data persist service
      * @param instanceContext compute node instance context
      * @return changed database
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData,
                                                                final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
-                                                               final MetaDataContexts originalMetaDataContext,
-                                                               final MetaDataPersistService metaDataPersistService,
+                                                               final MetaDataContexts originalMetaDataContext, final MetaDataPersistService persistService,
                                                                final ComputeNodeInstanceContext instanceContext) throws SQLException {
         ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(originalMetaDataContext.getMetaData().getDatabase(databaseName), switchingResource);
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
@@ -339,7 +329,7 @@ public final class MetaDataContextsFactory {
                 : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs);
         return createChangedDatabase(originalMetaDataContext.getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
-                metaDataPersistService, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps(), instanceContext);
+                persistService, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps(), instanceContext);
     }
     
     private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
