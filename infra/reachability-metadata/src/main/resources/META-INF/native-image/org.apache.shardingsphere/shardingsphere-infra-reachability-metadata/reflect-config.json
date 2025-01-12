@@ -254,7 +254,7 @@
   "allPublicMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]
