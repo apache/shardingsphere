@@ -167,17 +167,20 @@ public final class MetaDataContextsFactory {
         if (metaData.getAllDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
-        DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
-        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-        DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
-        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, databaseType);
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, getDatabaseType(metaData));
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
         ShardingSphereStatistics result = statisticsBuilder.get().build(metaData);
         persistService.getShardingSphereDataPersistService().load(metaData).ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
+    }
+    
+    private static DatabaseType getDatabaseType(final ShardingSphereMetaData metaData) {
+        DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
+        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
+        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
     }
     
     private static void useLoadedToReplaceInit(final ShardingSphereStatistics initStatistics, final ShardingSphereStatistics loadedStatistics) {
