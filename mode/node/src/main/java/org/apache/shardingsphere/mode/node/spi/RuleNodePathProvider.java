@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.spi.item;
+package org.apache.shardingsphere.mode.node.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 
 /**
- * Alter named rule item.
+ * Rule node path provider.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterNamedRuleItem implements AlterRuleItem {
+@SingletonSPI
+public interface RuleNodePathProvider extends TypedSPI {
     
-    private final String databaseName;
+    /**
+     * Get rule node path.
+     *
+     * @return got rule node path
+     */
+    RuleNodePath getRuleNodePath();
     
-    private final String itemName;
-    
-    private final String activeVersionKey;
-    
-    private final String activeVersion;
-    
-    private final String type;
+    @Override
+    Class<? extends RuleConfiguration> getType();
 }

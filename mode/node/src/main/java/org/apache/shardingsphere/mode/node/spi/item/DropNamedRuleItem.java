@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.spi.item;
+package org.apache.shardingsphere.mode.node.spi.item;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Drop rule item.
+ * Drop named rule item.
  */
-public interface DropRuleItem extends RuleItemChanged {
+@RequiredArgsConstructor
+@Getter
+public final class DropNamedRuleItem implements DropRuleItem {
     
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    private final String databaseName;
+    
+    private final String itemName;
+    
+    private final String type;
 }

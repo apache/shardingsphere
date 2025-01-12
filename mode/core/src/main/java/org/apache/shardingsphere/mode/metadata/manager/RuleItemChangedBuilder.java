@@ -23,12 +23,12 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.AlterUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.item.RuleItemChanged;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.AlterUniqueRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.DropUniqueRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.RuleItemChanged;
+import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 
 import java.util.Map.Entry;
 import java.util.Optional;

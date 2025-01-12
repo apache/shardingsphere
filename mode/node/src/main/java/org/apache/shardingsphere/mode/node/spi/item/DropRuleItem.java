@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.rule;
-
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+package org.apache.shardingsphere.mode.node.spi.item;
 
 /**
- * Rule node path provider.
+ * Drop rule item.
  */
-@SingletonSPI
-public interface RuleNodePathProvider extends TypedSPI {
+public interface DropRuleItem extends RuleItemChanged {
     
     /**
-     * Get rule node path.
+     * Get database name.
      *
-     * @return got rule node path
+     * @return database name
      */
-    RuleNodePath getRuleNodePath();
-    
-    @Override
-    Class<? extends RuleConfiguration> getType();
+    String getDatabaseName();
 }
