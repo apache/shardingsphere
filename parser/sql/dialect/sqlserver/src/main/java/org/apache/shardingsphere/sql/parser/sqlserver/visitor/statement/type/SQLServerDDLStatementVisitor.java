@@ -490,6 +490,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         SQLServerDropViewStatement result = new SQLServerDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         for (ViewNameContext each : ctx.viewName()) {
             result.getViews().add((SimpleTableSegment) visit(each));
         }

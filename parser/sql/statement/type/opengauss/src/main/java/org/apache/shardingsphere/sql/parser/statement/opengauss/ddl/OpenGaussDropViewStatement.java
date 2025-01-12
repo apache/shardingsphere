@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss drop view statement.
  */
+@Getter
+@Setter
 public final class OpenGaussDropViewStatement extends DropViewStatement implements OpenGaussStatement {
+    
+    private boolean ifExists;
 }

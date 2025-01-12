@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourceUnitPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
@@ -126,7 +126,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                     switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
             afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
-            reloadMetaDataContexts.close();
+            reloadMetaDataContexts.getMetaData().close();
         } finally {
             closeNewDataSources(newDataSources);
         }
@@ -146,7 +146,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             metaDataPersistService.getMetaDataVersionPersistService()
                     .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
             afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
-            reloadMetaDataContexts.close();
+            reloadMetaDataContexts.getMetaData().close();
         } finally {
             closeNewDataSources(newDataSources);
         }
@@ -162,7 +162,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
                     switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().delete(databaseName, each);
             afterStorageUnitsDropped(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
-            reloadMetaDataContexts.close();
+            reloadMetaDataContexts.getMetaData().close();
         }
     }
     

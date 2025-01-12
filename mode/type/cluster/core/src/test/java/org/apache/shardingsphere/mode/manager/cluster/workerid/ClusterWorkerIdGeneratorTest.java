@@ -64,7 +64,7 @@ class ClusterWorkerIdGeneratorTest {
     
     @Test
     void assertGenerateWithExistedWorkerId() {
-        when(computeNodePersistService.loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
+        when(computeNodePersistService.loadWorkerId("foo_id")).thenReturn(Optional.of(10));
         assertThat(workerIdGenerator.generate(new Properties()), is(10));
     }
     
@@ -87,7 +87,7 @@ class ClusterWorkerIdGeneratorTest {
     
     @Test
     void assertGenerateWorkerIdWithWarnLog() {
-        when(computeNodePersistService.loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
+        when(computeNodePersistService.loadWorkerId("foo_id")).thenReturn(Optional.of(10));
         assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
         assertThat(workerIdGenerator.generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "100"))), is(10));
     }

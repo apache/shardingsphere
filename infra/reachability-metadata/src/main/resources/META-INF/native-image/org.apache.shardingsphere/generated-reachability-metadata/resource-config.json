@@ -91,7 +91,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f30b7cc6cb8"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fe4e3cc4218"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -223,6 +223,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder\\E"
   }, {
@@ -323,7 +326,7 @@
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.logging.spi.ShardingSphereLogBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.event.deliver.DeliverEventSubscriber\\E"
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.ContextManagerBuilder\\E"
@@ -334,8 +337,11 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefresher\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder\\E"
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"

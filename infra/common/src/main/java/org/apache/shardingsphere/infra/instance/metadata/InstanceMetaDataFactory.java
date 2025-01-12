@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 
@@ -32,13 +33,13 @@ public final class InstanceMetaDataFactory {
      * Create instance meta data.
      *
      * @param instanceId instance ID
-     * @param instanceType instance type 
-     * @param attributes attributes
-     * @param version version
-     * @param databaseName database name
+     * @param instanceType instance type
+     * @param computeNodeData compute node data
      * @return created instance meta data
      */
-    public static InstanceMetaData create(final String instanceId, final InstanceType instanceType, final String attributes, final String version, final String databaseName) {
-        return InstanceType.JDBC == instanceType ? new JDBCInstanceMetaData(instanceId, attributes, version, databaseName) : new ProxyInstanceMetaData(instanceId, attributes, version);
+    public static InstanceMetaData create(final String instanceId, final InstanceType instanceType, final ComputeNodeData computeNodeData) {
+        return InstanceType.JDBC == instanceType
+                ? new JDBCInstanceMetaData(instanceId, computeNodeData.getAttribute(), computeNodeData.getVersion(), computeNodeData.getDatabaseName())
+                : new ProxyInstanceMetaData(instanceId, computeNodeData.getAttribute(), computeNodeData.getVersion());
     }
 }

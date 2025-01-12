@@ -38,7 +38,7 @@ public final class SetComputeNodeStateExecutor implements DistSQLUpdateExecutor<
         } else {
             checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
-        contextManager.getPersistServiceFacade().getComputeNodePersistService().updateComputeNodeState(sqlStatement.getInstanceId(),
+        contextManager.getPersistServiceFacade().getComputeNodePersistService().updateState(sqlStatement.getInstanceId(),
                 "DISABLE".equals(sqlStatement.getState()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
     }
     

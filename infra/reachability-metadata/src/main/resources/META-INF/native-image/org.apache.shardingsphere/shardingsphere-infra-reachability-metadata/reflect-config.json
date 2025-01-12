@@ -91,6 +91,11 @@
   "allPublicConstructors": true
 },
 {
+  "condition":{"typeReachable":"java.io.IOException"},
+  "name":"java.io.IOException",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
   "condition":{"typeReachable":"java.lang.Boolean"},
   "name":"java.lang.Boolean",
   "allDeclaredMethods": true,
@@ -331,6 +336,26 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
   "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
   "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"sun.security.provider.SecureRandom"},
