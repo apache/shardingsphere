@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DropNamedRuleItem implements DropRuleItem {
+public final class DropNamedRuleItem implements DropRuleItem {
     
     private final String databaseName;
     

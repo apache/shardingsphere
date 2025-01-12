@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class AlterUniqueRuleItem implements AlterRuleItem {
+public final class AlterUniqueRuleItem implements AlterRuleItem {
     
     private final String databaseName;
     
