@@ -21,40 +21,66 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalNodePathTest {
     
     @Test
-    void assertGetVersion() {
-        Optional<String> actual = GlobalNodePath.getVersion("transaction", "/rules/transaction/versions/0");
+    void assertGetRuleRootPath() {
+        assertThat(GlobalNodePath.getRuleRootPath(), is("/rules"));
+    }
+    
+    @Test
+    void assertGetRulePath() {
+        assertThat(GlobalNodePath.getRulePath("foo_rule"), is("/rules/foo_rule"));
+    }
+    
+    @Test
+    void assertGetRuleVersionsPath() {
+        assertThat(GlobalNodePath.getRuleVersionsPath("foo_rule"), is("/rules/foo_rule/versions"));
+    }
+    
+    @Test
+    void assertGetRuleVersionPath() {
+        assertThat(GlobalNodePath.getRuleVersionPath("foo_rule", "0"), is("/rules/foo_rule/versions/0"));
+    }
+    
+    @Test
+    void assertGetRuleActiveVersionPath() {
+        assertThat(GlobalNodePath.getRuleActiveVersionPath("foo_rule"), is("/rules/foo_rule/active_version"));
+    }
+    
+    @Test
+    void assertGetPropsRootPath() {
+        assertThat(GlobalNodePath.getPropsRootPath(), is("/props"));
+    }
+    
+    @Test
+    void assertGetPropsVersionsPath() {
+        assertThat(GlobalNodePath.getPropsVersionsPath(), is("/props/versions"));
+    }
+    
+    @Test
+    void assertGetPropsVersionPath() {
+        assertThat(GlobalNodePath.getPropsVersionPath("0"), is("/props/versions/0"));
+    }
+    
+    @Test
+    void assertGetPropsActiveVersionPath() {
+        assertThat(GlobalNodePath.getPropsActiveVersionPath(), is("/props/active_version"));
+    }
+    
+    @Test
+    void assertFindVersion() {
+        Optional<String> actual = GlobalNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("0"));
     }
     
     @Test
-    void assertIsRuleActiveVersionPath() {
-        assertTrue(GlobalNodePath.isRuleActiveVersionPath("/rules/transaction/active_version"));
-    }
-    
-    @Test
     void assertIsPropsActiveVersionPath() {
         assertTrue(GlobalNodePath.isPropsActiveVersionPath("/props/active_version"));
-    }
-    
-    @Test
-    void assertGetRuleName() {
-        Optional<String> actual = GlobalNodePath.getRuleName("/rules/transaction/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("transaction"));
-    }
-    
-    @Test
-    void assertGetRuleNameWhenNotFound() {
-        Optional<String> actual = GlobalNodePath.getRuleName("/invalid/transaction/active_version");
-        assertFalse(actual.isPresent());
     }
 }

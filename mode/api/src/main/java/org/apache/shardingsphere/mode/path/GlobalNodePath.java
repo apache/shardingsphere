@@ -30,41 +30,128 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalNodePath {
     
-    private static final String RULES_NODE = "rules";
+    private static final String RULES_NODE = "/rules";
     
-    private static final String PROPS_NODE = "props";
+    private static final String PROPS_NODE = "/props";
     
-    private static final String VERSIONS = "versions";
+    private static final String VERSIONS_NODE = "versions";
     
-    private static final String ACTIVE_VERSION_SUFFIX = "/active_version$";
+    private static final String ACTIVE_VERSION_NODE = "active_version";
+    
+    private static final String IDENTIFIER_PATTERN = "(\\w+)";
+    
+    private static final String VERSION_PATTERN = "(\\d+)";
     
     /**
-     * Get version.
+     * Get global rule root path.
      *
-     * @param ruleName rule name
-     * @param rulePath rule path
-     * @return version
+     * @return global rule root path
      */
-    public static Optional<String> getVersion(final String ruleName, final String rulePath) {
-        Pattern pattern = Pattern.compile(getVersionsNode(ruleName) + "/(\\d+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
+    public static String getRuleRootPath() {
+        return RULES_NODE;
+    }
+    
+    /**
+     * Get global rule path.
+     *
+     * @param ruleTypeName rule type name
+     * @return global rule path
+     */
+    public static String getRulePath(final String ruleTypeName) {
+        return String.join("/", getRuleRootPath(), ruleTypeName);
+    }
+    
+    /**
+     * Get global rule versions path.
+     *
+     * @param ruleTypeName rule type name
+     * @return global rule versions path
+     */
+    public static String getRuleVersionsPath(final String ruleTypeName) {
+        return String.join("/", getRulePath(ruleTypeName), VERSIONS_NODE);
+    }
+    
+    /**
+     * Get global rule version path.
+     *
+     * @param ruleTypeName rule type name
+     * @param version version
+     * @return global rule version path
+     */
+    public static String getRuleVersionPath(final String ruleTypeName, final String version) {
+        return String.join("/", getRuleVersionsPath(ruleTypeName), version);
+    }
+    
+    /**
+     * Get global rule active version path.
+     *
+     * @param ruleTypeName rule type name
+     * @return global rule active version path
+     */
+    public static String getRuleActiveVersionPath(final String ruleTypeName) {
+        return String.join("/", getRulePath(ruleTypeName), ACTIVE_VERSION_NODE);
+    }
+    
+    /**
+     * Get properties path.
+     *
+     * @return properties path
+     */
+    public static String getPropsRootPath() {
+        return PROPS_NODE;
+    }
+    
+    /**
+     * Get properties versions path.
+     *
+     * @return properties versions path
+     */
+    public static String getPropsVersionsPath() {
+        return String.join("/", getPropsRootPath(), VERSIONS_NODE);
+    }
+    
+    /**
+     * Get properties version path.
+     *
+     * @param version version
+     * @return properties version path
+     */
+    public static String getPropsVersionPath(final String version) {
+        return String.join("/", getPropsVersionsPath(), version);
+    }
+    
+    /**
+     * Get properties active version path.
+     *
+     * @return properties active version path
+     */
+    public static String getPropsActiveVersionPath() {
+        return String.join("/", getPropsRootPath(), ACTIVE_VERSION_NODE);
+    }
+    
+    /**
+     * Find rule type name from active version.
+     *
+     * @param path path to be found
+     * @return found rule type name
+     */
+    public static Optional<String> findRuleTypeNameFromActiveVersion(final String path) {
+        Pattern pattern = Pattern.compile(getRuleActiveVersionPath(IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
-    private static String getVersionsNode(final String ruleName) {
-        return String.join("/", "", RULES_NODE, ruleName, VERSIONS);
-    }
-    
     /**
-     * Is rule active version path.
+     * Find version.
      *
-     * @param rulePath rule path
-     * @return true or false
+     * @param ruleTypeName rule type name
+     * @param path path to be found
+     * @return found version
      */
-    public static boolean isRuleActiveVersionPath(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)" + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find();
+    public static Optional<String> findVersion(final String ruleTypeName, final String path) {
+        Pattern pattern = Pattern.compile(getRuleVersionPath(ruleTypeName, VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
@@ -74,28 +161,8 @@ public final class GlobalNodePath {
      * @return true or false
      */
     public static boolean isPropsActiveVersionPath(final String propsPath) {
-        Pattern pattern = Pattern.compile(getPropsNode() + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getPropsActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(propsPath);
         return matcher.find();
-    }
-    
-    private static String getPropsNode() {
-        return String.join("/", "", PROPS_NODE);
-    }
-    
-    /**
-     * Get rule name.
-     *
-     * @param rulePath rule path
-     * @return rule name
-     */
-    public static Optional<String> getRuleName(final String rulePath) {
-        Pattern pattern = Pattern.compile(getRuleNameNode() + "/(\\w+)" + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    private static String getRuleNameNode() {
-        return String.join("/", "", RULES_NODE);
     }
 }
