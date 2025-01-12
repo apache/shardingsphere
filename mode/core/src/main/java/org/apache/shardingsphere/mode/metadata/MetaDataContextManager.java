@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
@@ -72,8 +71,6 @@ public class MetaDataContextManager {
     
     private final GlobalConfigurationManager globalConfigurationManager;
     
-    private final RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine;
-    
     public MetaDataContextManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
@@ -85,7 +82,6 @@ public class MetaDataContextManager {
         ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, repository);
         metaDataPersistService = new MetaDataPersistService(repository);
-        ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(computeNodeInstanceContext);
     }
     
     /**
@@ -154,8 +150,8 @@ public class MetaDataContextManager {
                 .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
         metaDataContexts.get().getMetaData().putDatabase(changedDatabase);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(
-                ruleConfigPersistDecorateEngine.restore(metaDataPersistService.getGlobalRuleService().load()), metaDataContexts.get().getMetaData().getAllDatabases(), props));
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataContexts.get().getMetaData().getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
         MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaDataPersistService, metaData));

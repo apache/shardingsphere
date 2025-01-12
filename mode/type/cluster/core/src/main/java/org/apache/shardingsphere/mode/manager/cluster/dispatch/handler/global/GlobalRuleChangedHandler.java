@@ -19,14 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +45,6 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
@@ -60,7 +57,6 @@ public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleName.get());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleName.get());
-        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(
-                TypedSPILoader.findService(RuleConfigurationPersistDecorator.class, ruleConfig.get().getClass()).map(optional -> optional.restore(ruleConfig.get())).orElse(ruleConfig.get()));
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig.get());
     }
 }
