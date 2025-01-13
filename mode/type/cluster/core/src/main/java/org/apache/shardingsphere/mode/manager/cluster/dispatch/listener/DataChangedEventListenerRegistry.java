@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;

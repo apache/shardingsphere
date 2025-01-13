@@ -21,9 +21,9 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.path.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collections;
 import java.util.List;

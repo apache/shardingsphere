@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -62,7 +63,13 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
         for (String each : rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames()) {
             actualDataNodes.remove(each.toLowerCase());
         }
-        return actualDataNodes.entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().iterator().next().getDataSourceName())).collect(Collectors.toList());
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        actualDataNodes.values().stream().map(this::getRows).forEach(result::addAll);
+        return result;
+    }
+    
+    private Collection<LocalDataQueryResultRow> getRows(final Collection<DataNode> dataNodes) {
+        return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;

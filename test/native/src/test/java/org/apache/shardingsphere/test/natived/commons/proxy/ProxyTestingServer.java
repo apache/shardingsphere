@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.natived.commons.proxy;
 import lombok.Getter;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.shardingsphere.proxy.Bootstrap;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -29,6 +30,8 @@ import java.util.concurrent.CompletableFuture;
  * This class is designed to start ShardingSphere Proxy directly in the current process,
  * whether it is HotSpot VM or GraalVM Native Image,
  * so this class intentionally uses fewer than a few dozen JVM parameters.
+ * It is necessary to avoid creating multiple ShardingSphere Proxy instances in parallel in Junit5 unit tests.
+ * Currently, Junit5 unit tests are all executed serially.
  */
 @Getter
 public final class ProxyTestingServer {
@@ -53,9 +56,10 @@ public final class ProxyTestingServer {
     }
     
     /**
-     * Force close ShardingSphere Proxy.
+     * Force close ShardingSphere Proxy. See {@link org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy#close}.
      */
     public void close() {
-        completableFuture.cancel(true);
+        ProxyContext.getInstance().getContextManager().close();
+        completableFuture.cancel(false);
     }
 }

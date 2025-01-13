@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -26,15 +27,21 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.jdbc.ContainerDatabaseDriver;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @EnabledInNativeImage
 class PostgresTest {
     
+    private static DataSource logicDataSource;
+    
     private TestShardingService testShardingService;
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         ContainerDatabaseDriver.killContainers();
     }
     
@@ -43,8 +50,8 @@ class PostgresTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/postgresql.yaml");
-        DataSource dataSource = new HikariDataSource(config);
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = new HikariDataSource(config);
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();

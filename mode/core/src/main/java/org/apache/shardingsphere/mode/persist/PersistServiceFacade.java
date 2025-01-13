@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersist
 import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.persist.service.unified.StatePersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Persist service facade.

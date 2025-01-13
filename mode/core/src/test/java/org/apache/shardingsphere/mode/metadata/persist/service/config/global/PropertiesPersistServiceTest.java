@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.config.global;
 
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;

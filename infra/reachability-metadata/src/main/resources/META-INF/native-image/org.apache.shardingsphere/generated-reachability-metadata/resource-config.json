@@ -91,7 +91,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fe4e3cc4218"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f8e2bcc2910"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -349,9 +349,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleConfigurationPersistDecorator\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor\\E"
   }, {
@@ -484,910 +481,910 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},
     "pattern":"\\Qschema/common/shardingsphere/sharding_table_statistics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/administrable_role_authorizations.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/applicable_roles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/character_sets.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/check_constraints.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/collation_character_set_applicability.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/collations.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/column_privileges.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/column_statistics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/columns.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/columns_extensions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/enabled_roles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/engines.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/events.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/files.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/global_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/global_variables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_buffer_page.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_buffer_page_lru.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_buffer_pool_stats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cached_indexes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmp.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmp_per_index.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmp_per_index_reset.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmp_reset.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmpmem.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_cmpmem_reset.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_columns.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_datafiles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_fields.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_foreign.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_foreign_cols.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_being_deleted.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_config.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_default_stopword.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_deleted.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_index_cache.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_ft_index_table.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_indexes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_lock_waits.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_locks.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_metrics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_session_temp_tablespaces.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_columns.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_datafiles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_fields.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_foreign.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_foreign_cols.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_indexes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_tables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_tablespaces.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_tablestats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_sys_virtual.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_tables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_tablespaces.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_tablespaces_brief.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_tablestats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_temp_table_info.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_trx.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/innodb_virtual.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/key_column_usage.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/keywords.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/optimizer_trace.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/parameters.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/partitions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/plugins.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/processlist.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/profiling.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/referential_constraints.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/resource_groups.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/role_column_grants.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/role_routine_grants.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/role_table_grants.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/routines.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/schema_privileges.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/schemata.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/schemata_extensions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/session_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/session_variables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/st_geometry_columns.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/st_spatial_reference_systems.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/st_units_of_measure.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/statistics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/table_constraints.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/table_constraints_extensions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/table_privileges.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/tables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/tables_extensions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/tablespaces.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/tablespaces_extensions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/triggers.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/user_attributes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/user_privileges.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/view_routine_usage.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/view_table_usage.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/information_schema/views.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/columns_priv.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/component.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/db.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/default_roles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/engine_cost.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/event.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/func.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/general_log.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/global_grants.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/gtid_executed.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/help_category.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/help_keyword.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/help_relation.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/help_topic.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/innodb_index_stats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/innodb_table_stats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/ndb_binlog_index.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/password_history.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/plugin.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/proc.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/procs_priv.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/proxies_priv.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/replication_asynchronous_connection_failover.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/replication_asynchronous_connection_failover_managed.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/replication_group_configuration_version.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/replication_group_member_actions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/role_edges.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/server_cost.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/servers.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/slave_master_info.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/slave_relay_log_info.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/slave_worker_info.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/slow_log.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/tables_priv.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/time_zone.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/time_zone_leap_second.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/time_zone_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/time_zone_transition.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/time_zone_transition_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/mysql/user.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/accounts.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/binary_log_transaction_compression_stats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/cond_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/data_lock_waits.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/data_locks.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/error_log.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_errors_summary_by_account_by_error.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_errors_summary_by_host_by_error.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_errors_summary_by_thread_by_error.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_errors_summary_by_user_by_error.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_errors_summary_global_by_error.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_current.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_history.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_history_long.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_summary_by_account_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_summary_by_host_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_summary_by_thread_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_summary_by_user_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_stages_summary_global_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_current.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_histogram_by_digest.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_histogram_global.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_history.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_history_long.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_account_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_digest.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_host_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_program.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_thread_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_by_user_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_statements_summary_global_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_current.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_history.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_history_long.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_summary_by_account_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_summary_by_host_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_summary_by_thread_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_summary_by_user_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_transactions_summary_global_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_current.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_history.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_history_long.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_by_account_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_by_host_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_by_instance.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_by_thread_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_by_user_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/events_waits_summary_global_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/file_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/file_summary_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/file_summary_by_instance.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/global_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/global_variables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/host_cache.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/hosts.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/innodb_redo_log_files.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/keyring_component_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/keyring_keys.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/log_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/memory_summary_by_account_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/memory_summary_by_host_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/memory_summary_by_thread_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/memory_summary_by_user_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/memory_summary_global_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/metadata_locks.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/mutex_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/objects_summary_global_by_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/performance_timers.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/persisted_variables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/prepared_statements_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/processlist.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_configuration.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_filters.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_global_filters.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_status_by_coordinator.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_applier_status_by_worker.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_asynchronous_connection_failover.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_asynchronous_connection_failover_managed.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_connection_configuration.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_connection_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_group_member_stats.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/replication_group_members.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/rwlock_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/session_account_connect_attrs.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/session_connect_attrs.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/session_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/session_variables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_actors.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_consumers.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_instruments.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_meters.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_metrics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_objects.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_threads.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/setup_timers.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/socket_instances.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/socket_summary_by_event_name.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/socket_summary_by_instance.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/status_by_account.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/status_by_host.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/status_by_thread.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/status_by_user.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/table_handles.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/table_io_waits_summary_by_index_usage.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/table_io_waits_summary_by_table.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/table_lock_waits_summary_by_table.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/threads.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/tls_channel_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/user_defined_functions.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/user_variables_by_thread.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/users.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/variables_by_thread.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/performance_schema/variables_info.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary_by_file_io.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary_by_file_io_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary_by_stages.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary_by_statement_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/host_summary_by_statement_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/innodb_buffer_stats_by_schema.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/innodb_buffer_stats_by_table.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/innodb_lock_waits.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/io_by_thread_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/io_global_by_file_by_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/io_global_by_file_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/io_global_by_wait_by_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/io_global_by_wait_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/latest_file_io.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/memory_by_host_by_current_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/memory_by_thread_by_current_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/memory_by_user_by_current_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/memory_global_by_current_bytes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/memory_global_total.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/metrics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/processlist.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/ps_check_lost_instrumentation.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_auto_increment_columns.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_index_statistics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_object_overview.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_redundant_indexes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_table_lock_waits.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_table_statistics.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_table_statistics_with_buffer.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_tables_with_full_table_scans.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/schema_unused_indexes.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/session.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/session_ssl_status.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statement_analysis.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statements_with_errors_or_warnings.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statements_with_full_table_scans.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statements_with_runtimes_in_95th_percentile.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statements_with_sorting.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/statements_with_temp_tables.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/sys_config.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary_by_file_io.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary_by_file_io_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary_by_stages.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary_by_statement_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/user_summary_by_statement_type.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/version.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/wait_classes_global_by_avg_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/wait_classes_global_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/waits_by_host_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/waits_by_user_by_latency.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
     "pattern":"\\Qschema/mysql/sys/waits_global_by_latency.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},

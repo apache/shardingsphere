@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;

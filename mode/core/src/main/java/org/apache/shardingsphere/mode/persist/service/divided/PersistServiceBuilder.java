@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.persist.service.divided;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Persist service builder.

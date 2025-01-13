@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.persist.node.ReservationNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ReservationNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 
