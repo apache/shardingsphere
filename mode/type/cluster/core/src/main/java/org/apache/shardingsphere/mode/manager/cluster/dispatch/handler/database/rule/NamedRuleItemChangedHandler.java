@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.node.spi.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 
 import java.sql.SQLException;
 

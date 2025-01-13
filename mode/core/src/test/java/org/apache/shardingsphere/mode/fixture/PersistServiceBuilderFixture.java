@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 public final class PersistServiceBuilderFixture implements PersistServiceBuilder {
     

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.ProcessNodePath;
 import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.UUID;
