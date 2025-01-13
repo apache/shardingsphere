@@ -23,6 +23,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingServer;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +46,8 @@ class ZookeeperTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
     
+    private static DataSource logicDataSource;
+    
     private TestShardingService testShardingService;
     
     @BeforeAll
@@ -52,7 +56,10 @@ class ZookeeperTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
     }
     
@@ -60,8 +67,8 @@ class ZookeeperTest {
     void assertShardingInLocalTransactions() throws Exception {
         try (TestingServer testingServer = new TestingServer()) {
             String connectString = testingServer.getConnectString();
-            DataSource dataSource = createDataSource(connectString);
-            testShardingService = new TestShardingService(dataSource);
+            logicDataSource = createDataSource(connectString);
+            testShardingService = new TestShardingService(logicDataSource);
             initEnvironment();
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();

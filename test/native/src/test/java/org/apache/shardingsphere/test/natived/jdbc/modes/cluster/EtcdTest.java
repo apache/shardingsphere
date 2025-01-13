@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.modes.cluster;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.etcd.jetcd.test.EtcdClusterExtension;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
@@ -49,6 +51,8 @@ class EtcdTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.etcd.";
     
+    private static DataSource logicDataSource;
+    
     private TestShardingService testShardingService;
     
     @BeforeAll
@@ -57,14 +61,17 @@ class EtcdTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
     }
     
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        DataSource dataSource = createDataSource(CLUSTER.clientEndpoints());
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource(CLUSTER.clientEndpoints());
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
