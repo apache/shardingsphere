@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop view statement.
  */
+@Getter
+@Setter
 public final class PostgreSQLDropViewStatement extends DropViewStatement implements PostgreSQLStatement {
+    
+    private boolean ifExists;
 }

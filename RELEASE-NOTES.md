@@ -20,6 +20,7 @@
 1. SQL Parser: Support parsing Doris STRRIGHT - [#33393](https://github.com/apache/shardingsphere/pull/33393)
 1. SQL Parser: Support parsing MySQL by adding non-reserved keywords in BaseRule.g4 file according to MySQL 8.4 doc - [#33846](https://github.com/apache/shardingsphere/pull/33846)
 1. SQL Parser: Support parsing Doris EXTRACT\_URL\_PARAMETER - [#33571](https://github.com/apache/shardingsphere/pull/33571)
+1. SQL Parser: Enhance create view, alter view, drop view sql parser - [#34283](https://github.com/apache/shardingsphere/pull/34283)
 1. SQL Binder: Add sql bind logic for create table statement - [#34074](https://github.com/apache/shardingsphere/pull/34074)
 1. SQL Binder: Support create index statement sql bind - [#34112](https://github.com/apache/shardingsphere/pull/34112)
 1. SQL Parser: Support MySQL update with statement parse - [#34126](https://github.com/apache/shardingsphere/pull/34126)
@@ -32,6 +33,10 @@
 1. SQL Binder: Support truncate table sql bind and add test case - [#34162](https://github.com/apache/shardingsphere/pull/34162)
 1. SQL Binder: Support create view, alter view, drop view sql bind logic - [#34167](https://github.com/apache/shardingsphere/pull/34167)
 1. SQL Binder: Support load data and load xml sql bind and add test case - [#34177](https://github.com/apache/shardingsphere/pull/34177)
+1. SQL Binder: Support optimize table sql bind and add test case - [#34242](https://github.com/apache/shardingsphere/pull/34242)
+1. SQL Binder: Support show create table, show columns, show index statement bind - [#34271](https://github.com/apache/shardingsphere/pull/34271)
+1. SQL Binder: Support deny user sql bind and add test case - [#34279](https://github.com/apache/shardingsphere/pull/34279)
+1. SQL Binder: Support with segment bind check with UniqueCommonTableExpressionException - [#34163](https://github.com/apache/shardingsphere/pull/34163)
 1. Storage: Support setting `hive_conf_list`, `hive_var_list` and `sess_var_list` for jdbcURL when connecting to HiveServer2 - [#33749](https://github.com/apache/shardingsphere/pull/33749)
 1. Storage: Support connecting to HiveServer2 through database connection pools other than HikariCP - [#33762](https://github.com/apache/shardingsphere/pull/33762)
 1. Storage: Partial support for connecting to embedded ClickHouse `chDB` - [#33786](https://github.com/apache/shardingsphere/pull/33786)
@@ -50,11 +55,6 @@
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
 1. Encrypt: Support insert statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
-1. SQL Binder: Support optimize table sql bind and add test case - [#34242](https://github.com/apache/shardingsphere/pull/34242)
-1. SQL Binder: Support show create table, show columns, show index statement bind - [#34271](https://github.com/apache/shardingsphere/pull/34271)
-1. SQL Parser: Enhance create view, alter view, drop view sql parser - [#34283](https://github.com/apache/shardingsphere/pull/34283)
-1. SQL Binder: Support deny user sql bind and add test case - [#34279](https://github.com/apache/shardingsphere/pull/34279)
-1. SQL Binder: Support with segment bind check with UniqueCommonTableExpressionException - [#34163](https://github.com/apache/shardingsphere/pull/34163)
 
 ### Bug Fixes
 
@@ -71,6 +71,7 @@
 1. Proxy: Fixes BatchUpdateException when execute INSERT INTO ON DUPLICATE KEY UPDATE in proxy adapter - [#33796](https://github.com/apache/shardingsphere/pull/33796)
 1. Proxy: Fixes "ALL PRIVILEGES ON `DB`.*" is not recognized during SELECT privilege verification for MySQL - [#34037](https://github.com/apache/shardingsphere/pull/34037)
 1. Proxy: Fixes MySQL longblob wrong column type returned by proxy protocol - [#34121](https://github.com/apache/shardingsphere/pull/34121)
+1. Proxy: Fixes MySQL proxy error if insert SQL contains more parameters not in insert values syntax - [#34287](https://github.com/apache/shardingsphere/pull/34287)
 1. Sharding: Remove ShardingRouteAlgorithmException check logic temporarily to support different actual table name configuration - [#33367](https://github.com/apache/shardingsphere/pull/33367)
 1. Sharding: Fixes SQL COUNT with GROUP BY to prevent incorrect row returns - [#33380](https://github.com/apache/shardingsphere/pull/33380)
 1. Sharding: Fixes avg, sum, min, max function return empty data when no query result return - [#33449](https://github.com/apache/shardingsphere/pull/33449)

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.metadata.persist.node.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.path.GlobalPropertiesNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return GlobalNodePath.getPropsRootPath();
+        return GlobalPropertiesNodePath.getRootPath();
     }
     
     @Override
@@ -44,12 +44,10 @@ public final class PropertiesChangedHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!org.apache.shardingsphere.mode.path.GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
+        if (!GlobalPropertiesNodePath.isActiveVersionPath(event.getKey())) {
             return;
         }
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
     }
 }

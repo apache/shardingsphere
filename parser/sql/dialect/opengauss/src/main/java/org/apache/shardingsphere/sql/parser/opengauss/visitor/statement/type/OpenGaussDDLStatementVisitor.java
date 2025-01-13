@@ -666,6 +666,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         OpenGaussDropViewStatement result = new OpenGaussDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
         return result;
     }

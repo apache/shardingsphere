@@ -96,15 +96,6 @@ public final class BootstrapArguments {
         return addresses.stream().filter(address -> !InetAddresses.isInetAddress(address)).filter(this::isValidPath).findFirst();
     }
     
-    /**
-     * Get force startup parameter.
-     *
-     * @return force parameter
-     */
-    public boolean isForce() {
-        return args.length >= 4 && parseForceParameter(args[3]);
-    }
-    
     private boolean parseForceParameter(final String forceParam) {
         return Boolean.TRUE.toString().equalsIgnoreCase(forceParam.trim());
     }

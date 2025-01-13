@@ -61,7 +61,7 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
         checkPort(addresses, port);
-        new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.isForce());
+        new BootstrapInitializer().init(yamlConfig, port);
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                 .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
         ProxySSLContext.init();

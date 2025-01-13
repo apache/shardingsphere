@@ -56,7 +56,7 @@ class OpenGaussPipelineSQLBuilderTest {
     void assertBuildInsertOnDuplicateClause() {
         Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
+        assertThat(actual.get(), is("ON DUPLICATE KEY UPDATE \"c0\"=EXCLUDED.\"c0\",\"c1\"=EXCLUDED.\"c1\",\"c2\"=EXCLUDED.\"c2\",\"c3\"=EXCLUDED.\"c3\""));
     }
     
     private DataRecord createDataRecord() {

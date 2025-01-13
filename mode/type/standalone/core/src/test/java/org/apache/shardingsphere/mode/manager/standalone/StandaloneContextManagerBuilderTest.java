@@ -54,7 +54,7 @@ class StandaloneContextManagerBuilderTest {
     void assertBuild(final ContextManagerBuilder builder) throws SQLException {
         InstanceMetaData instanceMetaData = new JDBCInstanceMetaData("foo", "foo_db");
         ContextManager actual = builder.build(new ContextManagerBuilderParameter(createModeConfiguration(),
-                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData, false), mock(EventBusContext.class));
+                Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData), mock(EventBusContext.class));
         assertThat(actual.getComputeNodeInstanceContext().getInstance().getMetaData(), is(instanceMetaData));
     }
     

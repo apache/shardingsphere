@@ -65,7 +65,7 @@ class GlobalRuleChangedHandlerTest {
     
     @Test
     void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("/rules/foo_rule/active_version"))
+        when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version"))
                 .thenReturn("rule_value");
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));

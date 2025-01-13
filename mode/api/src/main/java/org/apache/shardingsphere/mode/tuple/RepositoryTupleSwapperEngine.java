@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.path.GlobalNodePath;
+import org.apache.shardingsphere.mode.path.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
@@ -153,7 +153,7 @@ public final class RepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleEntity tupleEntity) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (GlobalNodePath.getVersion(tupleEntity.value(), each.getKey()).isPresent()) {
+                if (GlobalRuleNodePath.findVersion(tupleEntity.value(), each.getKey()).isPresent()) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }
