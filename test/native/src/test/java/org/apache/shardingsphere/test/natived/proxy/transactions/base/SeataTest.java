@@ -20,12 +20,8 @@ package org.apache.shardingsphere.test.natived.proxy.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
-import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
-import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
-import org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionHolder;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,12 +53,12 @@ import static org.hamcrest.Matchers.nullValue;
 class SeataTest {
     
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
+    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
             .withExposedPorts(7091, 8091)
             .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("ok"::equals));
     
     @Container
-    public static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm")
+    private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/sh/postgres.sh").toAbsolutePath()),
                     "/docker-entrypoint-initdb.d/postgres.sh");
@@ -90,16 +86,8 @@ class SeataTest {
         });
     }
     
-    /**
-     * TODO Facing the same issue with {@code org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest},
-     *  {@link org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager#close()} was never called.
-     */
     @AfterAll
     static void afterAll() {
-        SeataTransactionHolder.clear();
-        RmNettyRemotingClient.getInstance().destroy();
-        TmNettyRemotingClient.getInstance().destroy();
-        ConfigurationFactory.reload();
         proxyTestingServer.close();
         System.clearProperty(SERVICE_DEFAULT_GROUP_LIST_KEY);
     }

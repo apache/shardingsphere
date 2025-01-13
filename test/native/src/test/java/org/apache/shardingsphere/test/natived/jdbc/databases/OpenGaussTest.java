@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -49,11 +50,17 @@ class OpenGaussTest {
     
     private static final String PASSWORD = "Enmo@123";
     
+    /**
+     * Unable to use Docker Image `enmotech/opengauss` under WSL.
+     * Background comes from <a href="https://github.com/enmotech/enmotech-docker-opengauss/issues/52">enmotech/enmotech-docker-opengauss#52</a>.
+     */
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("enmotech/opengauss-lite:5.1.0")
+    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("enmotech/opengauss-lite:5.1.0")
             .withEnv("GS_PASSWORD", PASSWORD)
             .withExposedPorts(5432);
+    
+    private static DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
     
@@ -67,7 +74,10 @@ class OpenGaussTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
@@ -76,8 +86,8 @@ class OpenGaussTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:opengauss://localhost:" + CONTAINER.getMappedPort(5432) + "/";
-        DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
