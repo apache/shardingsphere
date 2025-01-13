@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;

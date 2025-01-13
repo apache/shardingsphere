@@ -22,9 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
 
 import java.util.Collection;
 import java.util.LinkedList;

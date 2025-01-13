@@ -33,8 +33,8 @@ import org.apache.shardingsphere.mode.metadata.persist.service.metadata.Database
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.alter.AlterRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

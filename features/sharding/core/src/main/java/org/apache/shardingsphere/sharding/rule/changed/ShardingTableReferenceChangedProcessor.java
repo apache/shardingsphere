@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.node.spi.item.alter.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.alter.AlterRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.node.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;

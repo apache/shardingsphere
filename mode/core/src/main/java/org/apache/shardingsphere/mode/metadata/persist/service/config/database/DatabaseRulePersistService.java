@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.metadata.DatabaseRuleMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseRuleMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
-import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 
 import java.util.Collection;
 import java.util.Collections;

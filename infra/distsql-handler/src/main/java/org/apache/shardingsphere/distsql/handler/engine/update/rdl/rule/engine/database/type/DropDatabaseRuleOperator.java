@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 
 import java.sql.SQLException;
 import java.util.Objects;

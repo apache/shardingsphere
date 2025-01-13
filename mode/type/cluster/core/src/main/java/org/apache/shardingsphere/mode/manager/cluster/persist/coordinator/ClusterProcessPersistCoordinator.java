@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNodePath;
-import org.apache.shardingsphere.mode.metadata.persist.node.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ComputeNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ProcessNodePath;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
