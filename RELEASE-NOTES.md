@@ -79,6 +79,7 @@
 1. Encrypt: Use sql bind info in EncryptInsertPredicateColumnTokenGenerator to avoid wrong column table mapping - [#34110](https://github.com/apache/shardingsphere/pull/34110)
 1. Mode: Fixes `JDBCRepository` improper handling of H2-database in memory mode - [#33281](https://github.com/apache/shardingsphere/issues/33281)
 1. Mode: Fixes duplicate column names added when index changed in DDL - [#33982](https://github.com/apache/shardingsphere/issues/33281)
+1. Readwrite-splitting: Fixes readwrite-splitting data sources is incorrect when tableless [#34340](https://github.com/apache/shardingsphere/pull/34340)
 
 ### Change Logs
 
