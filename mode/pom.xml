@@ -29,6 +29,7 @@
     
     <modules>
         <module>api</module>
+        <module>node</module>
         <module>core</module>
         <module>type</module>
     </modules>

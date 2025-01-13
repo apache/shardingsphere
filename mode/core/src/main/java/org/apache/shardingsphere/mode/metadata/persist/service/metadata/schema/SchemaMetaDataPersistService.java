@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;

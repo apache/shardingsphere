@@ -103,11 +103,11 @@ public final class OrderItemRepository {
     }
     
     /**
-     * drop table.
+     * drop table in MySQL.
      *
      * @throws SQLException SQL exception
      */
-    public void dropTable() throws SQLException {
+    public void dropTableInMySQL() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_order_item";
         try (
                 Connection connection = dataSource.getConnection();

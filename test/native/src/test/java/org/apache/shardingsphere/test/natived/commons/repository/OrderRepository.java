@@ -78,7 +78,7 @@ public final class OrderRepository {
     }
     
     /**
-     * create table in MS SQL Server. `order_item_id` is not set to `IDENTITY(1,1)` to simplify the unit test.
+     * create table in MS SQL Server. `order_id` is not set to `IDENTITY(1,1)` to simplify the unit test.
      * This also ignored the default schema of the `dbo`.
      *
      * @throws SQLException SQL exception
@@ -100,12 +100,12 @@ public final class OrderRepository {
     }
     
     /**
-     * drop table.
+     * drop table in MySQL.
      * TODO There is a bug in this function in shadow's unit test and requires additional fixes.
      *
      * @throws SQLException SQL exception
      */
-    public void dropTable() throws SQLException {
+    public void dropTableInMySQL() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_order";
         try (
                 Connection connection = dataSource.getConnection();

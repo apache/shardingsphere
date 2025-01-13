@@ -71,11 +71,11 @@ public final class AddressRepository {
     }
     
     /**
-     * drop table t_address.
+     * drop table t_address in MySQL.
      *
      * @throws SQLException SQL exception
      */
-    public void dropTable() throws SQLException {
+    public void dropTableInMySQL() throws SQLException {
         String sql = "DROP TABLE IF EXISTS t_address";
         try (
                 Connection connection = dataSource.getConnection();

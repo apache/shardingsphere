@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.node.spi.item.alter.AlterRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.node.spi.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.node.spi.RuleItemConfigurationChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
