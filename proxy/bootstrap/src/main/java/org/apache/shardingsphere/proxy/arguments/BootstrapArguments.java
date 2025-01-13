@@ -96,10 +96,6 @@ public final class BootstrapArguments {
         return addresses.stream().filter(address -> !InetAddresses.isInetAddress(address)).filter(this::isValidPath).findFirst();
     }
     
-    private boolean parseForceParameter(final String forceParam) {
-        return Boolean.TRUE.toString().equalsIgnoreCase(forceParam.trim());
-    }
-    
     private String paddingWithSlash(final String pathArg) {
         StringBuilder result = new StringBuilder(pathArg);
         if (!pathArg.startsWith("/")) {
