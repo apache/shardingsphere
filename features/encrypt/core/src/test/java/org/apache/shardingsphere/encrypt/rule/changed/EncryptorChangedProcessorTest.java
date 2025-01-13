@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.spi.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.node.spi.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.node.spi.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.persist.service.unified;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.metadata.StatesNodePath;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Listener assisted persist service.

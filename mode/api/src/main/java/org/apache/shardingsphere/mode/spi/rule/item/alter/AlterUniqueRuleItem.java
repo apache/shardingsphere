@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.spi.item;
+package org.apache.shardingsphere.mode.spi.rule.item.alter;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule changed item.
+ * Alter unique rule item.
  */
-public interface RuleChangedItem {
+@RequiredArgsConstructor
+@Getter
+public final class AlterUniqueRuleItem implements AlterRuleItem {
     
-    /**
-     * Get rule item type.
-     *
-     * @return rule item type
-     */
-    String getType();
+    private final String databaseName;
+    
+    private final String activeVersionKey;
+    
+    private final String activeVersion;
+    
+    private final String type;
 }

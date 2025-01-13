@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.spi.item.alter;
+package org.apache.shardingsphere.mode.spi.rule.item.drop;
 
-import org.apache.shardingsphere.mode.node.spi.item.RuleChangedItem;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 /**
- * Alter rule item.
+ * Drop rule item.
  */
-public interface AlterRuleItem extends RuleChangedItem {
+public interface DropRuleItem extends RuleChangedItem {
     
     /**
      * Get database name.
@@ -30,18 +30,4 @@ public interface AlterRuleItem extends RuleChangedItem {
      * @return database name
      */
     String getDatabaseName();
-    
-    /**
-     * Get active version key.
-     *
-     * @return active version key
-     */
-    String getActiveVersionKey();
-    
-    /**
-     * Get active version.
-     *
-     * @return active version
-     */
-    String getActiveVersion();
 }
