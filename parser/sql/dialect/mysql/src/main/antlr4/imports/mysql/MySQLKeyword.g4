@@ -179,10 +179,6 @@ BIT
     : B I T
     ;
 
-BINLOGBIT
-    : B I N L O G B I T
-    ;
-
 BLOB
     : B L O B
     ;
@@ -263,8 +259,8 @@ CHANNEL
     : C H A N N E L
     ;
 
-CHALLENGE_RESPONSECHANGED
-    : C H A L L E N G E UL_ R E S P O N S E C H A N G E D
+CHALLENGE_RESPONSE
+    : C H A L L E N G E UL_ R E S P O N S E
     ;
 
 CHAR
