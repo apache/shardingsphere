@@ -82,7 +82,7 @@ public final class MetaDataContextsFactory {
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
         Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(param.getDatabaseConfigs(), props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
-        persistDatabaseConfigurations(result, param, persistService, instanceContext);
+        persistDatabaseConfigurations(result, param, persistService);
         persistMetaData(result, persistService);
         return result;
     }
@@ -132,8 +132,7 @@ public final class MetaDataContextsFactory {
         }
     }
     
-    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts,
-                                                      final ContextManagerBuilderParameter param, final MetaDataPersistService persistService, final ComputeNodeInstanceContext instanceContext) {
+    private static void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param, final MetaDataPersistService persistService) {
         Collection<RuleConfiguration> globalRuleConfigs = metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
         persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
