@@ -19,13 +19,10 @@ package org.apache.shardingsphere.infra.binder.context.segment.insert.values;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -40,9 +37,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * On conflict context.
+ */
 @Getter
-@ToString
-public final class OnConflictUpdateContext implements WhereAvailable {
+public final class OnConflictUpdateContext {
     
     private final int parameterCount;
     
@@ -51,8 +50,6 @@ public final class OnConflictUpdateContext implements WhereAvailable {
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
     private final Collection<ColumnSegment> columnSegments;
-    
-    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     private final List<ParameterMarkerExpressionSegment> parameterMarkerExpressions;
     
@@ -66,19 +63,31 @@ public final class OnConflictUpdateContext implements WhereAvailable {
         }
         columnSegments = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
         valueExpressions = getValueExpressions(expressionSegments);
         parameterMarkerExpressions = ExpressionExtractor.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
         parameters = getParameters(params, parametersOffset);
     }
     
+    /**
+     * get value expressions from expression segments.
+     *
+     * @param assignments Collection of expression segments
+     * @return List of value expressions
+     */
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
     }
     
+    /**
+     * get list of parameters.
+     *
+     * @param params List of parameters
+     * @param paramsOffset Offset in the parameter list
+     * @return List of parameters
+     */
     private List<Object> getParameters(final List<Object> params, final int paramsOffset) {
         if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
@@ -105,6 +114,12 @@ public final class OnConflictUpdateContext implements WhereAvailable {
         return ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
+    /**
+     * get index of a parameter.
+     *
+     * @param paramMarkerExpression Parameter marker expression.
+     * @return Index of the parameter in the parameter list.
+     */
     private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
         int result = parameterMarkerExpressions.indexOf(paramMarkerExpression);
         Preconditions.checkArgument(result >= 0, "Can not get parameter index.");
