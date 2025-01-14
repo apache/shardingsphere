@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.atomic.AtomicReference;
@@ -48,15 +49,6 @@ public final class MetaDataContexts {
     }
     
     /**
-     * Set ShardingSphere meta data.
-     *
-     * @param metaData meta data
-     */
-    public void setMetaData(final ShardingSphereMetaData metaData) {
-        this.metaData.set(metaData);
-    }
-    
-    /**
      * Get ShardingSphere statistics.
      *
      * @return got meta data statistics
@@ -66,11 +58,23 @@ public final class MetaDataContexts {
     }
     
     /**
-     * Set ShardingSphere statistics.
+     * Update meta data contexts.
      *
-     * @param statistics statistics
+     * @param newMetaDataContexts new meta data contexts
      */
-    public void setStatistics(final ShardingSphereStatistics statistics) {
-        this.statistics.set(statistics);
+    public void update(final MetaDataContexts newMetaDataContexts) {
+        this.metaData.set(newMetaDataContexts.getMetaData());
+        this.statistics.set(newMetaDataContexts.getStatistics());
+    }
+    
+    /**
+     * Update meta data contexts.
+     *
+     * @param metaData meta data
+     * @param metaDataPersistService meta data persist service
+     */
+    public void update(final ShardingSphereMetaData metaData, final MetaDataPersistService metaDataPersistService) {
+        this.metaData.set(metaData);
+        this.statistics.set(ShardingSphereStatisticsFactory.create(metaDataPersistService, metaData));
     }
 }
