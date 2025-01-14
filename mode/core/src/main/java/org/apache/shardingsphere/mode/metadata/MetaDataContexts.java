@@ -20,11 +20,13 @@ package org.apache.shardingsphere.mode.metadata;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data contexts.
  */
+@ThreadSafe
 public final class MetaDataContexts {
     
     private final AtomicReference<ShardingSphereMetaData> metaData = new AtomicReference<>();
