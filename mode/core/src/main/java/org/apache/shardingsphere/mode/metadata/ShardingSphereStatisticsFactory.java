@@ -71,20 +71,20 @@ public final class ShardingSphereStatisticsFactory {
     private static void useLoadedToReplaceInit(final ShardingSphereStatistics initStatistics, final ShardingSphereStatistics loadedStatistics) {
         for (Entry<String, ShardingSphereDatabaseData> entry : initStatistics.getDatabaseData().entrySet()) {
             if (loadedStatistics.getDatabaseData().containsKey(entry.getKey())) {
-                useLoadedToReplaceInitByDatabaseData(entry.getValue(), loadedStatistics.getDatabaseData().get(entry.getKey()));
+                useLoadedToReplaceInit(entry.getValue(), loadedStatistics.getDatabaseData().get(entry.getKey()));
             }
         }
     }
     
-    private static void useLoadedToReplaceInitByDatabaseData(final ShardingSphereDatabaseData initDatabaseData, final ShardingSphereDatabaseData loadedDatabaseData) {
+    private static void useLoadedToReplaceInit(final ShardingSphereDatabaseData initDatabaseData, final ShardingSphereDatabaseData loadedDatabaseData) {
         for (Entry<String, ShardingSphereSchemaData> entry : initDatabaseData.getSchemaData().entrySet()) {
             if (loadedDatabaseData.getSchemaData().containsKey(entry.getKey())) {
-                useLoadedToReplaceInitBySchemaData(entry.getValue(), loadedDatabaseData.getSchemaData().get(entry.getKey()));
+                useLoadedToReplaceInit(entry.getValue(), loadedDatabaseData.getSchemaData().get(entry.getKey()));
             }
         }
     }
     
-    private static void useLoadedToReplaceInitBySchemaData(final ShardingSphereSchemaData initSchemaData, final ShardingSphereSchemaData loadedSchemaData) {
+    private static void useLoadedToReplaceInit(final ShardingSphereSchemaData initSchemaData, final ShardingSphereSchemaData loadedSchemaData) {
         for (Entry<String, ShardingSphereTableData> entry : initSchemaData.getTableData().entrySet()) {
             if (loadedSchemaData.getTableData().containsKey(entry.getKey())) {
                 entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
