@@ -38,7 +38,6 @@ import org.mockito.quality.Strictness;
 
 import java.sql.Types;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,7 +67,7 @@ class SchemaMetaDataManagerTest {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
-        schemaMetaDataManager = new SchemaMetaDataManager(new AtomicReference<>(metaDataContexts), mock(PersistRepository.class));
+        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, mock(PersistRepository.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
