@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.database.firebird.connector;
 
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,11 +30,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.sql.SQLNonTransientConnectionException;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdConnectionPropertiesParserTest {
@@ -54,14 +56,29 @@ class FirebirdConnectionPropertiesParserTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:firebirdsql:xxxxxxxx", null, null));
+        assertDoesNotThrow(() -> parser.parse("jdbc:firebirdsql:xxxxxxxx", null, null));
+        assertThrows(SQLNonTransientConnectionException.class, () -> parser.parse("jdbc:firebirdsql://localhost:c:/data/db/test.fdb", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.of("simple", "jdbc:firebirdsql://127.0.0.1/foo_ds", "127.0.0.1", 3050, "foo_ds", null, new Properties()));
+            return Stream.of(
+                    Arguments.of("simple_first", "jdbc:firebirdsql://127.0.0.1/foo_ds", "127.0.0.1", 3050, "foo_ds", null, new Properties()),
+                    Arguments.of("simple_second", "jdbc:firebird://localhost:32783//var/lib/firebird/data/demo_ds_2.fdb",
+                            "localhost", 32783, "/var/lib/firebird/data/demo_ds_2.fdb", null, new Properties()),
+                    Arguments.of("simple_third", "jdbc:firebirdsql://localhost/database?socket_buffer_size=32767", "localhost", 3050, "database", null, PropertiesBuilder.build(
+                            new PropertiesBuilder.Property("socketBufferSize", "32767"))),
+                    Arguments.of("complex",
+                            "jdbc:firebirdsql://localhost/database?socket_buffer_size=32767"
+                                    + "&TRANSACTION_REPEATABLE_READ=concurrency,write,no_wait&columnLabelForName&soTimeout=1000&nonStandard2=value2",
+                            "localhost", 3050, "database", null, PropertiesBuilder.build(
+                                    new PropertiesBuilder.Property("socketBufferSize", "32767"),
+                                    new PropertiesBuilder.Property("TRANSACTION_REPEATABLE_READ", "concurrency,write,no_wait"),
+                                    new PropertiesBuilder.Property("columnLabelForName", ""),
+                                    new PropertiesBuilder.Property("soTimeout", "1000"),
+                                    new PropertiesBuilder.Property("nonStandard2", "value2"))));
         }
     }
 }

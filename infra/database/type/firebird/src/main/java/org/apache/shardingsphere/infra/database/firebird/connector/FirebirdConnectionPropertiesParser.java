@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.firebird.connector;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
+import org.firebirdsql.gds.impl.DbAttachInfo;
+import org.firebirdsql.gds.impl.GDSFactory;
+import org.firebirdsql.gds.impl.GDSType;
+import org.firebirdsql.jdbc.FBDriver;
 
 import java.util.Properties;
 
@@ -30,12 +33,18 @@ import java.util.Properties;
  */
 public final class FirebirdConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    private static final int DEFAULT_PORT = 3050;
-    
+    @SneakyThrows(Exception.class)
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
+        GDSType type = GDSFactory.getTypeForProtocol(url);
+        String databaseURL = GDSFactory.getDatabasePath(type, url);
+        DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(databaseURL);
+        String attachObjectName = dbAttachInfo.getAttachObjectName();
+        String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
+        Properties queryProperties = new Properties();
+        queryProperties.putAll(FBDriver.normalizeProperties(url, new Properties()));
+        return new StandardConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(),
+                databaseName, null, queryProperties, new Properties());
     }
     
     @Override
