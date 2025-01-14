@@ -38,7 +38,7 @@ public final class MetaDataContexts {
     
     /**
      * Get ShardingSphere meta data.
-     * 
+     *
      * @return got meta data
      */
     public ShardingSphereMetaData getMetaData() {
@@ -47,7 +47,7 @@ public final class MetaDataContexts {
     
     /**
      * Set ShardingSphere meta data.
-     * 
+     *
      * @param metaData meta data
      */
     public void setMetaData(final ShardingSphereMetaData metaData) {
@@ -56,7 +56,7 @@ public final class MetaDataContexts {
     
     /**
      * Get ShardingSphere statistics.
-     * 
+     *
      * @return got meta data statistics
      */
     public ShardingSphereStatistics getStatistics() {
