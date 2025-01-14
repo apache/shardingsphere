@@ -75,7 +75,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void dropDatabase(final String databaseName) {
-        String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getName();
+        String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
         listenerAssistedPersistService.persistDatabaseNameListenerAssisted(droppedDatabaseName, ListenerAssistedType.DROP_DATABASE);
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(droppedDatabaseName);
     }
@@ -89,7 +89,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
         String databaseName = alterSchemaPOJO.getDatabaseName();
         String schemaName = alterSchemaPOJO.getSchemaName();
-        ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().get().getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         if (schema.isEmpty()) {
             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, alterSchemaPOJO.getRenameSchemaName());
         }
@@ -116,7 +116,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeRegisteredProps.size());
         try {
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
@@ -134,7 +134,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeUpdatedProps.size());
         try {
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
@@ -155,7 +155,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
         for (String each : getToBeDroppedResourceNames(databaseName, toBeDroppedStorageUnitNames)) {
-            MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+            MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts();
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
             MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
@@ -209,7 +209,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
@@ -218,7 +218,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         Thread.sleep(3000L);
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         metaDataPersistService.persistReloadDatabaseByAlter(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
@@ -232,7 +232,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void removeRuleConfiguration(final String databaseName, final String ruleName) {
-        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts originalMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, ruleName);
         afterRuleConfigurationDropped(databaseName, originalMetaDataContexts);
     }
@@ -240,7 +240,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @SneakyThrows(InterruptedException.class)
     private void afterRuleConfigurationDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         Thread.sleep(3000L);
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts().get();
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         metaDataPersistService.persistReloadDatabaseByDrop(
                 databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }

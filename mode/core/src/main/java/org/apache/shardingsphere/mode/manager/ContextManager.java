@@ -44,7 +44,6 @@ import org.apache.shardingsphere.mode.state.ClusterStateContext;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Context manager.
@@ -53,7 +52,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ContextManager implements AutoCloseable {
     
-    private final AtomicReference<MetaDataContexts> metaDataContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
@@ -68,9 +67,9 @@ public final class ContextManager implements AutoCloseable {
     private final PersistCoordinatorFacade persistCoordinatorFacade;
     
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
-        this.metaDataContexts = new AtomicReference<>(metaDataContexts);
+        this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        metaDataContextManager = new MetaDataContextManager(this.metaDataContexts, computeNodeInstanceContext, repository);
+        metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new ClusterStateContext(persistServiceFacade.getStatePersistService().load());
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
@@ -78,24 +77,6 @@ public final class ContextManager implements AutoCloseable {
             each.onInitialized(this);
         }
         persistCoordinatorFacade = new PersistCoordinatorFacade(repository, computeNodeInstanceContext.getModeConfiguration());
-    }
-    
-    /**
-     * Get meta data contexts.
-     *
-     * @return meta data contexts
-     */
-    public MetaDataContexts getMetaDataContexts() {
-        return metaDataContexts.get();
-    }
-    
-    /**
-     * Renew meta data contexts.
-     *
-     * @param metaDataContexts meta data contexts
-     */
-    public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        this.metaDataContexts.set(metaDataContexts);
     }
     
     /**
@@ -146,7 +127,7 @@ public final class ContextManager implements AutoCloseable {
     private ShardingSphereSchema loadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) throws SQLException {
         database.reloadRules();
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName)),
-                database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(database.getProtocolType(), material).get(schemaName);
         persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
         return result;
@@ -161,7 +142,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+                database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
@@ -180,7 +161,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName, final String tableName) {
         StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                Collections.singletonMap(dataSourceName, storageUnit), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+                Collections.singletonMap(dataSourceName, storageUnit), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
@@ -199,7 +180,7 @@ public final class ContextManager implements AutoCloseable {
      * @return pre-selected database name
      */
     public String getPreSelectedDatabaseName() {
-        return InstanceType.JDBC == computeNodeInstanceContext.getInstance().getMetaData().getType() ? metaDataContexts.get().getMetaData().getAllDatabases().iterator().next().getName() : null;
+        return InstanceType.JDBC == computeNodeInstanceContext.getInstance().getMetaData().getType() ? metaDataContexts.getMetaData().getAllDatabases().iterator().next().getName() : null;
     }
     
     @Override
@@ -208,7 +189,7 @@ public final class ContextManager implements AutoCloseable {
             each.onDestroyed(this);
         }
         executorEngine.close();
-        metaDataContexts.get().getMetaData().close();
+        metaDataContexts.getMetaData().close();
         persistServiceFacade.close(computeNodeInstanceContext.getInstance());
     }
 }

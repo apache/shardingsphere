@@ -17,19 +17,58 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
-@Getter
 public final class MetaDataContexts {
     
-    private final ShardingSphereMetaData metaData;
+    private final AtomicReference<ShardingSphereMetaData> metaData = new AtomicReference<>();
     
-    private final ShardingSphereStatistics statistics;
+    private final AtomicReference<ShardingSphereStatistics> statistics = new AtomicReference<>();
+    
+    public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
+        this.metaData.set(metaData);
+        this.statistics.set(statistics);
+    }
+    
+    /**
+     * Get ShardingSphere meta data.
+     *
+     * @return got meta data
+     */
+    public ShardingSphereMetaData getMetaData() {
+        return metaData.get();
+    }
+    
+    /**
+     * Set ShardingSphere meta data.
+     *
+     * @param metaData meta data
+     */
+    public void setMetaData(final ShardingSphereMetaData metaData) {
+        this.metaData.set(metaData);
+    }
+    
+    /**
+     * Get ShardingSphere statistics.
+     *
+     * @return got meta data statistics
+     */
+    public ShardingSphereStatistics getStatistics() {
+        return statistics.get();
+    }
+    
+    /**
+     * Set ShardingSphere statistics.
+     *
+     * @param statistics statistics
+     */
+    public void setStatistics(final ShardingSphereStatistics statistics) {
+        this.statistics.set(statistics);
+    }
 }
