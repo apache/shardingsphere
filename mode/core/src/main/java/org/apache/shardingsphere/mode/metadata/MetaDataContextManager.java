@@ -42,7 +42,6 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data context manager..
