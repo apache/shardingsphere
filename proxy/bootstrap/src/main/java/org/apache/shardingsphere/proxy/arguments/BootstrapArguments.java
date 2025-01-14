@@ -70,6 +70,17 @@ public final class BootstrapArguments {
         return args.length < 2 ? DEFAULT_CONFIG_PATH : paddingWithSlash(args[1]);
     }
     
+    private String paddingWithSlash(final String pathArg) {
+        StringBuilder result = new StringBuilder(pathArg);
+        if (!pathArg.startsWith("/")) {
+            result.insert(0, '/');
+        }
+        if (!pathArg.endsWith("/")) {
+            result.append('/');
+        }
+        return result.toString();
+    }
+    
     /**
      * Get bind address list.
      *
@@ -79,8 +90,7 @@ public final class BootstrapArguments {
         if (args.length < 3) {
             return Collections.singletonList(DEFAULT_BIND_ADDRESS);
         }
-        List<String> addresses = Arrays.asList(args[2].split(","));
-        return addresses.stream().filter(InetAddresses::isInetAddress).collect(Collectors.toList());
+        return Arrays.stream(args[2].split(",")).filter(InetAddresses::isInetAddress).collect(Collectors.toList());
     }
     
     /**
@@ -94,21 +104,6 @@ public final class BootstrapArguments {
         }
         List<String> addresses = Arrays.asList(args[2].split(","));
         return addresses.stream().filter(address -> !InetAddresses.isInetAddress(address)).filter(this::isValidPath).findFirst();
-    }
-    
-    private boolean parseForceParameter(final String forceParam) {
-        return Boolean.TRUE.toString().equalsIgnoreCase(forceParam.trim());
-    }
-    
-    private String paddingWithSlash(final String pathArg) {
-        StringBuilder result = new StringBuilder(pathArg);
-        if (!pathArg.startsWith("/")) {
-            result.insert(0, '/');
-        }
-        if (!pathArg.endsWith("/")) {
-            result.append('/');
-        }
-        return result.toString();
     }
     
     private boolean isValidPath(final String path) {

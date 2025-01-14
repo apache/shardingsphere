@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Readwrite-splitting qualified data source changed subscriber.

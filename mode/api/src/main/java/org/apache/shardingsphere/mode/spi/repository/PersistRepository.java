@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.spi;
+package org.apache.shardingsphere.mode.spi.repository;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
