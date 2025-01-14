@@ -28,7 +28,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>metadata</module>
         <module>authority</module>
         <module>single</module>
         <module>sql-parser</module>

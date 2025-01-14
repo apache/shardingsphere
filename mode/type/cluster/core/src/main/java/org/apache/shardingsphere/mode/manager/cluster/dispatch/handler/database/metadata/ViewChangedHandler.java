@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.metadata.persist.node.metadata.ViewMetaDataNode;
+import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
 
 /**
@@ -46,10 +46,8 @@ public final class ViewChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNode.getViewNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        String viewName = ViewMetaDataNodePath.getViewNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, view);
         statisticsRefreshEngine.asyncRefresh();
@@ -63,7 +61,7 @@ public final class ViewChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNode.getViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
+        String viewName = ViewMetaDataNodePath.findViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }

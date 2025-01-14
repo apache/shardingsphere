@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**
  * Doris drop view statement.
  */
+@Getter
+@Setter
 public final class DorisDropViewStatement extends DropViewStatement implements DorisStatement {
+    
+    private boolean ifExists;
 }

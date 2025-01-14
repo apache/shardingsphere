@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.yaml;
 
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;

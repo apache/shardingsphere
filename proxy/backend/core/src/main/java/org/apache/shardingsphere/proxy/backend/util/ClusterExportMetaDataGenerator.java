@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedSnapshotInfo;
@@ -59,7 +58,7 @@ public final class ClusterExportMetaDataGenerator {
         ExportedMetaData exportedMetaData = new ExportedMetaData();
         exportedMetaData.setDatabases(generatorDatabasesExportData());
         exportedMetaData.setProps(generatePropsData(metaData.getProps().getProps()));
-        exportedMetaData.setRules(generateRulesData(getGlobalRules(metaData)));
+        exportedMetaData.setRules(generateRulesData(metaData.getGlobalRuleMetaData().getConfigurations()));
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
@@ -89,11 +88,6 @@ public final class ClusterExportMetaDataGenerator {
             }
         }
         return result.toString();
-    }
-    
-    private Collection<RuleConfiguration> getGlobalRules(final ShardingSphereMetaData metaData) {
-        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(contextManager.getComputeNodeInstanceContext());
-        return ruleConfigPersistDecorateEngine.decorate(metaData.getGlobalRuleMetaData().getConfigurations());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

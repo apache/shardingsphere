@@ -206,6 +206,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         DorisCreateViewStatement result = new DorisCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((DorisSelectStatement) visit(ctx.select()));
@@ -225,6 +226,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         DorisDropViewStatement result = new DorisDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }

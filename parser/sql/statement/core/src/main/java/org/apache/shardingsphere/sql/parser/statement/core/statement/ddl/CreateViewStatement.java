@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
 @Setter
 public abstract class CreateViewStatement extends AbstractSQLStatement implements DDLStatement {
     
+    private boolean replaceView;
+    
     private SimpleTableSegment view;
     
     private String viewDefinition;

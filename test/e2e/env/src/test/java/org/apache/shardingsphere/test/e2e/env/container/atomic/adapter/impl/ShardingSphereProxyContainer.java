@@ -131,7 +131,7 @@ public final class ShardingSphereProxyContainer implements AdapterContainer, Emb
     private void startInternalProxy() {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(getTempConfigDirectory().toString());
         int port = Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue());
-        new BootstrapInitializer().init(yamlConfig, port, false);
+        new BootstrapInitializer().init(yamlConfig, port);
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
         proxy.startInternal(port, Collections.singletonList("0.0.0.0"));

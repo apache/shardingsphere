@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mode.metadata.manager;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,9 +55,8 @@ public class RuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alterRuleItem(final AlterRuleItem alterRuleItem) throws SQLException {
-        Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistService.getMetaDataVersionPersistService()
-                .getActiveVersionByFullPath(alterRuleItem.getActiveVersionKey())), "Invalid active version: {} of key: {}",
-                alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
+        Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistService.getRepository().query(alterRuleItem.getActiveVersionKey())),
+                "Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
         String yamlContent = metaDataPersistService.getMetaDataVersionPersistService()
                 .getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());

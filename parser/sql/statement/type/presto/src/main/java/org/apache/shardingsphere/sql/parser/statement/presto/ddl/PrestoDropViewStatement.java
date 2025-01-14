@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.presto.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.presto.PrestoStatement;
 
 /**
  * Presto drop view statement.
  */
+@Getter
+@Setter
 public final class PrestoDropViewStatement extends DropViewStatement implements PrestoStatement {
+    
+    private boolean ifExists;
 }

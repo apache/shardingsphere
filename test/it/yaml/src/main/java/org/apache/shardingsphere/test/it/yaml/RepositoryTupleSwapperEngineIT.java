@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.tuple.RepositoryTuple;
-import org.apache.shardingsphere.mode.tuple.RepositoryTupleSwapperEngine;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

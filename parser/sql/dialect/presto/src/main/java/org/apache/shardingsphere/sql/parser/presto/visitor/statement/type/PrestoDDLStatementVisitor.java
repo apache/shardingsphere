@@ -56,6 +56,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         PrestoCreateViewStatement result = new PrestoCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((PrestoSelectStatement) visit(ctx.select()));
@@ -66,6 +67,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         PrestoDropViewStatement result = new PrestoDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }

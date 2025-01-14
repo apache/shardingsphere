@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.path.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;

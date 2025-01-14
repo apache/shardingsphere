@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersist
 import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.persist.service.unified.StatePersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Persist service facade.
