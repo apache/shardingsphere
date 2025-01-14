@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -68,10 +67,9 @@ public final class GlobalConfigurationManager {
         rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
-        metaDataContexts.setMetaData(toBeChangedMetaData);
-        metaDataContexts.setStatistics(ShardingSphereStatisticsFactory.create(metaDataPersistService, toBeChangedMetaData));
+        metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()),
+                metaDataPersistService);
     }
     
     // Optimize string comparison rule type.
@@ -90,9 +88,7 @@ public final class GlobalConfigurationManager {
      * @param props properties to be altered
      */
     public synchronized void alterProperties(final Properties props) {
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
-        metaDataContexts.setMetaData(toBeChangedMetaData);
-        metaDataContexts.setStatistics(ShardingSphereStatisticsFactory.create(metaDataPersistService, toBeChangedMetaData));
+        metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistService);
     }
 }

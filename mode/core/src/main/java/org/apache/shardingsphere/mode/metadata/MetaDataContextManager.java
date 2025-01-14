@@ -100,8 +100,7 @@ public class MetaDataContextManager {
      * @param metaDataContexts meta data contexts
      */
     public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        this.metaDataContexts.setMetaData(metaDataContexts.getMetaData());
-        this.metaDataContexts.setStatistics(metaDataContexts.getStatistics());
+        this.metaDataContexts.update(metaDataContexts);
     }
     
     /**
@@ -111,9 +110,7 @@ public class MetaDataContextManager {
      */
     public void forceRefreshDatabaseMetaData(final ShardingSphereDatabase database) {
         try {
-            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
-            metaDataContexts.setMetaData(reloadedMetaDataContexts.getMetaData());
-            metaDataContexts.setStatistics(reloadedMetaDataContexts.getStatistics());
+            metaDataContexts.update(createMetaDataContexts(database));
             metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()
                     .forEach(each -> {
                         if (each.isEmpty()) {
@@ -135,8 +132,7 @@ public class MetaDataContextManager {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
-            metaDataContexts.setMetaData(reloadedMetaDataContexts.getMetaData());
-            metaDataContexts.setStatistics(reloadedMetaDataContexts.getStatistics());
+            metaDataContexts.update(reloadedMetaDataContexts);
             metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()
                     .forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), each));
         } catch (final SQLException ex) {
