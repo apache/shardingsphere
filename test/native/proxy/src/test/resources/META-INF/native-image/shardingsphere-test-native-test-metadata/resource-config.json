@@ -1,0 +1,23 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+    "pattern":".*test-native/sh/.+\\.sh$"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+    "pattern":".*test-native/yaml/.+\\.yaml$"
+  }, {
+    "condition":{"typeReachable":"ch.qos.logback.core.util.Loader"},
+    "pattern":"\\Qlogback-test.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+    "pattern":"\\Qseata-script-client-conf-file.conf\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+    "pattern":"\\Qregistry.conf\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+    "pattern":"\\Qseata.conf\\E"
+  }]},
+  "bundles":[]
+}

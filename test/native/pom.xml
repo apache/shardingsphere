@@ -24,81 +24,27 @@
         <version>5.5.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-native</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
+    <modules>
+        <module>common</module>
+        <module>jdbc</module>
+        <module>proxy</module>
+    </modules>
     
     <dependencies>
+        <!-- TODO compile?-->
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-testcontainers</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-grpc</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-core</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.narayana.jta</groupId>
-            <artifactId>jta</artifactId>
-            <version>${narayana.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.narayana.jts</groupId>
-            <artifactId>narayana-jts-integration</artifactId>
-            <version>${narayana.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-            <version>${jboss-transaction-spi.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>${jboss-logging.version}</version>
-            <scope>test</scope>
-        </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
@@ -125,29 +71,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-hive</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-hive</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -159,48 +83,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opengauss</groupId>
-            <artifactId>opengauss-jdbc</artifactId>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <classifier>http</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.linghengqian</groupId>
-            <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-            <version>${hive-server2-jdbc-driver-thin.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.woodstox</groupId>
-                    <artifactId>woodstox-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-text</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-mapreduce-client-core</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -218,8 +103,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>clickhouse</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -229,14 +114,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>${native-maven-plugin.version}</version>
-            </plugin>
-        </plugins>
-    </build>
 </project>

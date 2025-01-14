@@ -1045,7 +1045,7 @@
             </build>
         </profile>
         <profile>
-            <id>generateMetadata</id>
+            <id>generateMetadataInJDBC</id>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -1055,7 +1055,68 @@
                             <version>${maven-surefire-plugin.version}</version>
                             <configuration>
                                 <includes>
-                                    <include>org.apache.shardingsphere.test.natived.**</include>
+                                    <include>org.apache.shardingsphere.test.natived.jdbc.**</include>
+                                </includes>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native-maven-plugin.version}</version>
+                            <extensions>true</extensions>
+                            <configuration>
+                                <agent>
+                                    <enabled>true</enabled>
+                                    <defaultMode>Conditional</defaultMode>
+                                    <modes>
+                                        <conditional>
+                                            <userCodeFilterPath>${user.dir}/test/native/native-image-filter/user-code-filter.json</userCodeFilterPath>
+                                            <extraFilterPath>${user.dir}/test/native/native-image-filter/extra-filter.json</extraFilterPath>
+                                            <parallel>true</parallel>
+                                        </conditional>
+                                    </modes>
+                                    <metadataCopy>
+                                        <disabledStages>
+                                            <stage>main</stage>
+                                        </disabledStages>
+                                        <merge>false</merge>
+                                        <outputDirectory>${user.dir}/infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/</outputDirectory>
+                                    </metadataCopy>
+                                </agent>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>build-native</id>
+                                    <goals>
+                                        <goal>compile-no-fork</goal>
+                                    </goals>
+                                    <phase>package</phase>
+                                </execution>
+                                <execution>
+                                    <id>test-native</id>
+                                    <goals>
+                                        <goal>test</goal>
+                                    </goals>
+                                    <phase>test</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>generateMetadataInProxy</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-surefire-plugin.version}</version>
+                            <configuration>
+                                <includes>
+                                    <include>org.apache.shardingsphere.test.natived.proxy.**</include>
                                 </includes>
                             </configuration>
                         </plugin>
