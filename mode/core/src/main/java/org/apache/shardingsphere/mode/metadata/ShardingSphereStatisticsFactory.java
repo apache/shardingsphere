@@ -56,13 +56,9 @@ public final class ShardingSphereStatisticsFactory {
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
-        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
-        if (!loadedStatistics.isPresent()) {
-            return create(statisticsBuilder.get(), metaData.getAllDatabases(), new ShardingSphereStatistics());
-        }
-        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream()
-                .filter(each -> !loadedStatistics.get().containsDatabase(each.getName())).collect(Collectors.toList());
-        return create(statisticsBuilder.get(), unloadedDatabases, loadedStatistics.get());
+        ShardingSphereStatistics loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData).orElse(new ShardingSphereStatistics());
+        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
+        return create(statisticsBuilder.get(), unloadedDatabases, loadedStatistics);
     }
     
     private static ShardingSphereStatistics create(final ShardingSphereStatisticsBuilder statisticsBuilder,
