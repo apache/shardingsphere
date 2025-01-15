@@ -39,19 +39,18 @@ mode:
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#
-#authority:
-#  users:
-#    - user: root@%
-#      password: root
-#      admin: true
-#    - user: sharding
-#      password: sharding
-#  privilege:
-#    type: ALL_PERMITTED
-#
-#transaction:
-#  defaultType: XA
+
+authority:
+  users:
+    - user: root@%
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED
+
+transaction:
+  defaultType: LOCAL
 #  providerType: Atomikos
 
 sqlParser:
