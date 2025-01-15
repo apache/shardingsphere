@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -52,7 +54,7 @@ public final class ShardingSphereStatisticsFactory {
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
-        ShardingSphereStatistics builtStatistics = statisticsBuilder.get().build(metaData);
+        ShardingSphereStatistics builtStatistics = build(metaData, statisticsBuilder.get());
         Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
         if (!loadedStatistics.isPresent()) {
             return builtStatistics;
@@ -66,6 +68,17 @@ public final class ShardingSphereStatisticsFactory {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
+    }
+    
+    private static ShardingSphereStatistics build(final ShardingSphereMetaData metaData, final ShardingSphereStatisticsBuilder statisticsBuilder) {
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
+        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
+            ShardingSphereDatabaseData databaseData = statisticsBuilder.build(each);
+            if (!databaseData.getSchemaData().isEmpty()) {
+                result.putDatabase(each.getName(), databaseData);
+            }
+        }
+        return result;
     }
     
     private static void putStatisticsIfAbsent(final ShardingSphereStatistics loadedStatistics, final ShardingSphereStatistics builtStatistics) {
