@@ -155,7 +155,6 @@ identifierKeywordsUnambiguous
     | BERNOULLI
     | BINLOG
     | BIT
-    | BINLOGBIT
     | BLOCK
     | BOOLEAN
     | BOOL
@@ -165,9 +164,9 @@ identifierKeywordsUnambiguous
     | CASCADED
     | CATALOG_NAME
     | CHAIN
+    | CHALLENGE_RESPONSE
     | CHANGED
     | CHANNEL
-    | CHALLENGE_RESPONSECHANGED
     | CIPHER
     | CLASS_ORIGIN
     | CLIENT
@@ -236,6 +235,7 @@ identifierKeywordsUnambiguous
     | EXPORT
     | EXTENDED
     | EXTENT_SIZE
+    | FACTOR
     | FAILED_LOGIN_ATTEMPTS
     | FAST
     | FAULTS

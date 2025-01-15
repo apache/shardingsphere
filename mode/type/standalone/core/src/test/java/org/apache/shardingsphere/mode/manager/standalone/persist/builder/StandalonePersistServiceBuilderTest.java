@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.standalone.persist.service.Standal
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

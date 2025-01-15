@@ -51,7 +51,7 @@ class MySQLPipelineSQLBuilderTest {
     void assertBuildInsertSQLOnDuplicateClause() {
         Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("ON DUPLICATE KEY UPDATE id=VALUES(id),sc=VALUES(sc),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual.get(), is("ON DUPLICATE KEY UPDATE `id`=VALUES(`id`),`sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
     
     private DataRecord createDataRecord() {

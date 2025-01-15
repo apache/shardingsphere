@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.metadata.table;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,7 +76,8 @@ class TableRowDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl")).thenReturn(Collections.singletonList("foo_tbl"));
         when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("uniqueKey: foo_key" + System.lineSeparator());
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", "foo_tbl", table);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", table);
         assertThat(actual.getName(), is("foo_tbl"));
         assertThat(actual.getRows().size(), is(1));
         assertThat(actual.getRows().iterator().next().getUniqueKey(), is("foo_key"));
@@ -87,7 +88,8 @@ class TableRowDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl")).thenReturn(Collections.singletonList("foo_tbl"));
         when(repository.query("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_tbl")).thenReturn("");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", "foo_tbl", table);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereTableData actual = persistService.load("foo_db", "foo_schema", table);
         assertThat(actual.getName(), is("foo_tbl"));
         assertTrue(actual.getRows().isEmpty());
     }

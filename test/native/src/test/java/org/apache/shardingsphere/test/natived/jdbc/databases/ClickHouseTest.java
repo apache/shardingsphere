@@ -19,6 +19,10 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -62,6 +66,7 @@ class ClickHouseTest {
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/keeper_config.xml").toAbsolutePath()),
                     "/etc/clickhouse-keeper/keeper_config.xml")
             .withNetwork(NETWORK)
+            .withExposedPorts(9181)
             .withNetworkAliases("clickhouse-keeper-01");
     
     @Container
@@ -75,6 +80,8 @@ class ClickHouseTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
     
+    private static DataSource logicDataSource;
+    
     private String jdbcUrlPrefix;
     
     @BeforeAll
@@ -85,7 +92,10 @@ class ClickHouseTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         NETWORK.close();
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
@@ -95,8 +105,8 @@ class ClickHouseTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:ch://localhost:" + CONTAINER.getMappedPort(8123) + "/";
-        DataSource dataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
         testShardingService.processSuccessInClickHouse();
     }
     
@@ -108,7 +118,13 @@ class ClickHouseTest {
     }
     
     private DataSource createDataSource() throws SQLException {
+        String connectionString = CLICKHOUSE_KEEPER_CONTAINER.getHost() + ":" + CLICKHOUSE_KEEPER_CONTAINER.getMappedPort(9181);
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
+            try (
+                    CuratorFramework client = CuratorFrameworkFactory.builder().connectString(connectionString)
+                            .retryPolicy(new ExponentialBackoffRetry(1000, 3)).build()) {
+                client.start();
+            }
             openConnection("default").close();
             return true;
         });

@@ -104,7 +104,11 @@ public final class E2ETestCasesLoader {
     }
     
     private Collection<E2ETestCaseContext> getE2ETestCaseContexts(final File file) throws IOException, JAXBException {
-        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new E2ETestCaseContext(each, file.getParent())).collect(Collectors.toList());
+        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new E2ETestCaseContext(each, getParentPath(file))).collect(Collectors.toList());
+    }
+    
+    private String getParentPath(final File file) {
+        return file.getParent().replaceAll("(/cases/.+)/cases/.+", "$1");
     }
     
     private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {

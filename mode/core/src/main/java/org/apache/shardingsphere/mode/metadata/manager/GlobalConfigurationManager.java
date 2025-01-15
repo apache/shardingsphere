@@ -26,18 +26,16 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
-import org.apache.shardingsphere.mode.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Global configuration manager.
@@ -45,11 +43,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class GlobalConfigurationManager {
     
-    private final AtomicReference<MetaDataContexts> metaDataContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final MetaDataPersistService metaDataPersistService;
     
-    public GlobalConfigurationManager(final AtomicReference<MetaDataContexts> metaDataContexts, final PersistRepository repository) {
+    public GlobalConfigurationManager(final MetaDataContexts metaDataContexts, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         metaDataPersistService = new MetaDataPersistService(repository);
     }
@@ -64,14 +62,14 @@ public final class GlobalConfigurationManager {
             return;
         }
         closeStaleTransactionRule(ruleConfig);
-        Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules());
+        Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.get().getMetaData().getAllDatabases(), metaDataContexts.get().getMetaData().getProps()));
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().clear();
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(),
-                metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), metaDataContexts.get().getMetaData().getProps());
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
+        rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()));
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
+        metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()),
+                metaDataPersistService);
     }
     
     // Optimize string comparison rule type.
@@ -81,7 +79,7 @@ public final class GlobalConfigurationManager {
         if (!"transaction".equals(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value())) {
             return;
         }
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class).ifPresent(TransactionRule::close);
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class).ifPresent(TransactionRule::close);
     }
     
     /**
@@ -90,12 +88,7 @@ public final class GlobalConfigurationManager {
      * @param props properties to be altered
      */
     public synchronized void alterProperties(final Properties props) {
-        ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getAllDatabases(),
-                metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
-        metaDataContexts.set(newMetaDataContexts(toBeChangedMetaData));
-    }
-    
-    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaData, MetaDataContextsFactory.createStatistics(metaDataPersistService, metaData));
+        metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistService);
     }
 }

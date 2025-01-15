@@ -38,24 +38,24 @@ class PipelineSQLSegmentBuilderTest {
     
     @Test
     void assertGetUnescapedIdentifier() {
-        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT1"), is("SELECT1"));
+        assertThat(mysqlBuilder.getEscapedIdentifier("SELECT1"), is("`SELECT1`"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
-        assertThat(mysqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_tbl"));
-        assertThat(mysqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_tbl"));
+        assertThat(mysqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("`foo_tbl`"));
+        assertThat(mysqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("`foo_tbl`"));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchema() {
-        assertThat(postgresqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("foo_schema.foo_tbl"));
-        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("foo_schema.foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("\"foo_schema\".\"foo_tbl\""));
+        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("\"foo_schema\".\"foo_tbl\""));
     }
     
     @Test
     void assertGetQualifiedTableNameWithSupportedSchemaAndNullSchema() {
-        assertThat(postgresqlBuilder.getQualifiedTableName(null, "foo_tbl"), is("foo_tbl"));
-        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("foo_tbl"));
+        assertThat(postgresqlBuilder.getQualifiedTableName(null, "foo_tbl"), is("\"foo_tbl\""));
+        assertThat(postgresqlBuilder.getQualifiedTableName(new QualifiedTable(null, "foo_tbl")), is("\"foo_tbl\""));
     }
 }

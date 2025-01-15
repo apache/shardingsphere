@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,11 +76,13 @@ class ShardingSphereDataPersistServiceTest {
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db").getName()).thenReturn("foo_db");
         when(result.getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_schema").getName()).thenReturn("foo_schema");
         when(result.getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl")).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.emptyList());
         when(result.containsDatabase("bar_db")).thenReturn(true);
-        when(result.getDatabase("bar_db")).thenReturn(mock(ShardingSphereDatabase.class));
+        when(result.getDatabase("bar_db").getName()).thenReturn("bar_db");
         return result;
     }
     

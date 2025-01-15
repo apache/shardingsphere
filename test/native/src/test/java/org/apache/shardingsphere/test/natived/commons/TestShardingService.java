@@ -196,8 +196,8 @@ public final class TestShardingService {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void cleanEnvironment() throws SQLException {
-        orderRepository.dropTable();
-        orderItemRepository.dropTable();
-        addressRepository.dropTable();
+        orderRepository.dropTableInMySQL();
+        orderItemRepository.dropTableInMySQL();
+        addressRepository.dropTableInMySQL();
     }
 }

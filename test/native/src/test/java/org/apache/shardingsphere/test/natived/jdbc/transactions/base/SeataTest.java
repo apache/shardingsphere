@@ -46,7 +46,7 @@ class SeataTest {
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
+    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("apache/seata-server:2.2.0")
             .withExposedPorts(7091, 8091)
             .waitingFor(Wait.forHttp("/health")
                     .forPort(7091)
@@ -64,12 +64,6 @@ class SeataTest {
         assertThat(System.getProperty(SERVICE_DEFAULT_GROUP_LIST_KEY), is(nullValue()));
     }
     
-    /**
-     * TODO Need to investigate why {@link org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager#close()} is not called.
-     *  The manual call {@link org.apache.shardingsphere.mode.manager.ContextManager#close()} is not intuitive.
-     *
-     * @throws SQLException SQL exception
-     */
     @AfterAll
     static void afterAll() throws SQLException {
         try (Connection connection = logicDataSource.getConnection()) {

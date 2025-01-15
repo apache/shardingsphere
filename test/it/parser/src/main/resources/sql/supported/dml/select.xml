@@ -201,9 +201,9 @@
     <sql-case id="select_with_auto_keyword" value="SELECT * FROM t_auto WHERE auto = ?" db-types="MySQL"/>
     <sql-case id="select_with_authentication_keyword" value="SELECT auth_id, authentication FROM t_auth" db-types="MySQL"/>
     <sql-case id="select_with_bernoulli_keyword" value="SELECT bernoulli.id FROM t bernoulli" db-types="MySQL"/>
-    <sql-case id="select_with_binlogbit_keyword" value="SELECT log_id, binlogbit FROM t_log" db-types="MySQL"/>
+    <sql-case id="select_with_binlog_keyword" value="SELECT log_id, binlog FROM t_log" db-types="MySQL"/>
     <sql-case id="select_with_bulk_keyword" value="SELECT * FROM t_bulk WHERE bulk = ?" db-types="MySQL"/>
-    <sql-case id="select_with_challenge_responsechanged_keyword" value="SELECT challenge_responsechanged.id FROM t challenge_responsechanged" db-types="MySQL"/>
+    <sql-case id="select_with_challenge_response_keyword" value="SELECT challenge_response.id FROM t challenge_response" db-types="MySQL"/>
     <sql-case id="select_with_finish_keyword" value="SELECT finish.id FROM t finish" db-types="MySQL"/>
     <sql-case id="select_with_initial_keyword" value="SELECT initial.id FROM t initial" db-types="MySQL"/>
     <sql-case id="select_with_gtids_keyword" value="SELECT WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5') as gtids" db-types="MySQL"/>

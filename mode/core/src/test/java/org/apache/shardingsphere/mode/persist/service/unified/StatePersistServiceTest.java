@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.persist.service.unified;
 
 import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
