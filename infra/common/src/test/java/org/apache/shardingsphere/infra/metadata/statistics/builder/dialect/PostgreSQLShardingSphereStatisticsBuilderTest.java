@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,27 +34,19 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     
     @Test
     void assertBuild() {
-        ShardingSphereMetaData metaData = mockMetaData();
-        ShardingSphereStatistics statistics = new PostgreSQLShardingSphereStatisticsBuilder().build(metaData);
-        assertTrue(statistics.getDatabaseData().containsKey("logic_db"));
-        assertTrue(statistics.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
-        assertTrue(statistics.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
+        ShardingSphereDatabase database = mockDatabase();
+        ShardingSphereDatabaseData databaseData = new PostgreSQLShardingSphereStatisticsBuilder().build(database);
+        assertTrue(databaseData.getSchemaData().containsKey("pg_catalog"));
+        assertTrue(databaseData.getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        Collection<ShardingSphereDatabase> databases = mockDatabases();
-        when(result.getAllDatabases()).thenReturn(databases);
-        return result;
-    }
-    
-    private Collection<ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("logic_db");
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("logic_db");
         ShardingSphereSchema schema = mockSchema();
-        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(database.getSchema("pg_catalog")).thenReturn(schema);
-        return Collections.singleton(database);
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getSchema("pg_catalog")).thenReturn(schema);
+        return result;
     }
     
     private ShardingSphereSchema mockSchema() {
