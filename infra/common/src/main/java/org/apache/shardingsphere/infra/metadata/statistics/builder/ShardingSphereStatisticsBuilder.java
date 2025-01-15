@@ -34,5 +34,5 @@ public interface ShardingSphereStatisticsBuilder extends DatabaseTypedSPI {
      * @param database database
      * @return built ShardingSphere data
      */
-    ShardingSphereDatabaseData build(final ShardingSphereDatabase database);
+    ShardingSphereDatabaseData build(ShardingSphereDatabase database);
 }
