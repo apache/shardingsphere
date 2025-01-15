@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bound.TableBoundAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
@@ -121,7 +122,7 @@ public final class TableAssert {
      * @param expected expected table
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
+        assertTableNameSegment(assertContext, actual, expected);
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
             assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
@@ -237,13 +238,6 @@ public final class TableAssert {
         }
     }
     
-    /**
-     * Assert actual table function segment is correct with expected table function.
-     *
-     * @param assertContext assert context
-     * @param actual actual table function
-     * @param expected expected table function
-     */
     private static void assertTableFunction(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedTableFunction expected) {
         if (actual instanceof XmlTableFunctionSegment) {
             XmlTableFunctionSegment actualXmlTableFunction = (XmlTableFunctionSegment) actual;
@@ -254,5 +248,10 @@ public final class TableAssert {
             assertThat(assertContext.getText("Function name assertion error"), actualTableFunction.getFunctionName(), is(expected.getFunctionName()));
             assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
         }
+    }
+    
+    private static void assertTableNameSegment(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedSimpleTable expected) {
+        IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
+        TableBoundAssert.assertIs(assertContext, actual.getTableName().getTableBoundInfo().orElse(null), expected.getTableBound());
     }
 }

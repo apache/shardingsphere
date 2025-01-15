@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -27,7 +26,6 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class ConstraintMetaData {
     

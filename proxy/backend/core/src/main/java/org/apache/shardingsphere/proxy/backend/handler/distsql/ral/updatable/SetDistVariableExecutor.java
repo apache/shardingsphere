@@ -36,7 +36,6 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.decorator.RuleConfigurationPersistDecorateEngine;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
@@ -104,7 +103,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
             metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
-                decorateGlobalRuleConfiguration(contextManager);
+                persistGlobalRuleConfigurations(contextManager);
             });
         }
     }
@@ -113,14 +112,13 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
             metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger).ifPresent(optional -> {
                 optional.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
-                decorateGlobalRuleConfiguration(contextManager);
+                persistGlobalRuleConfigurations(contextManager);
             });
         }
     }
     
-    private void decorateGlobalRuleConfiguration(final ContextManager contextManager) {
-        RuleConfigurationPersistDecorateEngine ruleConfigPersistDecorateEngine = new RuleConfigurationPersistDecorateEngine(contextManager.getComputeNodeInstanceContext());
-        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigPersistDecorateEngine.decorate(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
+    private void persistGlobalRuleConfigurations(final ContextManager contextManager) {
+        Collection<RuleConfiguration> globalRuleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
     

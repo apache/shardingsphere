@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureStatusStatement;
@@ -67,7 +67,8 @@ class ShowProcedureStatusExecutorTest {
     private ContextManager mockContextManager() {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getShardingSphereDataPersistService().load(any())).thenReturn(Optional.empty());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(metaDataPersistService, new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(createDatabases(), mock(), mock(), mock());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaDataPersistService, metaData));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

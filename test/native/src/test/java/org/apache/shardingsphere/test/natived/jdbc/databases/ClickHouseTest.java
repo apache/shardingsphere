@@ -19,13 +19,16 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -63,17 +66,21 @@ class ClickHouseTest {
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/keeper_config.xml").toAbsolutePath()),
                     "/etc/clickhouse-keeper/keeper_config.xml")
             .withNetwork(NETWORK)
+            .withExposedPorts(9181)
             .withNetworkAliases("clickhouse-keeper-01");
     
     @Container
-    public static final ClickHouseContainer CONTAINER = new ClickHouseContainer("clickhouse/clickhouse-server:24.11.1.2557")
+    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("clickhouse/clickhouse-server:24.11.1.2557")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/transactions.xml").toAbsolutePath()),
                     "/etc/clickhouse-server/config.d/transactions.xml")
             .withNetwork(NETWORK)
+            .withExposedPorts(8123)
             .dependsOn(CLICKHOUSE_KEEPER_CONTAINER);
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.clickhouse.";
+    
+    private static DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
     
@@ -85,7 +92,10 @@ class ClickHouseTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         NETWORK.close();
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
@@ -95,25 +105,31 @@ class ClickHouseTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:ch://localhost:" + CONTAINER.getMappedPort(8123) + "/";
-        DataSource dataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
         testShardingService.processSuccessInClickHouse();
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {
         Properties props = new Properties();
-        props.setProperty("user", CONTAINER.getUsername());
-        props.setProperty("password", CONTAINER.getPassword());
+        props.setProperty("user", "default");
+        props.setProperty("password", "");
         return DriverManager.getConnection(jdbcUrlPrefix + databaseName, props);
     }
     
     private DataSource createDataSource() throws SQLException {
+        String connectionString = CLICKHOUSE_KEEPER_CONTAINER.getHost() + ":" + CLICKHOUSE_KEEPER_CONTAINER.getMappedPort(9181);
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection(CONTAINER.getDatabaseName()).close();
+            try (
+                    CuratorFramework client = CuratorFrameworkFactory.builder().connectString(connectionString)
+                            .retryPolicy(new ExponentialBackoffRetry(1000, 3)).build()) {
+                client.start();
+            }
+            openConnection("default").close();
             return true;
         });
         try (
-                Connection connection = openConnection(CONTAINER.getDatabaseName());
+                Connection connection = openConnection("default");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");

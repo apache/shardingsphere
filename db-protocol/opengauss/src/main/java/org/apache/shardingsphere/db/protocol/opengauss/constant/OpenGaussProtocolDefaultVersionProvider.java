@@ -26,7 +26,7 @@ public final class OpenGaussProtocolDefaultVersionProvider implements DatabasePr
     
     @Override
     public String provide() {
-        return "12.3";
+        return "9.2.4";
     }
     
     @Override

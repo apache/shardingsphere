@@ -45,15 +45,15 @@ class ShardingCopySupportedCheckerTest {
     @Test
     void assertCheckWhenTableSegmentForPostgreSQL() {
         PostgreSQLCopyStatement sqlStatement = new PostgreSQLCopyStatement();
-        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement, "foo_db")));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWhenTableSegmentForOpenGauss() {
         OpenGaussCopyStatement sqlStatement = new OpenGaussCopyStatement();
-        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement, "foo_db")));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), new CopyStatementContext(sqlStatement)));
     }
     
     @Test
@@ -67,8 +67,8 @@ class ShardingCopySupportedCheckerTest {
     }
     
     private void assertCheckCopyTable(final CopyStatement sqlStatement) {
-        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement, "foo_db");
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement);
         String tableName = "t_order";
         when(rule.isShardingTable(tableName)).thenReturn(true);
         new ShardingCopySupportedChecker().check(rule, mock(), mock(), sqlStatementContext);

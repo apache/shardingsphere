@@ -31,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class SQLFederationExecutorContext {
     
-    private final String databaseName;
+    private final String currentDatabaseName;
     
     private final String schemaName;
     

@@ -53,7 +53,8 @@ public final class YamlEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
         try (BufferedReader inputStreamReader = Files.newBufferedReader(Paths.get(yamlFile.toURI()))) {
-            T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
+            T result = new Yaml(new ShardingSphereYamlConstructor(classType), new Representer(new DumperOptions()), new DumperOptions(),
+                    ShardingSphereYamlConstructor.createLoaderOptions()).loadAs(inputStreamReader, classType);
             return null == result ? classType.getConstructor().newInstance() : result;
         }
     }
@@ -70,7 +71,8 @@ public final class YamlEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends YamlConfiguration> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStream, classType);
+            T result = new Yaml(new ShardingSphereYamlConstructor(classType), new Representer(new DumperOptions()), new DumperOptions(),
+                    ShardingSphereYamlConstructor.createLoaderOptions()).loadAs(inputStream, classType);
             return null == result ? classType.getConstructor().newInstance() : result;
         }
     }
@@ -85,7 +87,8 @@ public final class YamlEngine {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
+        T result = new Yaml(new ShardingSphereYamlConstructor(classType), new Representer(new DumperOptions()), new DumperOptions(),
+                ShardingSphereYamlConstructor.createLoaderOptions()).loadAs(yamlContent, classType);
         return null == result ? classType.getConstructor().newInstance() : result;
     }
     
@@ -102,7 +105,8 @@ public final class YamlEngine {
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProps) {
         Representer representer = new Representer(new DumperOptions());
         representer.getPropertyUtils().setSkipMissingProperties(skipMissingProps);
-        T result = new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
+        T result = new Yaml(new ShardingSphereYamlConstructor(classType), representer, new DumperOptions(),
+                ShardingSphereYamlConstructor.createLoaderOptions()).loadAs(yamlContent, classType);
         return null == result ? classType.getConstructor().newInstance() : result;
     }
     

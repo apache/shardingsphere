@@ -36,4 +36,6 @@ public final class PrepareTargetTablesParameter {
     private final PipelineDataSourceManager dataSourceManager;
     
     private final SQLParserEngine sqlParserEngine;
+    
+    private final String targetDatabaseName;
 }

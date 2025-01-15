@@ -64,7 +64,7 @@ This means it can effectively solve problems caused by increasing data volume in
 ## Conclusion
 Apache ShardingSphere and openGauss can seek potential cooperation opportunities.
 
-Considering the increasingly diversified applicaiton scenarios and increasing data volume, the requirements for database performance are at an all time high and will only continue to increase in the future.
+Considering the increasingly diversified application scenarios and increasing data volume, the requirements for database performance are at an all time high and will only continue to increase in the future.
 
 The success of our two communities cooperation is just the beginning of ourtwo communities building a collaborative database ecosystem.
 

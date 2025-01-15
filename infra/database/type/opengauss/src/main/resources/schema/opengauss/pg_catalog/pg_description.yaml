@@ -17,6 +17,14 @@
 
 name: pg_description
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    unsigned: false
+    visible: true
   objoid:
     caseSensitive: true
     dataType: -5

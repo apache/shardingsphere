@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.type.EntranceSQLRouter;
-import org.apache.shardingsphere.infra.route.type.TableSQLRouter;
+import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.cache.route.CachedShardingSQLRouter;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -46,7 +45,7 @@ import java.util.Optional;
  * Sharding SQL router.
  */
 @HighFrequencyInvocation
-public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule>, TableSQLRouter<ShardingRule> {
+public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> {
     
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
@@ -91,6 +90,11 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule>,
     private void checkRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props,
                                    final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final RouteContext routeContext) {
         ShardingRouteContextCheckerFactory.newInstance(sqlStatement, shardingConditions).ifPresent(optional -> optional.check(rule, queryContext, database, props, routeContext));
+    }
+    
+    @Override
+    public Type getType() {
+        return Type.DATA_NODE;
     }
     
     @Override

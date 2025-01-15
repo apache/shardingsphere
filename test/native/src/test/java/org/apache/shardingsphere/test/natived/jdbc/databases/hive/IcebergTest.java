@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases.hive;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -58,6 +59,8 @@ class IcebergTest {
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
     private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-iceberg.sql").toAbsolutePath().toString();
     
+    private static DataSource logicDataSource;
+    
     private String jdbcUrlPrefix;
     
     @BeforeAll
@@ -68,7 +71,10 @@ class IcebergTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
@@ -77,8 +83,8 @@ class IcebergTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://localhost:" + CONTAINER.getMappedPort(10000) + "/";
-        DataSource dataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
         testShardingService.processSuccessInHive();
     }
     

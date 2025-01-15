@@ -18,6 +18,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10001       | 42S02     | Schema '%s' does not exist.                                                         |
 | 10002       | 42S02     | Table or view '%s' does not exist.                                                  |
 | 10003       | 42S02     | Unknown column '%s' in '%s'.                                                        |
+| 10004       | 42S02     | Index '%s' does not exist.                                                          |
+| 10005       | 42S01     | Index '%s' already exists.                                                          |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
@@ -68,6 +70,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 12101       | 42000     | Can not accept SQL type '%s'.            |
 | 12200       | 42000     | Hint data source '%s' does not exist.    |
 | 12300       | 0A000     | DROP TABLE ... CASCADE is not supported. |
+| 12500       | 42000     | Not unique table/alias: '%s'             |
 
 ### Connection
 
@@ -98,6 +101,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |
 | 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
+### Lock
+
+| Vendor Code | SQL State | Reason                     |
+|-------------|-----------|----------------------------|
+| 15030       | HY000     | Cluster is already locked. |
+| 15031       | HY000     | Cluster is not locked.     |
+
 ### Cluster
 
 | Vendor Code | SQL State | Reason                                                        |
@@ -106,8 +116,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
-| 17030       | HY000     | Cluster is already locked.                                    |
-| 17031       | HY000     | Cluster is not locked.                                        |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### Data Pipeline
@@ -151,8 +159,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 20004       | 42S02     | Actual table '%s.%s' is not in table rule configuration.                                                                            |
 | 20005       | 42S02     | Can not find binding actual table, data source is '%s', logic table is '%s', other actual table is '%s'.                            |
 | 20006       | 44000     | Actual tables '%s' are in use.                                                                                                      |
-| 20007       | 42S01     | Index '%s' already exists.                                                                                                          |
-| 20008       | 42S02     | Index '%s' does not exist.                                                                                                          |
 | 20009       | 42S01     | View name has to bind to %s tables.                                                                                                 |
 | 20010       | 44000     | Invalid binding table configuration.                                                                                                |
 | 20011       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |

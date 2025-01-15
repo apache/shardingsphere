@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Orde
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ReturningClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Upda
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -110,6 +112,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         FirebirdInsertStatement result = (FirebirdInsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     
@@ -137,6 +142,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     }
     
     @Override
+    public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
+        return new ReturningSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ProjectionsSegment) visit(ctx.projections()));
+    }
+    
+    @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         FirebirdUpdateStatement result = new FirebirdUpdateStatement();
         result.setTable((TableSegment) visit(ctx.tableReferences()));
@@ -145,6 +155,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     
@@ -194,6 +207,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
         return result;
     }
     

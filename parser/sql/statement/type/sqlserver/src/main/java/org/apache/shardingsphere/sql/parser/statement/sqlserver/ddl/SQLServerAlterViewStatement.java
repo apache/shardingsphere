@@ -35,7 +35,7 @@ public final class SQLServerAlterViewStatement extends AlterViewStatement implem
     private String viewDefinition;
     
     @Override
-    public Optional<SelectStatement> getSelectStatement() {
+    public Optional<SelectStatement> getSelect() {
         return Optional.ofNullable(select);
     }
     

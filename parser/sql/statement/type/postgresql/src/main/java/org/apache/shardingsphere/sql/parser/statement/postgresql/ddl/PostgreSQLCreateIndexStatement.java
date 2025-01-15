@@ -33,7 +33,7 @@ import java.util.Optional;
 @Setter
 public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
     
-    private final boolean ifNotExists;
+    private boolean ifNotExists;
     
     private Integer generatedIndexStartIndex;
     

@@ -19,33 +19,35 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.infra.exception.generic.FileIOException;
-import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
+import org.apache.shardingsphere.proxy.backend.util.MetaDataImportExecutor;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
 
 /**
  * Import database configuration executor.
  */
 public final class ImportDatabaseConfigurationExecutor implements DistSQLUpdateExecutor<ImportDatabaseConfigurationStatement> {
     
-    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
-    
     @Override
     public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+        YamlProxyDatabaseConfiguration yamlConfig = getYamlProxyDatabaseConfiguration(sqlStatement);
+        new MetaDataImportExecutor(contextManager).importDatabaseConfigurations(Collections.singletonList(yamlConfig));
+    }
+    
+    private YamlProxyDatabaseConfiguration getYamlProxyDatabaseConfiguration(final ImportDatabaseConfigurationStatement sqlStatement) {
         File file = new File(sqlStatement.getFilePath());
-        YamlProxyDatabaseConfiguration yamlConfig;
         try {
-            yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
+            return YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
         } catch (final IOException ignore) {
             throw new FileIOException(file);
         }
-        databaseConfigImportExecutor.importDatabaseConfiguration(yamlConfig);
     }
     
     @Override

@@ -20,12 +20,16 @@ package org.apache.shardingsphere.infra.binder.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
+import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 
@@ -61,10 +65,16 @@ public final class SQLBindEngine {
     
     private SQLStatement bindSQLStatement(final SQLStatement statement) {
         if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName).bind((DMLStatement) statement);
+            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DMLStatement) statement);
         }
         if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine(metaData, currentDatabaseName).bind((DDLStatement) statement);
+            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DDLStatement) statement);
+        }
+        if (statement instanceof DALStatement) {
+            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DALStatement) statement);
+        }
+        if (statement instanceof DCLStatement) {
+            return new DCLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DCLStatement) statement);
         }
         return statement;
     }

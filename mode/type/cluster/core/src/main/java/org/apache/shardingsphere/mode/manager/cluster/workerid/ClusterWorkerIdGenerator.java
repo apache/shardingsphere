@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdAssignedException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.ReservationPersistService;
-import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ReservationPersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -56,7 +56,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public int generate(final Properties props) {
-        int result = computeNodePersistService.loadInstanceWorkerId(instanceId).orElseGet(this::generateNewWorkerId);
+        int result = computeNodePersistService.loadWorkerId(instanceId).orElseGet(this::generateNewWorkerId);
         logWarning(result, props);
         return result;
     }
@@ -67,7 +67,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             generatedWorkId = generateAvailableWorkerId();
         } while (!generatedWorkId.isPresent());
         int result = generatedWorkId.get();
-        computeNodePersistService.persistInstanceWorkerId(instanceId, result);
+        computeNodePersistService.persistWorkerId(instanceId, result);
         return result;
     }
     

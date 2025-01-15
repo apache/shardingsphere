@@ -45,7 +45,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
         String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
         return "Standalone".equals(modeType)
                 ? Collections.singleton(buildRow(contextManager.getComputeNodeInstanceContext().getInstance(), modeType))
-                : contextManager.getComputeNodeInstanceContext().getAllClusterInstances().stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+                : contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances().stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {

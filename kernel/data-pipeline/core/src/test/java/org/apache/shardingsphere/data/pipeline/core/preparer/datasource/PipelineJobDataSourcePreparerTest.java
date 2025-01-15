@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,11 +49,17 @@ class PipelineJobDataSourcePreparerTest {
     }
     
     @Test
+    @SneakyThrows(SQLException.class)
     void assertPrepareTargetTables() {
         CreateTableConfiguration createTableConfig = mock(CreateTableConfiguration.class, RETURNS_DEEP_STUBS);
         when(createTableConfig.getSourceDataSourceConfig().getDatabaseType()).thenReturn(databaseType);
+        PipelineDataSourceManager pipelineDataSourceManager = mock(PipelineDataSourceManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(pipelineDataSourceManager.getDataSource(any()).getConnection()).thenReturn(connection);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
         PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(
-                Collections.singleton(createTableConfig), mock(PipelineDataSourceManager.class, RETURNS_DEEP_STUBS), mock(SQLParserEngine.class));
+                Collections.singleton(createTableConfig), pipelineDataSourceManager,
+                mock(SQLParserEngine.class), "foo_db");
         assertDoesNotThrow(() -> new PipelineJobDataSourcePreparer(databaseType).prepareTargetTables(parameter));
     }
 }

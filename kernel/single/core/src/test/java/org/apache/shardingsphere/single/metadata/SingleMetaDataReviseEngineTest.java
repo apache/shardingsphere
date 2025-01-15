@@ -22,6 +22,10 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMe
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -35,6 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class SingleMetaDataReviseEngineTest {
@@ -44,16 +49,19 @@ class SingleMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaDataMap = Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData())));
-        TableMetaData tableMetaData = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(
-                schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
-        Iterator<ColumnMetaData> columns = tableMetaData.getColumns().iterator();
-        assertThat(columns.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, true)));
-        assertThat(columns.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, false)));
-        assertThat(columns.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, false)));
-        assertThat(tableMetaData.getIndexes().size(), is(2));
-        Iterator<IndexMetaData> indexes = tableMetaData.getIndexes().iterator();
-        assertThat(indexes.next(), is(new IndexMetaData("id")));
-        assertThat(indexes.next(), is(new IndexMetaData("idx_name")));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("sharding_db"));
+        assertThat(actual.get("sharding_db").getAllTables().size(), is(1));
+        ShardingSphereTable table = actual.get("sharding_db").getAllTables().iterator().next();
+        Iterator<ShardingSphereColumn> columns = table.getAllColumns().iterator();
+        assertShardingSphereColumn(columns.next(), new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, true));
+        assertShardingSphereColumn(columns.next(), new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false));
+        assertShardingSphereColumn(columns.next(), new ShardingSphereColumn("doc", Types.LONGVARCHAR, false, false, false, true, false, false));
+        assertThat(table.getAllIndexes().size(), is(2));
+        Iterator<ShardingSphereIndex> indexes = table.getAllIndexes().iterator();
+        assertShardingSphereIndex(indexes.next(), new ShardingSphereIndex("id", Collections.emptyList(), false));
+        assertShardingSphereIndex(indexes.next(), new ShardingSphereIndex("idx_name", Collections.emptyList(), false));
     }
     
     private TableMetaData createTableMetaData() {
@@ -62,5 +70,22 @@ class SingleMetaDataReviseEngineTest {
                 new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, false));
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id"), new IndexMetaData("idx_name"));
         return new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList());
+    }
+    
+    private void assertShardingSphereColumn(final ShardingSphereColumn actual, final ShardingSphereColumn expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getDataType(), is(expected.getDataType()));
+        assertThat(actual.isPrimaryKey(), is(expected.isPrimaryKey()));
+        assertThat(actual.isGenerated(), is(expected.isGenerated()));
+        assertThat(actual.isCaseSensitive(), is(expected.isCaseSensitive()));
+        assertThat(actual.isVisible(), is(expected.isVisible()));
+        assertThat(actual.isUnsigned(), is(expected.isUnsigned()));
+        assertThat(actual.isNullable(), is(expected.isNullable()));
+    }
+    
+    private void assertShardingSphereIndex(final ShardingSphereIndex actual, final ShardingSphereIndex expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getColumns(), is(expected.getColumns()));
+        assertThat(actual.isUnique(), is(expected.isUnique()));
     }
 }

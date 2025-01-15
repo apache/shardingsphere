@@ -45,7 +45,7 @@ import java.util.Properties;
 class PostgresTest {
     
     @Container
-    public static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm");
+    private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm");
     
     private static ProxyTestingServer proxyTestingServer;
     

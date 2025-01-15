@@ -34,7 +34,7 @@ import java.util.Optional;
 @Setter
 public final class SQLServerDropIndexStatement extends DropIndexStatement implements SQLServerStatement {
     
-    private final boolean ifExists;
+    private boolean ifExists;
     
     private SimpleTableSegment simpleTable;
     

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ class EncryptTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        EncryptTableRuleConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        EncryptTableRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
         assertThat(actual, deepEqual(new EncryptTableRuleConfiguration("foo_tbl",
                 Collections.singletonList(new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_col_cipher", "foo_algo"))))));
     }
@@ -88,11 +88,11 @@ class EncryptTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         EncryptTableRuleConfiguration toBeChangedItemConfig = new EncryptTableRuleConfiguration("foo_tbl",
                 Collections.singleton(new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("bar_col_cipher", "bar_algo"))));
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         assertThat(new ArrayList<>(currentRuleConfig.getTables()).get(0).getColumns().size(), is(1));
         assertThat(new ArrayList<>(new ArrayList<>(currentRuleConfig.getTables()).get(0).getColumns()).get(0).getCipher().getName(), is("bar_col_cipher"));
@@ -101,10 +101,10 @@ class EncryptTableChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
-        when(event.getItemName()).thenReturn("foo_tbl");
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
+        when(dropNamedRuleItem.getItemName()).thenReturn("foo_tbl");
         EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     

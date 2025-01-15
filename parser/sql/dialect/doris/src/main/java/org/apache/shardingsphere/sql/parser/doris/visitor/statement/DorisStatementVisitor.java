@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
@@ -59,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.EngineR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExtractUrlParameterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromClauseContext;
@@ -958,14 +960,18 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
+        String separator = null;
+        if (null != ctx.separatorName()) {
+            separator = new StringLiteralValue(ctx.separatorName().string_().getText()).getValue();
+        }
         if (null != ctx.distinct()) {
             AggregationDistinctProjectionSegment result =
-                    new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx));
-            result.getParameters().addAll(getExpressions(ctx.expr()));
+                    new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx), separator);
+            result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
             return result;
         }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx));
-        result.getParameters().addAll(getExpressions(ctx.expr()));
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator);
+        result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
         return result;
     }
     
@@ -981,11 +987,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
-            result.append(ctx.getChild(i).getText());
-        }
-        return result.toString();
+        return ctx.aggregationExpression().getText();
     }
     
     @Override
@@ -1007,6 +1009,11 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.convertFunction()) {
             return visit(ctx.convertFunction());
         }
+        // DORIS ADDED BEGIN
+        if (null != ctx.extractUrlParameterFunction()) {
+            return visit(ctx.extractUrlParameterFunction());
+        }
+        // DORIS ADDED END
         // DORIS ADDED BEGIN
         if (null != ctx.instrFunction()) {
             return visit(ctx.instrFunction());
@@ -1046,8 +1053,21 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
+        for (ExprContext each : getTargetRuleContextFromParseTree(ctx, ExprContext.class)) {
             result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
+        Collection<T> result = new LinkedList<>();
+        for (int index = 0; index < parseTree.getChildCount(); index++) {
+            ParseTree child = parseTree.getChild(index);
+            if (clazz.isInstance(child)) {
+                result.add(clazz.cast(child));
+            } else {
+                result.addAll(getTargetRuleContextFromParseTree(child, clazz));
+            }
         }
         return result;
     }
@@ -1059,6 +1079,16 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
         }
+        return result;
+    }
+    // DORIS ADDED END
+    
+    // DORIS ADDED BEGIN
+    @Override
+    public final ASTNode visitExtractUrlParameterFunction(final ExtractUrlParameterFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT_URL_PARAMETER().getText(), getOriginalText(ctx));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(0).getStart().getStartIndex(), ctx.expr(0).getStop().getStopIndex(), ctx.expr(0).getText()));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.expr(1).getStart().getStartIndex(), ctx.expr(1).getStop().getStopIndex(), ctx.expr(1).getText()));
         return result;
     }
     // DORIS ADDED END

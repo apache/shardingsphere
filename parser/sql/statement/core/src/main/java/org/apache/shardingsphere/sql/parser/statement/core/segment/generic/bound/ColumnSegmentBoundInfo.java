@@ -23,25 +23,41 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 /**
  * Column segment bound info.
  */
-@Getter
 public final class ColumnSegmentBoundInfo {
     
-    private final IdentifierValue originalDatabase;
+    private final TableSegmentBoundInfo tableBoundInfo;
     
-    private final IdentifierValue originalSchema;
-    
+    @Getter
     private final IdentifierValue originalTable;
     
+    @Getter
     private final IdentifierValue originalColumn;
     
     public ColumnSegmentBoundInfo(final IdentifierValue originalColumn) {
-        this(null, null, null, originalColumn);
+        this(null, null, originalColumn);
     }
     
-    public ColumnSegmentBoundInfo(final IdentifierValue originalDatabase, final IdentifierValue originalSchema, final IdentifierValue originalTable, final IdentifierValue originalColumn) {
-        this.originalDatabase = null == originalDatabase ? new IdentifierValue("") : originalDatabase;
-        this.originalSchema = null == originalSchema ? new IdentifierValue("") : originalSchema;
+    public ColumnSegmentBoundInfo(final TableSegmentBoundInfo tableBoundInfo, final IdentifierValue originalTable, final IdentifierValue originalColumn) {
+        this.tableBoundInfo = null == tableBoundInfo ? new TableSegmentBoundInfo(null, null) : tableBoundInfo;
         this.originalTable = null == originalTable ? new IdentifierValue("") : originalTable;
         this.originalColumn = null == originalColumn ? new IdentifierValue("") : originalColumn;
+    }
+    
+    /**
+     * Get original database.
+     *
+     * @return original database
+     */
+    public IdentifierValue getOriginalDatabase() {
+        return tableBoundInfo.getOriginalDatabase();
+    }
+    
+    /**
+     * Get original schema.
+     *
+     * @return original schema
+     */
+    public IdentifierValue getOriginalSchema() {
+        return tableBoundInfo.getOriginalSchema();
     }
 }

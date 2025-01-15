@@ -77,7 +77,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
-        FetchStatementContext result = new FetchStatementContext(mockFetchStatement(), "foo_db");
+        FetchStatementContext result = new FetchStatementContext(mockFetchStatement());
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }

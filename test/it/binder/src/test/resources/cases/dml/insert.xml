@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <insert sql-case-id="insert_with_columns">
+        <table name="t_order" start-index="12" stop-index="18">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </table>
+        <columns start-index="20" stop-index="82">
+            <column name="order_id" start-index="21" stop-index="28">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="user_id" start-index="31" stop-index="37">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="status" start-index="40" stop-index="45">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="merchant_id" start-index="48" stop-index="58">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="remark" start-index="61" stop-index="66">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="creation_date" start-index="69" stop-index="81">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="92" stop-index="92" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="95" stop-index="95" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="OK" start-index="98" stop-index="101" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="104" stop-index="104" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="TEST" start-index="107" stop-index="112" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2024-12-25" start-index="115" stop-index="126" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_without_columns">
+        <table name="t_order" start-index="12" stop-index="18">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </table>
+        <columns start-index="19" stop-index="19" />
+        <derived-columns start-index="0" stop-index="0">
+            <column name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+            <column name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column>
+        </derived-columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="28" stop-index="28" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="31" stop-index="31" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="OK" start-index="34" stop-index="37" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="40" stop-index="40" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="TEST" start-index="43" stop-index="48" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2024-12-25" start-index="51" stop-index="62" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+</sql-parser-test-cases>

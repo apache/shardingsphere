@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -54,11 +55,17 @@ class UpdateStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl_2"))));
+        OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("tbl_2"));
+        ownerSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, columnSegment, null, null, null);
         when(whereSegment.getExpr()).thenReturn(expression);
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
+        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
+        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
+        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
+        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(table1);
         joinTableSegment.setRight(table2);
@@ -66,7 +73,7 @@ class UpdateStatementContextTest {
         updateStatement.setWhere(whereSegment);
         updateStatement.setTable(joinTableSegment);
         updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        UpdateStatementContext actual = new UpdateStatementContext(updateStatement, "foo_db");
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

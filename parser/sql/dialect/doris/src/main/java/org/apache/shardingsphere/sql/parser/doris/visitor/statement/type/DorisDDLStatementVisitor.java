@@ -206,6 +206,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         DorisCreateViewStatement result = new DorisCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((DorisSelectStatement) visit(ctx.select()));
@@ -225,6 +226,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         DorisDropViewStatement result = new DorisDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }
@@ -253,8 +255,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        DorisCreateTableStatement result = new DorisCreateTableStatement(null != ctx.ifNotExists());
+        DorisCreateTableStatement result = new DorisCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -663,7 +666,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DorisDropTableStatement result = new DorisDropTableStatement(null != ctx.ifExists());
+        DorisDropTableStatement result = new DorisDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

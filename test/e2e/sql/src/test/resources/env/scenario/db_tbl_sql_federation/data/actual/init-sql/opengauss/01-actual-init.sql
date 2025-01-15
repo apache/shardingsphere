@@ -15,16 +15,16 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE sql_federation_ds_0;
-CREATE DATABASE sql_federation_ds_1;
-CREATE DATABASE sql_federation_ds_2;
-CREATE DATABASE sql_federation_ds_3;
-CREATE DATABASE sql_federation_ds_4;
-CREATE DATABASE sql_federation_ds_5;
-CREATE DATABASE sql_federation_ds_6;
-CREATE DATABASE sql_federation_ds_7;
-CREATE DATABASE sql_federation_ds_8;
-CREATE DATABASE sql_federation_ds_9;
+CREATE DATABASE sql_federation_ds_0 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_1 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_2 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_3 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_4 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_5 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_6 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_7 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_8 DBCOMPATIBILITY 'B';
+CREATE DATABASE sql_federation_ds_9 DBCOMPATIBILITY 'B';
 
 GRANT ALL PRIVILEGES ON DATABASE sql_federation_ds_0 TO test_user;
 GRANT ALL PRIVILEGES ON DATABASE sql_federation_ds_1 TO test_user;

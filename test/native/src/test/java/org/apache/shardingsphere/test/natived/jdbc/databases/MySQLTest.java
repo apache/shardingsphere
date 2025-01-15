@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -52,18 +53,15 @@ class MySQLTest {
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.mysql.";
     
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "123456";
-    
-    private static final String DATABASE = "test";
+    private static final String PASSWORD = "example";
     
     @SuppressWarnings("resource")
     @Container
-    public static final GenericContainer<?> CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
-            .withEnv("MYSQL_DATABASE", DATABASE)
+    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
             .withExposedPorts(3306);
+    
+    private static DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
     
@@ -77,7 +75,10 @@ class MySQLTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
@@ -86,8 +87,8 @@ class MySQLTest {
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:mysql://localhost:" + CONTAINER.getMappedPort(3306) + "/";
-        DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();
@@ -104,9 +105,9 @@ class MySQLTest {
     
     private Connection openConnection() throws SQLException {
         Properties props = new Properties();
-        props.setProperty("user", USERNAME);
+        props.setProperty("user", "root");
         props.setProperty("password", PASSWORD);
-        return DriverManager.getConnection(jdbcUrlPrefix + DATABASE, props);
+        return DriverManager.getConnection(jdbcUrlPrefix, props);
     }
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})

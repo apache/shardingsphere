@@ -19,7 +19,7 @@ name: Nightly - Check
 
 on:
   schedule:
-    - cron: '0 23 */1 * *' # once a day. UTC time
+    - cron: '0 23 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
 env:
@@ -126,7 +126,7 @@ jobs:
           days-before-pr-stale: -1
           days-before-close: -1
           stale-issue-label: "stale"
-          any-of-issue-labels: "status: need more info,type: question,type: duplicate"
+          any-of-issue-labels: "status: need more info,type: question,type: duplicate,status: invalid"
           operations-per-run: 100
           remove-stale-when-updated: true
           stale-issue-message: >

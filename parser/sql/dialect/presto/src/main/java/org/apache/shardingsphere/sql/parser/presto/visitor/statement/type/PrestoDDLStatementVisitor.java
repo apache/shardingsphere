@@ -56,6 +56,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         PrestoCreateViewStatement result = new PrestoCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((PrestoSelectStatement) visit(ctx.select()));
@@ -66,6 +67,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         PrestoDropViewStatement result = new PrestoDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }
@@ -73,8 +75,9 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PrestoCreateTableStatement result = new PrestoCreateTableStatement(null != ctx.ifNotExists());
+        PrestoCreateTableStatement result = new PrestoCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -118,7 +121,8 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PrestoDropTableStatement result = new PrestoDropTableStatement(null != ctx.ifExists());
+        PrestoDropTableStatement result = new PrestoDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

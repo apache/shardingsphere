@@ -23,6 +23,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.InstanceSpec;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
@@ -65,11 +66,10 @@ class ZookeeperServiceDiscoveryTest {
             .withExposedPorts(2181);
     
     /**
-     * TODO Maybe we should be able to find a better solution than {@link InstanceSpec#getRandomPort()} to use a random available port on the host.
-     *  It is not a good practice to use {@link FixedHostPortGenericContainer}.
-     *  See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a> .
+     * Due to the design flaw of testcontainers-java,
+     * starting HiveServer2 using Zookeeper service discovery can only be done through the deprecated {@link FixedHostPortGenericContainer}.
+     * See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a>.
      */
-    @SuppressWarnings("unused")
     @Container
     private static final GenericContainer<?> HS2_1_CONTAINER = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
             .withNetwork(NETWORK)
@@ -86,6 +86,8 @@ class ZookeeperServiceDiscoveryTest {
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
     private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-iceberg.sql").toAbsolutePath().toString();
     
+    private static DataSource logicDataSource;
+    
     private final String jdbcUrlSuffix = ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2";
     
     private String jdbcUrlPrefix;
@@ -98,23 +100,21 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     @AfterAll
-    static void afterAll() {
+    static void afterAll() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+        }
         NETWORK.close();
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
         System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
     }
     
-    /**
-     * TODO Same problem {@link InstanceSpec#getRandomPort()} as {@code HIVE_SERVER2_1_CONTAINER}.
-     *
-     * @throws SQLException SQL exception.
-     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://" + ZOOKEEPER_CONTAINER.getHost() + ":" + ZOOKEEPER_CONTAINER.getMappedPort(2181) + "/";
-        DataSource dataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(dataSource);
+        logicDataSource = createDataSource();
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
         testShardingService.processSuccessInHive();
         HS2_1_CONTAINER.stop();
         int randomPortSecond = InstanceSpec.getRandomPort();

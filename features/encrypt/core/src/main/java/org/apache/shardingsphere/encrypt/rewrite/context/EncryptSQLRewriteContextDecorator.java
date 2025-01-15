@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -69,8 +69,8 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         if (!(sqlStatementContext instanceof TableAvailable)) {
             return false;
         }
-        for (String each : ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()) {
-            if (rule.findEncryptTable(each).isPresent()) {
+        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+            if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
                 return true;
             }
         }
@@ -86,15 +86,14 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         return createEncryptConditions(rule, sqlRewriteContext, sqlStatementContext);
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule rule, final SQLRewriteContext sqlRewriteContext, final SQLStatementContext sqlStatementContext) {
+    private Collection<EncryptCondition> createEncryptConditions(final EncryptRule rule, final SQLRewriteContext sqlRewriteContext,
+                                                                 final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        Collection<ColumnSegment> columnSegments = SQLStatementContextExtractor.getColumnSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        return new EncryptConditionEngine(
-                rule, sqlRewriteContext.getDatabase()).createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, sqlRewriteContext.getDatabase().getName());
+        return new EncryptConditionEngine(rule, sqlRewriteContext.getDatabase()).createEncryptConditions(whereSegments);
     }
     
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {

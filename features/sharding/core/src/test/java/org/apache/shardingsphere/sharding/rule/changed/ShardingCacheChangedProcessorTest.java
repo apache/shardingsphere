@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -50,8 +50,8 @@ class ShardingCacheChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        ShardingCacheConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        ShardingCacheConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
         assertThat(actual, deepEqual(new ShardingCacheConfiguration(1, new ShardingCacheOptionsConfiguration(true, 128, 1024))));
     }
     
@@ -82,10 +82,10 @@ class ShardingCacheChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ShardingCacheConfiguration toBeChangedItemConfig = new ShardingCacheConfiguration(2, new ShardingCacheOptionsConfiguration(false, 1280, 10240));
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getShardingCache().getAllowedMaxSqlLength(), is(2));
         assertFalse(currentRuleConfig.getShardingCache().getRouteCache().isSoftValues());
         assertThat(currentRuleConfig.getShardingCache().getRouteCache().getInitialCapacity(), is(1280));
@@ -94,9 +94,9 @@ class ShardingCacheChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertNull(currentRuleConfig.getShardingCache());
     }
     

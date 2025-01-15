@@ -48,21 +48,23 @@ class ConnectionTransactionTest {
     @Test
     void assertIsNotInDistributedTransactionWhenIsNotDistributedTransaction() {
         TransactionConnectionContext context = new TransactionConnectionContext();
-        context.beginTransaction("LOCAL");
+        context.beginTransaction("LOCAL", mock(ShardingSphereDistributedTransactionManager.class));
         assertFalse(new ConnectionTransaction(mock(TransactionRule.class), context).isInDistributedTransaction(context));
     }
     
     @Test
     void assertIsNotInDistributedTransactionWhenDistributedTransactionIsNotBegin() {
         TransactionConnectionContext context = new TransactionConnectionContext();
-        context.beginTransaction("XA");
+        context.beginTransaction("XA", mock(ShardingSphereDistributedTransactionManager.class));
         assertFalse(new ConnectionTransaction(mock(TransactionRule.class, RETURNS_DEEP_STUBS), context).isInDistributedTransaction(context));
     }
     
     @Test
     void assertIsInDistributedTransaction() {
         TransactionConnectionContext context = new TransactionConnectionContext();
-        context.beginTransaction("XA");
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(distributedTransactionManager.isInTransaction()).thenReturn(true);
+        context.beginTransaction("XA", distributedTransactionManager);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
         assertTrue(new ConnectionTransaction(rule, context).isInDistributedTransaction(context));
@@ -95,7 +97,9 @@ class ConnectionTransactionTest {
         when(rule.getDefaultType()).thenReturn(TransactionType.XA);
         when(rule.getResource().getTransactionManager(TransactionType.XA).isInTransaction()).thenReturn(true);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        context.beginTransaction("XA");
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(distributedTransactionManager.isInTransaction()).thenReturn(true);
+        context.beginTransaction("XA", distributedTransactionManager);
         assertTrue(new ConnectionTransaction(rule, context).isHoldTransaction(true));
     }
     
@@ -144,7 +148,10 @@ class ConnectionTransactionTest {
     @Test
     void assertGetConnectionWithInDistributeTransaction() throws SQLException {
         TransactionConnectionContext context = new TransactionConnectionContext();
-        context.beginTransaction("XA");
+        ShardingSphereDistributedTransactionManager distributedTransactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(distributedTransactionManager.isInTransaction()).thenReturn(true);
+        when(distributedTransactionManager.getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));
+        context.beginTransaction("XA", distributedTransactionManager);
         TransactionRule rule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).isInTransaction()).thenReturn(true);
         when(rule.getResource().getTransactionManager(rule.getDefaultType()).getConnection("foo_db", "foo_ds")).thenReturn(mock(Connection.class));

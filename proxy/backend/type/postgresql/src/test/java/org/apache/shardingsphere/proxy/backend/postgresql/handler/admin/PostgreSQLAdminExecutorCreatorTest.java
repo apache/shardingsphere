@@ -163,7 +163,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement(), "foo_db");
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

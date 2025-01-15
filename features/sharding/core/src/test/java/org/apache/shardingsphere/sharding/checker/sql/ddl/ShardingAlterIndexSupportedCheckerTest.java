@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexSt
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.metadata.DuplicateIndexException;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -60,7 +60,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
-        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
+        assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement)));
     }
     
     @Test
@@ -70,7 +70,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotExistedException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new AlterIndexStatementContext(sqlStatement, "foo_db")));
+        assertThrows(IndexNotFoundException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new AlterIndexStatementContext(sqlStatement)));
     }
     
     @Test
@@ -84,6 +84,6 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertThrows(DuplicateIndexException.class,
-                () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement, "foo_db")));
+                () -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new AlterIndexStatementContext(sqlStatement)));
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dml;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
@@ -48,6 +49,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -284,6 +286,8 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
             assertThat(actual.getString(columnIndex), is(expected));
         } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
             assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
+        } else if (Types.CLOB == actual.getMetaData().getColumnType(columnIndex)) {
+            assertThat(getClobValue((Clob) actual.getObject(columnIndex)), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
@@ -291,6 +295,11 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName, final DatabaseType databaseType) {
         return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()));
+    }
+    
+    @SneakyThrows(SQLException.class)
+    private static String getClobValue(final Clob value) {
+        return value.getSubString(1, (int) value.length());
     }
     
     protected void assertGeneratedKeys(final AssertionTestParameter testParam, final ResultSet generatedKeys, final DatabaseType databaseType) throws SQLException {

@@ -49,7 +49,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
              <plugin>
                  <groupId>org.graalvm.buildtools</groupId>
                  <artifactId>native-maven-plugin</artifactId>
-                 <version>0.10.3</version>
+                 <version>0.10.4</version>
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
@@ -89,12 +89,12 @@ Reference https://github.com/graalvm/native-build-tools/issues/572 .
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.3'
+   id 'org.graalvm.buildtools.native' version '0.10.4'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.3', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.4', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -335,6 +335,8 @@ Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
     io.grpc.netty.shaded.io.netty.util.AttributeKey
 ```
+
+ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability under GraalVM Native Image.
 
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.

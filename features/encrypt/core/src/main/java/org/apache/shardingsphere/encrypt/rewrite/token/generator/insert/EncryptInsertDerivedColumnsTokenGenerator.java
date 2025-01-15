@@ -57,7 +57,7 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> derivedColumnNames = getDerivedColumnNames(encryptTable, each);
             if (!derivedColumnNames.isEmpty()) {
-                result.add(new InsertColumnsToken(each.getStopIndex() + 1, derivedColumnNames));
+                result.add(new InsertColumnsToken(each.getStopIndex() + 1, derivedColumnNames, each.getIdentifier().getQuoteCharacter()));
             }
         }
         return result;

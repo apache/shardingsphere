@@ -68,8 +68,9 @@ public final class EncryptProjectionTokenGenerator {
      * @return generated SQL tokens
      */
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
-        Collection<SQLToken> result = new LinkedList<>(generateSelectSQLTokens(selectStatementContext));
+        Collection<SQLToken> result = new LinkedList<>();
         selectStatementContext.getSubqueryContexts().values().stream().map(this::generateSQLTokens).forEach(result::addAll);
+        result.addAll(generateSelectSQLTokens(selectStatementContext));
         return result;
     }
     
@@ -161,7 +162,7 @@ public final class EncryptProjectionTokenGenerator {
         if (SubqueryType.PREDICATE == subqueryType) {
             return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection));
         }
-        if (SubqueryType.INSERT_SELECT == subqueryType) {
+        if (SubqueryType.INSERT_SELECT == subqueryType || SubqueryType.VIEW_DEFINITION == subqueryType) {
             return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection);
         }
         throw new UnsupportedSQLOperationException(

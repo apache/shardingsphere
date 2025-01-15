@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +40,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,10 +50,13 @@ class EncryptMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap("foo_db", new SchemaMetaData("foo_db", Collections.singleton(createTableMetaData())));
-        TableMetaData actual = new MetaDataReviseEngine(
-                Collections.singleton(mockEncryptRule())).revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class)).get("foo_db").getTables().iterator().next();
-        assertThat(actual.getColumns().size(), is(2));
-        List<ColumnMetaData> columns = new ArrayList<>(actual.getColumns());
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("foo_db"));
+        assertThat(actual.get("foo_db").getAllTables().size(), is(1));
+        ShardingSphereTable table = actual.get("foo_db").getAllTables().iterator().next();
+        assertThat(table.getAllColumns().size(), is(2));
+        List<ShardingSphereColumn> columns = new ArrayList<>(table.getAllColumns());
         assertThat(columns.get(0).getName(), is("id"));
         assertThat(columns.get(1).getName(), is("pwd"));
     }

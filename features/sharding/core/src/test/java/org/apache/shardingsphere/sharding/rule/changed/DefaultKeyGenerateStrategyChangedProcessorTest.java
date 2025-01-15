@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropNamedRuleItemEvent;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.item.AlterNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropNamedRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -47,8 +47,8 @@ class DefaultKeyGenerateStrategyChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
-        KeyGenerateStrategyConfiguration actual = processor.swapRuleItemConfiguration(event, createYAMLContent());
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
+        KeyGenerateStrategyConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
         assertThat(actual, deepEqual(new KeyGenerateStrategyConfiguration("foo_col", "foo_algo")));
     }
     
@@ -75,18 +75,18 @@ class DefaultKeyGenerateStrategyChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItemEvent event = mock(AlterNamedRuleItemEvent.class);
+        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         KeyGenerateStrategyConfiguration toBeChangedItemConfig = new KeyGenerateStrategyConfiguration("foo_col", "bar_algo");
-        processor.changeRuleItemConfiguration(event, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName(), is("bar_algo"));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItemEvent event = mock(DropNamedRuleItemEvent.class);
+        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(event, currentRuleConfig);
+        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultKeyGenerateStrategy());
     }
     

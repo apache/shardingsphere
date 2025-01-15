@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.deliver.datasource.qualified.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.readwritesplitting.deliver.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.Test;

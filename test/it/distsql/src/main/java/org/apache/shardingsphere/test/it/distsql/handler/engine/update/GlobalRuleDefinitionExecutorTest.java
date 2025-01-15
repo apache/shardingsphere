@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRul
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
 
 import java.sql.SQLException;
 import java.util.Collections;

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateS
 public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
     
     @Override
-    public KeyGenerateStrategyConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public KeyGenerateStrategyConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         return new YamlKeyGenerateStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlKeyGenerateStrategyConfiguration.class));
     }
     
@@ -45,12 +45,12 @@ public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleIte
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(null);
     }
     

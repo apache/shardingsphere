@@ -25,7 +25,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.metadata.persist.node.ShardingSphereDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNodePath;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -68,7 +68,7 @@ public final class StatisticsCollectJobWorker {
     
     private CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        String namespace = String.join("/", repositoryConfig.getNamespace(), ShardingSphereDataNode.getJobPath());
+        String namespace = repositoryConfig.getNamespace() + ShardingSphereDataNodePath.getJobPath();
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfiguration(repositoryConfig, namespace));
         result.init();
         return result;

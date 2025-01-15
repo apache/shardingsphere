@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.exception.NotLockedClusterException;
+import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.lock.exception.NotLockedClusterException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,8 +42,16 @@ class UnlockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getClusterState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
+        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(null), contextManager));
+    }
+    
+    @Test
+    void assertExecuteUpdateWithUsingTimeout() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.UNAVAILABLE);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertDoesNotThrow(() -> executor.executeUpdate(new UnlockClusterStatement(2000L), contextManager));
     }
 }

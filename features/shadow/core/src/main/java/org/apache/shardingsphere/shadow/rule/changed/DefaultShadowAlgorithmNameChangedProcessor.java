@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, String> {
     
     @Override
-    public String swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public String swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
         return yamlContent;
     }
     
@@ -41,12 +41,12 @@ public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleIte
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShadowRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShadowAlgorithmName(null);
     }
     

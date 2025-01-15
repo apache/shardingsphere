@@ -51,7 +51,7 @@ class EnumerableScanExecutorTest {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         when(optimizerContext.getParserContext(any()).getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         SQLFederationExecutorContext executorContext = mock(SQLFederationExecutorContext.class);
-        when(executorContext.getDatabaseName()).thenReturn("db");
+        when(executorContext.getCurrentDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabaseData databaseData = mock(ShardingSphereDatabaseData.class, RETURNS_DEEP_STUBS);

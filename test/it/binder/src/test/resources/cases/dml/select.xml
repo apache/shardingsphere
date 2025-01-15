@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_shorthand_projection">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7">
+                <actual-projections>
+                    <column-projection name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="o" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                </actual-projections>
+            </shorthand-projection>
+        </projections>
+        <from start-index="14" stop-index="22">
+            <simple-table name="t_order" start-index="14" stop-index="22" alias="o">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_group_by_order_by">
+        <projections start-index="7" stop-index="30">
+            <column-projection name="order_id" start-index="7" stop-index="14">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+            <aggregation-projection type="COUNT" expression="COUNT(1)" start-index="17" stop-index="24" alias="count">
+                <parameter>
+                    <literal-expression value="1" start-index="23" stop-index="23" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from start-index="37" stop-index="45">
+            <simple-table name="t_order" start-index="37" stop-index="45" alias="o">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+        <group-by>
+            <column-item name="order_id" start-index="56" stop-index="63" >
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-item>
+        </group-by>
+        <having start-index="65" stop-index="80">
+            <expr>
+                <binary-operation-expression start-index="72" stop-index="80">
+                    <left>
+                        <column name="count" start-index="72" stop-index="76" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="80" stop-index="80" value="1" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <column-item name="order_id" start-index="91" stop-index="98">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_with_clause">
+        <with start-index="0" stop-index="44">
+            <common-table-expression name="t_order_tmp" start-index="5" stop-index="44">
+                <subquery-expression start-index="5" stop-index="44">
+                    <select>
+                        <projections start-index="28" stop-index="28">
+                            <shorthand-projection start-index="28" stop-index="28">
+                                <actual-projections>
+                                    <column-projection name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                    <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                    <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                    <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                    <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                    <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                                        <owner name="o" start-index="0" stop-index="0" />
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_order" />
+                                            <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                                        </column-bound>
+                                    </column-projection>
+                                </actual-projections>
+                            </shorthand-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="t_order" alias="o" start-index="35" stop-index="43">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </from>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="53" stop-index="53">
+            <shorthand-projection start-index="53" stop-index="53">
+                <actual-projections>
+                    <column-projection name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                    <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
+                        <owner name="t_order_tmp" start-index="0" stop-index="0" />
+                        <column-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                            <original-table name="t_order" />
+                            <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                        </column-bound>
+                    </column-projection>
+                </actual-projections>
+            </shorthand-projection>
+        </projections>
+        <from start-index="55" stop-index="70">
+            <simple-table name="t_order_tmp" start-index="60" stop-index="70">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_clause_with_multiple_cte_definitions">
+        <with start-index="0" stop-index="141">
+            <common-table-expression name="cte1" start-index="5" stop-index="68">
+                <subquery-expression start-index="5" stop-index="68">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="59" stop-index="67" alias="a">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </from>
+                        <projections start-index="38" stop-index="52">
+                            <column-projection name="status" start-index="38" stop-index="43" >
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                            <column-projection name="user_id" start-index="46" stop-index="52" >
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+                <column name="status" start-index="10" stop-index="15" >
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="user_id" start-index="18" stop-index="24" >
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+            </common-table-expression>
+            <common-table-expression name="cte2" start-index="71" stop-index="141">
+                <subquery-expression start-index="71" stop-index="141">
+                    <select>
+                        <from>
+                            <simple-table name="t_order_item" start-index="127" stop-index="140" alias="b">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </from>
+                        <projections start-index="105" stop-index="120">
+                            <column-projection name="user_id" start-index="105" stop-index="111" >
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order_item" />
+                                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                            <column-projection name="item_id" start-index="114" stop-index="120" >
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order_item" />
+                                    <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                        </projections>
+                    </select>
+                </subquery-expression>
+                <column name="user_id" start-index="76" stop-index="82" >
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order_item" />
+                        <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="item_id" start-index="85" stop-index="91" >
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order_item" />
+                        <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+            </common-table-expression>
+        </with>
+        <from start-index="180" stop-index="230">
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="cte1" start-index="180" stop-index="183" >
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="cte2" start-index="196" stop-index="199" >
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="204" stop-index="230">
+                        <left>
+                            <column name="user_id" start-index="204" stop-index="215">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                                <owner name="cte1" start-index="204" stop-index="207" >
+                                    <table-bound>
+                                        <original-database name="foo_db_1" />
+                                        <original-schema name="foo_db_1" />
+                                    </table-bound>
+                                </owner>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="219" stop-index="230">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order_item" />
+                                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                                <owner name="cte2" start-index="219" stop-index="222" >
+                                    <table-bound>
+                                        <original-database name="foo_db_1" />
+                                        <original-schema name="foo_db_1" />
+                                    </table-bound>
+                                </owner>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="150" stop-index="173">
+            <column-projection name="status" start-index="150" stop-index="155">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+            <column-projection name="user_id" start-index="158" stop-index="164">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order_item" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+            <column-projection name="item_id" start-index="167" stop-index="173">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order_item" />
+                    <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_current_select_projection_reference">
+        <projections start-index="7" stop-index="58">
+            <column-projection name="order_id" start-index="7" stop-index="25" alias="orderId">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                </column-bound>
+            </column-projection>
+            <subquery-projection start-index="28" stop-index="43" alias="tempOrderId" text="(SELECT orderId)">
+                <subquery>
+                    <select>
+                        <projections start-index="36" stop-index="42">
+                            <column-projection name="orderId" start-index="36" stop-index="42">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                </column-bound>
+                            </column-projection>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+        <from start-index="60" stop-index="71">
+            <simple-table name="t_order" start-index="65" stop-index="71">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+</sql-parser-test-cases>

@@ -80,8 +80,7 @@ public final class InventoryRecordsCountCalculator {
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                return resultSet.getLong(1);
+                return resultSet.next() ? resultSet.getLong(1) : 0;
             }
         }
     }

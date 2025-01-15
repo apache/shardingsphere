@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris,openGauss" />
     <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
     <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
@@ -275,6 +275,7 @@
     <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
+    <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />

@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop view statement.
  */
+@Getter
+@Setter
 public final class MySQLDropViewStatement extends DropViewStatement implements MySQLStatement {
+    
+    private boolean ifExists;
 }

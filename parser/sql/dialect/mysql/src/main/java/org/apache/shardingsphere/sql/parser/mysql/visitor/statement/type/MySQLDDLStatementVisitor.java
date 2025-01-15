@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
@@ -207,6 +207,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
+        result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
@@ -226,6 +227,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         MySQLDropViewStatement result = new MySQLDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }
@@ -254,8 +256,9 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement(null != ctx.ifNotExists());
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -670,7 +673,8 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        MySQLDropTableStatement result = new MySQLDropTableStatement(null != ctx.ifExists());
+        MySQLDropTableStatement result = new MySQLDropTableStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

@@ -89,7 +89,6 @@ public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSP
      * @param lockContext lock context
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("rawtypes")
     void beforeCommit(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
     
     /**
@@ -102,7 +101,6 @@ public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSP
      * @param lockContext lock context
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("rawtypes")
     void afterCommit(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext, LockContext lockContext) throws SQLException;
     
     /**

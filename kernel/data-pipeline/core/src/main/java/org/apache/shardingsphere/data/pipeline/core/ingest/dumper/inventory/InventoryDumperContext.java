@@ -58,6 +58,8 @@ public final class InventoryDumperContext {
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
+    private boolean firstDump = true;
+    
     public InventoryDumperContext(final DumperCommonContext commonContext) {
         this.commonContext = new DumperCommonContext(
                 commonContext.getDataSourceName(), commonContext.getDataSourceConfig(), commonContext.getTableNameMapper(), commonContext.getTableAndSchemaNameMapper());

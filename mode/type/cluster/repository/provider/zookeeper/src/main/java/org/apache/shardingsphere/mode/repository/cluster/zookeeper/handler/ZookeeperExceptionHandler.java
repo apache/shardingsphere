@@ -51,6 +51,7 @@ public final class ZookeeperExceptionHandler {
             log.info("InterruptedException caught");
             Thread.currentThread().interrupt();
         } else {
+            log.error("Zookeeper exception occured.", cause);
             throw new ClusterRepositoryPersistException(cause);
         }
     }

@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -56,9 +55,10 @@ public final class CopyStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(actual.getTableSegment(), assertContext.getText("Actual table should not exist."));
+            assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
         } else {
-            TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
+            assertTrue(actual.getTable().isPresent(), assertContext.getText("Actual table should exist."));
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
         }
     }
     

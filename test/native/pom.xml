@@ -194,6 +194,7 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-mapreduce-client-core</artifactId>
             <version>${hadoop.version}</version>
+            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -214,11 +215,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mssqlserver</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>clickhouse</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

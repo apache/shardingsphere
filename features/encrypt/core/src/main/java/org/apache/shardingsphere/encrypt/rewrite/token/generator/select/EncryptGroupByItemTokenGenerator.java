@@ -30,9 +30,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -42,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -51,13 +48,9 @@ import java.util.Optional;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, SchemaMetaDataAware {
+public final class EncryptGroupByItemTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext> {
     
     private final EncryptRule rule;
-    
-    private Map<String, ShardingSphereSchema> schemas;
-    
-    private ShardingSphereSchema defaultSchema;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -79,21 +72,18 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> defaultSchema);
         for (OrderByItem each : getGroupByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNames(Collections.singleton(columnSegment), schema);
-                generateSQLToken(columnSegment, columnTableNames, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
+                generateSQLToken(columnSegment, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final Map<String, String> columnTableNames, final DatabaseType databaseType) {
-        String tableName = columnTableNames.getOrDefault(columnSegment.getExpression(), "");
-        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-        String columnName = columnSegment.getIdentifier().getValue();
+    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final DatabaseType databaseType) {
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
+        String columnName = columnSegment.getColumnBoundInfo().getOriginalColumn().getValue();
         if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
             return Optional.empty();
         }

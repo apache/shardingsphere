@@ -65,7 +65,7 @@ ShardingSphere offers a flat learning curve to DBAs and is interaction-friendly 
 
 It can provide enhancement capability based on mature databases while ensuring security and stability.
 
-- Elastic Extention
+- Elastic Extension
 
 It supports computing, storage, and smooth online expansion, which can meet diverse business needs.
 

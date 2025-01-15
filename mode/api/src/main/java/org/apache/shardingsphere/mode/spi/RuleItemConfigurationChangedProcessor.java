@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.spi;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.event.dispatch.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.mode.event.dispatch.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.spi.item.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.item.DropRuleItem;
 
 /**
  * Rule item configuration changed processor.
@@ -36,11 +36,11 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     /**
      * Swap rule item configuration.
      *
-     * @param event alter rule item event
+     * @param alterRuleItem alter rule item
      * @param yamlContent YAML content
      * @return rule item configuration
      */
-    I swapRuleItemConfiguration(AlterRuleItemEvent event, String yamlContent);
+    I swapRuleItemConfiguration(AlterRuleItem alterRuleItem, String yamlContent);
     
     /**
      * Find rule configuration.
@@ -53,17 +53,17 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     /**
      * Change rule item configuration.
      *
-     * @param event alter rule item event
+     * @param alterRuleItem alter rule item
      * @param currentRuleConfig current rule configuration
      * @param toBeChangedItemConfig to be changed item configuration
      */
-    void changeRuleItemConfiguration(AlterRuleItemEvent event, T currentRuleConfig, I toBeChangedItemConfig);
+    void changeRuleItemConfiguration(AlterRuleItem alterRuleItem, T currentRuleConfig, I toBeChangedItemConfig);
     
     /**
      * Drop rule item configuration.
      *
-     * @param event drop rule item event
+     * @param dropRuleItem drop rule item
      * @param currentRuleConfig current rule configuration
      */
-    void dropRuleItemConfiguration(DropRuleItemEvent event, T currentRuleConfig);
+    void dropRuleItemConfiguration(DropRuleItem dropRuleItem, T currentRuleConfig);
 }

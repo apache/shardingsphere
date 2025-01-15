@@ -237,10 +237,10 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkDataSource(final ReadwriteSplittingRuleSegment ruleSegment) {
-        for (Object each : ruleSegment.getLoadBalancer().getProps().keySet()) {
-            String dataSourceName = (String) each;
-            ShardingSpherePreconditions.checkState(ruleSegment.getReadDataSources().contains(dataSourceName) || ruleSegment.getWriteDataSource().equals(dataSourceName),
-                    () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName()));
-        }
+        Collection<String> weightKeys = ruleSegment.getLoadBalancer().getProps().stringPropertyNames();
+        weightKeys.forEach(each -> ShardingSpherePreconditions.checkContains(ruleSegment.getReadDataSources(), each,
+                () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Can not find read storage unit '%s'", each))));
+        ruleSegment.getReadDataSources().forEach(each -> ShardingSpherePreconditions.checkContains(weightKeys, each,
+                () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Weight of '%s' is required", each))));
     }
 }

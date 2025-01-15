@@ -19,16 +19,17 @@ package org.apache.shardingsphere.mode.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.persist.service.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
-import org.apache.shardingsphere.mode.persist.service.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.persist.service.StatePersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.persist.service.unified.StatePersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 /**
@@ -63,5 +64,15 @@ public final class PersistServiceFacade {
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
         processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
         listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
+    }
+    
+    /**
+     * Close persist service facade.
+     *
+     * @param computeNodeInstance compute node instance
+     */
+    public void close(final ComputeNodeInstance computeNodeInstance) {
+        computeNodePersistService.offline(computeNodeInstance);
+        repository.close();
     }
 }
