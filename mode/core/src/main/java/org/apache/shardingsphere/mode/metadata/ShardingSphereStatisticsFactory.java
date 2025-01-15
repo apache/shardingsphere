@@ -24,15 +24,11 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -56,9 +52,13 @@ public final class ShardingSphereStatisticsFactory {
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
-        ShardingSphereStatistics result = statisticsBuilder.get().build(metaData);
-        persistService.getShardingSphereDataPersistService().load(metaData).ifPresent(optional -> useLoadedToReplaceInit(result, optional));
-        return result;
+        ShardingSphereStatistics builtStatistics = statisticsBuilder.get().build(metaData);
+        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
+        if (!loadedStatistics.isPresent()) {
+            return builtStatistics;
+        }
+        putStatisticsIfAbsent(loadedStatistics.get(), builtStatistics);
+        return loadedStatistics.get();
     }
     
     private static DatabaseType getDatabaseType(final ShardingSphereMetaData metaData) {
@@ -68,27 +68,8 @@ public final class ShardingSphereStatisticsFactory {
         return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
     }
     
-    private static void useLoadedToReplaceInit(final ShardingSphereStatistics initStatistics, final ShardingSphereStatistics loadedStatistics) {
-        for (Entry<String, ShardingSphereDatabaseData> entry : initStatistics.getDatabaseData().entrySet()) {
-            if (loadedStatistics.getDatabaseData().containsKey(entry.getKey())) {
-                useLoadedToReplaceInit(entry.getValue(), loadedStatistics.getDatabaseData().get(entry.getKey()));
-            }
-        }
-    }
-    
-    private static void useLoadedToReplaceInit(final ShardingSphereDatabaseData initDatabaseData, final ShardingSphereDatabaseData loadedDatabaseData) {
-        for (Entry<String, ShardingSphereSchemaData> entry : initDatabaseData.getSchemaData().entrySet()) {
-            if (loadedDatabaseData.getSchemaData().containsKey(entry.getKey())) {
-                useLoadedToReplaceInit(entry.getValue(), loadedDatabaseData.getSchemaData().get(entry.getKey()));
-            }
-        }
-    }
-    
-    private static void useLoadedToReplaceInit(final ShardingSphereSchemaData initSchemaData, final ShardingSphereSchemaData loadedSchemaData) {
-        for (Entry<String, ShardingSphereTableData> entry : initSchemaData.getTableData().entrySet()) {
-            if (loadedSchemaData.getTableData().containsKey(entry.getKey())) {
-                entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
-            }
-        }
+    private static void putStatisticsIfAbsent(final ShardingSphereStatistics loadedStatistics, final ShardingSphereStatistics builtStatistics) {
+        loadedStatistics.getDatabaseData().keySet().stream().filter(builtStatistics::containsDatabase).forEach(builtStatistics::dropDatabase);
+        builtStatistics.getDatabaseData().forEach(loadedStatistics::putDatabase);
     }
 }
