@@ -118,6 +118,13 @@ class ContextManagerTest {
     }
     
     @Test
+    void assertRenewMetaDataContexts() {
+        MetaDataContexts contexts = mock(MetaDataContexts.class);
+        contextManager.renewMetaDataContexts(contexts);
+        assertThat(contextManager.getMetaDataContexts(), is(contexts));
+    }
+    
+    @Test
     void assertGetDatabase() {
         assertNotNull(contextManager.getDatabase("foo_db"));
     }
