@@ -128,7 +128,7 @@ Assuming the folder `/customAbsolutePath/conf` already exists, the example is.
 
 ```bash
 cd ./shardingsphere/
-cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-SNAPSHOT-shardingsphere-proxy-native-bin/
+cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-shardingsphere-proxy-native-bin/
 ./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
 ```
 
