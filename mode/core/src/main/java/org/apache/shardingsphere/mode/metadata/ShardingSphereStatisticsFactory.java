@@ -31,7 +31,9 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere statistics factory.
@@ -54,13 +56,22 @@ public final class ShardingSphereStatisticsFactory {
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
-        ShardingSphereStatistics builtStatistics = build(metaData, statisticsBuilder.get());
-        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
-        if (!loadedStatistics.isPresent()) {
-            return builtStatistics;
+        ShardingSphereStatistics loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData).orElse(new ShardingSphereStatistics());
+        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
+        return create(statisticsBuilder.get(), unloadedDatabases, loadedStatistics);
+    }
+    
+    private static ShardingSphereStatistics create(final ShardingSphereStatisticsBuilder statisticsBuilder,
+                                                   final Collection<ShardingSphereDatabase> unloadedDatabases, final ShardingSphereStatistics loadedStatistics) {
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
+        for (ShardingSphereDatabase each : unloadedDatabases) {
+            ShardingSphereDatabaseData databaseData = statisticsBuilder.build(each);
+            if (!databaseData.getSchemaData().isEmpty()) {
+                result.putDatabase(each.getName(), databaseData);
+            }
         }
-        putStatisticsIfAbsent(loadedStatistics.get(), builtStatistics);
-        return loadedStatistics.get();
+        loadedStatistics.getDatabaseData().forEach(result::putDatabase);
+        return result;
     }
     
     private static DatabaseType getDatabaseType(final ShardingSphereMetaData metaData) {
@@ -68,21 +79,5 @@ public final class ShardingSphereStatisticsFactory {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
-    }
-    
-    private static ShardingSphereStatistics build(final ShardingSphereMetaData metaData, final ShardingSphereStatisticsBuilder statisticsBuilder) {
-        ShardingSphereStatistics result = new ShardingSphereStatistics();
-        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
-            ShardingSphereDatabaseData databaseData = statisticsBuilder.build(each);
-            if (!databaseData.getSchemaData().isEmpty()) {
-                result.putDatabase(each.getName(), databaseData);
-            }
-        }
-        return result;
-    }
-    
-    private static void putStatisticsIfAbsent(final ShardingSphereStatistics loadedStatistics, final ShardingSphereStatistics builtStatistics) {
-        loadedStatistics.getDatabaseData().keySet().stream().filter(builtStatistics::containsDatabase).forEach(builtStatistics::dropDatabase);
-        builtStatistics.getDatabaseData().forEach(loadedStatistics::putDatabase);
     }
 }
