@@ -37,6 +37,12 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
+    /**
+     * Build default statistics data.
+     * 
+     * @param database database
+     * @return built statistics data
+     */
     public ShardingSphereDatabaseData build(final ShardingSphereDatabase database) {
         ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
         if (database.containsSchema(SHARDINGSPHERE)) {
