@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -116,9 +117,9 @@ class ShardingProjectionsTokenGeneratorTest {
     }
     
     private AggregationProjection createAggregationProjection() {
-        AggregationDistinctProjection derivedProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "",
+        AggregationDistinctProjection derivedProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""),
                 new IdentifierValue("foo_agg_alias"), "foo_agg_expr", databaseType);
-        AggregationProjection result = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "", null, "", databaseType);
+        AggregationProjection result = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, ""), null, "", databaseType);
         result.getDerivedAggregationProjections().add(derivedProjection);
         return result;
     }
