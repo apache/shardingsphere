@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,9 +32,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ShardingSphere statistics builder for PostgreSQL.
+ * Statistics appender for PostgreSQL.
  */
-public final class PostgreSQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
+public final class PostgreSQLStatisticsAppender implements DialectStatisticsAppender {
     
     private static final Map<String, Collection<String>> INIT_DATA_SCHEMA_TABLES = new LinkedHashMap<>();
     
@@ -44,16 +43,14 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     }
     
     @Override
-    public ShardingSphereDatabaseData build(final ShardingSphereDatabase database) {
-        ShardingSphereDatabaseData result = new ShardingSphereDefaultStatisticsBuilder().build(database);
+    public void append(final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabase database) {
         for (Entry<String, Collection<String>> entry : INIT_DATA_SCHEMA_TABLES.entrySet()) {
             ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
             if (null != database.getSchema(entry.getKey())) {
                 initTables(database.getSchema(entry.getKey()), entry.getValue(), schemaData);
-                result.putSchema(entry.getKey(), schemaData);
+                databaseData.putSchema(entry.getKey(), schemaData);
             }
         }
-        return result;
     }
     
     private void initTables(final ShardingSphereSchema schema, final Collection<String> tables, final ShardingSphereSchemaData schemaData) {
