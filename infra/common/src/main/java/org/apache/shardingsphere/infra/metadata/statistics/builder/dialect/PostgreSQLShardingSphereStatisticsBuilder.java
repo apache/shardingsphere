@@ -35,7 +35,6 @@ import java.util.Map.Entry;
 /**
  * ShardingSphere statistics builder for PostgreSQL.
  */
-
 public final class PostgreSQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
     private static final Map<String, Collection<String>> INIT_DATA_SCHEMA_TABLES = new LinkedHashMap<>();

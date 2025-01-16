@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 /**
  * ShardingSphere statistics builder for MySQL.
  */
-
 public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
     @Override
