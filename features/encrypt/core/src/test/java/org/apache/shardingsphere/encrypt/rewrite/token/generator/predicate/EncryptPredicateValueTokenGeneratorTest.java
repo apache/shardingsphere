@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngin
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,13 +34,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class EncryptPredicateRightValueTokenGeneratorTest {
+class EncryptPredicateValueTokenGeneratorTest {
     
-    private EncryptPredicateRightValueTokenGenerator generator;
+    private EncryptPredicateValueTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator = new EncryptPredicateRightValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptPredicateValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
@@ -61,8 +60,7 @@ class EncryptPredicateRightValueTokenGeneratorTest {
     }
     
     private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updateStatementContext) {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db")));
-        return new EncryptConditionEngine(EncryptGeneratorFixtureBuilder.createEncryptRule(), database)
+        return new EncryptConditionEngine(EncryptGeneratorFixtureBuilder.createEncryptRule())
                 .createEncryptConditions(updateStatementContext.getWhereSegments());
     }
 }

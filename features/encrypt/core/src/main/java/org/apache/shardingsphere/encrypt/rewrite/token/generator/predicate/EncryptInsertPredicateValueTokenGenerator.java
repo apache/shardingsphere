@@ -35,12 +35,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Insert predicate right value token generator for encrypt.
+ * Insert predicate value token generator for encrypt.
  */
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, DatabaseAware {
+public final class EncryptInsertPredicateValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware, DatabaseAware {
     
     private final EncryptRule rule;
     
@@ -58,7 +58,7 @@ public final class EncryptInsertPredicateRightValueTokenGenerator implements Col
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        EncryptPredicateRightValueTokenGenerator generator = new EncryptPredicateRightValueTokenGenerator(rule);
+        EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(rule);
         generator.setParameters(parameters);
         generator.setEncryptConditions(encryptConditions);
         generator.setDatabase(database);
