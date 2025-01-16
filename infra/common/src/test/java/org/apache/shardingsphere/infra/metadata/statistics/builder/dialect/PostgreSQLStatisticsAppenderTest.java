@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -30,12 +31,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PostgreSQLShardingSphereStatisticsBuilderTest {
+class PostgreSQLStatisticsAppenderTest {
     
     @Test
-    void assertBuild() {
+    void assertAppend() {
         ShardingSphereDatabase database = mockDatabase();
-        ShardingSphereDatabaseData databaseData = new PostgreSQLShardingSphereStatisticsBuilder().build(database);
+        ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(database);
+        new PostgreSQLStatisticsAppender().append(databaseData, database);
         assertTrue(databaseData.getSchemaData().containsKey("pg_catalog"));
         assertTrue(databaseData.getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
     }

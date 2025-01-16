@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.junit.jupiter.api.Test;
-
-class MySQLShardingSphereStatisticsBuilderTest {
+class MySQLStatisticsAppenderTest {
     
     @Test
-    void assertBuild() {
+    void assertAppend() {
         ShardingSphereDatabase database = mockDatabase();
-        ShardingSphereDatabaseData databaseData = new MySQLShardingSphereStatisticsBuilder().build(database);
+        ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(database);
+        new MySQLStatisticsAppender().append(new ShardingSphereDefaultStatisticsBuilder().build(database), database);
         assertTrue(databaseData.getSchemaData().containsKey("shardingsphere"));
         assertTrue(databaseData.getSchemaData().get("shardingsphere").getTableData().containsKey("cluster_information"));
         assertTrue(databaseData.getSchemaData().get("shardingsphere").getTableData().containsKey("sharding_table_statistics"));
