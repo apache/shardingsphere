@@ -39,7 +39,7 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     
     /**
      * Build default statistics data.
-     * 
+     *
      * @param database database
      * @return built statistics data
      */
