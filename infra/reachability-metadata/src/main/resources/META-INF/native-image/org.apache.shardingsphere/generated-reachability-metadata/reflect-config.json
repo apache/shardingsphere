@@ -1711,11 +1711,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLShardingSphereStatisticsBuilder"
+  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLStatisticsAppender"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLShardingSphereStatisticsBuilder"
+  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLStatisticsAppender"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder"},

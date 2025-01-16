@@ -62,12 +62,12 @@ public final class ShardingSphereStatisticsFactory {
         return create(dialectStatisticsAppender.get(), unloadedDatabases, loadedStatistics);
     }
     
-    private static ShardingSphereStatistics create(final DialectStatisticsAppender statisticsBuilder,
+    private static ShardingSphereStatistics create(final DialectStatisticsAppender dialectStatisticsAppender,
                                                    final Collection<ShardingSphereDatabase> unloadedDatabases, final ShardingSphereStatistics loadedStatistics) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (ShardingSphereDatabase each : unloadedDatabases) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(each);
-            statisticsBuilder.append(databaseData, each);
+            dialectStatisticsAppender.append(databaseData, each);
             if (!databaseData.getSchemaData().isEmpty()) {
                 result.putDatabase(each.getName(), databaseData);
             }
