@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-
-import java.util.Collections;
 
 /**
  * ShardingSphere statistics builder for MySQL.
@@ -33,32 +28,9 @@ import java.util.Collections;
 
 public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
     
-    private static final String SHARDINGSPHERE = "shardingsphere";
-    
-    private static final String CLUSTER_INFORMATION = "cluster_information";
-    
-    private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
-    
     @Override
     public ShardingSphereDatabaseData build(final ShardingSphereDatabase database) {
-        ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
-        if (database.containsSchema(SHARDINGSPHERE)) {
-            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-            initClusterInformationTable(schemaData);
-            initShardingTableStatisticsTable(schemaData);
-            result.putSchema(SHARDINGSPHERE, schemaData);
-        }
-        return result;
-    }
-    
-    private void initClusterInformationTable(final ShardingSphereSchemaData schemaData) {
-        ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
-        tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
-        schemaData.putTable(CLUSTER_INFORMATION, tableData);
-    }
-    
-    private void initShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
-        schemaData.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
+        return new ShardingSphereDefaultStatisticsBuilder().build(database);
     }
     
     @Override
