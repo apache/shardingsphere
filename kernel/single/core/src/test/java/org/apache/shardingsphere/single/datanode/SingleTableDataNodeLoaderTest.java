@@ -51,6 +51,8 @@ class SingleTableDataNodeLoaderTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
+    private static final String PARTITIONED_TABLE_TYPE = "PARTITIONED TABLE";
+    
     private static final String VIEW_TYPE = "VIEW";
     
     private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
@@ -74,7 +76,7 @@ class SingleTableDataNodeLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         return new MockedDataSource(connection);
     }

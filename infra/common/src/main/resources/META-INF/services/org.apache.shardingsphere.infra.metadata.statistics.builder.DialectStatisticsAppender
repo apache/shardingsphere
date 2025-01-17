@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLShardingSphereStatisticsBuilder
-org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLShardingSphereStatisticsBuilder
+org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLStatisticsAppender
+org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLStatisticsAppender

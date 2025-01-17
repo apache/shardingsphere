@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.builder;
+package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 
 /**
- * ShardingSphere statistics builder.
+ * Statistics appender for MySQL.
  */
-@SingletonSPI
-public interface ShardingSphereStatisticsBuilder extends DatabaseTypedSPI {
+public final class MySQLStatisticsAppender implements DialectStatisticsAppender {
     
-    /**
-     * Build ShardingSphere data.
-     *
-     * @param database database
-     * @return built ShardingSphere data
-     */
-    ShardingSphereDatabaseData build(ShardingSphereDatabase database);
+    @Override
+    public void append(final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabase database) {
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
 }

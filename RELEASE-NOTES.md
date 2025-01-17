@@ -1,4 +1,21 @@
-## Release 5.5.2-SNAPSHOT
+## Release 5.5.3-SNAPSHOT
+
+### API Changes
+
+### New Features
+
+### Enhancements
+
+1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
+1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
+
+### Bug Fixes
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/31)
+
+## Release 5.5.2
 
 ### API Changes
 

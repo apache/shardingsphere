@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
@@ -83,13 +85,31 @@ public final class SQLStatementContextExtractor {
         if (sqlStatementContext instanceof SelectStatementContext) {
             result.addAll(((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values());
             ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            return result;
         }
         if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             InsertSelectContext insertSelectContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
             result.add(insertSelectContext.getSelectStatementContext());
             result.addAll(insertSelectContext.getSelectStatementContext().getSubqueryContexts().values());
             insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            return result;
         }
+        // SPEX ADDED: BEGIN
+        if (sqlStatementContext instanceof CreateViewStatementContext) {
+            CreateViewStatementContext createViewStatementContext = (CreateViewStatementContext) sqlStatementContext;
+            result.add(createViewStatementContext.getSelectStatementContext());
+            result.addAll(createViewStatementContext.getSelectStatementContext().getSubqueryContexts().values());
+            createViewStatementContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            return result;
+        }
+        if (sqlStatementContext instanceof AlterViewStatementContext && ((AlterViewStatementContext) sqlStatementContext).getSelectStatementContext().isPresent()) {
+            AlterViewStatementContext alterViewStatementContext = (AlterViewStatementContext) sqlStatementContext;
+            result.add(alterViewStatementContext.getSelectStatementContext().get());
+            result.addAll(alterViewStatementContext.getSelectStatementContext().get().getSubqueryContexts().values());
+            alterViewStatementContext.getSelectStatementContext().get().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            return result;
+        }
+        // SPEX ADDED: END
         return result;
     }
     

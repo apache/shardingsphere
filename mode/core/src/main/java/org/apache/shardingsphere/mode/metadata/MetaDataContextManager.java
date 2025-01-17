@@ -44,7 +44,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Meta data context manager..
+ * Meta data context manager.
  */
 @Getter
 @Slf4j

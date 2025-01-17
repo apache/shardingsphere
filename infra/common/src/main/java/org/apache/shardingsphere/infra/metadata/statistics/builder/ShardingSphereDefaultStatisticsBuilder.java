@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
+package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -23,15 +23,13 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabas
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 
 import java.util.Collections;
 
 /**
- * ShardingSphere statistics builder for MySQL.
+ * ShardingSphere default statistics builder.
  */
-
-public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
+public final class ShardingSphereDefaultStatisticsBuilder {
     
     private static final String SHARDINGSPHERE = "shardingsphere";
     
@@ -39,30 +37,30 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
-    @Override
+    /**
+     * Build default statistics data.
+     *
+     * @param database database
+     * @return built statistics data
+     */
     public ShardingSphereDatabaseData build(final ShardingSphereDatabase database) {
         ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
         if (database.containsSchema(SHARDINGSPHERE)) {
             ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-            initClusterInformationTable(schemaData);
-            initShardingTableStatisticsTable(schemaData);
+            buildClusterInformationTable(schemaData);
+            buildShardingTableStatisticsTable(schemaData);
             result.putSchema(SHARDINGSPHERE, schemaData);
         }
         return result;
     }
     
-    private void initClusterInformationTable(final ShardingSphereSchemaData schemaData) {
+    private void buildClusterInformationTable(final ShardingSphereSchemaData schemaData) {
         ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
         tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
         schemaData.putTable(CLUSTER_INFORMATION, tableData);
     }
     
-    private void initShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
+    private void buildShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
         schemaData.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
     }
 }

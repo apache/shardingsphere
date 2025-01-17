@@ -57,6 +57,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -81,7 +82,8 @@ class EncryptMergedResultTest {
     void assertGetValueWithoutColumnProjection() throws SQLException {
         when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.empty());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
-        assertThat(new EncryptMergedResult(mock(), mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        assertThat(new EncryptMergedResult(database, mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
     }
     
     @Test

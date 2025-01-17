@@ -65,8 +65,8 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        ContextManager contextManager = mock(ContextManager.class);
-        ComputeNodeInstanceContext computeNodeInstanceContext = createClusterInstanceContext();
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ComputeNodeInstanceContext computeNodeInstanceContext = createClusterInstanceContext(contextManager);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
@@ -92,7 +92,7 @@ class ShowComputeNodesExecutorTest {
         return result;
     }
     
-    private ComputeNodeInstanceContext createClusterInstanceContext() {
+    private ComputeNodeInstanceContext createClusterInstanceContext(final ContextManager contextManager) {
         ComputeNodeInstanceContext result = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
@@ -100,6 +100,7 @@ class ShowComputeNodesExecutorTest {
         when(computeNodeInstance.getState()).thenReturn(new InstanceStateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getClusterInstanceRegistry().getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         return result;
     }
 }

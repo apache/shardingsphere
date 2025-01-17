@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.segment;
+package org.apache.shardingsphere.infra.metadata.statistics.builder;
+
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Segment type.
+ * Dialect statistics appender.
  */
-public enum SegmentType {
+@SingletonSPI
+public interface DialectStatisticsAppender extends DatabaseTypedSPI {
     
-    PROJECTION, PREDICATE, HAVING, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, COPY, INSERT_COLUMNS, DEFINITION_COLUMNS
+    /**
+     * Append database data.
+     *
+     * @param databaseData to be appended database data 
+     * @param database database
+     */
+    void append(ShardingSphereDatabaseData databaseData, ShardingSphereDatabase database);
 }
