@@ -37,17 +37,18 @@ public final class AggregationDistinctProjectionSegmentBinder {
      * Bind aggregation distinct projection segment.
      *
      * @param segment aggregation distinct projection segment
+     * @param parentSegmentType parent segment type
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound aggregation distinct projection segment
      */
-    public static AggregationDistinctProjectionSegment bind(final AggregationDistinctProjectionSegment segment, final SQLStatementBinderContext binderContext,
-                                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+    public static AggregationDistinctProjectionSegment bind(final AggregationDistinctProjectionSegment segment, final SegmentType parentSegmentType,
+                                                            final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         AggregationDistinctProjectionSegment result =
                 new AggregationDistinctProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getType(), segment.getExpression(), segment.getDistinctInnerExpression());
-        segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
 }

@@ -37,16 +37,17 @@ public final class AggregationProjectionSegmentBinder {
      * Bind aggregation projection segment.
      *
      * @param segment aggregation projection segment
+     * @param parentSegmentType parent segment type
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound aggregation projection segment
      */
-    public static AggregationProjectionSegment bind(final AggregationProjectionSegment segment, final SQLStatementBinderContext binderContext,
-                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+    public static AggregationProjectionSegment bind(final AggregationProjectionSegment segment, final SegmentType parentSegmentType,
+                                                    final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         AggregationProjectionSegment result = new AggregationProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getType(), segment.getExpression());
-        segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
 }

@@ -94,10 +94,10 @@ public final class ExpressionSegmentBinder {
             return BetweenExpressionSegmentBinder.bind((BetweenExpression) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof AggregationDistinctProjectionSegment) {
-            return AggregationDistinctProjectionSegmentBinder.bind((AggregationDistinctProjectionSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
+            return AggregationDistinctProjectionSegmentBinder.bind((AggregationDistinctProjectionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof AggregationProjectionSegment) {
-            return AggregationProjectionSegmentBinder.bind((AggregationProjectionSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
+            return AggregationProjectionSegmentBinder.bind((AggregationProjectionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bound
         return segment;
