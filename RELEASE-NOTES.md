@@ -56,6 +56,7 @@
 1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
 1. Encrypt: Support insert statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
 1. Infra: Support connecting to Firebird via jdbcUrl containing the absolute path to fdb - [#34335](https://github.com/apache/shardingsphere/pull/34335)
+1. Add support for partition tables in Postgresql [#34346](https://github.com/apache/shardingsphere/pull/34346)
 
 ### Bug Fixes
 
