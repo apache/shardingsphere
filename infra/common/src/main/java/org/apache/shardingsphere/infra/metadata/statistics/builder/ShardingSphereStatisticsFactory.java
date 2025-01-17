@@ -41,7 +41,7 @@ public final class ShardingSphereStatisticsFactory {
     
     /**
      * Create statistics.
-     * 
+     *
      * @param metaData meta data
      * @param loadedStatistics loaded statistics
      * @return created statistics
