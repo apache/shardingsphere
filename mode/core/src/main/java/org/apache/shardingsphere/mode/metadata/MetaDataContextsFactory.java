@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory;
@@ -103,7 +104,7 @@ public final class MetaDataContextsFactory {
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext instanceContext,
@@ -182,7 +183,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     /**
@@ -208,7 +209,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     private static ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {

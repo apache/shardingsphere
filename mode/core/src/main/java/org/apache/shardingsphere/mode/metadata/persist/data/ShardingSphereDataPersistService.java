@@ -25,13 +25,12 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
-import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
+import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -54,16 +53,16 @@ public final class ShardingSphereDataPersistService {
      * @param metaData meta data
      * @return statistics
      */
-    public Optional<ShardingSphereStatistics> load(final ShardingSphereMetaData metaData) {
+    public ShardingSphereStatistics load(final ShardingSphereMetaData metaData) {
         Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNodePath.getDatabasesRootPath());
         if (databaseNames.isEmpty()) {
-            return Optional.empty();
+            return new ShardingSphereStatistics();
         }
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (String each : databaseNames.stream().filter(metaData::containsDatabase).collect(Collectors.toList())) {
             result.getDatabaseData().put(each, load(metaData.getDatabase(each)));
         }
-        return Optional.of(result);
+        return result;
     }
     
     private ShardingSphereDatabaseData load(final ShardingSphereDatabase database) {

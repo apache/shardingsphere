@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata;
+package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -45,19 +42,17 @@ public final class ShardingSphereStatisticsFactory {
     /**
      * Create statistics.
      *
-     * @param persistService meta data persist service
      * @param metaData meta data
+     * @param loadedStatistics loaded statistics
      * @return created statistics
      */
-    public static ShardingSphereStatistics create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        if (metaData.getAllDatabases().isEmpty()) {
-            return new ShardingSphereStatistics();
-        }
-        
-        ShardingSphereStatistics loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData).orElse(new ShardingSphereStatistics());
-        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
+    public static ShardingSphereStatistics create(final ShardingSphereMetaData metaData, final ShardingSphereStatistics loadedStatistics) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
+        if (metaData.getAllDatabases().isEmpty()) {
+            return result;
+        }
         Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
+        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
         for (ShardingSphereDatabase each : unloadedDatabases) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(each);
             dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseData, each));

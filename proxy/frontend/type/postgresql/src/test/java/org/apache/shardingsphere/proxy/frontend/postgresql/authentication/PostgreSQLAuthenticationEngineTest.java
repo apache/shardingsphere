@@ -43,10 +43,9 @@ import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.P
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.ShardingSphereStatisticsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -201,7 +200,7 @@ class PostgreSQLAuthenticationEngineTest {
     private MetaDataContexts getMetaDataContexts(final UserConfiguration userConfig) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.emptyList(), mock(ResourceMetaData.class), buildGlobalRuleMetaData(userConfig), new ConfigurationProperties(new Properties()));
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData));
+        return new MetaDataContexts(metaData, new ShardingSphereStatistics());
     }
     
     private RuleMetaData buildGlobalRuleMetaData(final UserConfiguration userConfig) {
