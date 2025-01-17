@@ -62,7 +62,7 @@ class ShardingSphereDataPersistServiceTest {
     
     @Test
     void assertLoadWithEmptyDatabases() {
-        assertFalse(persistService.load(mock(ShardingSphereMetaData.class)).isPresent());
+        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseData().isEmpty());
     }
     
     @Test
@@ -70,7 +70,7 @@ class ShardingSphereDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Arrays.asList("foo_db", "bar_db"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
-        assertTrue(persistService.load(mockMetaData()).isPresent());
+        assertFalse(persistService.load(mockMetaData()).getDatabaseData().isEmpty());
     }
     
     private ShardingSphereMetaData mockMetaData() {
