@@ -53,21 +53,14 @@ public final class ShardingSphereStatisticsFactory {
         if (metaData.getAllDatabases().isEmpty()) {
             return new ShardingSphereStatistics();
         }
-        Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
-        if (!dialectStatisticsAppender.isPresent()) {
-            return new ShardingSphereStatistics();
-        }
+        
         ShardingSphereStatistics loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData).orElse(new ShardingSphereStatistics());
         Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
-        return create(dialectStatisticsAppender.get(), unloadedDatabases, loadedStatistics);
-    }
-    
-    private static ShardingSphereStatistics create(final DialectStatisticsAppender dialectStatisticsAppender,
-                                                   final Collection<ShardingSphereDatabase> unloadedDatabases, final ShardingSphereStatistics loadedStatistics) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
+        Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
         for (ShardingSphereDatabase each : unloadedDatabases) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(each);
-            dialectStatisticsAppender.append(databaseData, each);
+            dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseData, each));
             if (!databaseData.getSchemaData().isEmpty()) {
                 result.putDatabase(each.getName(), databaseData);
             }
