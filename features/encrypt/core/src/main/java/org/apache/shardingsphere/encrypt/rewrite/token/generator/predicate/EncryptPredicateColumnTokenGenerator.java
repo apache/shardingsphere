@@ -69,26 +69,35 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
         Collection<ColumnSegment> columnSegments = SQLStatementContextExtractor.getColumnSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        return generateSQLTokens(columnSegments, whereSegments, sqlStatementContext.getDatabaseType());
+        Collection<AndPredicate> andPredicates = getAndPredicates(whereSegments);
+        return generateSQLTokens(columnSegments, andPredicates, sqlStatementContext);
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Collection<AndPredicate> andPredicates, final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : columnSegments) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
                 EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue());
-                result.add(buildSubstitutableColumnNameToken(encryptColumn, each, whereSegments, databaseType));
+                result.add(buildSubstitutableColumnNameToken(encryptColumn, each, andPredicates, sqlStatementContext.getDatabaseType()));
             }
         }
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn,
-                                                                           final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments, final DatabaseType databaseType) {
+    private Collection<AndPredicate> getAndPredicates(final Collection<WhereSegment> whereSegments) {
+        Collection<AndPredicate> result = new LinkedList<>();
+        for (WhereSegment each : whereSegments) {
+            result.addAll(ExpressionExtractor.extractAndPredicates(each.getExpr()));
+        }
+        return result;
+    }
+    
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment,
+                                                                           final Collection<AndPredicate> andPredicates, final DatabaseType databaseType) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
-        if (includesLike(whereSegments, columnSegment)) {
+        if (includesLike(andPredicates, columnSegment)) {
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
             return new SubstitutableColumnNameToken(
@@ -100,13 +109,10 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
     }
     
-    private boolean includesLike(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
-        for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
-            for (AndPredicate andPredicate : andPredicates) {
-                if (isLikeColumnSegment(andPredicate, targetColumnSegment)) {
-                    return true;
-                }
+    private boolean includesLike(final Collection<AndPredicate> andPredicates, final ColumnSegment targetColumnSegment) {
+        for (AndPredicate each : andPredicates) {
+            if (isLikeColumnSegment(each, targetColumnSegment)) {
+                return true;
             }
         }
         return false;
