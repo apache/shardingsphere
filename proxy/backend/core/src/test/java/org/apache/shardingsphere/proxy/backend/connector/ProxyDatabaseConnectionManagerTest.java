@@ -127,8 +127,8 @@ class ProxyDatabaseConnectionManagerTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        return new ContextManager(
-                new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData)), computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(new MetaDataContexts(metaData,
+                ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), metaData)), computeNodeInstanceContext, mock(PersistRepository.class));
     }
     
     @AfterEach

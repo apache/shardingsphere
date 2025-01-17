@@ -85,7 +85,7 @@ class ProxyContextTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(mockDatabase()), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), metaData));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         assertTrue(ProxyContext.getInstance().databaseExists("db"));
@@ -97,7 +97,7 @@ class ProxyContextTest {
         Collection<ShardingSphereDatabase> databases = createDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(), mock(), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), metaData));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         assertThat(new HashSet<>(ProxyContext.getInstance().getAllDatabaseNames()), is(databases.stream().map(ShardingSphereDatabase::getName).collect(Collectors.toSet())));

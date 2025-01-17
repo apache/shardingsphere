@@ -112,6 +112,7 @@ class DatabaseAdminQueryBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        return new ContextManager(new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData)), computeNodeInstanceContext, mock());
+        return new ContextManager(
+                new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), metaData)), computeNodeInstanceContext, mock());
     }
 }

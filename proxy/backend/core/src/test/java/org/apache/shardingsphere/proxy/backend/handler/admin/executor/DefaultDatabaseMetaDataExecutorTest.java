@@ -152,7 +152,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), metaData));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getDatabase("auth_db")).thenReturn(database);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
