@@ -19,4 +19,8 @@
     <test-case sql="WITH products AS (SELECT * FROM t_product) SELECT * FROM products" db-types="MySQL" scenario-types="db">
         <assertion />
     </test-case>
+
+    <test-case sql="WITH products (col1, col2, col3, col4, col5, col6) AS (SELECT * FROM t_product) SELECT col1 FROM products" db-types="MySQL" scenario-types="db">
+        <assertion />
+    </test-case>
 </e2e-test-cases>

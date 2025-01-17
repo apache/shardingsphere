@@ -26,9 +26,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
@@ -36,10 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * With segment binder.
@@ -71,7 +71,13 @@ public final class WithSegmentBinder {
     }
     
     private static SimpleTableSegmentBinderContext createWithTableBinderContext(final CommonTableExpressionSegment commonTableExpressionSegment) {
-        return new SimpleTableSegmentBinderContext(commonTableExpressionSegment.getSubquery().getSelect().getProjections().getProjections());
+        if( commonTableExpressionSegment.getColumns().isEmpty() )
+            return new SimpleTableSegmentBinderContext(commonTableExpressionSegment.getSubquery().getSelect().getProjections().getProjections());
+        else {
+            Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
+            commonTableExpressionSegment.getColumns().forEach( each -> projectionSegments.add(new ColumnProjectionSegment(each)));
+            return new SimpleTableSegmentBinderContext( projectionSegments );
+        }
     }
     
     private static void bindWithColumns(final Collection<ColumnSegment> columns, final CommonTableExpressionSegment boundCommonTableExpression) {
@@ -79,11 +85,12 @@ public final class WithSegmentBinder {
             return;
         }
         Map<String, ColumnProjectionSegment> columnProjections = extractWithSubqueryColumnProjections(boundCommonTableExpression);
+        ShardingSpherePreconditions.checkState( columns.isEmpty() || columnProjections.size() == columns.size() ,
+                DifferenceInColumnCountOfSelectListAndColumnNameListException::new);
+        Iterator<ColumnProjectionSegment> projectionSegmentIterator = columnProjections.values().iterator();
         columns.forEach(each -> {
-            ColumnProjectionSegment projectionSegment = columnProjections.get(each.getIdentifier().getValue());
-            if (null != projectionSegment) {
-                each.setColumnBoundInfo(createColumnSegmentBoundInfo(each, projectionSegment.getColumn()));
-            }
+            if(projectionSegmentIterator.hasNext())
+             each.setColumnBoundInfo(createColumnSegmentBoundInfo( each, projectionSegmentIterator.next().getColumn()));
         });
     }
     
@@ -105,12 +112,23 @@ public final class WithSegmentBinder {
                 }
             });
         }
+        if(projectionSegment instanceof ExpressionProjectionSegment){
+            result.put( getColumnName((ExpressionProjectionSegment)projectionSegment ), getColumnProjectionSegment(projectionSegment) );
+        }
     }
     
     private static String getColumnName(final ColumnProjectionSegment columnProjection) {
         return columnProjection.getAliasName().orElse(columnProjection.getColumn().getIdentifier().getValue());
     }
-    
+
+    private static String getColumnName(final ExpressionProjectionSegment projectionSegment) {
+        return projectionSegment.getAliasName().orElse( projectionSegment.getText());
+    }
+
+    private static ColumnProjectionSegment getColumnProjectionSegment(ProjectionSegment projectionSegment){
+        return new ColumnProjectionSegment(new ColumnSegment(projectionSegment.getStartIndex() ,projectionSegment.getStopIndex() , new IdentifierValue(getColumnName((ExpressionProjectionSegment) projectionSegment))));
+    }
+
     private static ColumnSegmentBoundInfo createColumnSegmentBoundInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
         IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
         IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
