@@ -38,8 +38,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Iterator;
 
 /**
  * With segment binder.
@@ -71,12 +74,12 @@ public final class WithSegmentBinder {
     }
     
     private static SimpleTableSegmentBinderContext createWithTableBinderContext(final CommonTableExpressionSegment commonTableExpressionSegment) {
-        if( commonTableExpressionSegment.getColumns().isEmpty() )
+        if (commonTableExpressionSegment.getColumns().isEmpty()) {
             return new SimpleTableSegmentBinderContext(commonTableExpressionSegment.getSubquery().getSelect().getProjections().getProjections());
-        else {
+        } else {
             Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
-            commonTableExpressionSegment.getColumns().forEach( each -> projectionSegments.add(new ColumnProjectionSegment(each)));
-            return new SimpleTableSegmentBinderContext( projectionSegments );
+            commonTableExpressionSegment.getColumns().forEach(each -> projectionSegments.add(new ColumnProjectionSegment(each)));
+            return new SimpleTableSegmentBinderContext(projectionSegments);
         }
     }
     
@@ -85,12 +88,13 @@ public final class WithSegmentBinder {
             return;
         }
         Map<String, ColumnProjectionSegment> columnProjections = extractWithSubqueryColumnProjections(boundCommonTableExpression);
-        ShardingSpherePreconditions.checkState( columns.isEmpty() || columnProjections.size() == columns.size() ,
+        ShardingSpherePreconditions.checkState(columns.isEmpty() || columnProjections.size() == columns.size(),
                 DifferenceInColumnCountOfSelectListAndColumnNameListException::new);
         Iterator<ColumnProjectionSegment> projectionSegmentIterator = columnProjections.values().iterator();
         columns.forEach(each -> {
-            if(projectionSegmentIterator.hasNext())
-             each.setColumnBoundInfo(createColumnSegmentBoundInfo( each, projectionSegmentIterator.next().getColumn()));
+            if (projectionSegmentIterator.hasNext()) {
+                each.setColumnBoundInfo(createColumnSegmentBoundInfo(each, projectionSegmentIterator.next().getColumn()));
+            }
         });
     }
     
@@ -112,23 +116,24 @@ public final class WithSegmentBinder {
                 }
             });
         }
-        if(projectionSegment instanceof ExpressionProjectionSegment){
-            result.put( getColumnName((ExpressionProjectionSegment)projectionSegment ), getColumnProjectionSegment(projectionSegment) );
+        if (projectionSegment instanceof ExpressionProjectionSegment) {
+            result.put(getColumnName((ExpressionProjectionSegment) projectionSegment), getColumnProjectionSegment(projectionSegment));
         }
     }
     
     private static String getColumnName(final ColumnProjectionSegment columnProjection) {
         return columnProjection.getAliasName().orElse(columnProjection.getColumn().getIdentifier().getValue());
     }
-
+    
     private static String getColumnName(final ExpressionProjectionSegment projectionSegment) {
-        return projectionSegment.getAliasName().orElse( projectionSegment.getText());
+        return projectionSegment.getAliasName().orElse(projectionSegment.getText());
     }
-
-    private static ColumnProjectionSegment getColumnProjectionSegment(ProjectionSegment projectionSegment){
-        return new ColumnProjectionSegment(new ColumnSegment(projectionSegment.getStartIndex() ,projectionSegment.getStopIndex() , new IdentifierValue(getColumnName((ExpressionProjectionSegment) projectionSegment))));
+    
+    private static ColumnProjectionSegment getColumnProjectionSegment(final ProjectionSegment projectionSegment) {
+        return new ColumnProjectionSegment(
+                new ColumnSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), new IdentifierValue(getColumnName((ExpressionProjectionSegment) projectionSegment))));
     }
-
+    
     private static ColumnSegmentBoundInfo createColumnSegmentBoundInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
         IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
         IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();

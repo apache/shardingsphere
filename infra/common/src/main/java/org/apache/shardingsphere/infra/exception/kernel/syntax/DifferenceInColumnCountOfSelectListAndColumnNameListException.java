@@ -19,14 +19,15 @@ package org.apache.shardingsphere.infra.exception.kernel.syntax;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+
 /**
- *  Difference in column count of select list and column name list exception
+ *  Difference in column count of select list and column name list exception.
  */
-public class DifferenceInColumnCountOfSelectListAndColumnNameListException extends SyntaxSQLException {
-
+public final class DifferenceInColumnCountOfSelectListAndColumnNameListException extends SyntaxSQLException {
+    
     private static final long serialVersionUID = 2526071146353972164L;
-
-    public DifferenceInColumnCountOfSelectListAndColumnNameListException(  ) {
-        super(XOpenSQLState.GENERAL_ERROR, 600 , "In definition of view, derived table or common table expression, SELECT list and column names list have different column counts");
+    
+    public DifferenceInColumnCountOfSelectListAndColumnNameListException() {
+        super(XOpenSQLState.GENERAL_ERROR, 600, "In definition of view, derived table or common table expression, SELECT list and column names list have different column counts");
     }
 }
