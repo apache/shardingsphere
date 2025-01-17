@@ -26,11 +26,15 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MetaDataContextsTest {
     
@@ -38,6 +42,8 @@ class MetaDataContextsTest {
     void assertGetDefaultMetaData() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(), mock(), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        assertThat(new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(mock(MetaDataPersistService.class), metaData)).getMetaData().getDatabase("foo_db"), is(database));
+        MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        when(persistService.getShardingSphereDataPersistService().load(any())).thenReturn(Optional.empty());
+        assertThat(new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData)).getMetaData().getDatabase("foo_db"), is(database));
     }
 }
