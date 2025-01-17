@@ -155,9 +155,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
-        MetaDataContexts metaDataContexts = isGovernance
-                ? mockMetaDataContexts()
-                : new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
+        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(metaData, new ShardingSphereStatistics());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
