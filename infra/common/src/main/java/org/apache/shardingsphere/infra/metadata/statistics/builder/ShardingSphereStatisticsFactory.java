@@ -48,6 +48,9 @@ public final class ShardingSphereStatisticsFactory {
      */
     public static ShardingSphereStatistics create(final ShardingSphereMetaData metaData, final ShardingSphereStatistics loadedStatistics) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
+        if (metaData.getAllDatabases().isEmpty()) {
+            return result;
+        }
         Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
         Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
         for (ShardingSphereDatabase each : unloadedDatabases) {
