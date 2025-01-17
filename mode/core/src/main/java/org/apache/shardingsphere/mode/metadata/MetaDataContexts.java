@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -75,6 +76,6 @@ public final class MetaDataContexts {
      */
     public void update(final ShardingSphereMetaData metaData, final MetaDataPersistService metaDataPersistService) {
         this.metaData.set(metaData);
-        this.statistics.set(ShardingSphereStatisticsFactory.create(metaDataPersistService, metaData));
+        this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getShardingSphereDataPersistService().load(metaData)));
     }
 }
