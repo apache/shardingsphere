@@ -87,7 +87,7 @@ public final class ShardingSphereDatabaseFactory {
                                                              final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         return databaseConfigMap.entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), 
+                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(),
                         entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, computeNodeInstanceContext),
                         (a, b) -> b, () -> new ConcurrentHashMap<>(databaseConfigMap.size(), 1F)));
     }
