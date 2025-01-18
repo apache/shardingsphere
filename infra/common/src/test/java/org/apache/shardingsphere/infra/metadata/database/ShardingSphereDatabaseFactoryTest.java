@@ -51,7 +51,7 @@ class ShardingSphereDatabaseFactoryTest {
                 "foo_db", mock(DatabaseConfiguration.class), Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertThat(database.getName(), is("foo_db"));
         assertThat(database.getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
-        assertTrue(database.getRuleMetaData().getRules().isEmpty());
+        assertThat(database.getRuleMetaData().getRules().size(), is(1));
         assertTrue(database.getAllSchemas().isEmpty());
     }
     
