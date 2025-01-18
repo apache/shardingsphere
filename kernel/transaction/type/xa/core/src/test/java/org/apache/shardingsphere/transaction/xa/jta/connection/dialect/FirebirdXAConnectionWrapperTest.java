@@ -43,16 +43,14 @@ import static org.mockito.Mockito.when;
 class FirebirdXAConnectionWrapperTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-    
+
     @Test
     void assertWrap() throws SQLException {
         XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual, instanceOf(FBXAConnection.class));
-        /*
-         * TODO: Fix the error with getting XAResource assertThat(actual.getXAResource(), instanceOf(FBXAConnection.class));
-         */
+        // TODO Fix the error with getting XAResource assertThat(actual.getXAResource(), instanceOf(FBXAConnection.class));
     }
-    
+
     private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
         return new DataSourceSwapper(DatabaseTypedSPILoader.getService(XADataSourceDefinition.class, databaseType)).swap(dataSource);
