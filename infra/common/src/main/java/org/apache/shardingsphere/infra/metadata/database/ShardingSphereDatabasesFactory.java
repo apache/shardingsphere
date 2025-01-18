@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere database factory.
+ * ShardingSphere databases factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereDatabaseFactory {
+public final class ShardingSphereDatabasesFactory {
     
     /**
      * Create databases.

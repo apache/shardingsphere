@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
@@ -63,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ShardingSphereDatabaseFactory.class, GlobalRulesBuilder.class})
+@StaticMockSettings({ShardingSphereDatabasesFactory.class, GlobalRulesBuilder.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MetaDataContextsFactoryTest {
     
@@ -90,7 +90,7 @@ class MetaDataContextsFactoryTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(ShardingSphereDatabaseFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
     }
     
