@@ -74,5 +74,4 @@ public final class InternalMetaDataFactory {
         }
         return result;
     }
-    
 }
