@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory;
+package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -34,29 +35,39 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class ExternalMetaDataFactoryTest {
+class ShardingSphereDatabaseFactoryTest {
     
     @Test
-    void assertCreateSingleDatabase() throws SQLException {
+    void assertCreateDatabase() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
+        ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertThat(actual.getName(), is("foo_db"));
         assertTrue(actual.getResourceMetaData().getStorageUnits().isEmpty());
     }
     
     @Test
-    void assertCreateDatabaseMap() throws SQLException {
+    void assertCreateDatabaseWithSchemas() {
+        ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(
+                "foo_db", mock(DatabaseConfiguration.class), Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
+        assertThat(database.getName(), is("foo_db"));
+        assertThat(database.getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
+        assertThat(database.getRuleMetaData().getRules().size(), is(1));
+        assertTrue(database.getAllSchemas().isEmpty());
+    }
+    
+    @Test
+    void assertCreateDatabases() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabaseFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }
     
     @Test
-    void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
+    void assertCreateDatabasesWhenConfigUppercaseDatabaseName() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabaseFactory.create(
                 Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
