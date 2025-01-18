@@ -83,6 +83,7 @@
             <groupId>org.firebirdsql.jdbc</groupId>
             <artifactId>jaybird</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
