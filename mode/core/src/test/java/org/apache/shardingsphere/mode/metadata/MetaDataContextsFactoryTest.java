@@ -67,6 +67,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MetaDataContextsFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataPersistService metaDataPersistService;
     
@@ -86,7 +88,7 @@ class MetaDataContextsFactoryTest {
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(ShardingSphereDatabaseFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
