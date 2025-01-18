@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -253,10 +254,10 @@ public final class MetaDataContextsFactory {
     private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
                                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
                                                                 final ComputeNodeInstanceContext instanceContext) throws SQLException {
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return internalLoadMetaData
-                ? ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props),
-                        databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
-                : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, props, instanceContext);
+                ? ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                : ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     
     private static ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
