@@ -31,12 +31,12 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class ShardingSphereDatabaseFactoryTest {
+class ShardingSphereDatabasesFactoryTest {
     
     @Test
     void assertCreateDatabases() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabaseFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
@@ -45,7 +45,7 @@ class ShardingSphereDatabaseFactoryTest {
     @Test
     void assertCreateDatabasesWhenConfigUppercaseDatabaseName() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabaseFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());

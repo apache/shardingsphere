@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
@@ -83,7 +83,7 @@ public final class MetaDataContextsFactory {
                                                   final ContextManagerBuilderParameter param, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         Collection<RuleConfiguration> globalRuleConfigs = param.getGlobalRuleConfigs();
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabaseFactory.create(param.getDatabaseConfigs(), props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
         persistDatabaseConfigurations(result, param, persistService);
         persistMetaData(result, persistService);
@@ -96,7 +96,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         return newMetaDataContexts(persistService, param, globalRuleConfigs,
-                ShardingSphereDatabaseFactory.create(effectiveDatabaseConfigs, loadSchemas(persistService, effectiveDatabaseConfigs.keySet()), props, instanceContext), props);
+                ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, loadSchemas(persistService, effectiveDatabaseConfigs.keySet()), props, instanceContext), props);
     }
     
     private static Map<String, Collection<ShardingSphereSchema>> loadSchemas(final MetaDataPersistService persistService, final Collection<String> databaseNames) {
