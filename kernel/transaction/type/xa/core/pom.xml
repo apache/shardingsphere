@@ -82,9 +82,7 @@
         <dependency>
             <groupId>org.firebirdsql.jdbc</groupId>
             <artifactId>jaybird</artifactId>
-            <version>6.0.0</version>
         </dependency>
-        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>

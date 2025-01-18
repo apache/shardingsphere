@@ -70,6 +70,6 @@ public final class FirebirdXAConnectionWrapper implements XAConnectionWrapper {
     
     @Override
     public String getDatabaseType() {
-        return "firebird";
+        return "Firebird";
     }
 }
