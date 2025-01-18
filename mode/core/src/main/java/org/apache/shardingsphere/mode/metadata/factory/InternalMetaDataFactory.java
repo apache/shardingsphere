@@ -49,9 +49,8 @@ public final class InternalMetaDataFactory {
      */
     public static ShardingSphereDatabase create(final String databaseName, final MetaDataPersistService persistService, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return ShardingSphereDatabase.create(databaseName,
-                protocolType, databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName));
+                DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName));
     }
     
     /**
@@ -65,12 +64,7 @@ public final class InternalMetaDataFactory {
      */
     public static Map<String, ShardingSphereDatabase> create(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        return createDatabases(persistService, databaseConfigMap, DatabaseTypeEngine.getProtocolType(databaseConfigMap, props), props, computeNodeInstanceContext);
-    }
-    
-    private static Map<String, ShardingSphereDatabase> createDatabases(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                       final DatabaseType protocolType, final ConfigurationProperties props,
-                                                                       final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        final DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
@@ -80,4 +74,5 @@ public final class InternalMetaDataFactory {
         }
         return result;
     }
+    
 }

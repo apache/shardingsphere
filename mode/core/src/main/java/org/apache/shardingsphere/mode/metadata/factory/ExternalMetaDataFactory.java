@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ExternalMetaDataFactory {
     
     /**
-     * Create database meta data for db.
+     * Create database meta data.
      *
      * @param databaseName database name
      * @param databaseConfig database configuration
@@ -55,7 +55,7 @@ public final class ExternalMetaDataFactory {
     }
     
     /**
-     * Create databases meta data for db.
+     * Create databases meta data.
      *
      * @param databaseConfigMap database configuration map
      * @param props properties
