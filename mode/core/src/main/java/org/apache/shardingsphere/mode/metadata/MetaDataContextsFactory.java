@@ -255,7 +255,7 @@ public final class MetaDataContextsFactory {
                                                                 final ComputeNodeInstanceContext instanceContext) throws SQLException {
         return internalLoadMetaData
                 ? ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props),
-                databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                        databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
                 : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, props, instanceContext);
     }
     
