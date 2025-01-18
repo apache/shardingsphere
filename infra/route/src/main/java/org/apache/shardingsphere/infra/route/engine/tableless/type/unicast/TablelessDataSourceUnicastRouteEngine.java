@@ -51,7 +51,7 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        Collection<String> usedDataSourceNames = dataSourceNames == null || dataSourceNames.isEmpty() ? connectionContext.getUsedDataSourceNames() : dataSourceNames;
+        Collection<String> usedDataSourceNames = null == dataSourceNames || dataSourceNames.isEmpty() ? connectionContext.getUsedDataSourceNames() : dataSourceNames;
         return new ArrayList<>(usedDataSourceNames).get(ThreadLocalRandom.current().nextInt(usedDataSourceNames.size()));
     }
 }

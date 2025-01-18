@@ -31,33 +31,33 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.anyOf;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class TablelessDataSourceUnicastRouteEngineTest {
     
     @Test
-    void assertRouteWithoutUsedDataSourceNames() {
-        ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);
-        Collection<String> aggregatedDataSources = Arrays.asList("foo_ds_1", "foo_ds_2");
+    void assertRouteWithNoAggregatedDataSources() {
+        ConnectionContext connectionContext = new ConnectionContext(() -> Arrays.asList("foo_ds_1", "foo_ds_2"));
+        Collection<String> aggregatedDataSources = Collections.emptyList();
         RouteContext actual = new TablelessDataSourceUnicastRouteEngine(connectionContext).route(mock(RuleMetaData.class), aggregatedDataSources);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
-        assertTrue(aggregatedDataSources.contains(routeUnit.getDataSourceMapper().getLogicName()));
-        assertTrue(aggregatedDataSources.contains(routeUnit.getDataSourceMapper().getActualName()));
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), anyOf(is("foo_ds_1"), is("foo_ds_2")));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), anyOf(is("foo_ds_1"), is("foo_ds_2")));
         assertThat(routeUnit.getTableMappers().size(), is(0));
     }
     
     @Test
-    void assertRouteWithUsedDataSourceNames() {
+    void assertRouteWithAggregatedDataSources() {
         ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singleton("foo_ds_1"));
-        Collection<String> aggregatedDataSources = Arrays.asList("foo_ds_1", "foo_ds_2");
+        Collection<String> aggregatedDataSources = Arrays.asList("foo_ds_2", "foo_ds_3");
         RouteContext actual = new TablelessDataSourceUnicastRouteEngine(connectionContext).route(mock(RuleMetaData.class), aggregatedDataSources);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
-        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("foo_ds_1"));
-        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("foo_ds_1"));
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), anyOf(is("foo_ds_2"), is("foo_ds_3")));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), anyOf(is("foo_ds_2"), is("foo_ds_3")));
         assertThat(routeUnit.getTableMappers().size(), is(0));
     }
 }

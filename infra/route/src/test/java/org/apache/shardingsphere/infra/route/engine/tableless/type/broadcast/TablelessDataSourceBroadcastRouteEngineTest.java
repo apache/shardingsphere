@@ -20,12 +20,14 @@ package org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,15 +38,30 @@ import static org.mockito.Mockito.mock;
 class TablelessDataSourceBroadcastRouteEngineTest {
     
     @Test
-    void assertRoute() {
-        RouteContext actual = new TablelessDataSourceBroadcastRouteEngine().route(mock(RuleMetaData.class), Arrays.asList("foo_ds_1", "foo_ds_2"));
+    void assertRouteWithNoAggregatedDataSources() {
+        ConnectionContext connectionContext = new ConnectionContext(() -> Arrays.asList("foo_ds_1", "foo_ds_2"));
+        RouteContext actual = new TablelessDataSourceBroadcastRouteEngine(connectionContext).route(mock(RuleMetaData.class), Collections.emptyList());
         assertThat(actual.getRouteUnits().size(), is(2));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
-        assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("foo_ds_1"));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("foo_ds_1"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("foo_ds_2"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("foo_ds_2"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getLogicName(), is("foo_ds_2"));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("foo_ds_2"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getLogicName(), is("foo_ds_1"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("foo_ds_1"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(0));
+    }
+    
+    @Test
+    void assertRouteWithAggregatedDataSources() {
+        ConnectionContext connectionContext = new ConnectionContext(() -> Arrays.asList("foo_ds_1", "foo_ds_2"));
+        RouteContext actual = new TablelessDataSourceBroadcastRouteEngine(connectionContext).route(mock(RuleMetaData.class), Arrays.asList("foo_ds_3", "foo_ds_4"));
+        assertThat(actual.getRouteUnits().size(), is(2));
+        List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
+        assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("foo_ds_3"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("foo_ds_3"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getLogicName(), is("foo_ds_4"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("foo_ds_4"));
         assertThat(routeUnits.get(1).getTableMappers().size(), is(0));
     }
 }
