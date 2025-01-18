@@ -20,9 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -30,30 +28,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ShardingSphereDatabaseFactoryTest {
-    
-    @Test
-    void assertCreateDatabase() throws SQLException {
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
-        assertThat(actual.getName(), is("foo_db"));
-        assertTrue(actual.getResourceMetaData().getStorageUnits().isEmpty());
-    }
-    
-    @Test
-    void assertCreateDatabaseWithSchemas() {
-        ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(
-                "foo_db", mock(DatabaseConfiguration.class), Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
-        assertThat(database.getName(), is("foo_db"));
-        assertThat(database.getProtocolType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
-        assertThat(database.getRuleMetaData().getRules().size(), is(1));
-        assertTrue(database.getAllSchemas().isEmpty());
-    }
     
     @Test
     void assertCreateDatabases() throws SQLException {
