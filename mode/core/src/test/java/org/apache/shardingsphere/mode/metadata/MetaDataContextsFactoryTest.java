@@ -74,7 +74,7 @@ class MetaDataContextsFactoryTest {
     private DatabaseMetaDataPersistFacade databaseMetaDataPersistFacade;
     
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp() {
         when(metaDataPersistService.loadDataSourceConfigurations("foo_db")).thenReturn(Collections.emptyMap());
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
@@ -85,9 +85,10 @@ class MetaDataContextsFactoryTest {
         when(metaDataPersistService.getPropsService()).thenReturn(propertiesPersistService);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(ShardingSphereDatabaseFactory.create(anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
+        when(ShardingSphereDatabaseFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", database)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
     }
     
