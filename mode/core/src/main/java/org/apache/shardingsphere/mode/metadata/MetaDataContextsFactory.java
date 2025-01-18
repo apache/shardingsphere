@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -253,8 +254,9 @@ public final class MetaDataContextsFactory {
                                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
                                                                 final ComputeNodeInstanceContext instanceContext) throws SQLException {
         return internalLoadMetaData
-                ? ShardingSphereDatabaseFactory.create(databaseName, databaseConfig, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName), props, instanceContext)
-                : ShardingSphereDatabaseFactory.create(databaseName, databaseConfig, props, instanceContext);
+                ? ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props),
+                        databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, props, instanceContext);
     }
     
     private static ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {

@@ -42,38 +42,6 @@ import java.util.stream.Collectors;
 public final class ShardingSphereDatabaseFactory {
     
     /**
-     * Create database.
-     *
-     * @param databaseName database name
-     * @param databaseConfig database configuration
-     * @param props configuration properties
-     * @param computeNodeInstanceContext compute node instance context
-     * @return created database
-     * @throws SQLException SQL exception
-     */
-    public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
-                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, props, computeNodeInstanceContext);
-    }
-    
-    /**
-     * Create database.
-     *
-     * @param databaseName database name
-     * @param databaseConfig database configuration
-     * @param schemas schemas
-     * @param props configuration properties
-     * @param computeNodeInstanceContext compute node instance context
-     * @return created database
-     */
-    public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereSchema> schemas,
-                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, computeNodeInstanceContext, schemas);
-    }
-    
-    /**
      * Create databases.
      *
      * @param databaseConfigMap database configuration map
@@ -97,7 +65,7 @@ public final class ShardingSphereDatabaseFactory {
                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return databaseConfig.getStorageUnits().isEmpty()
                 ? ShardingSphereDatabase.create(databaseName, protocolType, props)
-                : create(databaseName, databaseConfig, schemas, props, computeNodeInstanceContext);
+                : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, schemas);
     }
     
     /**
