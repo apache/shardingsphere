@@ -50,8 +50,8 @@ public final class ShardingSphereDatabasesFactory {
      * @return created databases
      */
     public static Collection<ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                             final Map<String, Collection<ShardingSphereSchema>> schemas,
-                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) {
+                                                            final Map<String, Collection<ShardingSphereSchema>> schemas,
+                                                            final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         return databaseConfigMap.entrySet().stream()
                 .map(entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, instanceContext)).collect(Collectors.toList());
@@ -85,8 +85,8 @@ public final class ShardingSphereDatabasesFactory {
     }
     
     private static Collection<ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                              final DatabaseType protocolType, final SystemDatabase systemDatabase,
-                                                                              final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) throws SQLException {
+                                                                             final DatabaseType protocolType, final SystemDatabase systemDatabase,
+                                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereDatabase> result = new HashSet<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
@@ -98,7 +98,7 @@ public final class ShardingSphereDatabasesFactory {
     }
     
     private static Collection<ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
-                                                                             final SystemDatabase systemDatabase, final ConfigurationProperties props) {
+                                                                            final SystemDatabase systemDatabase, final ConfigurationProperties props) {
         Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
