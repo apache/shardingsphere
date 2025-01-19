@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * Rule item manager.
  */
 @RequiredArgsConstructor
-public class RuleItemManager {
+public final class RuleItemManager {
     
     private final MetaDataContexts metaDataContexts;
     
