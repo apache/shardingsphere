@@ -62,8 +62,8 @@ public final class ShardingSphereDatabasesFactory {
                                                  final Collection<ShardingSphereSchema> schemas, final ConfigurationProperties props,
                                                  final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return databaseConfig.getStorageUnits().isEmpty()
-                ? ShardingSphereDatabase.create(databaseName, protocolType, props)
-                : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, schemas);
+                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, props)
+                : ShardingSphereDatabaseFactory.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, schemas);
     }
     
     /**
@@ -92,7 +92,7 @@ public final class ShardingSphereDatabasesFactory {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
-                result.add(ShardingSphereDatabase.create(databaseName, protocolType, entry.getValue(), props, instanceContext));
+                result.add(ShardingSphereDatabaseFactory.create(databaseName, protocolType, entry.getValue(), props, instanceContext));
             }
         }
         return result;
@@ -103,7 +103,7 @@ public final class ShardingSphereDatabasesFactory {
         Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
-                result.add(ShardingSphereDatabase.create(each, protocolType, props));
+                result.add(ShardingSphereDatabaseFactory.create(each, protocolType, props));
             }
         }
         return result;

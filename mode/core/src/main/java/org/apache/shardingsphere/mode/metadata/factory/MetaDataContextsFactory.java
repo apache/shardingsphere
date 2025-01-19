@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -82,15 +83,15 @@ public final class MetaDataContextsFactory {
      * Create meta data contexts by switch resource.
      *
      * @param databaseName database name
-     * @param internalLoadMetaData internal load meta data
+     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param switchingResource switching resource
      * @param originalMetaDataContexts original meta data contexts
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
-    public MetaDataContexts createBySwitchResource(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                   final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, internalLoadMetaData, switchingResource, null, originalMetaDataContexts);
+    public MetaDataContexts createBySwitchResource(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
+                                                   final SwitchingResource switchingResource, final MetaDataContexts originalMetaDataContexts) throws SQLException {
+        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, isLoadSchemasFromRegisterCenter, switchingResource, null, originalMetaDataContexts);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -104,15 +105,15 @@ public final class MetaDataContextsFactory {
      * Create meta data contexts by alter rule.
      *
      * @param databaseName database name
-     * @param internalLoadMetaData internal load meta data
+     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param ruleConfigs rule configs
      * @param originalMetaDataContexts original meta data contexts
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
-    public MetaDataContexts createByAlterRule(final String databaseName, final boolean internalLoadMetaData, final Collection<RuleConfiguration> ruleConfigs,
-                                              final MetaDataContexts originalMetaDataContexts) throws SQLException {
-        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, internalLoadMetaData, null, ruleConfigs, originalMetaDataContexts);
+    public MetaDataContexts createByAlterRule(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
+                                              final Collection<RuleConfiguration> ruleConfigs, final MetaDataContexts originalMetaDataContexts) throws SQLException {
+        ShardingSphereDatabase changedDatabase = createChangedDatabase(databaseName, isLoadSchemasFromRegisterCenter, null, ruleConfigs, originalMetaDataContexts);
         ShardingSphereMetaData clonedMetaData = cloneMetaData(originalMetaDataContexts.getMetaData(), changedDatabase);
         ConfigurationProperties props = originalMetaDataContexts.getMetaData().getProps();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
@@ -130,67 +131,58 @@ public final class MetaDataContextsFactory {
     }
     
     /**
-     * Create changed database by switch resource.
+     * Create changed database.
      *
      * @param databaseName database name
-     * @param internalLoadMetaData internal load meta data
+     * @param isLoadSchemasFromRegisterCenter is load schemas from register center or not
      * @param switchingResource switching resource
      * @param ruleConfigs rule configurations
      * @param originalMetaDataContext original meta data contexts
      * @return changed database
      * @throws SQLException SQL exception
      */
-    public ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                        final Collection<RuleConfiguration> ruleConfigs, final MetaDataContexts originalMetaDataContext) throws SQLException {
-        ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(originalMetaDataContext.getMetaData().getDatabase(databaseName), switchingResource);
-        Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
-                ? originalMetaDataContext.getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
-                : ruleConfigs;
+    public ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean isLoadSchemasFromRegisterCenter,
+                                                        final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
+                                                        final MetaDataContexts originalMetaDataContext) throws SQLException {
+        ShardingSphereDatabase database = originalMetaDataContext.getMetaData().getDatabase(databaseName);
+        ResourceMetaData effectiveResourceMetaData = getEffectiveResourceMetaData(database, switchingResource);
+        Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs ? database.getRuleMetaData().getConfigurations() : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(effectiveResourceMetaData, switchingResource, toBeCreatedRuleConfigs);
-        return createChangedDatabase(originalMetaDataContext.getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
-                toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps());
+        return createChangedDatabase(database.getName(), isLoadSchemasFromRegisterCenter, toBeCreatedDatabaseConfig, originalMetaDataContext.getMetaData().getProps());
     }
     
-    private ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final DatabaseConfiguration databaseConfig,
+    private ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean isLoadSchemasFromRegisterCenter, final DatabaseConfiguration databaseConfig,
                                                          final ConfigurationProperties props) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return internalLoadMetaData
-                ? ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
-                : ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, props, instanceContext);
+        return isLoadSchemasFromRegisterCenter
+                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     
-    private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {
-        Map<StorageNode, DataSource> storageNodes = getStorageNodes(database.getResourceMetaData().getDataSources(), resource);
-        Map<String, StorageUnit> storageUnits = getStorageUnits(database.getResourceMetaData().getStorageUnits(), resource);
+    private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource switchingResource) {
+        Map<StorageNode, DataSource> storageNodes = getStorageNodes(database.getResourceMetaData().getDataSources(), switchingResource);
+        Map<String, StorageUnit> storageUnits = getStorageUnits(database.getResourceMetaData().getStorageUnits(), switchingResource);
         return new ResourceMetaData(storageNodes, storageUnits);
     }
     
-    private Map<StorageNode, DataSource> getStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentStorageNodes.size(), 1F);
-        for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
-            if (null == resource || !resource.getStaleDataSources().containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
+    private Map<StorageNode, DataSource> getStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource switchingResource) {
+        return currentStorageNodes.entrySet().stream()
+                .filter(entry -> null == switchingResource || !switchingResource.getStaleDataSources().containsKey(entry.getKey()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (a, b) -> b, () -> new LinkedHashMap<>(currentStorageNodes.size(), 1F)));
     }
     
-    private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
-        Map<String, StorageUnit> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
-            if (null == resource || !resource.getStaleStorageUnitNames().contains(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
+    private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource switchingResource) {
+        return currentStorageUnits.entrySet().stream()
+                .filter(entry -> null == switchingResource || !switchingResource.getStaleStorageUnitNames().contains(entry.getKey()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (a, b) -> b, () -> new LinkedHashMap<>(currentStorageUnits.size(), 1F)));
     }
     
-    private DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData resourceMetaData,
+    private DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData currentResourceMetaData,
                                                            final SwitchingResource switchingResource, final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
-        Map<String, DataSourcePoolProperties> propsMap = null == switchingResource ? resourceMetaData.getStorageUnits().entrySet().stream()
+        Map<String, DataSourcePoolProperties> propsMap = null == switchingResource ? currentResourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
-        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(resourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap);
+        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(currentResourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap);
     }
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
