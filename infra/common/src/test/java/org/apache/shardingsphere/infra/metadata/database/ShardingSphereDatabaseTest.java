@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShardingSphereDatabase.class)
+@StaticMockSettings(ShardingSphereDatabaseFactory.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSphereDatabaseTest {
     
