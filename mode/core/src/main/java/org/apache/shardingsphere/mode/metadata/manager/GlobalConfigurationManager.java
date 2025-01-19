@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Collection;
@@ -40,17 +40,13 @@ import java.util.Properties;
 /**
  * Global configuration manager.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class GlobalConfigurationManager {
     
     private final MetaDataContexts metaDataContexts;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public GlobalConfigurationManager(final MetaDataContexts metaDataContexts, final PersistRepository repository) {
-        this.metaDataContexts = metaDataContexts;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Alter global rule configuration.

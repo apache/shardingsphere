@@ -32,20 +32,19 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.sql.SQLException;
@@ -69,9 +68,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private final RuleItemChangedBuilder ruleItemChangedBuilder;
     
-    public StandaloneMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        metaDataPersistService = new MetaDataPersistService(repository);
+    public StandaloneMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager) {
         this.metaDataContextManager = metaDataContextManager;
+        metaDataPersistService = metaDataContextManager.getMetaDataPersistService();
         ruleItemChangedBuilder = new RuleItemChangedBuilder();
     }
     

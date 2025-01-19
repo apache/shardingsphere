@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Database rule configuration manager.
  */
+@RequiredArgsConstructor
 public final class DatabaseRuleConfigurationManager {
     
     private final MetaDataContexts metaDataContexts;
@@ -47,13 +48,6 @@ public final class DatabaseRuleConfigurationManager {
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public DatabaseRuleConfigurationManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                            final PersistRepository repository) {
-        this.metaDataContexts = metaDataContexts;
-        this.computeNodeInstanceContext = computeNodeInstanceContext;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Alter rule configuration.

@@ -56,6 +56,8 @@ public class MetaDataContextManager {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
+    private final MetaDataPersistService metaDataPersistService;
+    
     private final ShardingSphereDatabaseDataManager databaseManager;
     
     private final SchemaMetaDataManager schemaMetaDataManager;
@@ -63,8 +65,6 @@ public class MetaDataContextManager {
     private final RuleItemManager ruleItemManager;
     
     private final ResourceSwitchManager resourceSwitchManager;
-    
-    private final MetaDataPersistService metaDataPersistService;
     
     private final StorageUnitManager storageUnitManager;
     
@@ -75,14 +75,14 @@ public class MetaDataContextManager {
     public MetaDataContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
+        metaDataPersistService = new MetaDataPersistService(repository);
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
-        storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, repository, resourceSwitchManager);
-        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, repository);
-        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, repository);
-        ruleItemManager = new RuleItemManager(metaDataContexts, repository, databaseRuleConfigurationManager);
-        globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, repository);
-        metaDataPersistService = new MetaDataPersistService(repository);
+        storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistService);
+        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistService);
+        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, metaDataPersistService);
+        ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistService);
+        globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistService);
     }
     
     /**

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedTy
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -39,16 +39,12 @@ import java.util.Optional;
 /**
  * Resource meta data manager.
  */
+@RequiredArgsConstructor
 public final class SchemaMetaDataManager {
     
     private final MetaDataContexts metaDataContexts;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public SchemaMetaDataManager(final MetaDataContexts metaDataContexts, final PersistRepository repository) {
-        this.metaDataContexts = metaDataContexts;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Add database.
