@@ -87,8 +87,7 @@ public final class MetaDataContextsFactory {
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
-                effectiveDatabaseConfigs, loadSchemas(effectiveDatabaseConfigs.keySet()), props, instanceContext);
+        Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, loadSchemas(effectiveDatabaseConfigs.keySet()), props, instanceContext);
         return createMetaDataContexts(globalRuleConfigs, globalDataSources, databases, props);
     }
     
