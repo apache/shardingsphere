@@ -17,15 +17,29 @@
 
 package org.apache.shardingsphere.mode.metadata.factory.init;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Meta data contexts init factory.
  */
-public interface MetaDataContextsInitFactory {
+public abstract class MetaDataContextsInitFactory {
     
     /**
      * Create meta data contexts.
@@ -34,5 +48,13 @@ public interface MetaDataContextsInitFactory {
      * @return created meta data contexts
      * @throws SQLException SQL exception
      */
-    MetaDataContexts create(ContextManagerBuilderParameter param) throws SQLException;
+    public abstract MetaDataContexts create(ContextManagerBuilderParameter param) throws SQLException;
+    
+    protected final MetaDataContexts create(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, DataSource> globalDataSources,
+                                            final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props, final MetaDataPersistService persistService) {
+        Collection<ShardingSphereRule> globalRules = GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, new ResourceMetaData(globalDataSources), new RuleMetaData(globalRules), props);
+        ShardingSphereStatistics statistics = ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData));
+        return new MetaDataContexts(metaData, statistics);
+    }
 }
