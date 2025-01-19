@@ -8,6 +8,7 @@
 
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
+1. SQL Binder: Support column definition for the WITH clause in ColumnBind and ExternalTableBinderContext in WithSegmentBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 
 ### Bug Fixes
 
