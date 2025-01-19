@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -47,17 +47,15 @@ public final class ShardingSphereDatabasesFactory {
      * @param databaseConfigMap database configuration map
      * @param schemas schemas
      * @param props properties
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return created databases
      */
-    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                             final Map<String, Collection<ShardingSphereSchema>> schemas,
-                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+    public static Collection<ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                            final Map<String, Collection<ShardingSphereSchema>> schemas,
+                                                            final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         return databaseConfigMap.entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(),
-                        entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, computeNodeInstanceContext),
-                        (a, b) -> b, () -> new ConcurrentHashMap<>(databaseConfigMap.size(), 1F)));
+                .map(entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, instanceContext)).collect(Collectors.toList());
     }
     
     private static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig, final DatabaseType protocolType,
@@ -73,39 +71,39 @@ public final class ShardingSphereDatabasesFactory {
      *
      * @param databaseConfigMap database configuration map
      * @param props properties
-     * @param computeNodeInstanceContext compute node instance context
+     * @param instanceContext compute node instance context
      * @return created databases
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
+    public static Collection<ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                            final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         SystemDatabase systemDatabase = new SystemDatabase(protocolType);
-        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
-        result.putAll(createGenericDatabases(databaseConfigMap, protocolType, systemDatabase, props, computeNodeInstanceContext));
-        result.putAll(createSystemDatabases(databaseConfigMap, protocolType, systemDatabase, props));
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
+        result.addAll(createGenericDatabases(databaseConfigMap, protocolType, systemDatabase, props, instanceContext));
+        result.addAll(createSystemDatabases(databaseConfigMap, protocolType, systemDatabase, props));
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                              final DatabaseType protocolType, final SystemDatabase systemDatabase,
-                                                                              final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1F);
+    private static Collection<ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                                             final DatabaseType protocolType, final SystemDatabase systemDatabase,
+                                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) throws SQLException {
+        Collection<ShardingSphereDatabase> result = new HashSet<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, entry.getValue(), props, computeNodeInstanceContext));
+                result.add(ShardingSphereDatabase.create(databaseName, protocolType, entry.getValue(), props, instanceContext));
             }
         }
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
-                                                                             final SystemDatabase systemDatabase, final ConfigurationProperties props) {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
+    private static Collection<ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
+                                                                            final SystemDatabase systemDatabase, final ConfigurationProperties props) {
+        Collection<ShardingSphereDatabase> result = new HashSet<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
-                result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType, props));
+                result.add(ShardingSphereDatabase.create(each, protocolType, props));
             }
         }
         return result;

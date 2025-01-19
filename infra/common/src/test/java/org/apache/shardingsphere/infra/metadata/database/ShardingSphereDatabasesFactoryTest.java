@@ -24,10 +24,13 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -36,18 +39,9 @@ class ShardingSphereDatabasesFactoryTest {
     @Test
     void assertCreateDatabases() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
-                Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
-        assertTrue(actual.containsKey("foo_db"));
-        assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
-    }
-    
-    @Test
-    void assertCreateDatabasesWhenConfigUppercaseDatabaseName() throws SQLException {
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
-                Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
-        assertTrue(actual.containsKey("foo_db"));
-        assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
+        List<ShardingSphereDatabase> actual = new ArrayList<>(ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class)));
+        assertThat(actual.get(0).getName(), is("foo_db"));
+        assertTrue(actual.get(0).getResourceMetaData().getStorageUnits().isEmpty());
     }
 }
