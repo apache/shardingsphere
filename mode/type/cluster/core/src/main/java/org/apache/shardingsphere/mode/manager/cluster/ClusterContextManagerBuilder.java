@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLock
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriberRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.workerid.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
