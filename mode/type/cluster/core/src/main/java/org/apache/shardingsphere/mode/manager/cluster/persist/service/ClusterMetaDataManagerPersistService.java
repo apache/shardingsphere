@@ -57,16 +57,16 @@ import java.util.stream.Collectors;
  */
 public final class ClusterMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
+    private final MetaDataContextManager metaDataContextManager;
+    
     private final MetaDataPersistService metaDataPersistService;
     
     private final ListenerAssistedPersistService listenerAssistedPersistService;
     
-    private final MetaDataContextManager metaDataContextManager;
-    
-    public ClusterMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
+    public ClusterMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        this.metaDataContextManager = metaDataContextManager;
         metaDataPersistService = metaDataContextManager.getMetaDataPersistService();
         listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
-        this.metaDataContextManager = metaDataContextManager;
     }
     
     @Override

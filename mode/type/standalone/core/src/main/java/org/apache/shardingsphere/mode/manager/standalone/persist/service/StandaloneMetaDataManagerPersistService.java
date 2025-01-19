@@ -62,9 +62,9 @@ import java.util.stream.Collectors;
  */
 public final class StandaloneMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
-    private final MetaDataPersistService metaDataPersistService;
-    
     private final MetaDataContextManager metaDataContextManager;
+    
+    private final MetaDataPersistService metaDataPersistService;
     
     private final RuleItemChangedBuilder ruleItemChangedBuilder;
     
