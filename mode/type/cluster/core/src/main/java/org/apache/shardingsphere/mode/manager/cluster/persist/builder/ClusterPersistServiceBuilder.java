@@ -32,7 +32,7 @@ public final class ClusterPersistServiceBuilder implements PersistServiceBuilder
     
     @Override
     public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return new ClusterMetaDataManagerPersistService(repository, metaDataContextManager);
+        return new ClusterMetaDataManagerPersistService(metaDataContextManager, repository);
     }
     
     @Override
