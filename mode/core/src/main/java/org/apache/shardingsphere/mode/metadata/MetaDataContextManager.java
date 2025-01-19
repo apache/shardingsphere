@@ -145,8 +145,8 @@ public class MetaDataContextManager {
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
-        ShardingSphereDatabase changedDatabase = MetaDataContextsFactory
-                .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+        ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistService)
+                .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts, computeNodeInstanceContext);
         metaDataContexts.getMetaData().putDatabase(changedDatabase);
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();

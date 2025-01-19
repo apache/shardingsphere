@@ -109,7 +109,7 @@ class MetaDataContextsFactoryTest {
     void assertCreateWithJDBCInstanceMetaData() throws SQLException {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(computeNodeInstanceContext.getInstance().getMetaData()).thenReturn(mock(JDBCInstanceMetaData.class));
-        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), computeNodeInstanceContext);
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistService).create(createContextManagerBuilderParameter(), computeNodeInstanceContext);
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
@@ -120,7 +120,7 @@ class MetaDataContextsFactoryTest {
     void assertCreateWithProxyInstanceMetaData() throws SQLException {
         when(databaseMetaDataPersistFacade.getDatabase().loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
-        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS));
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistService).create(createContextManagerBuilderParameter(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));

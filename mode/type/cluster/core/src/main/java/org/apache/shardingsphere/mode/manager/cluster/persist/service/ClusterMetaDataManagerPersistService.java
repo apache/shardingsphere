@@ -125,8 +125,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .switchByRegisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
             newDataSources.putAll(switchingResource.getNewDataSources());
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
             afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();
@@ -143,8 +143,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
             newDataSources.putAll(switchingResource.getNewDataSources());
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts, metaDataContextManager.getComputeNodeInstanceContext());
             DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
             metaDataPersistService.getMetaDataVersionPersistService()
                     .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
@@ -161,8 +161,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             MetaDataContexts originalMetaDataContexts = buildOriginalMetaDataContexts();
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts, metaDataContextManager.getComputeNodeInstanceContext());
             metaDataPersistService.getDataSourceUnitService().delete(databaseName, each);
             afterStorageUnitsDropped(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();

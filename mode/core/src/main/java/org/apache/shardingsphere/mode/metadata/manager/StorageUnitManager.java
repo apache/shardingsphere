@@ -107,8 +107,8 @@ public final class StorageUnitManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(
-                databaseName, true, switchingResource, metaDataContexts, metaDataPersistService, computeNodeInstanceContext);
+        MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService).createBySwitchResource(
+                databaseName, true, switchingResource, metaDataContexts, computeNodeInstanceContext);
         metaDataContexts.update(reloadMetaDataContexts);
         metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();

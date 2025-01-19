@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockCont
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
@@ -45,10 +45,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
-        MetaDataPersistService persistService = new MetaDataPersistService(repository);
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new StandaloneLockContext());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, computeNodeInstanceContext);
+        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistService(repository)).create(param, computeNodeInstanceContext);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
     }
     
