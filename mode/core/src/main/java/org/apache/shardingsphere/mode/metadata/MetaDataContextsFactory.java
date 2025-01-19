@@ -113,11 +113,10 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
         persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
-            String databaseName = entry.getKey();
-            persistService.persistConfigurations(entry.getKey(), entry.getValue(),
-                    metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits().entrySet().stream()
-                            .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                    metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+            ShardingSphereDatabase database = metadataContexts.getMetaData().getDatabase(entry.getKey());
+            Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            persistService.persistConfigurations(entry.getKey(), entry.getValue(), dataSources, database.getRuleMetaData().getRules());
         }
     }
     
