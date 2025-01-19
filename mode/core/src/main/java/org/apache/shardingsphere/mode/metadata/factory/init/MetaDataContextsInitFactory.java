@@ -34,5 +34,5 @@ public interface MetaDataContextsInitFactory {
      * @return created meta data contexts
      * @throws SQLException SQL exception
      */
-    MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException;
+    MetaDataContexts create(ContextManagerBuilderParameter param) throws SQLException;
 }
