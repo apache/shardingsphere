@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.database.D
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
 import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;

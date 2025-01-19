@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;

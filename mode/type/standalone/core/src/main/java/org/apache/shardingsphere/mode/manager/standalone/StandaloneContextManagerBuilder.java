@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockContext;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 

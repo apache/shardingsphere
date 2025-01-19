@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata;
+package org.apache.shardingsphere.mode.metadata.factory;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabases
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
