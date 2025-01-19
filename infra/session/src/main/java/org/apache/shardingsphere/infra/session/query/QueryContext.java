@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -90,6 +91,8 @@ public final class QueryContext {
      * @return used database
      */
     public ShardingSphereDatabase getUsedDatabase() {
+        ShardingSpherePreconditions.checkNotNull(usedDatabaseNames, NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkNotEmpty(usedDatabaseNames, NoDatabaseSelectedException::new);
         ShardingSpherePreconditions.checkState(usedDatabaseNames.size() <= 1,
                 () -> new UnsupportedSQLOperationException(String.format("Can not support multiple logic databases [%s]", Joiner.on(", ").join(usedDatabaseNames))));
         String databaseName = usedDatabaseNames.iterator().next();
