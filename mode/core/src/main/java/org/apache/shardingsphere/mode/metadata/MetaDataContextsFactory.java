@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -35,12 +37,13 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory;
-import org.apache.shardingsphere.mode.metadata.factory.InternalMetaDataFactory;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
@@ -80,7 +83,7 @@ public final class MetaDataContextsFactory {
                                                   final ContextManagerBuilderParameter param, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         Collection<RuleConfiguration> globalRuleConfigs = param.getGlobalRuleConfigs();
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
-        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(param.getDatabaseConfigs(), props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
         MetaDataContexts result = newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
         persistDatabaseConfigurations(result, param, persistService);
         persistMetaData(result, persistService);
@@ -92,8 +95,12 @@ public final class MetaDataContextsFactory {
                 getDatabaseNames(instanceContext, param.getDatabaseConfigs(), persistService), param.getDatabaseConfigs(), persistService);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Map<String, ShardingSphereDatabase> databases = InternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, instanceContext);
-        return newMetaDataContexts(persistService, param, globalRuleConfigs, databases, props);
+        return newMetaDataContexts(persistService, param, globalRuleConfigs,
+                ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, loadSchemas(persistService, effectiveDatabaseConfigs.keySet()), props, instanceContext), props);
+    }
+    
+    private static Map<String, Collection<ShardingSphereSchema>> loadSchemas(final MetaDataPersistService persistService, final Collection<String> databaseNames) {
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistService.getDatabaseMetaDataFacade().getSchema().load(each)));
     }
     
     private static MetaDataContexts newMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
@@ -103,7 +110,7 @@ public final class MetaDataContextsFactory {
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(param.getGlobalDataSources());
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases.values(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases.values(), globalResourceMetaData, globalRuleMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     private static Collection<String> getDatabaseNames(final ComputeNodeInstanceContext instanceContext,
@@ -182,7 +189,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     /**
@@ -208,7 +215,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(persistService, metaData));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData)));
     }
     
     private static ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
@@ -247,9 +254,10 @@ public final class MetaDataContextsFactory {
     private static ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataPersistService persistService,
                                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props,
                                                                 final ComputeNodeInstanceContext instanceContext) throws SQLException {
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return internalLoadMetaData
-                ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, instanceContext)
-                : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, instanceContext);
+                ? ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                : ShardingSphereDatabase.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     
     private static ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource resource) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata;
+package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -45,29 +42,20 @@ public final class ShardingSphereStatisticsFactory {
     /**
      * Create statistics.
      *
-     * @param persistService meta data persist service
      * @param metaData meta data
+     * @param loadedStatistics loaded statistics
      * @return created statistics
      */
-    public static ShardingSphereStatistics create(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+    public static ShardingSphereStatistics create(final ShardingSphereMetaData metaData, final ShardingSphereStatistics loadedStatistics) {
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
         if (metaData.getAllDatabases().isEmpty()) {
-            return new ShardingSphereStatistics();
+            return result;
         }
         Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
-        if (!dialectStatisticsAppender.isPresent()) {
-            return new ShardingSphereStatistics();
-        }
-        ShardingSphereStatistics loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData).orElse(new ShardingSphereStatistics());
         Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
-        return create(dialectStatisticsAppender.get(), unloadedDatabases, loadedStatistics);
-    }
-    
-    private static ShardingSphereStatistics create(final DialectStatisticsAppender dialectStatisticsAppender,
-                                                   final Collection<ShardingSphereDatabase> unloadedDatabases, final ShardingSphereStatistics loadedStatistics) {
-        ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (ShardingSphereDatabase each : unloadedDatabases) {
             ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(each);
-            dialectStatisticsAppender.append(databaseData, each);
+            dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseData, each));
             if (!databaseData.getSchemaData().isEmpty()) {
                 result.putDatabase(each.getName(), databaseData);
             }

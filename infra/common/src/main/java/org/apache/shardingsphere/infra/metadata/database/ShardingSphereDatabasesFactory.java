@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory;
+package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,42 +25,56 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
- * External meta data factory.
+ * ShardingSphere databases factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExternalMetaDataFactory {
+public final class ShardingSphereDatabasesFactory {
     
     /**
-     * Create database meta data for db.
+     * Create databases.
      *
-     * @param databaseName database name
-     * @param databaseConfig database configuration
-     * @param props configuration properties
+     * @param databaseConfigMap database configuration map
+     * @param schemas schemas
+     * @param props properties
      * @param computeNodeInstanceContext compute node instance context
-     * @return database meta data
-     * @throws SQLException SQL exception
+     * @return created databases
      */
-    public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
-                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
-        return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, props, computeNodeInstanceContext);
+    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                             final Map<String, Collection<ShardingSphereSchema>> schemas,
+                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
+        return databaseConfigMap.entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(),
+                        entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, computeNodeInstanceContext),
+                        (a, b) -> b, () -> new ConcurrentHashMap<>(databaseConfigMap.size(), 1F)));
+    }
+    
+    private static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig, final DatabaseType protocolType,
+                                                 final Collection<ShardingSphereSchema> schemas, final ConfigurationProperties props,
+                                                 final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        return databaseConfig.getStorageUnits().isEmpty()
+                ? ShardingSphereDatabase.create(databaseName, protocolType, props)
+                : ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseConfig, props), databaseConfig, computeNodeInstanceContext, schemas);
     }
     
     /**
-     * Create databases meta data for db.
+     * Create databases.
      *
      * @param databaseConfigMap database configuration map
      * @param props properties
      * @param computeNodeInstanceContext compute node instance context
-     * @return databases
+     * @return created databases
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,

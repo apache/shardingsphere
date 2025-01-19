@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory;
+package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -29,34 +28,24 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class ExternalMetaDataFactoryTest {
+class ShardingSphereDatabasesFactoryTest {
     
     @Test
-    void assertCreateSingleDatabase() throws SQLException {
+    void assertCreateDatabases() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
-        assertThat(actual.getName(), is("foo_db"));
-        assertTrue(actual.getResourceMetaData().getStorageUnits().isEmpty());
-    }
-    
-    @Test
-    void assertCreateDatabaseMap() throws SQLException {
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }
     
     @Test
-    void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
+    void assertCreateDatabasesWhenConfigUppercaseDatabaseName() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
-        Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(ComputeNodeInstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
         assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
