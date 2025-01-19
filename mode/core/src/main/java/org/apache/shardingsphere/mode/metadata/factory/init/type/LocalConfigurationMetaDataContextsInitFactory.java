@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory.type;
+package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
@@ -46,37 +40,23 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Local configuration meta data contexts factory.
+ * Local configuration meta data contexts init factory.
  */
 @RequiredArgsConstructor
-public final class LocalConfigurationMetaDataContextsFactory {
+public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDataContextsInitFactory {
     
     private final MetaDataPersistService persistService;
     
     private final ComputeNodeInstanceContext instanceContext;
     
-    /**
-     * Create meta data contexts.
-     *
-     * @param param context manager builder parameter
-     * @return meta data contexts
-     * @throws SQLException SQL exception
-     */
+    @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
         Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
-        MetaDataContexts result = createMetaDataContexts(param.getGlobalRuleConfigs(), param.getGlobalDataSources(), databases, props);
+        MetaDataContexts result = create(param.getGlobalRuleConfigs(), param.getGlobalDataSources(), databases, props, persistService);
         persistDatabaseConfigurations(result, param);
         persistMetaData(result);
         return result;
-    }
-    
-    private MetaDataContexts createMetaDataContexts(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, DataSource> globalDataSources,
-                                                    final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        Collection<ShardingSphereRule> globalRules = GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, new ResourceMetaData(globalDataSources), new RuleMetaData(globalRules), props);
-        ShardingSphereStatistics statistics = ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereDataPersistService().load(metaData));
-        return new MetaDataContexts(metaData, statistics);
     }
     
     private void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param) {

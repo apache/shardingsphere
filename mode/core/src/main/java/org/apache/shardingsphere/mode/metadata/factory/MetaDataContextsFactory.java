@@ -36,8 +36,9 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.factory.type.LocalConfigurationMetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.factory.type.RegisterCenterMetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
+import org.apache.shardingsphere.mode.metadata.factory.init.type.LocalConfigurationMetaDataContextsInitFactory;
+import org.apache.shardingsphere.mode.metadata.factory.init.type.RegisterCenterMetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
@@ -67,9 +68,10 @@ public final class MetaDataContextsFactory {
      * @throws SQLException SQL exception
      */
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
-        return containsRegisteredDatabases()
-                ? new RegisterCenterMetaDataContextsFactory(persistService, instanceContext).create(param)
-                : new LocalConfigurationMetaDataContextsFactory(persistService, instanceContext).create(param);
+        MetaDataContextsInitFactory initFactory = containsRegisteredDatabases()
+                ? new RegisterCenterMetaDataContextsInitFactory(persistService, instanceContext)
+                : new LocalConfigurationMetaDataContextsInitFactory(persistService, instanceContext);
+        return initFactory.create(param);
     }
     
     private boolean containsRegisteredDatabases() {
