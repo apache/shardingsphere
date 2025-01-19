@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory.type;
+package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
@@ -47,22 +48,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Register center meta data contexts factory.
+ * Register center meta data contexts init factory.
  */
 @RequiredArgsConstructor
-public final class RegisterCenterMetaDataContextsFactory {
+public final class RegisterCenterMetaDataContextsInitFactory implements MetaDataContextsInitFactory {
     
     private final MetaDataPersistService persistService;
     
     private final ComputeNodeInstanceContext instanceContext;
     
-    /**
-     * Create meta data contexts.
-     *
-     * @param param context manager builder parameter
-     * @return meta data contexts
-     * @throws SQLException SQL exception
-     */
+    @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(getDatabaseNames(param.getDatabaseConfigs()), param.getDatabaseConfigs());
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory.type;
+package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
@@ -46,22 +47,16 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Local configuration meta data contexts factory.
+ * Local configuration meta data contexts init factory.
  */
 @RequiredArgsConstructor
-public final class LocalConfigurationMetaDataContextsFactory {
+public final class LocalConfigurationMetaDataContextsInitFactory implements MetaDataContextsInitFactory {
     
     private final MetaDataPersistService persistService;
     
     private final ComputeNodeInstanceContext instanceContext;
     
-    /**
-     * Create meta data contexts.
-     *
-     * @param param context manager builder parameter
-     * @return meta data contexts
-     * @throws SQLException SQL exception
-     */
+    @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
         Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
