@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Storage unit manager.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class StorageUnitManager {
     
@@ -48,14 +49,6 @@ public final class StorageUnitManager {
     private final ResourceSwitchManager resourceSwitchManager;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public StorageUnitManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                              final PersistRepository repository, final ResourceSwitchManager resourceSwitchManager) {
-        this.metaDataContexts = metaDataContexts;
-        this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.resourceSwitchManager = resourceSwitchManager;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Register storage unit.

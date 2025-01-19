@@ -64,7 +64,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     private final MetaDataContextManager metaDataContextManager;
     
     public ClusterMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        metaDataPersistService = new MetaDataPersistService(repository);
+        metaDataPersistService = metaDataContextManager.getMetaDataPersistService();
         listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
         this.metaDataContextManager = metaDataContextManager;
     }

@@ -32,7 +32,7 @@ public final class StandalonePersistServiceBuilder implements PersistServiceBuil
     
     @Override
     public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return new StandaloneMetaDataManagerPersistService(repository, metaDataContextManager);
+        return new StandaloneMetaDataManagerPersistService(metaDataContextManager);
     }
     
     @Override
