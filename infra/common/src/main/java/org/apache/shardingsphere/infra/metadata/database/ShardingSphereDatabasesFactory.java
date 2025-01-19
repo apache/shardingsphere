@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -78,7 +79,7 @@ public final class ShardingSphereDatabasesFactory {
                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         SystemDatabase systemDatabase = new SystemDatabase(protocolType);
-        Collection<ShardingSphereDatabase> result = new HashSet<>(databaseConfigMap.size() + systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
+        Collection<ShardingSphereDatabase> result = new LinkedList<>();
         result.addAll(createGenericDatabases(databaseConfigMap, protocolType, systemDatabase, props, instanceContext));
         result.addAll(createSystemDatabases(databaseConfigMap, protocolType, systemDatabase, props));
         return result;
