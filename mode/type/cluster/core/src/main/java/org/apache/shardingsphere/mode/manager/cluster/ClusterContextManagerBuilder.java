@@ -60,7 +60,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
         LockContext lockContext = new ClusterLockContext(new GlobalLockPersistService(repository));
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
-        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistService(repository)).create(param, computeNodeInstanceContext);
+        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistService(repository), computeNodeInstanceContext).create(param);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         registerOnline(computeNodeInstanceContext, param, result, repository);
         return result;

@@ -102,7 +102,7 @@ public final class DatabaseRuleConfigurationManager {
     }
     
     private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
-        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistService).createByAlterRule(databaseName, false, ruleConfigurations, metaDataContexts, computeNodeInstanceContext));
+        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistService, computeNodeInstanceContext).createByAlterRule(databaseName, false, ruleConfigurations, metaDataContexts));
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final Collection<ShardingSphereRule> rules) {
