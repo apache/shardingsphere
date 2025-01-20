@@ -79,6 +79,10 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>
