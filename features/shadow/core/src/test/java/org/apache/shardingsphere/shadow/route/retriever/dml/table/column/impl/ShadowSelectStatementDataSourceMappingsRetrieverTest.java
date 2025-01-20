@@ -58,7 +58,6 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         when(columnSegment.getColumnBoundInfo().getOriginalTable().getValue()).thenReturn("foo_tbl");
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("foo"));
         ownerSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        when(columnSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
         when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
@@ -81,7 +80,6 @@ class ShadowSelectStatementDataSourceMappingsRetrieverTest {
         when(sqlStatementContext.getWhereSegments()).thenReturn(Arrays.asList(whereSegment, mock(WhereSegment.class, RETURNS_DEEP_STUBS)));
         ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(columnSegment.getColumnBoundInfo().getOriginalTable().getValue()).thenReturn("foo_tbl");
-        when(columnSegment.getOwner()).thenReturn(Optional.empty());
         when(ColumnExtractor.extract(expressionSegment)).thenReturn(Collections.singleton(columnSegment));
         when(ShadowExtractor.extractValues(expressionSegment, Collections.singletonList("foo"))).thenReturn(Optional.of(Collections.singleton("foo")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));

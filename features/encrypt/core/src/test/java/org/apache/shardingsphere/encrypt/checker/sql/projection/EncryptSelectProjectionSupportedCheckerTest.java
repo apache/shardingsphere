@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -76,8 +77,13 @@ class EncryptSelectProjectionSupportedCheckerTest {
     
     @Test
     void assertCheckWhenCombineStatementContainsEncryptColumn() {
+        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(encryptRule.findQueryEncryptor("foo_tbl", "foo_col_1")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(encryptRule.findQueryEncryptor("foo_tbl", "foo_col_2")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(encryptRule.findQueryEncryptor("bar_tbl", "bar_col_1")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(encryptRule.findQueryEncryptor("bar_tbl", "bar_col_2")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
         SelectStatementContext sqlStatementContext = mockSelectStatementContext();
-        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, null, sqlStatementContext));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(encryptRule, null, null, sqlStatementContext));
     }
     
     @Test

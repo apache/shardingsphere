@@ -66,140 +66,144 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>32.1.2-jre</guava.version>
-        <checker-qual.version>3.39.0</checker-qual.version>
-        <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
+        <guava.version>33.4.0-jre</guava.version>
+        <checker-qual.version>3.48.4</checker-qual.version>
+        <error_prone_annotations.version>2.36.0</error_prone_annotations.version>
         <j2objc-annotations.version>1.3</j2objc-annotations.version>
         
-        <commons-lang3.version>3.15.0</commons-lang3.version>
-        <commons-codec.version>1.16.0</commons-codec.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <commons-codec.version>1.17.2</commons-codec.version>
         <commons-math3.version>3.6.1</commons-math3.version>
-        <caffeine.version>2.9.3</caffeine.version>
-        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
-        <java-util.version>2.4.0</java-util.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
+        <commons-configuration2.version>2.11.0</commons-configuration2.version>
+        <commons-text.version>1.13.0</commons-text.version>
+        <caffeine.version>3.2.0</caffeine.version>
+        <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
+        <java-util.version>3.0.0</java-util.version>
         
-        <antlr4.version>4.10.1</antlr4.version>
-        <snakeyaml.version>2.2</snakeyaml.version>
-        <gson.version>2.10.1</gson.version>
-        <jackson.version>2.16.1</jackson.version>
+        <antlr4.version>4.13.2</antlr4.version>
+        <snakeyaml.version>2.3</snakeyaml.version>
+        <gson.version>2.11.0</gson.version>
+        <jackson.version>2.18.2</jackson.version>
         <json-path.version>2.9.0</json-path.version>
-        <json-smart.version>2.4.10</json-smart.version>
-        <accessors-smart.version>2.4.9</accessors-smart.version>
-        <asm.version>9.3</asm.version>
-        <groovy.version>4.0.22</groovy.version>
-        <freemarker.version>2.3.31</freemarker.version>
+        <json-smart.version>2.5.1</json-smart.version>
+        <accessors-smart.version>2.5.1</accessors-smart.version>
+        <asm.version>9.7.1</asm.version>
+        <groovy.version>4.0.24</groovy.version>
+        <freemarker.version>2.3.34</freemarker.version>
         <bytebuddy.version>1.15.4</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <atomikos.version>6.0.0</atomikos.version>
-        <narayana.version>5.12.7.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+        <narayana.version>5.13.1.Final</narayana.version>
+        <jboss-transaction-spi.version>8.0.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.6.1.Final</jboss-logging.version>
         <seata.version>2.2.0</seata.version>
         
-        <netty.version>4.1.112.Final</netty.version>
-        <bouncycastle.version>1.78.1</bouncycastle.version>
+        <netty.version>4.1.117.Final</netty.version>
+        <bouncycastle.version>1.80</bouncycastle.version>
         
-        <curator.version>5.7.0</curator.version>
-        <zookeeper.version>3.9.2</zookeeper.version>
-        <audience-annotations.version>0.12.0</audience-annotations.version>
-        <jetcd.version>0.7.7</jetcd.version>
-        <vertx.version>4.5.1</vertx.version>
+        <curator.version>5.7.1</curator.version>
+        <zookeeper.version>3.9.3</zookeeper.version>
+        <audience-annotations.version>0.15.0</audience-annotations.version>
+        <jetcd.version>0.8.4</jetcd.version>
+        <vertx.version>4.5.11</vertx.version>
         
-        <grpc.version>1.65.1</grpc.version>
-        <protobuf.version>3.21.12</protobuf.version>
+        <grpc.version>1.69.1</grpc.version>
+        <protobuf.version>4.29.3</protobuf.version>
         <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
-        <slf4j.version>1.7.36</slf4j.version>
-        <logback.version>1.2.13</logback.version>
-        <commons-logging.version>1.2</commons-logging.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.5.16</logback.version>
+        <commons-logging.version>1.3.4</commons-logging.version>
         
         <lombok.version>1.18.36</lombok.version>
-        <immutables.version>2.9.3</immutables.version>
+        <immutables.version>2.10.1</immutables.version>
         
-        <postgresql.version>42.7.2</postgresql.version>
-        <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
-        <mssql.version>6.1.7.jre8-preview</mssql.version>
-        <h2.version>2.2.224</h2.version>
-        <opengauss.version>3.1.0-og</opengauss.version>
-        <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
+        <postgresql.version>42.7.5</postgresql.version>
+        <mysql-connector-java.version>9.1.0</mysql-connector-java.version>
+        <mssql.version>12.9.0.jre8-preview</mssql.version>
+        <h2.version>2.3.232</h2.version>
+        <opengauss.version>6.0.0-og</opengauss.version>
+        <mariadb-java-client.version>2.7.12</mariadb-java-client.version>
+        <clickhouse-jdbc.version>0.7.2</clickhouse-jdbc.version>
         <hive.version>4.0.1</hive.version>
         <hive-server2-jdbc-driver-thin.version>1.6.0</hive-server2-jdbc-driver-thin.version>
-        <hadoop.version>3.3.6</hadoop.version>
-        <presto.version>0.288.1</presto.version>
+        <hadoop.version>3.4.1</hadoop.version>
+        <avro.version>1.12.0</avro.version>
+        <presto.version>0.290</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
         
-        <hikari-cp.version>4.0.3</hikari-cp.version>
+        <hikari-cp.version>6.2.1</hikari-cp.version>
         
-        <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
-        <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
-        <opentelemetry.version>1.41.0</opentelemetry.version>
-        <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
-        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
+        <prometheus-simpleclient.version>0.16.0</prometheus-simpleclient.version>
+        <prometheus-jmx.version>1.1.0</prometheus-jmx.version>
+        <opentelemetry.version>1.46.0</opentelemetry.version>
+        <opentelemetry-semconv.version>1.29.0-alpha</opentelemetry-semconv.version>
+        <kotlin-stdlib.version>1.9.25</kotlin-stdlib.version>
         
-        <junit.version>5.11.2</junit.version>
+        <junit.version>5.11.4</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <mockito.version>4.11.0</mockito.version>
+        <mockito.version>5.15.2</mockito.version>
         <awaitility.version>4.2.2</awaitility.version>
-        <testcontainers.version>1.20.3</testcontainers.version>
-        <commons-csv.version>1.9.0</commons-csv.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
+        <commons-csv.version>1.13.0</commons-csv.version>
         
-        <graal-sdk.version>24.1.0</graal-sdk.version>
-        <jedis.version>4.4.6</jedis.version>
+        <graal-sdk.version>24.1.1</graal-sdk.version>
+        <jedis.version>5.2.0</jedis.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
-        <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
+        <os-detector-maven-plugin.version>0.6.0</os-detector-maven-plugin.version>
         <native-maven-plugin.version>0.10.4</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
+        <templating-maven-plugin.version>3.0.0</templating-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <jandex-maven-plugin.version>3.1.3</jandex-maven-plugin.version>
-        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
-        <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
-        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <jandex-maven-plugin.version>3.2.3</jandex-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
         
         <!-- Release plugin versions -->
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
-        <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         
-        <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
-        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
+        <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+        <checksum-maven-plugin.version>1.11</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->
-        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
-        <spotless-maven-plugin.version>2.24.1</spotless-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
-        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
-        <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
-        <fb-contrib.version>7.6.0</fb-contrib.version>
-        <findsecbugs.version>1.12.0</findsecbugs.version>
-        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+        <apache-rat-plugin.version>0.16.1</apache-rat-plugin.version>
+        <spotless-maven-plugin.version>2.44.2</spotless-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+        <spotbugs-maven-plugin.version>4.8.6.6</spotbugs-maven-plugin.version>
+        <fb-contrib.version>7.6.9</fb-contrib.version>
+        <findsecbugs.version>1.13.0</findsecbugs.version>
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
-        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.8.0</maven-project-info-reports-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
-        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-        <dependency-check-maven.version>10.0.3</dependency-check-maven.version>
+        <maven-jxr-plugin.version>3.6.0</maven-jxr-plugin.version>
+        <jdepend-maven-plugin.version>2.1</jdepend-maven-plugin.version>
+        <taglist-maven-plugin.version>3.2.1</taglist-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <dependency-check-maven.version>12.0.0</dependency-check-maven.version>
     </properties>
     
     <dependencyManagement>
@@ -613,17 +617,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -914,14 +909,17 @@
     <reporting>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${maven-site-plugin.version}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
@@ -933,6 +931,7 @@
                 </reportSets>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${maven-jxr-plugin.version}</version>
                 <reportSets>

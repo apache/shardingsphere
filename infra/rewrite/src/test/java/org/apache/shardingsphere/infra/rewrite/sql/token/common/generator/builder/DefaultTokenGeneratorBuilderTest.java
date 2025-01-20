@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -47,7 +48,7 @@ class DefaultTokenGeneratorBuilderTest {
     @Test
     void assertGetSQLTokenGeneratorsWithSelect() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("DatabaseName"));
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
     
@@ -55,7 +56,7 @@ class DefaultTokenGeneratorBuilderTest {
     void assertGetSQLTokenGeneratorsWithShowColumns() {
         ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
-        when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("DatabaseName"));
         assertGetSQLTokenGenerators(sqlStatementContext);
     }
     

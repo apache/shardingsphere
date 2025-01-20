@@ -25,4 +25,12 @@
     </parent>
     <artifactId>shardingsphere-infra-exception-core</artifactId>
     <name>${project.artifactId}</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
