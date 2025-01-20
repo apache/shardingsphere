@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -57,7 +58,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null, null);
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), "testDataBaseName", new H2DatabaseType());
         when(tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));

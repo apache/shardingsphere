@@ -21,9 +21,11 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +40,7 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getWith().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getWith()).thenReturn(Optional.of(mock(WithSegment.class)));
         assertTrue(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     

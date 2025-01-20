@@ -71,7 +71,7 @@ class EncryptProjectionTokenGeneratorTest {
         EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
         when(encryptColumn.getAssistedQuery()).thenReturn(Optional.empty());
         when(encryptTable1.getEncryptColumn("mobile")).thenReturn(encryptColumn);
-        when(result.findEncryptTable("t_order").isPresent()).thenReturn(true);
+        when(result.findEncryptTable("t_order")).thenReturn(Optional.of(mock(EncryptTable.class)));
         when(result.getEncryptTable("t_order").isEncryptColumn("order_id")).thenReturn(true);
         return result;
     }

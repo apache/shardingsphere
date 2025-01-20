@@ -40,7 +40,7 @@ class GeneratedKeyAssignmentTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getSetAssignment().isPresent()).thenReturn(true);
+        when(insertStatementContext.getSqlStatement().getSetAssignment()).thenReturn(Optional.of(mock(SetAssignmentSegment.class)));
         assertTrue(new GeneratedKeyAssignmentTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     

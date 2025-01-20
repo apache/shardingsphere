@@ -58,10 +58,5 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>

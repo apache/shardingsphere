@@ -62,7 +62,9 @@ class ShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowDatabasesStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowDatabasesStatement());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowDatabasesStatement());
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(LocalDataMergedResult.class));
     }
     
