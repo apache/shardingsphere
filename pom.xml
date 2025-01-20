@@ -90,13 +90,12 @@
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.15.4</bytebuddy.version>
         
-        <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
-        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
+        <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
+        <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
         
         <atomikos.version>6.0.0</atomikos.version>
         <narayana.version>5.12.7.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+        <jboss-logging.version>3.4.3.Final</jboss-logging.version>
         <seata.version>2.2.0</seata.version>
         
         <netty.version>4.1.112.Final</netty.version>
@@ -296,16 +295,16 @@
             </dependency>
             
             <dependency>
-                <groupId>jakarta.platform</groupId>
-                <artifactId>jakarta.jakartaee-bom</artifactId>
-                <version>${jakarta.jakartaee-bom.version}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${glassfish-jaxb.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-bom</artifactId>
-                <version>${glassfish-jaxb.version}</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-bom</artifactId>
+                <version>${jakarta.jakartaee-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
