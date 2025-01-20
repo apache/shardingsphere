@@ -14,6 +14,9 @@
     "pattern":"\\QMETA-INF/services/javax.xml.parsers.SAXParserFactory\\E"
   }]},
   "bundles":[{
+    "name":"com.sun.org.apache.xml.internal.serializer.XMLEntities",
+    "locales":["en"]
+  }, {
     "name":"com.microsoft.sqlserver.jdbc.SQLServerResource",
     "locales":["en"]
   }, {

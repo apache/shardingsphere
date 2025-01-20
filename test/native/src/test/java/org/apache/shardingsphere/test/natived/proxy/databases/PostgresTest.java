@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -45,21 +45,21 @@ import java.util.Properties;
 class PostgresTest {
     
     @Container
-    private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:17.2-bookworm");
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17.2-bookworm");
     
-    private static ProxyTestingServer proxyTestingServer;
+    private ProxyTestingServer proxyTestingServer;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() throws SQLException {
+    @BeforeEach
+    void beforeEach() throws SQLException {
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/")
+            openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/")
                     .close();
             return true;
         });
         try (
-                Connection connection = openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/");
+                Connection connection = openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/");
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
@@ -73,8 +73,8 @@ class PostgresTest {
         });
     }
     
-    @AfterAll
-    static void afterAll() {
+    @AfterEach
+    void afterEach() {
         proxyTestingServer.close();
     }
     
@@ -96,15 +96,15 @@ class PostgresTest {
                 Connection connection = openConnection("root", "root", "jdbc:postgresql://127.0.0.1:" + proxyTestingServer.getProxyPort() + "/sharding_db");
                 Statement statement = connection.createStatement()) {
             statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_0\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_0\",\n"
                     + "  USER=\"test\",\n"
                     + "  PASSWORD=\"test\"\n"
                     + "),ds_1 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_1\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_1\",\n"
                     + "  USER=\"test\",\n"
                     + "  PASSWORD=\"test\"\n"
                     + "),ds_2 (\n"
-                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + POSTGRES_CONTAINER.getMappedPort(5432) + "/demo_ds_2\",\n"
+                    + "  URL=\"jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/demo_ds_2\",\n"
                     + "  USER=\"test\",\n"
                     + "  PASSWORD=\"test\"\n"
                     + ")");
