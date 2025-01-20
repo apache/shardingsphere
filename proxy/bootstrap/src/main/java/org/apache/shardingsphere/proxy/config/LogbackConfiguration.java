@@ -22,7 +22,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.Configurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
@@ -40,13 +39,12 @@ public final class LogbackConfiguration extends BasicConfigurator {
     public static final String NETTY_LOGGER_NAME = "io.netty";
     
     @Override
-    public Configurator.ExecutionStatus configure(final LoggerContext loggerContext) {
+    public void configure(final LoggerContext loggerContext) {
         ConsoleAppender<ILoggingEvent> consoleAppender = createConsoleAppender(loggerContext);
         Logger rootLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(consoleAppender);
         initBasicLogger(loggerContext);
-        return ExecutionStatus.NEUTRAL;
     }
     
     private ConsoleAppender<ILoggingEvent> createConsoleAppender(final LoggerContext loggerContext) {

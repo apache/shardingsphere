@@ -117,8 +117,8 @@
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
-        <slf4j.version>2.0.16</slf4j.version>
-        <logback.version>1.3.15</logback.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.13</logback.version>
         <commons-logging.version>1.3.4</commons-logging.version>
         
         <lombok.version>1.18.36</lombok.version>
@@ -130,11 +130,10 @@
         <h2.version>2.2.224</h2.version>
         <opengauss.version>6.0.0-og</opengauss.version>
         <mariadb-java-client.version>2.7.12</mariadb-java-client.version>
-        <clickhouse-jdbc.version>0.7.2</clickhouse-jdbc.version>
+        <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive.version>4.0.1</hive.version>
         <hive-server2-jdbc-driver-thin.version>1.6.0</hive-server2-jdbc-driver-thin.version>
-        <hadoop.version>3.4.1</hadoop.version>
-        <avro.version>1.12.0</avro.version>
+        <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.290</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
         
