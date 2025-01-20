@@ -65,7 +65,7 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(decode(cipherValue.toString().trim()));
         return new String(result, StandardCharsets.UTF_8);
     }
-
+    
     @SneakyThrows(DecoderException.class)
     private byte[] decode(final String value) {
         return Base64.getDecoder().decode(value);
