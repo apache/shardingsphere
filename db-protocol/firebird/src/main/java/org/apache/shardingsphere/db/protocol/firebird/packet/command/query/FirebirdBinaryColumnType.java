@@ -21,17 +21,18 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
+import org.firebirdsql.gds.BlrConstants;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column type for PostgreSQL.
+ * Column type for Firebird.
  */
 @RequiredArgsConstructor
 @Getter
-public enum FirebirdColumnType implements BinaryColumnType {
+public enum FirebirdBinaryColumnType implements BinaryColumnType {
 
     //TODO add different varying length based on a row length
     TEXT(452, 255),
@@ -58,9 +59,11 @@ public enum FirebirdColumnType implements BinaryColumnType {
     BOOLEAN(32764, 1),
     NULL(32766, 0);
 
-    private static final Map<Integer, FirebirdColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
-
-    private static final Map<Integer, FirebirdColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
+    private static final Map<Integer, FirebirdBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
+    
+    private static final Map<Integer, FirebirdBinaryColumnType> BLR_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
+    
+    private static final Map<Integer, FirebirdBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
 
     private final int value;
     private final int length;
@@ -90,7 +93,30 @@ public enum FirebirdColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, ARRAY);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME_WITH_TIMEZONE, TIME_TZ);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP_WITH_TIMEZONE, TIMESTAMP_TZ);
-        for (FirebirdColumnType each : values()) {
+        
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_varying2, VARYING);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_text2, TEXT);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_text, NULL);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_double, DOUBLE);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_float, FLOAT);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_d_float, D_FLOAT);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_sql_date, DATE);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_sql_time, TIME);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_timestamp, TIMESTAMP);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_quad, BLOB);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_long, LONG);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_short, SHORT);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_int64, INT64);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_bool, BOOLEAN);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_dec64, DEC16);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_dec128, DEC34);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_int128, INT128);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_timestamp_tz, TIMESTAMP_TZ);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_sql_time_tz, TIME_TZ);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_ex_timestamp_tz, TIMESTAMP_TZ_EX);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_ex_time_tz, TIME_TZ_EX);
+        
+        for (FirebirdBinaryColumnType each : values()) {
             VALUE_AND_COLUMN_TYPE_MAP.put(each.value, each);
         }
     }
@@ -101,9 +127,20 @@ public enum FirebirdColumnType implements BinaryColumnType {
      * @param jdbcType JDBC type
      * @return column type enum
      */
-    public static FirebirdColumnType valueOfJDBCType(final int jdbcType) {
-        Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in column type", jdbcType);
+    public static FirebirdBinaryColumnType valueOfJDBCType(final int jdbcType) {
+        Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%d` in column type", jdbcType);
         return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
+    }
+    
+    /**
+     * Value of BLR type.
+     *
+     * @param blrType BLR type
+     * @return column type enum
+     */
+    public static FirebirdBinaryColumnType valueOfBLRType(final int blrType) {
+        Preconditions.checkArgument(BLR_TYPE_AND_COLUMN_TYPE_MAP.containsKey(blrType), "Can not find BLR type `%d` in column type", blrType);
+        return BLR_TYPE_AND_COLUMN_TYPE_MAP.get(blrType);
     }
 
     /**
@@ -112,8 +149,8 @@ public enum FirebirdColumnType implements BinaryColumnType {
      * @param value value
      * @return column type
      */
-    public static FirebirdColumnType valueOf(final int value) {
-        Preconditions.checkArgument(VALUE_AND_COLUMN_TYPE_MAP.containsKey(value), "Can not find value `%s` in column type", value);
+    public static FirebirdBinaryColumnType valueOf(final int value) {
+        Preconditions.checkArgument(VALUE_AND_COLUMN_TYPE_MAP.containsKey(value), "Can not find value `%d` in column type", value);
         return VALUE_AND_COLUMN_TYPE_MAP.get(value);
     }
 }

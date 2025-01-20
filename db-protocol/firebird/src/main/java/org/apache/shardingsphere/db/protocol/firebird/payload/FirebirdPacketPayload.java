@@ -36,7 +36,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     private final ByteBuf byteBuf;
     
     private final Charset charset;
-
+    
     /**
      * Read 1 byte fixed length integer from byte buffers.
      *
@@ -45,7 +45,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public int readInt1() {
         return byteBuf.readUnsignedByte();
     }
-
+    
     /**
      * Write 1 byte fixed length integer to byte buffers.
      *
@@ -54,7 +54,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeInt1(final int value) {
         byteBuf.writeByte(value);
     }
-
+    
     /**
      * Read 2 byte fixed length integer from byte buffers.
      *
@@ -63,7 +63,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public int readInt2() {
         return byteBuf.readUnsignedShort();
     }
-
+    
     /**
      * Write 2 byte fixed length integer to byte buffers.
      *
@@ -72,7 +72,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeInt2(final int value) {
         byteBuf.writeShort(value);
     }
-
+    
     /**
      * Read 2 byte fixed length integer in little-endian from byte buffers.
      *
@@ -81,7 +81,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public int readInt2LE() {
         return byteBuf.readUnsignedShortLE();
     }
-
+    
     /**
      * Write 2 byte fixed length integer in little-endian to byte buffers.
      *
@@ -90,7 +90,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeInt2LE(final int value) {
         byteBuf.writeShortLE(value);
     }
-
+    
     /**
      * Read 4 byte fixed length integer from byte buffers.
      *
@@ -126,27 +126,26 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public void writeInt8(final long value) {
         byteBuf.writeLong(value);
     }
-
+    
     /**
      * Read specified length of bytes from byte buffers.
      *
      * @param count fixed number of bytes to read
-     *
      * @return ByteBuf consisting of a specified number of bytes
      */
     public ByteBuf readBytes(final int count) {
         return byteBuf.readBytes(count);
     }
-
+    
     /**
      * Write variable length bytes to byte buffers.
-     * 
+     *
      * @param value fixed length bytes
      */
     public void writeBytes(final byte[] value) {
         byteBuf.writeBytes(value);
     }
-
+    
     /**
      * Read variable length of bytes from byte buffers.
      *
@@ -158,7 +157,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
         skipPadding(length);
         return buffer;
     }
-
+    
     /**
      * Write variable length bytes to byte buffers.
      *
@@ -169,7 +168,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
         byteBuf.writeBytes(value);
         byteBuf.writeBytes(new byte[(4 - value.length) & 3]);
     }
-
+    
     /**
      * Read variable length of bytes from byte buffers.
      *
@@ -178,7 +177,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     public String readString() {
         return this.readBuffer().toString(charset);
     }
-
+    
     /**
      * Write variable length bytes to byte buffers.
      *
@@ -199,7 +198,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     
     /**
      * Read null terminated string from byte buffers.
-     * 
+     *
      * @return null terminated string
      */
     public String readStringNul() {
@@ -210,7 +209,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     
     /**
      * Write null terminated string to byte buffers.
-     * 
+     *
      * @param value null terminated string
      */
     public void writeStringNul(final String value) {
@@ -220,7 +219,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     
     /**
      * Write rest of packet string to byte buffers.
-     * 
+     *
      * @param value rest of packet string
      */
     public void writeStringEOF(final String value) {
@@ -229,13 +228,13 @@ public final class FirebirdPacketPayload implements PacketPayload {
     
     /**
      * Skip reserved from byte buffers.
-     * 
+     *
      * @param length length of reserved
      */
     public void skipReserved(final int length) {
         byteBuf.skipBytes(length);
     }
-
+    
     /**
      * Skip padding from byte buffers.
      *
@@ -243,15 +242,5 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public void skipPadding(final int length) {
         byteBuf.skipBytes((4 - length) & 3);
-    }
-    
-    /**
-     * Check if there has complete packet in ByteBuf.
-     * PostgreSQL Message: (byte1) message type + (int4) length + (length - 4) payload
-     *
-     * @return has complete packet
-     */
-    public boolean hasCompletePacket() {
-        return byteBuf.readableBytes() >= 5 && byteBuf.readableBytes() - 1 >= byteBuf.getInt(byteBuf.readerIndex() + 1);
     }
 }

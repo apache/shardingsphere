@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdColumnType;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -46,7 +47,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdS
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -81,16 +82,38 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
         } else {
             responseType = ResponseType.UPDATE;
         }
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+        Collection<DatabasePacket> result = new LinkedList<>();
+        if (packet.isStoredProcedure() && next()) {
+            result.add(getSQLResponse());
+        }
+        result.add(new FirebirdGenericResponsePacket());
+        return result;
     }
 
     private FirebirdServerPreparedStatement updateAndGetPreparedStatement() {
         FirebirdServerPreparedStatement result = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-        if (!packet.getParamsValues().isEmpty()) {
+        if (!packet.getParameterTypes().isEmpty()) {
             result.getParameterTypes().clear();
             result.getParameterTypes().addAll(packet.getParameterTypes());
         }
         return result;
+    }
+    
+    private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
+        QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
+        BinaryRow row = createBinaryRow(queryResponseRow);
+        FirebirdSQLResponsePacket result = new FirebirdSQLResponsePacket();
+        result.setMessageCount(1);
+        result.setData(packet.getReturnData(row));
+        return result;
+    }
+    
+    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
+        List<BinaryCell> result = new ArrayList<>(queryResponseRow.getCells().size());
+        for (QueryResponseCell each : queryResponseRow.getCells()) {
+            result.add(new BinaryCell(FirebirdBinaryColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
+        }
+        return new BinaryRow(result);
     }
 
     @Override
@@ -99,18 +122,8 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     }
 
     @Override
-    public FirebirdPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
-        BinaryRow test = createBinaryRow(queryResponseRow);
-        return new FirebirdGenericResponsePacket();
-    }
-
-    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
-        List<BinaryCell> result = new ArrayList<>(queryResponseRow.getCells().size());
-        for (QueryResponseCell each : queryResponseRow.getCells()) {
-            result.add(new BinaryCell(FirebirdColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
-        }
-        return new BinaryRow(result);
+    public FirebirdPacket getQueryRowPacket() {
+        return null;
     }
 
     @Override

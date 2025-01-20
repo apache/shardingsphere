@@ -23,56 +23,34 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.util.Arrays;
-
 /**
- * Accept data packet for Firebird.
+ * SQL response packet for Firebird.
  */
 @Getter
 @NoArgsConstructor
-public final class FirebirdGenericResponsePacket extends FirebirdPacket {
+public final class FirebirdSQLResponsePacket extends FirebirdPacket {
 
-    private int handle = 0;
-    private long id = 0;
+    private int messageCount = 0;
     private byte[] data = new byte[0];
-    private byte[] statusVector = getEmptyStatusVector();
 
-    public FirebirdGenericResponsePacket setHandle(final int objectHandle) {
-        handle = objectHandle;
+    public FirebirdSQLResponsePacket setMessageCount(final int messageCount) {
+        this.messageCount = messageCount;
         return this;
     }
 
-    public FirebirdGenericResponsePacket setId(final int objectId) {
-        id = objectId;
-        return this;
-    }
-
-    public FirebirdGenericResponsePacket setData(final byte[] buffer) {
+    public FirebirdSQLResponsePacket setData(final byte[] buffer) {
         data = buffer;
-        return this;
-    }
-
-    public FirebirdGenericResponsePacket setStatusVector(final byte[] buffer) {
-        statusVector = buffer;
         return this;
     }
 
     @Override
     protected void write(FirebirdPacketPayload payload) {
-        payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
-        payload.writeInt4(handle);
-        payload.writeInt8(id);
-        payload.writeBuffer(data);
-        payload.writeBytes(statusVector);
+        payload.writeInt4(FirebirdCommandPacketType.SQL_RESPONSE.getValue());
+        payload.writeInt4(messageCount);
+        payload.writeBytes(data);
     }
 
-    private static byte[] getEmptyStatusVector() {
-        byte[] statusVector = new byte[4];
-        Arrays.fill(statusVector, (byte) 0);
-        return statusVector;
-    }
-
-    public static FirebirdGenericResponsePacket getPacket() {
-        return new FirebirdGenericResponsePacket();
+    public static FirebirdSQLResponsePacket getPacket() {
+        return new FirebirdSQLResponsePacket();
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdColumnType;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -103,7 +103,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     break;
                 case SELECT:
                     writeCode(FirebirdSQLInfoPacketType.SELECT, data);
-                    processDescribe(sqlStatementContext, metaDataContexts, data, true);
+                    if (getFirebirdStatementType(sqlStatementContext.getSqlStatement()) == FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode()) {
+                        processDescribe(sqlStatementContext, metaDataContexts, data, true);
+                    } else {
+                        skipDescribe(sqlStatementContext, data);
+                    }
                     break;
                 case BIND:
                     writeCode(FirebirdSQLInfoPacketType.BIND, data);
@@ -167,6 +171,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return 0;
     }
+    
+    private void skipDescribe(SQLStatementContext sqlStatementContext, ByteBuf buffer) {
+        while (packet.getCurrentItem() != FirebirdSQLInfoPacketType.DESCRIBE_END) {
+            packet.nextItem();
+        }
+        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, 0, buffer);
+    }
 
     private void processDescribe(SQLStatementContext sqlStatementContext, MetaDataContexts metaDataContexts, ByteBuf buffer, boolean returnAll) {
         //TODO add exception if the first item is not DESCRIBE_VARS
@@ -214,7 +225,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     writeInt(FirebirdSQLInfoPacketType.SQLDA_SEQ, idx, buffer);
                     break;
                 case TYPE:
-                    writeInt(FirebirdSQLInfoPacketType.TYPE, FirebirdColumnType.valueOfJDBCType(column.getDataType()).getValue() + 1, buffer);
+                    writeInt(FirebirdSQLInfoPacketType.TYPE, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getValue() + 1, buffer);
                     break;
                 case SUB_TYPE:
                     writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, 0, buffer);
@@ -223,7 +234,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     writeInt(FirebirdSQLInfoPacketType.SCALE, 0, buffer);
                     break;
                 case LENGTH:
-                    writeInt(FirebirdSQLInfoPacketType.LENGTH, FirebirdColumnType.valueOfJDBCType(column.getDataType()).getLength(), buffer);
+                    writeInt(FirebirdSQLInfoPacketType.LENGTH, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getLength(), buffer);
                     break;
                 case FIELD:
                     writeString(FirebirdSQLInfoPacketType.FIELD, column.getName(), buffer);

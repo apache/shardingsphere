@@ -77,7 +77,7 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
             count++;
             databaseConnectionManager.getConnectionResourceLock().doAwait(context);
             DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
-            context.write(dataValue);
+//            context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();
                 count = 0;
