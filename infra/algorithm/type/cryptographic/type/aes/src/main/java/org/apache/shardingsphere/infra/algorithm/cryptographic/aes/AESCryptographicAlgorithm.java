@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
-import org.apache.commons.codec.DecoderException;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -66,7 +65,6 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         return new String(result, StandardCharsets.UTF_8);
     }
     
-    @SneakyThrows(DecoderException.class)
     private byte[] decode(final String value) {
         return Base64.getDecoder().decode(value);
     }
