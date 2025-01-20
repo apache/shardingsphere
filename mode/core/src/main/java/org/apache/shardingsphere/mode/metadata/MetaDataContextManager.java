@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -104,13 +105,12 @@ public class MetaDataContextManager {
     public void forceRefreshDatabaseMetaData(final ShardingSphereDatabase database) {
         try {
             metaDataContexts.update(createMetaDataContexts(database));
-            metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()
-                    .forEach(each -> {
-                        if (each.isEmpty()) {
-                            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(database.getName(), each.getName());
-                        }
-                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), each.getName(), each.getAllTables());
-                    });
+            for (ShardingSphereSchema each : metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()) {
+                if (each.isEmpty()) {
+                    metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(database.getName(), each.getName());
+                }
+                metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(database.getName(), each.getName(), each.getAllTables());
+            }
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
