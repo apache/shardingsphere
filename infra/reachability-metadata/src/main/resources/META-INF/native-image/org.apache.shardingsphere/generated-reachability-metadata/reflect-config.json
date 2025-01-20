@@ -28,7 +28,7 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f258bdf9c28"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fe21bdf9c28"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -748,11 +748,6 @@
   "name":"java.util.concurrent.atomic.LongAdder",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"add","parameterTypes":["long"] }, {"name":"sum","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask"},
-  "name":"java.util.concurrent.atomic.Striped64$Cell",
-  "fields":[{"name":"value"}]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},

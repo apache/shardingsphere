@@ -91,7 +91,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f258bca2b10"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fe21bca2710"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
