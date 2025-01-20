@@ -20,8 +20,11 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -30,14 +33,18 @@ import java.sql.SQLException;
 
 class ShardingTest {
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @AfterAll
-    static void afterAll() throws SQLException {
+    @AfterEach
+    void afterEach() throws SQLException {
         try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
         }
     }
     

@@ -20,12 +20,15 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.firebirdsql.management.FBManager;
 import org.firebirdsql.management.PageSizeConstants;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
@@ -47,46 +50,50 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class FirebirdTest {
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.firebird.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.firebird.";
     
-    private static final String PASSWORD = "masterkey";
+    private final String password = "masterkey";
     
     @SuppressWarnings("resource")
     @Container
-    private static final GenericContainer<?> CONTAINER = new GenericContainer<>("ghcr.io/fdcastel/firebird:5.0.1")
-            .withEnv("FIREBIRD_ROOT_PASSWORD", PASSWORD)
+    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/fdcastel/firebird:5.0.1")
+            .withEnv("FIREBIRD_ROOT_PASSWORD", password)
             .withEnv("FIREBIRD_USER", "alice")
-            .withEnv("FIREBIRD_PASSWORD", PASSWORD)
+            .withEnv("FIREBIRD_PASSWORD", password)
             .withEnv("FIREBIRD_DATABASE", "mirror.fdb")
             .withEnv("FIREBIRD_DATABASE_DEFAULT_CHARSET", "UTF8")
             .withExposedPorts(3050);
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private String jdbcUrlPrefix;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() throws SQLException {
+    @AfterEach
+    void afterEach() throws SQLException {
         try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
         }
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
     }
     
     @Test
     void assertShardingInLocalTransactions() throws Exception {
-        jdbcUrlPrefix = "jdbc:firebird://localhost:" + CONTAINER.getMappedPort(3050) + "//var/lib/firebird/data/";
+        jdbcUrlPrefix = "jdbc:firebird://localhost:" + container.getMappedPort(3050) + "//var/lib/firebird/data/";
         logicDataSource = createDataSource();
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
@@ -109,7 +116,7 @@ class FirebirdTest {
     private Connection openConnection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", "alice");
-        props.setProperty("password", PASSWORD);
+        props.setProperty("password", password);
         return DriverManager.getConnection(jdbcUrlPrefix + "mirror.fdb", props);
     }
     
@@ -131,22 +138,22 @@ class FirebirdTest {
         try (FBManager fbManager = new FBManager()) {
             fbManager.setServer("localhost");
             fbManager.setUserName("alice");
-            fbManager.setPassword(PASSWORD);
+            fbManager.setPassword(password);
             fbManager.setFileName("/var/lib/firebird/data/mirror.fdb");
             fbManager.setPageSize(PageSizeConstants.SIZE_16K);
             fbManager.setDefaultCharacterSet("UTF8");
-            fbManager.setPort(CONTAINER.getMappedPort(3050));
+            fbManager.setPort(container.getMappedPort(3050));
             fbManager.start();
-            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_0.fdb", "alice", PASSWORD);
-            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_1.fdb", "alice", PASSWORD);
-            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_2.fdb", "alice", PASSWORD);
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_0.fdb", "alice", password);
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_1.fdb", "alice", password);
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_2.fdb", "alice", password);
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/firebird.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0.fdb");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1.fdb");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2.fdb");
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0.fdb");
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1.fdb");
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2.fdb");
         return new HikariDataSource(config);
     }
 }
