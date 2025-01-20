@@ -97,15 +97,6 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Renew meta data contexts.
-     *
-     * @param metaDataContexts meta data contexts
-     */
-    public void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        this.metaDataContexts.update(metaDataContexts);
-    }
-    
-    /**
      * Force refresh database meta data.
      *
      * @param database to be reloaded database
