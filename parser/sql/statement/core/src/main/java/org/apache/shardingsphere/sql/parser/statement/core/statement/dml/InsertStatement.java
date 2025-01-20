@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -102,6 +103,15 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
      * @return on duplicate key columns segment
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get On conflict key columns segment.
+     *
+     * @return on conflict key columns segment
+     */
+    public Optional<OnConflictKeyColumnsSegment> getOnConflictKeyColumns() {
         return Optional.empty();
     }
     
