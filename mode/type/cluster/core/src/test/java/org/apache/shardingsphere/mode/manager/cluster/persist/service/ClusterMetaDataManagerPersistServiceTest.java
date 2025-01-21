@@ -70,7 +70,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeEach
     void setUp() {
-        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(mock(PersistRepository.class), metaDataContextManager);
+        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, mock(PersistRepository.class));
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistService);
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("listenerAssistedPersistService"), metaDataManagerPersistService, listenerAssistedPersistService);
     }

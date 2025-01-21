@@ -52,7 +52,7 @@ public final class MetaDataContexts {
     /**
      * Get ShardingSphere statistics.
      *
-     * @return got meta data statistics
+     * @return got statistics
      */
     public ShardingSphereStatistics getStatistics() {
         return statistics.get();

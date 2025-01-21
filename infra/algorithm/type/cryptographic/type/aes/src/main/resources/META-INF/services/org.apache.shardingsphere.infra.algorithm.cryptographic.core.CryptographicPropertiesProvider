@@ -15,12 +15,4 @@
 # limitations under the License.
 #
 
-advisors:
-  - target: org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory
-    advice: org.apache.shardingsphere.agent.plugin.logging.file.advice.MetaDataContextsFactoryAdvice
-    pointcuts:
-      - name: create
-        type: method
-        params:
-          - index: 0
-            type: org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter
+org.apache.shardingsphere.infra.algorithm.cryptographic.aes.props.DefaultAESPropertiesProvider
