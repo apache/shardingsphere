@@ -119,7 +119,7 @@
         
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.13</logback.version>
-        <commons-logging.version>1.3.4</commons-logging.version>
+        <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.36</lombok.version>
         <immutables.version>2.10.1</immutables.version>
@@ -610,6 +610,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
@@ -641,12 +647,6 @@
         <dependency>
             <groupId>com.cedarsoftware</groupId>
             <artifactId>java-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     

@@ -59,6 +59,5 @@
             <artifactId>seata-all</artifactId>
             <scope>provided</scope>
         </dependency>
-        
     </dependencies>
 </project>
