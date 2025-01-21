@@ -56,7 +56,7 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA_ tableName*)? (FROM databaseName)?
+    : SHOW TABLE METADATA tableName (COMMA_ tableName)* (FROM databaseName)?
     ;
 
 showComputeNodeInfo

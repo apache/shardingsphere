@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
@@ -32,19 +32,14 @@ import java.sql.SQLException;
 /**
  * Rule item manager.
  */
-public class RuleItemManager {
+@RequiredArgsConstructor
+public final class RuleItemManager {
     
     private final MetaDataContexts metaDataContexts;
     
     private final DatabaseRuleConfigurationManager ruleConfigManager;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public RuleItemManager(final MetaDataContexts metaDataContexts, final PersistRepository repository, final DatabaseRuleConfigurationManager ruleConfigManager) {
-        this.metaDataContexts = metaDataContexts;
-        this.ruleConfigManager = ruleConfigManager;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Alter with rule item.
@@ -55,10 +50,9 @@ public class RuleItemManager {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alterRuleItem(final AlterRuleItem alterRuleItem) throws SQLException {
         Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistService.getRepository().query(alterRuleItem.getActiveVersionKey())),
-                "Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
+                "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String yamlContent = metaDataPersistService.getMetaDataVersionPersistService()
-                .getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
+        String yamlContent = metaDataPersistService.getMetaDataVersionPersistService().getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
