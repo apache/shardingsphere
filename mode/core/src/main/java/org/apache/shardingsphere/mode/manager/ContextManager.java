@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.ClusterStateContext;
+import org.apache.shardingsphere.mode.state.cluster.ClusterStateContext;
 
 import java.sql.SQLException;
 import java.util.Collections;

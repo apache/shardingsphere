@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.persist;
+package org.apache.shardingsphere.mode.persist.service;
 
-import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Cluster state persist service.
+ * Persist service builder.
  */
-@RequiredArgsConstructor
-public final class ClusterStatePersistService {
-    
-    private final PersistRepository repository;
+public interface PersistServiceBuilder extends TypedSPI {
     
     /**
-     * Update cluster state.
+     * Build meta data manager persist service.
      *
-     * @param state to be updated cluster state
+     * @param repository persist repository
+     * @param metaDataContextManager meta data context manager
+     * @return meta data manager persist service
      */
-    public void update(final ClusterState state) {
-        repository.persist(StatesNodePath.getClusterStatePath(), state.name());
-    }
+    MetaDataManagerPersistService buildMetaDataManagerPersistService(PersistRepository repository, MetaDataContextManager metaDataContextManager);
     
     /**
-     * Load cluster state.
+     * Build process persist service.
      *
-     * @return loaded cluster state
+     * @param repository persist repository
+     * @return process persist service
      */
-    public ClusterState load() {
-        String value = repository.query(StatesNodePath.getClusterStatePath());
-        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
-    }
+    ProcessPersistService buildProcessPersistService(PersistRepository repository);
 }

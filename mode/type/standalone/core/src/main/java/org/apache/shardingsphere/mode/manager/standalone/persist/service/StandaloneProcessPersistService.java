@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone.persist.service;
 
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;

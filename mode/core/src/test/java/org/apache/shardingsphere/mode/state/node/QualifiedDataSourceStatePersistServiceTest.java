@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.unified;
+package org.apache.shardingsphere.mode.state.node;
 
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.persist.ClusterStatePersistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,33 +35,30 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClusterStatePersistServiceTest {
+class QualifiedDataSourceStatePersistServiceTest {
     
-    private ClusterStatePersistService clusterStatePersistService;
+    private QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        clusterStatePersistService = new ClusterStatePersistService(repository);
-    }
-    
-    @Test
-    void assertUpdate() {
-        clusterStatePersistService.update(ClusterState.OK);
-        verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
+        qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
     }
     
     @Test
     void assertLoad() {
-        when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
-        assertThat(clusterStatePersistService.load(), is(ClusterState.READ_ONLY));
+        when(repository.getChildrenKeys("/nodes/qualified_data_sources")).thenReturn(Arrays.asList("foo_db.foo_group.foo_ds", "bar_db.bar_group.bar_ds"));
+        when(repository.query("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds")).thenReturn("state: ENABLED");
+        Map<String, QualifiedDataSourceState> actual = qualifiedDataSourceStatePersistService.load();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_db.foo_group.foo_ds").getState(), is(DataSourceState.ENABLED));
     }
     
     @Test
-    void assertLoadWithEmptyState() {
-        when(repository.query("/states/cluster_state")).thenReturn("");
-        assertThat(clusterStatePersistService.load(), is(ClusterState.OK));
+    void assertUpdate() {
+        qualifiedDataSourceStatePersistService.update("foo_db", "foo_group", "foo_ds", DataSourceState.ENABLED);
+        verify(repository).persist("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "state: ENABLED" + System.lineSeparator());
     }
 }
