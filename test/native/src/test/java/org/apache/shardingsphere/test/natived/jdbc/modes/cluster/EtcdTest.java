@@ -21,10 +21,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.etcd.jetcd.test.EtcdClusterExtension;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -49,23 +52,27 @@ class EtcdTest {
             .withMountDirectory(false)
             .build();
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.etcd.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.mode.cluster.etcd.";
     
-    private static DataSource logicDataSource;
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(systemPropKeyPrefix + "server-lists"), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() throws SQLException {
+    @AfterEach
+    void afterEach() throws SQLException {
         try (Connection connection = logicDataSource.getConnection()) {
-            connection.unwrap(ShardingSphereConnection.class).getContextManager().close();
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
         }
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
+        System.clearProperty(systemPropKeyPrefix + "server-lists");
     }
     
     @Test
@@ -100,7 +107,7 @@ class EtcdTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/modes/cluster/etcd.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", clientEndpoint.toString());
+        System.setProperty(systemPropKeyPrefix + "server-lists", clientEndpoint.toString());
         return new HikariDataSource(config);
     }
 }
