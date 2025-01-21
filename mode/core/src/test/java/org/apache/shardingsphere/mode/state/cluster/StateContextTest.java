@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.unified;
+package org.apache.shardingsphere.mode.state.cluster;
 
-/**
- * Listener assisted type.
- */
-public enum ListenerAssistedType {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class StateContextTest {
     
-    CREATE_DATABASE, DROP_DATABASE
+    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
+    
+    @Test
+    void assertGetClusterState() {
+        assertThat(stateContext.getState(), is(ClusterState.OK));
+    }
+    
+    @Test
+    void assertSwitchClusterState() {
+        assertThat(stateContext.getState(), is(ClusterState.OK));
+        stateContext.switchState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
+    }
 }

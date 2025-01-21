@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.persist.service.unified.QualifiedDataSourceStatePersistService;
-import org.apache.shardingsphere.mode.state.persist.ClusterStatePersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
+import org.apache.shardingsphere.mode.state.node.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.node.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.state.cluster.ClusterStatePersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**

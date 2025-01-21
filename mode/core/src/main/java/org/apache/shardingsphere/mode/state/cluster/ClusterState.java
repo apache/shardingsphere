@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.divided;
-
-import org.apache.shardingsphere.infra.executor.sql.process.Process;
-
-import java.sql.SQLException;
-import java.util.Collection;
+package org.apache.shardingsphere.mode.state.cluster;
 
 /**
- * Process persist service.
+ * Cluster state.
  */
-public interface ProcessPersistService {
+public enum ClusterState {
     
-    /**
-     * Get process list.
-     *
-     * @return collection of process
-     */
-    Collection<Process> getProcessList();
-    
-    /**
-     * Kill process.
-     *
-     * @param processId process id
-     * @throws  SQLException SQL exception
-     */
-    void killProcess(String processId) throws SQLException;
+    OK, READ_ONLY, UNAVAILABLE
 }

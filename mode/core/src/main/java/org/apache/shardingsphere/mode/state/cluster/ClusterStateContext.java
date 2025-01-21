@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state;
+package org.apache.shardingsphere.mode.state.cluster;
 
-import org.junit.jupiter.api.Test;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class StateContextTest {
+/**
+ * Cluster state context.
+ */
+public final class ClusterStateContext {
     
-    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
+    private final AtomicReference<ClusterState> clusterState;
     
-    @Test
-    void assertGetClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
+    public ClusterStateContext(final ClusterState clusterState) {
+        this.clusterState = new AtomicReference<>(clusterState);
     }
     
-    @Test
-    void assertSwitchClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
-        stateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
+    /**
+     * Get cluster state.
+     *
+     * @return cluster state
+     */
+    public ClusterState getState() {
+        return clusterState.get();
+    }
+    
+    /**
+     * Switch cluster state.
+     *
+     * @param state to be switched cluster state
+     */
+    public void switchState(final ClusterState state) {
+        clusterState.set(state);
     }
 }
