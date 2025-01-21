@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.node.path.state;
 
-import org.apache.shardingsphere.mode.node.path.metadata.StatesNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
