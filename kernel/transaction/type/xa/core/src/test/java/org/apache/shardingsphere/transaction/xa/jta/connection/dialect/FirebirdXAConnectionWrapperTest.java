@@ -48,7 +48,8 @@ class FirebirdXAConnectionWrapperTest {
     void assertWrap() throws SQLException {
         XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual, instanceOf(FBXAConnection.class));
-        // TODO Fix the error with getting XAResource assertThat(actual.getXAResource(), instanceOf(FBXAConnection.class));
+        // TODO Fix the error with getting XAResource
+        // assertThat(actual.getXAResource(), instanceOf(FBXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
