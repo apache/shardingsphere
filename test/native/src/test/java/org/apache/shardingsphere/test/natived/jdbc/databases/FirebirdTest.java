@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.databases;
 
-import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
+import org.firebirdsql.management.FBManager;
+import org.firebirdsql.management.PageSizeConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
 
@@ -46,23 +46,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-/**
- * Unable to use `org.testcontainers:mysql:1.20.0` under GraalVM Native Image.
- * Background comes from <a href="https://github.com/testcontainers/testcontainers-java/issues/7954">testcontainers/testcontainers-java#7954</a>.
- */
 @EnabledInNativeImage
 @Testcontainers
-class MySQLTest {
+class FirebirdTest {
     
-    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.mysql.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.firebird.";
     
-    private final String password = "example";
+    private final String password = "masterkey";
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
-            .withEnv("MYSQL_ROOT_PASSWORD", password)
-            .withExposedPorts(3306);
+    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/fdcastel/firebird:5.0.1")
+            .withEnv("FIREBIRD_ROOT_PASSWORD", password)
+            .withEnv("FIREBIRD_USER", "alice")
+            .withEnv("FIREBIRD_PASSWORD", password)
+            .withEnv("FIREBIRD_DATABASE", "mirror.fdb")
+            .withEnv("FIREBIRD_DATABASE_DEFAULT_CHARSET", "UTF8")
+            .withExposedPorts(3050);
     
     private DataSource logicDataSource;
     
@@ -92,50 +92,68 @@ class MySQLTest {
     }
     
     @Test
-    void assertShardingInLocalTransactions() throws SQLException {
-        jdbcUrlPrefix = "jdbc:mysql://localhost:" + container.getMappedPort(3306) + "/";
+    void assertShardingInLocalTransactions() throws Exception {
+        jdbcUrlPrefix = "jdbc:firebird://localhost:" + container.getMappedPort(3050) + "//var/lib/firebird/data/";
         logicDataSource = createDataSource();
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
-        testShardingService.cleanEnvironment();
+        testShardingService.cleanEnvironmentInFirebird();
     }
     
+    /**
+     * Docker Image `ghcr.io/fdcastel/firebird:5.0.1` cannot use `TRUNCATE TABLE`.
+     * See <a href="https://github.com/FirebirdSQL/firebird/issues/2892">FirebirdSQL/firebird#2892</a>.
+     *
+     * @throws SQLException SQL Exception
+     */
     private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getOrderRepository().truncateTable();
-        testShardingService.getOrderItemRepository().truncateTable();
-        testShardingService.getAddressRepository().truncateTable();
+        testShardingService.getOrderRepository().createTableInFirebird();
+        testShardingService.getOrderItemRepository().createTableInFirebird();
+        testShardingService.getAddressRepository().createTableInFirebird();
     }
     
     private Connection openConnection() throws SQLException {
         Properties props = new Properties();
-        props.setProperty("user", "root");
+        props.setProperty("user", "alice");
         props.setProperty("password", password);
-        return DriverManager.getConnection(jdbcUrlPrefix, props);
+        return DriverManager.getConnection(jdbcUrlPrefix + "mirror.fdb", props);
     }
     
+    /**
+     * Due to <a href="https://github.com/FirebirdSQL/jaybird/issues/629">FirebirdSQL/jaybird#629</a>,
+     * the SQL statement `Create Database` cannot be executed on the Firebird JDBC driver.
+     * Unit testing requires the use of {@link org.firebirdsql.management.FBManager}.
+     *
+     * @return Data Source
+     * @throws Exception Exception
+     * @see org.firebirdsql.management.FBManager
+     */
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    private DataSource createDataSource() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
+    private DataSource createDataSource() throws Exception {
+        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
             openConnection().close();
             return true;
         });
-        try (
-                Connection connection = openConnection();
-                Statement statement = connection.createStatement()) {
-            statement.executeUpdate("CREATE DATABASE demo_ds_0");
-            statement.executeUpdate("CREATE DATABASE demo_ds_1");
-            statement.executeUpdate("CREATE DATABASE demo_ds_2");
+        try (FBManager fbManager = new FBManager()) {
+            fbManager.setServer("localhost");
+            fbManager.setUserName("alice");
+            fbManager.setPassword(password);
+            fbManager.setFileName("/var/lib/firebird/data/mirror.fdb");
+            fbManager.setPageSize(PageSizeConstants.SIZE_16K);
+            fbManager.setDefaultCharacterSet("UTF8");
+            fbManager.setPort(container.getMappedPort(3050));
+            fbManager.start();
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_0.fdb", "alice", password);
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_1.fdb", "alice", password);
+            fbManager.createDatabase("/var/lib/firebird/data/demo_ds_2.fdb", "alice", password);
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/mysql.yaml?placeholder-type=system_props");
-        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
-        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
-        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/firebird.yaml?placeholder-type=system_props");
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0.fdb");
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1.fdb");
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2.fdb");
         return new HikariDataSource(config);
     }
 }
