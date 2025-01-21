@@ -117,11 +117,11 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Refresh table meta data.
+     * Refresh database meta data.
      *
      * @param database to be reloaded database
      */
-    public void refreshTableMetaData(final ShardingSphereDatabase database) {
+    public void refreshDatabaseMetaData(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
@@ -129,13 +129,13 @@ public class MetaDataContextManager {
             metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()
                     .forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), each));
         } catch (final SQLException ex) {
-            log.error("Refresh table meta data: {} failed", database.getName(), ex);
+            log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
     }
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataPersistService.getDataSourceUnitService().load(database.getName());
-        SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
+        Map<String, DataSourcePoolProperties> dataSourcePoolProps = metaDataPersistService.getDataSourceUnitService().load(database.getName());
+        SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolProps);
         Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
         ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistService, computeNodeInstanceContext)
                 .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts);
