@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.persist.service.unified;
 
 import org.apache.shardingsphere.mode.state.ClusterState;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.state.persist.ClusterStatePersistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,33 +32,33 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StatePersistServiceTest {
+class ClusterStatePersistServiceTest {
     
-    private StatePersistService statePersistService;
+    private ClusterStatePersistService clusterStatePersistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        statePersistService = new StatePersistService(repository);
+        clusterStatePersistService = new ClusterStatePersistService(repository);
     }
     
     @Test
     void assertUpdate() {
-        statePersistService.update(ClusterState.OK);
+        clusterStatePersistService.update(ClusterState.OK);
         verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
     }
     
     @Test
     void assertLoad() {
         when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
-        assertThat(statePersistService.load(), is(ClusterState.READ_ONLY));
+        assertThat(clusterStatePersistService.load(), is(ClusterState.READ_ONLY));
     }
     
     @Test
     void assertLoadWithEmptyState() {
         when(repository.query("/states/cluster_state")).thenReturn("");
-        assertThat(statePersistService.load(), is(ClusterState.OK));
+        assertThat(clusterStatePersistService.load(), is(ClusterState.OK));
     }
 }

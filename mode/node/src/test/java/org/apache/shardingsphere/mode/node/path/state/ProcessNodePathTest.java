@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.node.path.state;
 
-import org.apache.shardingsphere.mode.node.path.metadata.ProcessNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

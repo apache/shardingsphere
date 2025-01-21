@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service.unified;
+package org.apache.shardingsphere.mode.state.persist;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.mode.node.path.metadata.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * State persist service.
+ * Cluster state persist service.
  */
 @RequiredArgsConstructor
-public final class StatePersistService {
+public final class ClusterStatePersistService {
     
     private final PersistRepository repository;
     

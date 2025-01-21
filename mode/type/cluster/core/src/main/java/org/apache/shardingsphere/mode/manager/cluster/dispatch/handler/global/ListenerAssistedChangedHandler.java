@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
