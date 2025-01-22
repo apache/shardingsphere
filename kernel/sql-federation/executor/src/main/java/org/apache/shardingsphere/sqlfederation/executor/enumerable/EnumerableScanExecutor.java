@@ -157,7 +157,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         if (databaseType instanceof OpenGaussDatabaseType && EnumerableConstants.SYSTEM_CATALOG_TABLES.contains(table.getName())) {
             return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableData(table, federationContext.getMetaData()), table, databaseType);
         }
-        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabase(databaseName))
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseStatistics(databaseName))
                 .map(optional -> optional.getSchema(schemaName)).map(optional -> optional.getTable(table.getName()));
         return tableData.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
     }

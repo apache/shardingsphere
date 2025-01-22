@@ -44,9 +44,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingSphereDataPersistServiceTest {
+class ShardingSphereStatisticsPersistServiceTest {
     
-    private ShardingSphereDataPersistService persistService;
+    private ShardingSphereStatisticsPersistService persistService;
     
     @Mock
     private PersistRepository repository;
@@ -56,13 +56,13 @@ class ShardingSphereDataPersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        persistService = new ShardingSphereDataPersistService(repository);
-        Plugins.getMemberAccessor().set(ShardingSphereDataPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
+        persistService = new ShardingSphereStatisticsPersistService(repository);
+        Plugins.getMemberAccessor().set(ShardingSphereStatisticsPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
     }
     
     @Test
     void assertLoadWithEmptyDatabases() {
-        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseData().isEmpty());
+        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseStatisticsMap().isEmpty());
     }
     
     @Test
@@ -70,7 +70,7 @@ class ShardingSphereDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Arrays.asList("foo_db", "bar_db"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
-        assertFalse(persistService.load(mockMetaData()).getDatabaseData().isEmpty());
+        assertFalse(persistService.load(mockMetaData()).getDatabaseStatisticsMap().isEmpty());
     }
     
     private ShardingSphereMetaData mockMetaData() {

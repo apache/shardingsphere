@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
@@ -38,13 +38,13 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     /**
-     * Build default statistics data.
+     * Build default database statistics.
      *
      * @param database database
-     * @return built statistics data
+     * @return built database statistics
      */
-    public ShardingSphereDatabaseData build(final ShardingSphereDatabase database) {
-        ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
+    public DatabaseStatistics build(final ShardingSphereDatabase database) {
+        DatabaseStatistics result = new DatabaseStatistics();
         if (database.containsSchema(SHARDINGSPHERE)) {
             ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
             buildClusterInformationTable(schemaData);

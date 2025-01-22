@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,10 +29,10 @@ class ShardingSphereDefaultStatisticsBuilderTest {
     
     @Test
     void assertBuild() {
-        ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(mockDatabase());
-        assertTrue(databaseData.getSchemaData().containsKey("shardingsphere"));
-        assertTrue(databaseData.getSchemaData().get("shardingsphere").getTableData().containsKey("cluster_information"));
-        assertTrue(databaseData.getSchemaData().get("shardingsphere").getTableData().containsKey("sharding_table_statistics"));
+        DatabaseStatistics databaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(mockDatabase());
+        assertTrue(databaseStatistics.getSchemaData().containsKey("shardingsphere"));
+        assertTrue(databaseStatistics.getSchemaData().get("shardingsphere").getTableData().containsKey("cluster_information"));
+        assertTrue(databaseStatistics.getSchemaData().get("shardingsphere").getTableData().containsKey("sharding_table_statistics"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

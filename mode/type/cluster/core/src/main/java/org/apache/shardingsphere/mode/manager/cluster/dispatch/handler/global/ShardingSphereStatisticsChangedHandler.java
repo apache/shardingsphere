@@ -86,10 +86,10 @@ public final class ShardingSphereStatisticsChangedHandler implements DataChanged
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addShardingSphereDatabaseData(databaseName);
+                databaseManager.addDatabaseStatistics(databaseName);
                 return;
             case DELETED:
-                databaseManager.dropShardingSphereDatabaseData(databaseName);
+                databaseManager.dropDatabaseStatistics(databaseName);
                 return;
             default:
         }
@@ -99,10 +99,10 @@ public final class ShardingSphereStatisticsChangedHandler implements DataChanged
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addShardingSphereSchemaData(databaseName, schemaName);
+                databaseManager.addSchemaStatistics(databaseName, schemaName);
                 return;
             case DELETED:
-                databaseManager.dropShardingSphereSchemaData(databaseName, schemaName);
+                databaseManager.dropSchemaStatistics(databaseName, schemaName);
                 return;
             default:
         }
@@ -112,10 +112,10 @@ public final class ShardingSphereStatisticsChangedHandler implements DataChanged
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addShardingSphereTableData(databaseName, schemaName, tableName);
+                databaseManager.addTableStatistics(databaseName, schemaName, tableName);
                 return;
             case DELETED:
-                databaseManager.dropShardingSphereTableData(databaseName, schemaName, tableName);
+                databaseManager.dropTableStatistics(databaseName, schemaName, tableName);
                 return;
             default:
         }

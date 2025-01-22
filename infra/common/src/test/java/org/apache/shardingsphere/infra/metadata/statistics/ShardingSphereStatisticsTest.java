@@ -35,45 +35,44 @@ class ShardingSphereStatisticsTest {
     public static final String NON_EXISTENT_DATABASE_NAME = "NON_EXISTENT_DATABASE_NAME";
     
     @Test
-    void assertGetDatabase() {
-        ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereStatistics.putDatabase(TEST_DATABASE_NAME, shardingSphereDatabaseData);
-        ShardingSphereDatabaseData databaseData = shardingSphereStatistics.getDatabase(TEST_DATABASE_NAME);
-        assertEquals(databaseData, shardingSphereDatabaseData);
-        assertNull(shardingSphereStatistics.getDatabase(NON_EXISTENT_DATABASE_NAME));
+    void assertGetDatabaseStatistics() {
+        ShardingSphereStatistics statistics = new ShardingSphereStatistics();
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        statistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
+        assertEquals(statistics.getDatabaseStatistics(TEST_DATABASE_NAME), databaseStatistics);
+        assertNull(statistics.getDatabaseStatistics(NON_EXISTENT_DATABASE_NAME));
     }
     
     @Test
-    void assertPutDatabase() {
+    void assertPutDatabaseStatistics() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereStatistics.putDatabase(TEST_DATABASE_NAME, shardingSphereDatabaseData);
-        assertThat(shardingSphereStatistics.getDatabaseData().size(), is(1));
-        assertFalse(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME_2));
-        ShardingSphereDatabaseData newShardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereStatistics.putDatabase(TEST_DATABASE_NAME_2, newShardingSphereDatabaseData);
-        assertThat(shardingSphereStatistics.getDatabaseData().size(), is(2));
-        assertTrue(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME_2));
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        shardingSphereStatistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
+        assertThat(shardingSphereStatistics.getDatabaseStatisticsMap().size(), is(1));
+        assertFalse(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME_2));
+        DatabaseStatistics newDatabaseStatistics = new DatabaseStatistics();
+        shardingSphereStatistics.putDatabaseStatistics(TEST_DATABASE_NAME_2, newDatabaseStatistics);
+        assertThat(shardingSphereStatistics.getDatabaseStatisticsMap().size(), is(2));
+        assertTrue(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME_2));
     }
     
     @Test
-    void assertDropDatabase() {
+    void assertDropDatabaseStatistics() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereStatistics.putDatabase(TEST_DATABASE_NAME, shardingSphereDatabaseData);
-        assertTrue(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME));
-        shardingSphereStatistics.dropDatabase(TEST_DATABASE_NAME);
-        assertThat(shardingSphereStatistics.getDatabaseData().size(), is(0));
-        assertFalse(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME));
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        shardingSphereStatistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
+        assertTrue(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME));
+        shardingSphereStatistics.dropDatabaseStatistics(TEST_DATABASE_NAME);
+        assertThat(shardingSphereStatistics.getDatabaseStatisticsMap().size(), is(0));
+        assertFalse(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME));
     }
     
     @Test
     void assertContainsTable() {
         ShardingSphereStatistics shardingSphereStatistics = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereStatistics.putDatabase(TEST_DATABASE_NAME, shardingSphereDatabaseData);
-        assertTrue(shardingSphereStatistics.containsDatabase(TEST_DATABASE_NAME));
-        assertFalse(shardingSphereStatistics.containsDatabase(NON_EXISTENT_DATABASE_NAME));
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        shardingSphereStatistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
+        assertTrue(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME));
+        assertFalse(shardingSphereStatistics.containsDatabaseStatistics(NON_EXISTENT_DATABASE_NAME));
     }
 }

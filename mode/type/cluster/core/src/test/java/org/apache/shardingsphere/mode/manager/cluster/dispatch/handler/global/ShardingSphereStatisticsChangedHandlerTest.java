@@ -53,37 +53,37 @@ class ShardingSphereStatisticsChangedHandlerTest {
     @Test
     void assertHandleWithDatabaseAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addShardingSphereDatabaseData("foo_db");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addDatabaseStatistics("foo_db");
     }
     
     @Test
     void assertHandleWithDatabaseDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropShardingSphereDatabaseData("foo_db");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropDatabaseStatistics("foo_db");
     }
     
     @Test
     void assertHandleWithSchemaAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addShardingSphereSchemaData("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addSchemaStatistics("foo_db", "foo_schema");
     }
     
     @Test
     void assertHandleWithSchemaDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropShardingSphereSchemaData("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropSchemaStatistics("foo_db", "foo_schema");
     }
     
     @Test
     void assertHandleWithTableAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addShardingSphereTableData("foo_db", "foo_schema", "foo_tbl");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addTableStatistics("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
     void assertHandleWithTableDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropShardingSphereTableData("foo_db", "foo_schema", "foo_tbl");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropTableStatistics("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
@@ -103,19 +103,19 @@ class ShardingSphereStatisticsChangedHandlerTest {
     @Test
     void assertHandleWithMissedDatabaseNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addShardingSphereDatabaseData(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addDatabaseStatistics(any());
     }
     
     @Test
     void assertHandleWithMissedSchemaNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addShardingSphereSchemaData(any(), any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addSchemaStatistics(any(), any());
     }
     
     @Test
     void assertHandleWithMissedTableNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addShardingSphereTableData(any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addTableStatistics(any(), any(), any());
     }
     
     @Test
