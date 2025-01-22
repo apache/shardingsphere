@@ -343,6 +343,3 @@ the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Ma
 
 9. Due to https://github.com/apache/doris/issues/9426, when connecting to Apache Doris FE via Shardinghere JDBC,
    users need to provide GraalVM Reachability Metadata related to the `apache/doris` integration module.
-
-10. Due to https://github.com/prestodb/presto/issues/23226, when connecting to Presto Server via Shardinghere JDBC,
-    users need to provide GraalVM Reachability Metadata related to the `com.facebook.presto:presto-jdbc` and `prestodb/presto` integration module.
