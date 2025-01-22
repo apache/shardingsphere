@@ -25,10 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ShardingSphere data node path.
+ * ShardingSphere statistics node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereDataNodePath {
+public final class ShardingSphereStatisticsNodePath {
     
     private static final String ROOT_NODE = "/statistics";
     

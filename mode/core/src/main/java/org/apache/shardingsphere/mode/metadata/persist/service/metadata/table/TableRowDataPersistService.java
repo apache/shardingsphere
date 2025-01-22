@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
-import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -48,9 +48,10 @@ public final class TableRowDataPersistService {
      */
     public void persist(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         if (rows.isEmpty()) {
-            repository.persist(ShardingSphereDataNodePath.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
+            repository.persist(ShardingSphereStatisticsNodePath.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
         } else {
-            rows.forEach(each -> repository.persist(ShardingSphereDataNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
+            rows.forEach(
+                    each -> repository.persist(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
         }
     }
     
@@ -63,7 +64,7 @@ public final class TableRowDataPersistService {
      * @param rows rows
      */
     public void delete(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
-        rows.forEach(each -> repository.delete(ShardingSphereDataNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey())));
+        rows.forEach(each -> repository.delete(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey())));
     }
     
     /**
@@ -77,8 +78,8 @@ public final class TableRowDataPersistService {
     public ShardingSphereTableData load(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
         YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getAllColumns()));
-        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getTablePath(databaseName, schemaName, table.getName()))) {
-            String yamlRow = repository.query(ShardingSphereDataNodePath.getTableRowPath(databaseName, schemaName, table.getName(), each));
+        for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTablePath(databaseName, schemaName, table.getName()))) {
+            String yamlRow = repository.query(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, table.getName(), each));
             if (!Strings.isNullOrEmpty(yamlRow)) {
                 result.getRows().add(swapper.swapToObject(YamlEngine.unmarshal(yamlRow, YamlShardingSphereRowData.class)));
             }
