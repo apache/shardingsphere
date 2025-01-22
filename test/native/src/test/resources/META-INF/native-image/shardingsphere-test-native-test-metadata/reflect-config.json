@@ -10,14 +10,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest",
   "allDeclaredConstructors": true,
@@ -28,14 +20,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.AtomikosTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.AtomikosTest",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true,
@@ -178,16 +162,40 @@
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"},
-  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,

@@ -31,6 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -105,8 +106,8 @@ public final class TestShardingService {
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
+        assertThat(new HashSet<>(addressRepository.selectAll()),
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toSet())));
     }
     
     /**
@@ -124,6 +125,19 @@ public final class TestShardingService {
         assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+    }
+    
+    /**
+     * Process success in Presto Memory Connector.
+     * TODO ShardingSphere's Presto integration has a bug in transaction support.
+     *  Can't execute {@code orderItemRepository.assertRollbackWithTransactions();} here.
+     * Presto Memory Connector does not support `DELETE FROM` SQL.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void processSuccessInPresto() throws SQLException {
+        insertData(Statement.RETURN_GENERATED_KEYS);
+        extracted();
     }
     
     /**
