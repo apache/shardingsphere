@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
-import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public final class ShardingSphereDataPersistService {
      * @return statistics
      */
     public ShardingSphereStatistics load(final ShardingSphereMetaData metaData) {
-        Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNodePath.getDatabasesRootPath());
+        Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getDatabasesRootPath());
         if (databaseNames.isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -67,7 +67,7 @@ public final class ShardingSphereDataPersistService {
     
     private ShardingSphereDatabaseData load(final ShardingSphereDatabase database) {
         ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
-        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getSchemaRootPath(database.getName())).stream().filter(database::containsSchema).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getSchemaRootPath(database.getName())).stream().filter(database::containsSchema).collect(Collectors.toList())) {
             result.putSchema(each, load(database.getName(), database.getSchema(each)));
         }
         return result;
@@ -75,7 +75,7 @@ public final class ShardingSphereDataPersistService {
     
     private ShardingSphereSchemaData load(final String databaseName, final ShardingSphereSchema schema) {
         ShardingSphereSchemaData result = new ShardingSphereSchemaData();
-        for (String each : repository.getChildrenKeys(ShardingSphereDataNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
+        for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
                 .collect(Collectors.toList())) {
             result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
@@ -98,7 +98,7 @@ public final class ShardingSphereDataPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(ShardingSphereDataNodePath.getSchemaPath(databaseName, schemaName), "");
+        repository.persist(ShardingSphereStatisticsNodePath.getSchemaPath(databaseName, schemaName), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
@@ -130,6 +130,6 @@ public final class ShardingSphereDataPersistService {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(ShardingSphereDataNodePath.getDatabasePath(databaseName));
+        repository.delete(ShardingSphereStatisticsNodePath.getDatabasePath(databaseName));
     }
 }
