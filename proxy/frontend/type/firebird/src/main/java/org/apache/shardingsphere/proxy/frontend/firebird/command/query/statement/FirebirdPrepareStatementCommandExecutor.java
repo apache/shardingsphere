@@ -96,22 +96,27 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, MetaDataContexts metaDataContexts) {
         ByteBuf data = buffer(packet.getMaxLength());
+        int statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         while (packet.nextItem()) {
             switch (packet.getCurrentItem()) {
                 case STMT_TYPE:
-                    writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, getFirebirdStatementType(sqlStatementContext.getSqlStatement()), data);
+                    writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, statementType, data);
                     break;
                 case SELECT:
                     writeCode(FirebirdSQLInfoPacketType.SELECT, data);
-                    if (getFirebirdStatementType(sqlStatementContext.getSqlStatement()) == FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode()) {
+                    if (FirebirdSQLInfoReturnValue.isSelectDescribable(statementType)) {
                         processDescribe(sqlStatementContext, metaDataContexts, data, true);
                     } else {
-                        skipDescribe(sqlStatementContext, data);
+                        skipDescribe(data);
                     }
                     break;
                 case BIND:
                     writeCode(FirebirdSQLInfoPacketType.BIND, data);
-                    processDescribe(sqlStatementContext, metaDataContexts, data, false);
+                    if (FirebirdSQLInfoReturnValue.isBindDescribable(statementType)) {
+                        processDescribe(sqlStatementContext, metaDataContexts, data, false);
+                    } else {
+                        skipDescribe(data);
+                    }
                     break;
                 default:
                     throw new FirebirdProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
@@ -149,9 +154,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return FirebirdSQLInfoReturnValue.INSERT.getCode();
         }
         if (statement instanceof UpdateStatement) {
+            if (((UpdateStatement) statement).getReturningSegment().isPresent()) {
+                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode();
+            }
             return FirebirdSQLInfoReturnValue.UPDATE.getCode();
         }
         if (statement instanceof DeleteStatement) {
+            if (((DeleteStatement) statement).getReturningSegment().isPresent()) {
+                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode();
+            }
             return FirebirdSQLInfoReturnValue.DELETE.getCode();
         }
         if (statement instanceof DDLStatement) {
@@ -172,7 +183,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return 0;
     }
     
-    private void skipDescribe(SQLStatementContext sqlStatementContext, ByteBuf buffer) {
+    private void skipDescribe(ByteBuf buffer) {
         while (packet.getCurrentItem() != FirebirdSQLInfoPacketType.DESCRIBE_END) {
             packet.nextItem();
         }

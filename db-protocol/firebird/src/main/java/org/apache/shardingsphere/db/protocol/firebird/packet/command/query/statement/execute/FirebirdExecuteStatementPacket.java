@@ -56,9 +56,11 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         parameterTypes = parseBLR(payload.readBuffer());
         message = payload.readInt4();
         int msgCount = payload.readInt4();
-        int length = (parameterTypes.size() + 7) / 8;
-        payload.skipReserved(length);
-        payload.skipPadding(length);
+        if (msgCount > 0) {
+            int length = (parameterTypes.size() + 7) / 8;
+            payload.skipReserved(length);
+            payload.skipPadding(length);
+        }
         this.payload = payload;
         //        while (msgCount-- != 0) {
         //            paramsValues.add(payload.readBuffer());
@@ -67,17 +69,18 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     }
     
     private List<FirebirdBinaryColumnType> parseBLR(ByteBuf blrBuffer) {
+        if (!blrBuffer.isReadable()) {
+            return new ArrayList<>(0);
+        }
         blrBuffer.skipBytes(4);
         List<FirebirdBinaryColumnType> result = new ArrayList<>(blrBuffer.readUnsignedByte() / 2);
         blrBuffer.skipBytes(1);
-        while (blrBuffer.isReadable()) {
-            int blrType = blrBuffer.readUnsignedByte();
-            if (blrType == BlrConstants.blr_end) {
-                break;
-            }
+        int blrType = blrBuffer.readUnsignedByte();
+        while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
             result.add(type);
             blrBuffer.skipBytes(getSkipCount(type) + 2);
+            blrType = blrBuffer.readUnsignedByte();
         }
         return result;
     }
