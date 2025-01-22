@@ -112,6 +112,10 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.presto.metadata.data.loader.PrestoMetaDataLoader"},
+  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.sqlserver.metadata.data.loader.SQLServerMetaDataLoader"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
@@ -125,10 +129,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -1715,6 +1715,18 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
   "name":"org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"},
+  "name":"org.apache.shardingsphere.infra.database.presto.metadata.data.loader.PrestoMetaDataLoader"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"},
+  "name":"org.apache.shardingsphere.infra.database.presto.metadata.database.PrestoDatabaseMetaData"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
+  "name":"org.apache.shardingsphere.infra.database.presto.type.PrestoDatabaseType"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"},
@@ -3706,6 +3718,26 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.presto.parser.PrestoLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.presto.parser.PrestoParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
+  "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDDLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -3863,6 +3895,16 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
   "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoInsertStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

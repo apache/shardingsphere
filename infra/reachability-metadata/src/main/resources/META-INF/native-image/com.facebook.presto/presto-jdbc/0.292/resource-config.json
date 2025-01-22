@@ -1,0 +1,14 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"com.facebook.presto.jdbc.internal.joda.time.tz.ZoneInfoProvider"},
+    "pattern":".*com/facebook/presto/jdbc/internal/joda/time/tz/data/.+"
+  }, {
+    "condition":{"typeReachable":"com.facebook.presto.jdbc.internal.common.type.TimeZoneKey"},
+    "pattern":"\\Qcom/facebook/presto/jdbc/internal/common/type/zone-index.properties\\E"
+  }, {
+    "condition":{"typeReachable":"com.facebook.presto.jdbc.internal.joda.time.tz.ZoneInfoProvider"},
+    "pattern":"\\Qcom/facebook/presto/jdbc/internal/joda/time/tz/data/ZoneInfoMap\\E"
+  }]},
+  "bundles":[]
+}
