@@ -553,12 +553,54 @@
                         </from>
                     </select>
                 </subquery-expression>
-                <column name="col1" start-index="18" stop-index="21"/>
-                <column name="col2" start-index="24" stop-index="27"/>
-                <column name="col3" start-index="30" stop-index="33"/>
-                <column name="col4" start-index="36" stop-index="39"/>
-                <column name="col5" start-index="42" stop-index="45"/>
-                <column name="col6" start-index="48" stop-index="51"/>
+                <column name="col1" start-index="18" stop-index="21">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="col2" start-index="24" stop-index="27">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="col3" start-index="30" stop-index="33">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="col4" start-index="36" stop-index="39">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="col5" start-index="42" stop-index="45">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
+                <column name="col6" start-index="48" stop-index="51">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                    </column-bound>
+                </column>
             </common-table-expression>
         </with>
         <projections start-index="90" stop-index="93">

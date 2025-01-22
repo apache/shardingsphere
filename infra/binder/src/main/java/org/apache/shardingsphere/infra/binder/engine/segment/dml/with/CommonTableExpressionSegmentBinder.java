@@ -28,9 +28,10 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTableExpressionAliasException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Common table expression segment binder.
@@ -54,7 +55,7 @@ public final class CommonTableExpressionSegmentBinder {
         }
         if (recursive && segment.getAliasName().isPresent()) {
             binderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString(segment.getAliasName().get()),
-                    new SimpleTableSegmentBinderContext(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList())));
+                    createWithTableBinderContext(segment));
         }
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getSubquery());
         subqueryTableSegment.setAlias(segment.getAliasSegment());
@@ -65,5 +66,15 @@ public final class CommonTableExpressionSegmentBinder {
         // TODO bind with columns
         result.getColumns().addAll(segment.getColumns());
         return result;
+    }
+    
+    private static SimpleTableSegmentBinderContext createWithTableBinderContext(final CommonTableExpressionSegment commonTableExpressionSegment) {
+        if (commonTableExpressionSegment.getColumns().isEmpty()) {
+            return new SimpleTableSegmentBinderContext(commonTableExpressionSegment.getSubquery().getSelect().getProjections().getProjections());
+        } else {
+            Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
+            commonTableExpressionSegment.getColumns().forEach(each -> projectionSegments.add(new ColumnProjectionSegment(each)));
+            return new SimpleTableSegmentBinderContext(projectionSegments);
+        }
     }
 }
