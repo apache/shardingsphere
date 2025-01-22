@@ -50,7 +50,8 @@ public final class TableRowDataPersistService {
         if (rows.isEmpty()) {
             repository.persist(ShardingSphereStatisticsNodePath.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
         } else {
-            rows.forEach(each -> repository.persist(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
+            rows.forEach(
+                    each -> repository.persist(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
         }
     }
     
