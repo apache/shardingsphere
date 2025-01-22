@@ -38,11 +38,7 @@ public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecu
                 .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getAllDatabases());
         for (ShardingSphereDatabase each : databases) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
-                if (sqlStatement.isForce()) {
-                    contextManager.getMetaDataContextManager().forceRefreshDatabaseMetaData(each);
-                } else {
-                    contextManager.getMetaDataContextManager().refreshDatabaseMetaData(each);
-                }
+                contextManager.getMetaDataContextManager().refreshDatabaseMetaData(each);
             }
         }
     }
