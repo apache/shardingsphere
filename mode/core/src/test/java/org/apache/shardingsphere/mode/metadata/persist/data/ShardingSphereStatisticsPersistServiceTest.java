@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.data;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
@@ -90,21 +90,21 @@ class ShardingSphereStatisticsPersistServiceTest {
     void assertPersistWithEmptyTableData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        persistService.persist(database, "foo_schema", mock(ShardingSphereSchemaData.class));
+        persistService.persist(database, "foo_schema", mock(SchemaStatistics.class));
         verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema", "");
     }
     
     @Test
     void assertPersist() {
-        ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
-        when(schemaData.getTableData().isEmpty()).thenReturn(false);
+        SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
+        when(schemaStatistics.getTableData().isEmpty()).thenReturn(false);
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
         when(tableData.getName()).thenReturn("foo_tbl");
-        when(schemaData.getTableData().values()).thenReturn(Collections.singleton(tableData));
+        when(schemaStatistics.getTableData().values()).thenReturn(Collections.singleton(tableData));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
-        persistService.persist(database, "foo_schema", schemaData);
+        persistService.persist(database, "foo_schema", schemaStatistics);
         verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "foo_tbl", Collections.emptyList());
     }
     

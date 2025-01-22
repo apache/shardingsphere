@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,10 +66,10 @@ class ShardingSphereStatisticsRefreshEngineTest {
     private ShardingSphereStatistics mockStatistics() {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         DatabaseStatistics databaseStatistics = new DatabaseStatistics();
-        ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-        databaseStatistics.getSchemaData().put("foo_schema", schemaData);
+        SchemaStatistics schemaStatistics = new SchemaStatistics();
+        databaseStatistics.getSchemaStatisticsMap().put("foo_schema", schemaStatistics);
         ShardingSphereTableData tableData = new ShardingSphereTableData("test_table");
-        schemaData.getTableData().put("test_table", tableData);
+        schemaStatistics.getTableData().put("test_table", tableData);
         result.getDatabaseStatisticsMap().put("foo_db", databaseStatistics);
         return result;
     }

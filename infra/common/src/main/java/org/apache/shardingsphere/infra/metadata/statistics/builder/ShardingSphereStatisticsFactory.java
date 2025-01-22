@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -61,7 +61,7 @@ public final class ShardingSphereStatisticsFactory {
         for (ShardingSphereDatabase each : unloadedDatabases) {
             DatabaseStatistics databaseStatistics = new DatabaseStatistics();
             dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseStatistics, each));
-            if (!databaseStatistics.getSchemaData().isEmpty()) {
+            if (!databaseStatistics.getSchemaStatisticsMap().isEmpty()) {
                 result.putDatabaseStatistics(each.getName(), databaseStatistics);
             }
         }
@@ -80,7 +80,7 @@ public final class ShardingSphereStatisticsFactory {
     private static void fillDefaultStatistics(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
         for (ShardingSphereDatabase database : metaData.getAllDatabases()) {
             DatabaseStatistics defaultDatabaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(database);
-            Collection<String> defaultSchemaNames = new CaseInsensitiveSet<>(defaultDatabaseStatistics.getSchemaData().keySet());
+            Collection<String> defaultSchemaNames = new CaseInsensitiveSet<>(defaultDatabaseStatistics.getSchemaStatisticsMap().keySet());
             if (database.getAllSchemas().stream().noneMatch(optional -> defaultSchemaNames.contains(optional.getName()))) {
                 continue;
             }
@@ -93,19 +93,19 @@ public final class ShardingSphereStatisticsFactory {
     }
     
     private static void fillDefaultStatistics(final DatabaseStatistics defaultDatabaseStatistics, final DatabaseStatistics existedDatabaseStatistics) {
-        for (Entry<String, ShardingSphereSchemaData> entry : defaultDatabaseStatistics.getSchemaData().entrySet()) {
-            if (!existedDatabaseStatistics.containsSchema(entry.getKey())) {
-                existedDatabaseStatistics.putSchema(entry.getKey(), entry.getValue());
+        for (Entry<String, SchemaStatistics> entry : defaultDatabaseStatistics.getSchemaStatisticsMap().entrySet()) {
+            if (!existedDatabaseStatistics.containsSchemaStatistics(entry.getKey())) {
+                existedDatabaseStatistics.putSchemaStatistics(entry.getKey(), entry.getValue());
                 continue;
             }
-            fillDefaultStatistics(entry.getValue(), existedDatabaseStatistics.getSchema(entry.getKey()));
+            fillDefaultStatistics(entry.getValue(), existedDatabaseStatistics.getSchemaStatistics(entry.getKey()));
         }
     }
     
-    private static void fillDefaultStatistics(final ShardingSphereSchemaData defaultSchemaStatistics, final ShardingSphereSchemaData existedSchemaData) {
+    private static void fillDefaultStatistics(final SchemaStatistics defaultSchemaStatistics, final SchemaStatistics existedSchemaStatistics) {
         for (Entry<String, ShardingSphereTableData> entry : defaultSchemaStatistics.getTableData().entrySet()) {
-            if (!existedSchemaData.containsTable(entry.getKey())) {
-                existedSchemaData.putTable(entry.getKey(), entry.getValue());
+            if (!existedSchemaStatistics.containsTable(entry.getKey())) {
+                existedSchemaStatistics.putTable(entry.getKey(), entry.getValue());
             }
         }
     }

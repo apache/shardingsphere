@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 
 import java.util.Collections;
@@ -46,21 +46,21 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     public DatabaseStatistics build(final ShardingSphereDatabase database) {
         DatabaseStatistics result = new DatabaseStatistics();
         if (database.containsSchema(SHARDINGSPHERE)) {
-            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-            buildClusterInformationTable(schemaData);
-            buildShardingTableStatisticsTable(schemaData);
-            result.putSchema(SHARDINGSPHERE, schemaData);
+            SchemaStatistics schemaStatistics = new SchemaStatistics();
+            buildClusterInformationTable(schemaStatistics);
+            buildShardingTableStatisticsTable(schemaStatistics);
+            result.putSchemaStatistics(SHARDINGSPHERE, schemaStatistics);
         }
         return result;
     }
     
-    private void buildClusterInformationTable(final ShardingSphereSchemaData schemaData) {
+    private void buildClusterInformationTable(final SchemaStatistics schemaStatistics) {
         ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
         tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
-        schemaData.putTable(CLUSTER_INFORMATION, tableData);
+        schemaStatistics.putTable(CLUSTER_INFORMATION, tableData);
     }
     
-    private void buildShardingTableStatisticsTable(final ShardingSphereSchemaData schemaData) {
-        schemaData.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
+    private void buildShardingTableStatisticsTable(final SchemaStatistics schemaStatistics) {
+        schemaStatistics.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
     }
 }

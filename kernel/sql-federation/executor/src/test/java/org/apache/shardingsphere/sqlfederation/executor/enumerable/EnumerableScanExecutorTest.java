@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -56,11 +56,11 @@ class EnumerableScanExecutorTest {
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         DatabaseStatistics databaseStatistics = mock(DatabaseStatistics.class, RETURNS_DEEP_STUBS);
         when(statistics.getDatabaseStatistics("db")).thenReturn(databaseStatistics);
-        ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
-        when(databaseStatistics.getSchema("pg_catalog")).thenReturn(schemaData);
+        SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
+        when(databaseStatistics.getSchemaStatistics("pg_catalog")).thenReturn(schemaStatistics);
         ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
         when(tableData.getRows()).thenReturn(Collections.singletonList(new ShardingSphereRowData(Collections.singletonList(1))));
-        when(schemaData.getTable("test")).thenReturn(tableData);
+        when(schemaStatistics.getTable("test")).thenReturn(tableData);
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");
         when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));

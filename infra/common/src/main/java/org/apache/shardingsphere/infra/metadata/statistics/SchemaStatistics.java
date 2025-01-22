@@ -23,10 +23,10 @@ import lombok.Getter;
 import java.util.Map;
 
 /**
- * ShardingSphere schema data.
+ * Schema statistics.
  */
 @Getter
-public final class ShardingSphereSchemaData {
+public final class SchemaStatistics {
     
     private final Map<String, ShardingSphereTableData> tableData = new CaseInsensitiveMap<>();
     

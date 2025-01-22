@@ -30,30 +30,30 @@ class DatabaseStatisticsTest {
     
     @BeforeEach
     void setUp() {
-        databaseStatistics.putSchema("foo_schema", new ShardingSphereSchemaData());
+        databaseStatistics.putSchemaStatistics("foo_schema", new SchemaStatistics());
     }
     
     @Test
-    void assertContainsSchema() {
-        assertTrue(databaseStatistics.containsSchema("foo_schema"));
-        assertFalse(databaseStatistics.containsSchema("bar_schema"));
+    void assertContainsSchemaStatistics() {
+        assertTrue(databaseStatistics.containsSchemaStatistics("foo_schema"));
+        assertFalse(databaseStatistics.containsSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertGetSchema() {
-        assertTrue(databaseStatistics.getSchema("foo_schema").getTableData().isEmpty());
-        assertNull(databaseStatistics.getSchema("bar_schema"));
+    void assertGetSchemaStatistics() {
+        assertTrue(databaseStatistics.getSchemaStatistics("foo_schema").getTableData().isEmpty());
+        assertNull(databaseStatistics.getSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertPutSchema() {
-        databaseStatistics.putSchema("bar_schema", new ShardingSphereSchemaData());
-        assertTrue(databaseStatistics.containsSchema("bar_schema"));
+    void assertPutSchemaStatistics() {
+        databaseStatistics.putSchemaStatistics("bar_schema", new SchemaStatistics());
+        assertTrue(databaseStatistics.containsSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertRemoveSchema() {
-        databaseStatistics.removeSchema("foo_schema");
-        assertFalse(databaseStatistics.containsSchema("foo_schema"));
+    void assertRemoveSchemaStatistics() {
+        databaseStatistics.removeSchemaStatistics("foo_schema");
+        assertFalse(databaseStatistics.containsSchemaStatistics("foo_schema"));
     }
 }

@@ -158,7 +158,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableData(table, federationContext.getMetaData()), table, databaseType);
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseStatistics(databaseName))
-                .map(optional -> optional.getSchema(schemaName)).map(optional -> optional.getTable(table.getName()));
+                .map(optional -> optional.getSchemaStatistics(schemaName)).map(optional -> optional.getTable(table.getName()));
         return tableData.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);
     }
     

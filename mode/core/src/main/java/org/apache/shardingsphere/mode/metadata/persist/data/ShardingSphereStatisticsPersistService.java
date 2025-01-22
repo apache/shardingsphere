@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
@@ -68,13 +68,13 @@ public final class ShardingSphereStatisticsPersistService {
     private DatabaseStatistics load(final ShardingSphereDatabase database) {
         DatabaseStatistics result = new DatabaseStatistics();
         for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getSchemaRootPath(database.getName())).stream().filter(database::containsSchema).collect(Collectors.toList())) {
-            result.putSchema(each, load(database.getName(), database.getSchema(each)));
+            result.putSchemaStatistics(each, load(database.getName(), database.getSchema(each)));
         }
         return result;
     }
     
-    private ShardingSphereSchemaData load(final String databaseName, final ShardingSphereSchema schema) {
-        ShardingSphereSchemaData result = new ShardingSphereSchemaData();
+    private SchemaStatistics load(final String databaseName, final ShardingSphereSchema schema) {
+        SchemaStatistics result = new SchemaStatistics();
         for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
                 .collect(Collectors.toList())) {
             result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
@@ -88,21 +88,21 @@ public final class ShardingSphereStatisticsPersistService {
      *
      * @param database database
      * @param schemaName schema name
-     * @param schemaData schema data
+     * @param schemaStatistics schema statistics
      */
-    public void persist(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
-        if (schemaData.getTableData().isEmpty()) {
+    public void persist(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
+        if (schemaStatistics.getTableData().isEmpty()) {
             persistSchema(database.getName(), schemaName);
         }
-        persistTableData(database, schemaName, schemaData);
+        persistTableData(database, schemaName, schemaStatistics);
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
         repository.persist(ShardingSphereStatisticsNodePath.getSchemaPath(databaseName, schemaName), "");
     }
     
-    private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereSchemaData schemaData) {
-        schemaData.getTableData().values().forEach(each -> {
+    private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
+        schemaStatistics.getTableData().values().forEach(each -> {
             YamlShardingSphereRowDataSwapper swapper =
                     new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
             persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
