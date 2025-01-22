@@ -41,6 +41,6 @@ public final class StatisticsCollectorFixture implements StatisticsCollector {
     
     @Override
     public String getType() {
-        return "test_table";
+        return "foo_database";
     }
 }

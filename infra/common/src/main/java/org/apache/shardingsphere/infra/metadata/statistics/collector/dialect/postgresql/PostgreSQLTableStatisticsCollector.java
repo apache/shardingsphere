@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.po
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import java.util.Optional;
 /**
  * PostgreSQL table statistics collector.
  */
+@SingletonSPI
 public interface PostgreSQLTableStatisticsCollector extends TypedSPI {
     
     /**
