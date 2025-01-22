@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.StatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -59,11 +59,11 @@ class MySQLShardingStatisticsTableCollectorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
-    private ShardingSphereStatisticsCollector statisticsCollector;
+    private StatisticsCollector statisticsCollector;
     
     @BeforeEach
     void setUp() {
-        statisticsCollector = TypedSPILoader.getService(ShardingSphereStatisticsCollector.class, "sharding_table_statistics");
+        statisticsCollector = TypedSPILoader.getService(StatisticsCollector.class, "sharding_table_statistics");
     }
     
     @Test

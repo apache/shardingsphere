@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.fixture;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.postgresql;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.StatisticsCollector;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Statistics collector fixture.
+ * PostgreSQL table statistics collector.
  */
-public final class StatisticsCollectorFixture implements StatisticsCollector {
+public interface PostgreSQLTableStatisticsCollector extends TypedSPI {
     
-    @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final String schemaName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
-        shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
-        return Optional.of(shardingSphereTableData);
-    }
-    
-    @Override
-    public String getType() {
-        return "test_table";
-    }
+    /**
+     * Collect statistics.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table shardingsphere table
+     * @param metaData ShardingSphere meta data
+     * @return ShardingSphere table data
+     * @throws SQLException SQL exception
+     */
+    Optional<ShardingSphereTableData> collect(String databaseName, String schemaName, ShardingSphereTable table, ShardingSphereMetaData metaData) throws SQLException;
 }

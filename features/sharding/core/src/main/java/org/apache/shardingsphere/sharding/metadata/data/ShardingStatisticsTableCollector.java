@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.shardingsphere.ShardingSphereTableStatisticsCollector;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -47,12 +47,13 @@ import java.util.Optional;
 /**
  * Sharding statistics table data collector.
  */
-public final class ShardingStatisticsTableCollector implements ShardingSphereStatisticsCollector {
+public final class ShardingStatisticsTableCollector implements ShardingSphereTableStatisticsCollector {
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final String schemaName,
+                                                     final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
@@ -123,6 +124,6 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     
     @Override
     public String getType() {
-        return SHARDING_TABLE_STATISTICS;
+        return "shardingsphere.sharding_table_statistics";
     }
 }
