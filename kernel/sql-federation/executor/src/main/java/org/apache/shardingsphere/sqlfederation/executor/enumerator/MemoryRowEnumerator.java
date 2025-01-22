@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerator;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.sqlfederation.executor.utils.EnumeratorUtils;
 
 import java.util.ArrayList;
@@ -33,15 +33,15 @@ import java.util.Map;
  */
 public final class MemoryRowEnumerator implements Enumerator<Object> {
     
-    private final Collection<ShardingSphereRowData> rows;
+    private final Collection<RowStatistics> rows;
     
     private final Map<Integer, Class<?>> columnTypes;
     
-    private Iterator<ShardingSphereRowData> iterator;
+    private Iterator<RowStatistics> iterator;
     
     private Object current;
     
-    public MemoryRowEnumerator(final Collection<ShardingSphereRowData> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
+    public MemoryRowEnumerator(final Collection<RowStatistics> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
         this.rows = rows;
         columnTypes = EnumeratorUtils.createColumnTypes(new ArrayList<>(columns), databaseType);
         iterator = rows.iterator();

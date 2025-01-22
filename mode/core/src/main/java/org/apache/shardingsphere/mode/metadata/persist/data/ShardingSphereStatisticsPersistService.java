@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -103,8 +103,8 @@ public final class ShardingSphereStatisticsPersistService {
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
         schemaStatistics.getTableStatisticsMap().values().forEach(each -> {
-            YamlShardingSphereRowDataSwapper swapper =
-                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
+            YamlShardingSphereRowStatisticsSwapper swapper =
+                    new YamlShardingSphereRowStatisticsSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
             persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }

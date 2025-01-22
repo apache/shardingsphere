@@ -21,7 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
@@ -53,15 +53,15 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
         return Optional.of(result);
     }
     
-    private Collection<ShardingSphereRowData> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
-        Collection<ShardingSphereRowData> result = new LinkedList<>();
+    private Collection<RowStatistics> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
+        Collection<RowStatistics> result = new LinkedList<>();
         for (ShardingSphereTable each : schema.getAllTables()) {
             Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);
             columnValues.put("oid", oid);
             columnValues.put("relnamespace", relNamespace);
             columnValues.put("relname", each.getName());
             columnValues.put("relkind", "r");
-            result.add(new ShardingSphereRowData(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
+            result.add(new RowStatistics(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
         }
         return result;
     }

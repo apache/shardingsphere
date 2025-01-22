@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.fixture;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 
@@ -35,7 +35,7 @@ public final class StatisticsCollectorFixture implements ShardingSphereStatistic
     @Override
     public Optional<TableStatistics> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
         TableStatistics tableStatistics = new TableStatistics("test_table");
-        tableStatistics.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
+        tableStatistics.getRows().add(new RowStatistics(Arrays.asList("1", "2")));
         return Optional.of(tableStatistics);
     }
     

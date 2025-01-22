@@ -28,19 +28,19 @@ import java.security.MessageDigest;
 import java.util.List;
 
 /**
- * ShardingSphere row data.
+ * Row statistics.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public final class ShardingSphereRowData {
+public final class RowStatistics {
     
     @EqualsAndHashCode.Include
     private final String uniqueKey;
     
     private final List<Object> rows;
     
-    public ShardingSphereRowData(final List<Object> rows) {
+    public RowStatistics(final List<Object> rows) {
         uniqueKey = generateUniqueKey(rows);
         this.rows = rows;
     }

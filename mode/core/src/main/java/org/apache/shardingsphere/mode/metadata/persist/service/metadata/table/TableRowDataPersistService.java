@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -77,7 +77,7 @@ public final class TableRowDataPersistService {
      */
     public TableStatistics load(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         TableStatistics result = new TableStatistics(table.getName());
-        YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getAllColumns()));
+        YamlShardingSphereRowStatisticsSwapper swapper = new YamlShardingSphereRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
         for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTablePath(databaseName, schemaName, table.getName()))) {
             String yamlRow = repository.query(ShardingSphereStatisticsNodePath.getTableRowPath(databaseName, schemaName, table.getName(), each));
             if (!Strings.isNullOrEmpty(yamlRow)) {

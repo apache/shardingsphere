@@ -27,13 +27,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.data.AlteredShardingSphereDatabaseData;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -185,18 +185,18 @@ public final class ShardingSphereStatisticsRefreshEngine {
     private AlteredShardingSphereDatabaseData createAlteredShardingSphereDatabaseData(final String databaseName, final String schemaName, final TableStatistics tableStatistics,
                                                                                       final TableStatistics changedTableStatistics, final ShardingSphereTable table) {
         AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableStatistics.getName());
-        Map<String, ShardingSphereRowData> tableDataMap = tableStatistics.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
-        Map<String, ShardingSphereRowData> changedTableDataMap = changedTableStatistics.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
-        YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getAllColumns()));
-        for (Entry<String, ShardingSphereRowData> entry : changedTableDataMap.entrySet()) {
-            if (!tableDataMap.containsKey(entry.getKey())) {
+        Map<String, RowStatistics> tableStatisticsMap = tableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
+        Map<String, RowStatistics> changedTableStatisticsMap = changedTableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
+        YamlShardingSphereRowStatisticsSwapper swapper = new YamlShardingSphereRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
+        for (Entry<String, RowStatistics> entry : changedTableStatisticsMap.entrySet()) {
+            if (!tableStatisticsMap.containsKey(entry.getKey())) {
                 result.getAddedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
-            } else if (!tableDataMap.get(entry.getKey()).equals(entry.getValue())) {
+            } else if (!tableStatisticsMap.get(entry.getKey()).equals(entry.getValue())) {
                 result.getUpdatedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
             }
         }
-        for (Entry<String, ShardingSphereRowData> entry : tableDataMap.entrySet()) {
-            if (!changedTableDataMap.containsKey(entry.getKey())) {
+        for (Entry<String, RowStatistics> entry : tableStatisticsMap.entrySet()) {
+            if (!changedTableStatisticsMap.containsKey(entry.getKey())) {
                 result.getDeletedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
             }
         }

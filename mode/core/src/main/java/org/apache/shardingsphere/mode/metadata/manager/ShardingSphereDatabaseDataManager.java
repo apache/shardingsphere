@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public final class ShardingSphereDatabaseDataManager {
         }
         TableStatistics tableStatistics = metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).getTableStatistics(tableName);
         List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getAllColumns());
-        tableStatistics.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData));
+        tableStatistics.getRows().add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToObject(yamlRowData));
     }
     
     /**
@@ -154,6 +154,7 @@ public final class ShardingSphereDatabaseDataManager {
                 || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).containsTableStatistics(tableName)) {
             return;
         }
-        metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).getTableStatistics(tableName).getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
+        metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).getTableStatistics(tableName).getRows()
+                .removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
     }
 }

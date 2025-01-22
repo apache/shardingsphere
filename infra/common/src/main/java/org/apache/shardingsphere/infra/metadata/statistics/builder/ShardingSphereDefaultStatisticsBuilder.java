@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 
@@ -56,7 +56,7 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     
     private void buildClusterInformationTable(final SchemaStatistics schemaStatistics) {
         TableStatistics tableStatistics = new TableStatistics(CLUSTER_INFORMATION);
-        tableStatistics.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+        tableStatistics.getRows().add(new RowStatistics(Collections.singletonList(ShardingSphereVersion.VERSION)));
         schemaStatistics.putTableStatistics(CLUSTER_INFORMATION, tableStatistics);
     }
     

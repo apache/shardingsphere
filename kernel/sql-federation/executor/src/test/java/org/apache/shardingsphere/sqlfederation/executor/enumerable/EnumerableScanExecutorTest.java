@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
@@ -59,7 +59,7 @@ class EnumerableScanExecutorTest {
         SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
         when(databaseStatistics.getSchemaStatistics("pg_catalog")).thenReturn(schemaStatistics);
         TableStatistics tableStatistics = mock(TableStatistics.class);
-        when(tableStatistics.getRows()).thenReturn(Collections.singletonList(new ShardingSphereRowData(Collections.singletonList(1))));
+        when(tableStatistics.getRows()).thenReturn(Collections.singletonList(new RowStatistics(Collections.singletonList(1))));
         when(schemaStatistics.getTableStatistics("test")).thenReturn(tableStatistics);
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");

@@ -29,10 +29,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * YAML ShardingSphere data swapper.
+ * YAML ShardingSphere statistics swapper.
  */
 @RequiredArgsConstructor
-public final class YamlShardingSphereTableDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, TableStatistics> {
+public final class YamlShardingSphereTableStatisticsSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, TableStatistics> {
     
     private final List<ShardingSphereColumn> columns;
     
@@ -41,7 +41,7 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
         YamlShardingSphereTableData result = new YamlShardingSphereTableData();
         result.setName(data.getName());
         Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
-        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(columns).swapToYamlConfiguration(rowData)));
+        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToYamlConfiguration(rowData)));
         result.setRowData(yamlShardingSphereRowData);
         return result;
     }
@@ -50,7 +50,7 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
     public TableStatistics swapToObject(final YamlShardingSphereTableData yamlConfig) {
         TableStatistics result = new TableStatistics(yamlConfig.getName());
         if (null != yamlConfig.getRowData()) {
-            yamlConfig.getRowData().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData)));
+            yamlConfig.getRowData().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToObject(yamlRowData)));
         }
         return result;
     }
