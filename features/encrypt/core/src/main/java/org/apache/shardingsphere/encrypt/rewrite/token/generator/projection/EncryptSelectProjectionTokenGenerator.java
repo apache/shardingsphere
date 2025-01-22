@@ -49,6 +49,6 @@ public final class EncryptSelectProjectionTokenGenerator implements CollectionSQ
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SelectStatementContext sqlStatementContext) {
-        return new EncryptProjectionTokenGenerator(previousSQLTokens, rule, sqlStatementContext.getDatabaseType()).generateSQLTokens(sqlStatementContext);
+        return new EncryptProjectionTokenGenerator(previousSQLTokens, sqlStatementContext.getDatabaseType(), rule).generateSQLTokens(sqlStatementContext);
     }
 }

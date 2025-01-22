@@ -56,7 +56,7 @@ class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singleton(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
-        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(rule, selectStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
+        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(selectStatementContext, Collections.emptyList(), rule, mock(ShardingSphereDatabase.class));
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(3));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
