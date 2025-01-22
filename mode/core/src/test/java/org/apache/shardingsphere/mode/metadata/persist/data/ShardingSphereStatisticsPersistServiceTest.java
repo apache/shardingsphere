@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -97,10 +97,10 @@ class ShardingSphereStatisticsPersistServiceTest {
     @Test
     void assertPersist() {
         SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
-        when(schemaStatistics.getTableData().isEmpty()).thenReturn(false);
-        ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
-        when(tableData.getName()).thenReturn("foo_tbl");
-        when(schemaStatistics.getTableData().values()).thenReturn(Collections.singleton(tableData));
+        when(schemaStatistics.getTableStatisticsMap().isEmpty()).thenReturn(false);
+        TableStatistics tableStatistics = mock(TableStatistics.class);
+        when(tableStatistics.getName()).thenReturn("foo_tbl");
+        when(schemaStatistics.getTableStatisticsMap().values()).thenReturn(Collections.singleton(tableStatistics));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));

@@ -77,7 +77,7 @@ public final class ShardingSphereStatisticsPersistService {
         SchemaStatistics result = new SchemaStatistics();
         for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
                 .collect(Collectors.toList())) {
-            result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
+            result.getTableStatisticsMap().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
         }
         return result;
@@ -91,7 +91,7 @@ public final class ShardingSphereStatisticsPersistService {
      * @param schemaStatistics schema statistics
      */
     public void persist(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
-        if (schemaStatistics.getTableData().isEmpty()) {
+        if (schemaStatistics.getTableStatisticsMap().isEmpty()) {
             persistSchema(database.getName(), schemaName);
         }
         persistTableData(database, schemaName, schemaStatistics);
@@ -102,7 +102,7 @@ public final class ShardingSphereStatisticsPersistService {
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
-        schemaStatistics.getTableData().values().forEach(each -> {
+        schemaStatistics.getTableStatisticsMap().values().forEach(each -> {
             YamlShardingSphereRowDataSwapper swapper =
                     new YamlShardingSphereRowDataSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
             persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));

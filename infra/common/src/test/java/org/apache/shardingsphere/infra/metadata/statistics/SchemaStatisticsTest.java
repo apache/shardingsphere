@@ -34,40 +34,40 @@ class SchemaStatisticsTest {
     private static final String NON_EXISTENT_TABLE = "NON_EXISTENT_TABLE";
     
     @Test
-    void assertGetTable() {
+    void assertGetTableStatistics() {
         SchemaStatistics schemaStatistics = new SchemaStatistics();
-        schemaStatistics.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        ShardingSphereTableData tableData = schemaStatistics.getTable(TEST_TABLE_NAME);
-        assertTrue(TEST_TABLE_NAME.equalsIgnoreCase(tableData.getName()));
-        assertNull(schemaStatistics.getTable(NON_EXISTENT_TABLE));
+        schemaStatistics.putTableStatistics(TEST_TABLE_NAME, new TableStatistics(TEST_TABLE_NAME));
+        TableStatistics tableStatistics = schemaStatistics.getTableStatistics(TEST_TABLE_NAME);
+        assertTrue(TEST_TABLE_NAME.equalsIgnoreCase(tableStatistics.getName()));
+        assertNull(schemaStatistics.getTableStatistics(NON_EXISTENT_TABLE));
     }
     
     @Test
-    void assertPutTable() {
+    void assertPutTableStatistics() {
         SchemaStatistics schemaStatistics = new SchemaStatistics();
-        schemaStatistics.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        assertThat(schemaStatistics.getTableData().size(), is(1));
-        assertFalse(schemaStatistics.getTableData().containsKey(TEST_TABLE_2));
-        ShardingSphereTableData newTable = new ShardingSphereTableData(TEST_TABLE_2);
-        schemaStatistics.putTable(TEST_TABLE_2, newTable);
-        assertThat(schemaStatistics.getTableData().size(), is(2));
-        assertTrue(schemaStatistics.containsTable(TEST_TABLE_2));
+        schemaStatistics.putTableStatistics(TEST_TABLE_NAME, new TableStatistics(TEST_TABLE_NAME));
+        assertThat(schemaStatistics.getTableStatisticsMap().size(), is(1));
+        assertFalse(schemaStatistics.getTableStatisticsMap().containsKey(TEST_TABLE_2));
+        TableStatistics newTableStatistics = new TableStatistics(TEST_TABLE_2);
+        schemaStatistics.putTableStatistics(TEST_TABLE_2, newTableStatistics);
+        assertThat(schemaStatistics.getTableStatisticsMap().size(), is(2));
+        assertTrue(schemaStatistics.containsTableStatistics(TEST_TABLE_2));
     }
     
     @Test
-    void assertRemoveTable() {
+    void assertRemoveTableStatistics() {
         SchemaStatistics schemaStatistics = new SchemaStatistics();
-        schemaStatistics.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        assertTrue(schemaStatistics.containsTable(TEST_TABLE_NAME));
-        schemaStatistics.removeTable(TEST_TABLE_NAME);
-        assertTrue(schemaStatistics.getTableData().isEmpty());
+        schemaStatistics.putTableStatistics(TEST_TABLE_NAME, new TableStatistics(TEST_TABLE_NAME));
+        assertTrue(schemaStatistics.containsTableStatistics(TEST_TABLE_NAME));
+        schemaStatistics.removeTableStatistics(TEST_TABLE_NAME);
+        assertTrue(schemaStatistics.getTableStatisticsMap().isEmpty());
     }
     
     @Test
-    void assertContainsTable() {
+    void assertContainsTableStatistics() {
         SchemaStatistics schemaStatistics = new SchemaStatistics();
-        schemaStatistics.putTable(TEST_TABLE_NAME, new ShardingSphereTableData(TEST_TABLE_NAME));
-        assertTrue(schemaStatistics.containsTable(TEST_TABLE_NAME));
-        assertFalse(schemaStatistics.containsTable(NON_EXISTENT_TABLE));
+        schemaStatistics.putTableStatistics(TEST_TABLE_NAME, new TableStatistics(TEST_TABLE_NAME));
+        assertTrue(schemaStatistics.containsTableStatistics(TEST_TABLE_NAME));
+        assertFalse(schemaStatistics.containsTableStatistics(NON_EXISTENT_TABLE));
     }
 }

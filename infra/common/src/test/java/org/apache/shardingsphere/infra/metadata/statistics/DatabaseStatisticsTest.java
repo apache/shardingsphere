@@ -41,7 +41,7 @@ class DatabaseStatisticsTest {
     
     @Test
     void assertGetSchemaStatistics() {
-        assertTrue(databaseStatistics.getSchemaStatistics("foo_schema").getTableData().isEmpty());
+        assertTrue(databaseStatistics.getSchemaStatistics("foo_schema").getTableStatisticsMap().isEmpty());
         assertNull(databaseStatistics.getSchemaStatistics("bar_schema"));
     }
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 
 import java.util.Collections;
 
@@ -55,12 +55,12 @@ public final class ShardingSphereDefaultStatisticsBuilder {
     }
     
     private void buildClusterInformationTable(final SchemaStatistics schemaStatistics) {
-        ShardingSphereTableData tableData = new ShardingSphereTableData(CLUSTER_INFORMATION);
-        tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
-        schemaStatistics.putTable(CLUSTER_INFORMATION, tableData);
+        TableStatistics tableStatistics = new TableStatistics(CLUSTER_INFORMATION);
+        tableStatistics.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+        schemaStatistics.putTableStatistics(CLUSTER_INFORMATION, tableStatistics);
     }
     
     private void buildShardingTableStatisticsTable(final SchemaStatistics schemaStatistics) {
-        schemaStatistics.putTable(SHARDING_TABLE_STATISTICS, new ShardingSphereTableData(SHARDING_TABLE_STATISTICS));
+        schemaStatistics.putTableStatistics(SHARDING_TABLE_STATISTICS, new TableStatistics(SHARDING_TABLE_STATISTICS));
     }
 }

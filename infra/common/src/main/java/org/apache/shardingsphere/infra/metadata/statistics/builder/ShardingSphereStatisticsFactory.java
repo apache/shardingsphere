@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -103,9 +103,9 @@ public final class ShardingSphereStatisticsFactory {
     }
     
     private static void fillDefaultStatistics(final SchemaStatistics defaultSchemaStatistics, final SchemaStatistics existedSchemaStatistics) {
-        for (Entry<String, ShardingSphereTableData> entry : defaultSchemaStatistics.getTableData().entrySet()) {
-            if (!existedSchemaStatistics.containsTable(entry.getKey())) {
-                existedSchemaStatistics.putTable(entry.getKey(), entry.getValue());
+        for (Entry<String, TableStatistics> entry : defaultSchemaStatistics.getTableStatisticsMap().entrySet()) {
+            if (!existedSchemaStatistics.containsTableStatistics(entry.getKey())) {
+                existedSchemaStatistics.putTableStatistics(entry.getKey(), entry.getValue());
             }
         }
     }

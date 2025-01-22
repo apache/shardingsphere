@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public final class PostgreSQLStatisticsAppender implements DialectStatisticsAppe
     private void initTables(final ShardingSphereSchema schema, final Collection<String> tableNames, final SchemaStatistics schemaStatistics) {
         for (ShardingSphereTable each : schema.getAllTables()) {
             if (tableNames.contains(each.getName().toLowerCase())) {
-                schemaStatistics.putTable(each.getName().toLowerCase(), new ShardingSphereTableData(each.getName()));
+                schemaStatistics.putTableStatistics(each.getName().toLowerCase(), new TableStatistics(each.getName()));
             }
         }
     }

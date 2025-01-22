@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -68,8 +68,8 @@ class ShardingSphereStatisticsRefreshEngineTest {
         DatabaseStatistics databaseStatistics = new DatabaseStatistics();
         SchemaStatistics schemaStatistics = new SchemaStatistics();
         databaseStatistics.getSchemaStatisticsMap().put("foo_schema", schemaStatistics);
-        ShardingSphereTableData tableData = new ShardingSphereTableData("test_table");
-        schemaStatistics.getTableData().put("test_table", tableData);
+        TableStatistics tableStatistics = new TableStatistics("test_table");
+        schemaStatistics.getTableStatisticsMap().put("test_table", tableStatistics);
         result.getDatabaseStatisticsMap().put("foo_db", databaseStatistics);
         return result;
     }
