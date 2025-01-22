@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
-import org.apache.shardingsphere.mode.node.path.metadata.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.state.cluster.ClusterState;
 
 import java.util.Arrays;
 import java.util.Collection;

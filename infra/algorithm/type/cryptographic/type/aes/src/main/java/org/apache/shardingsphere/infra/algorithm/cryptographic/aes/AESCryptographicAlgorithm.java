@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -36,23 +34,11 @@ import java.util.Properties;
  */
 public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
     
-    private static final String AES_KEY = "aes-key-value";
-    
-    private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
-    
-    private byte[] secretKey;
+    private CryptographicPropertiesProvider propsProvider;
     
     @Override
     public void init(final Properties props) {
-        secretKey = getSecretKey(props);
-    }
-    
-    private byte[] getSecretKey(final Properties props) {
-        String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkNotEmpty(aesKey, () -> new AlgorithmInitializationException(this, "%s can not be null or empty", AES_KEY));
-        String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME);
-        ShardingSpherePreconditions.checkNotEmpty(digestAlgorithm, () -> new AlgorithmInitializationException(this, "%s can not be null or empty", DIGEST_ALGORITHM_NAME));
-        return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
+        propsProvider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT", props);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
@@ -62,7 +48,11 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
             return null;
         }
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(result);
+        return encode(result);
+    }
+    
+    private String encode(final byte[] value) {
+        return Base64.getEncoder().encodeToString(value);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
@@ -71,13 +61,17 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue.toString().trim()));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(decode(cipherValue.toString().trim()));
         return new String(result, StandardCharsets.UTF_8);
+    }
+    
+    private byte[] decode(final String value) {
+        return Base64.getDecoder().decode(value);
     }
     
     private Cipher getCipher(final int decryptMode) throws GeneralSecurityException {
         Cipher result = Cipher.getInstance(getType());
-        result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
+        result.init(decryptMode, new SecretKeySpec(propsProvider.getSecretKey(), getType()));
         return result;
     }
     

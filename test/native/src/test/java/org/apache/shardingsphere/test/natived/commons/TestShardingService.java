@@ -200,4 +200,15 @@ public final class TestShardingService {
         orderItemRepository.dropTableInMySQL();
         addressRepository.dropTableInMySQL();
     }
+    
+    /**
+     * Clean environment in Firebird.
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public void cleanEnvironmentInFirebird() throws SQLException {
+        orderRepository.dropTableInFirebird();
+        orderItemRepository.dropTableInFirebird();
+        addressRepository.dropTableInFirebird();
+    }
 }

@@ -34,11 +34,11 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.database.D
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
+import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
@@ -57,16 +57,16 @@ import java.util.stream.Collectors;
  */
 public final class ClusterMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
+    private final MetaDataContextManager metaDataContextManager;
+    
     private final MetaDataPersistService metaDataPersistService;
     
     private final ListenerAssistedPersistService listenerAssistedPersistService;
     
-    private final MetaDataContextManager metaDataContextManager;
-    
-    public ClusterMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        metaDataPersistService = new MetaDataPersistService(repository);
-        listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
+    public ClusterMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
         this.metaDataContextManager = metaDataContextManager;
+        metaDataPersistService = metaDataContextManager.getMetaDataPersistService();
+        listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
     }
     
     @Override
@@ -125,8 +125,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .switchByRegisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
             newDataSources.putAll(switchingResource.getNewDataSources());
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts);
             metaDataPersistService.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
             afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();
@@ -143,8 +143,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
             newDataSources.putAll(switchingResource.getNewDataSources());
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts);
             DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
             metaDataPersistService.getMetaDataVersionPersistService()
                     .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
@@ -161,8 +161,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             MetaDataContexts originalMetaDataContexts = buildOriginalMetaDataContexts();
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
                     .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
-            MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(databaseName, false,
-                    switchingResource, originalMetaDataContexts, metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext());
+            MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
+                    databaseName, false, switchingResource, originalMetaDataContexts);
             metaDataPersistService.getDataSourceUnitService().delete(databaseName, each);
             afterStorageUnitsDropped(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();
