@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.StatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.shardingsphere.ShardingSphereTableStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -60,11 +60,11 @@ class OpenGaussShardingStatisticsTableCollectorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
-    private StatisticsCollector statisticsCollector;
+    private ShardingSphereTableStatisticsCollector shardingSphereTableStatisticsCollector;
     
     @BeforeEach
     void setUp() {
-        statisticsCollector = TypedSPILoader.getService(StatisticsCollector.class, "sharding_table_statistics");
+        shardingSphereTableStatisticsCollector = TypedSPILoader.getService(ShardingSphereTableStatisticsCollector.class, "shardingsphere.sharding_table_statistics");
     }
     
     @Test
@@ -77,7 +77,7 @@ class OpenGaussShardingStatisticsTableCollectorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
+        Optional<ShardingSphereTableData> actual = shardingSphereTableStatisticsCollector.collect("foo_db", "foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
         List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());
@@ -96,7 +96,7 @@ class OpenGaussShardingStatisticsTableCollectorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
+        Optional<ShardingSphereTableData> actual = shardingSphereTableStatisticsCollector.collect("foo_db", "foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
         List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());
