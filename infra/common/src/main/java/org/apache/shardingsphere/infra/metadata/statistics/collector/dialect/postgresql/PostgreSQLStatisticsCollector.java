@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.postgresql;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.StatisticsCollector;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * ShardingSphere statistics collector.
+ * PostgreSQL shardingsphere statistics collector.
  */
-@SingletonSPI
-public interface ShardingSphereStatisticsCollector extends TypedSPI {
+public final class PostgreSQLStatisticsCollector implements StatisticsCollector {
     
-    /**
-     * Collect statistics.
-     *
-     * @param databaseName database name
-     * @param table table
-     * @param metaData ShardingSphere meta data
-     * @return ShardingSphere table data
-     * @throws SQLException SQL exception
-     */
-    Optional<ShardingSphereTableData> collect(String databaseName, ShardingSphereTable table, ShardingSphereMetaData metaData) throws SQLException;
+    @Override
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final String schemaName,
+                                                     final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
+        Optional<PostgreSQLTableStatisticsCollector> statisticsCollector = TypedSPILoader.findService(PostgreSQLTableStatisticsCollector.class, String.format("%s.%s", schemaName, table.getName()));
+        return statisticsCollector.isPresent() ? statisticsCollector.get().collect(databaseName, schemaName, table, metaData) : Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

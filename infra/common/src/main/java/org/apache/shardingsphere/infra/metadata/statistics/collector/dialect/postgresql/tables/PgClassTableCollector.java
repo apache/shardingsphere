@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.postgresql.tables;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.dialect.postgresql.PostgreSQLTableStatisticsCollector;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -35,7 +36,8 @@ import java.util.Optional;
 /**
  * Table pg_class data collector.
  */
-public final class PgClassTableCollector implements ShardingSphereStatisticsCollector {
+@RequiredArgsConstructor
+public final class PgClassTableCollector implements PostgreSQLTableStatisticsCollector {
     
     private static final String PG_CLASS = "pg_class";
     
@@ -44,7 +46,8 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final String schemaName,
+                                                     final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
         ShardingSphereSchema publicSchema = metaData.getDatabase(databaseName).getSchema(PUBLIC_SCHEMA);
         if (null != publicSchema) {
@@ -68,6 +71,6 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     
     @Override
     public String getType() {
-        return PG_CLASS;
+        return "pg_catalog.pg_class";
     }
 }
