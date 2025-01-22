@@ -34,7 +34,7 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     
     private WithSegment withSegment;
     
-    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment;
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
     private ReturningSegment returningSegment;
     
@@ -45,7 +45,7 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     
     @Override
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
-        return Optional.ofNullable(onDuplicateKeyColumnsSegment);
+        return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     @Override

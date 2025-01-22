@@ -704,7 +704,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         PostgreSQLInsertStatement result = (PostgreSQLInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnConflict()) {
-            result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
+            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
         }
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
