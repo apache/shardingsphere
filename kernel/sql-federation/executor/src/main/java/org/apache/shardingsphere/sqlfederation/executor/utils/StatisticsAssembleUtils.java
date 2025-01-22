@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
 
@@ -39,15 +39,15 @@ import java.util.Collection;
 public final class StatisticsAssembleUtils {
     
     /**
-     * Assemble table data.
+     * Assemble table statistics.
      *
      * @param table table
      * @param metaData meta data
-     * @return ShardingSphere table data
+     * @return table statistics
      */
-    public static ShardingSphereTableData assembleTableData(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
+    public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
         // TODO move this logic to ShardingSphere statistics
-        ShardingSphereTableData result = new ShardingSphereTableData(table.getName());
+        TableStatistics result = new TableStatistics(table.getName());
         if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
         } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
@@ -60,31 +60,31 @@ public final class StatisticsAssembleUtils {
         return result;
     }
     
-    private static void assembleOpenGaussDatabaseData(final ShardingSphereTableData tableData, final Collection<ShardingSphereDatabase> databases) {
+    private static void assembleOpenGaussDatabaseData(final TableStatistics tableStatistics, final Collection<ShardingSphereDatabase> databases) {
         for (ShardingSphereDatabase each : databases) {
             Object[] rows = new Object[15];
             rows[0] = each.getName();
             rows[11] = EnumerableConstants.DAT_COMPATIBILITY;
-            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+            tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
     }
     
-    private static void assembleOpenGaussTableData(final ShardingSphereTableData tableData, final Collection<ShardingSphereSchema> schemas) {
+    private static void assembleOpenGaussTableData(final TableStatistics tableStatistics, final Collection<ShardingSphereSchema> schemas) {
         for (ShardingSphereSchema schema : schemas) {
             for (ShardingSphereTable each : schema.getAllTables()) {
                 Object[] rows = new Object[10];
                 rows[0] = schema.getName();
                 rows[1] = each.getName();
-                tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+                tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
             }
         }
     }
     
-    private static void assembleOpenGaussRoleData(final ShardingSphereTableData tableData, final ShardingSphereMetaData metaData) {
+    private static void assembleOpenGaussRoleData(final TableStatistics tableStatistics, final ShardingSphereMetaData metaData) {
         for (Grantee each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getGrantees()) {
             Object[] rows = new Object[27];
             rows[0] = each.getUsername();
-            tableData.getRows().add(new ShardingSphereRowData(Arrays.asList(rows)));
+            tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
     }
 }

@@ -125,7 +125,7 @@ public class MetaDataContextManager {
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataContexts.getMetaData().getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getShardingSphereDataPersistService().load(metaData)));
+        MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getShardingSphereStatisticsPersistService().load(metaData)));
         switchingResource.closeStaleDataSources();
         return result;
     }

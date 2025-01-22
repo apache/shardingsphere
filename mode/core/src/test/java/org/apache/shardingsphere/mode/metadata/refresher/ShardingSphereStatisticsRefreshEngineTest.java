@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -60,17 +60,17 @@ class ShardingSphereStatisticsRefreshEngineTest {
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         when(contextManager.getComputeNodeInstanceContext().getLockContext().tryLock(any(), anyLong())).thenReturn(true);
         new ShardingSphereStatisticsRefreshEngine(contextManager).refresh();
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereDataPersistService()).update(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereStatisticsPersistService()).update(any());
     }
     
     private ShardingSphereStatistics mockStatistics() {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-        ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-        databaseData.getSchemaData().put("foo_schema", schemaData);
-        ShardingSphereTableData tableData = new ShardingSphereTableData("test_table");
-        schemaData.getTableData().put("test_table", tableData);
-        result.getDatabaseData().put("foo_db", databaseData);
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        SchemaStatistics schemaStatistics = new SchemaStatistics();
+        databaseStatistics.getSchemaStatisticsMap().put("foo_schema", schemaStatistics);
+        TableStatistics tableStatistics = new TableStatistics("test_table");
+        schemaStatistics.getTableStatisticsMap().put("test_table", tableStatistics);
+        result.getDatabaseStatisticsMap().put("foo_db", databaseStatistics);
         return result;
     }
     

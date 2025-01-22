@@ -24,36 +24,36 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSphereDatabaseDataTest {
+class DatabaseStatisticsTest {
     
-    private final ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
+    private final DatabaseStatistics databaseStatistics = new DatabaseStatistics();
     
     @BeforeEach
     void setUp() {
-        databaseData.putSchema("foo_schema", new ShardingSphereSchemaData());
+        databaseStatistics.putSchemaStatistics("foo_schema", new SchemaStatistics());
     }
     
     @Test
-    void assertContainsSchema() {
-        assertTrue(databaseData.containsSchema("foo_schema"));
-        assertFalse(databaseData.containsSchema("bar_schema"));
+    void assertContainsSchemaStatistics() {
+        assertTrue(databaseStatistics.containsSchemaStatistics("foo_schema"));
+        assertFalse(databaseStatistics.containsSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertGetSchema() {
-        assertTrue(databaseData.getSchema("foo_schema").getTableData().isEmpty());
-        assertNull(databaseData.getSchema("bar_schema"));
+    void assertGetSchemaStatistics() {
+        assertTrue(databaseStatistics.getSchemaStatistics("foo_schema").getTableStatisticsMap().isEmpty());
+        assertNull(databaseStatistics.getSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertPutSchema() {
-        databaseData.putSchema("bar_schema", new ShardingSphereSchemaData());
-        assertTrue(databaseData.containsSchema("bar_schema"));
+    void assertPutSchemaStatistics() {
+        databaseStatistics.putSchemaStatistics("bar_schema", new SchemaStatistics());
+        assertTrue(databaseStatistics.containsSchemaStatistics("bar_schema"));
     }
     
     @Test
-    void assertRemoveSchema() {
-        databaseData.removeSchema("foo_schema");
-        assertFalse(databaseData.containsSchema("foo_schema"));
+    void assertRemoveSchemaStatistics() {
+        databaseStatistics.removeSchemaStatistics("foo_schema");
+        assertFalse(databaseStatistics.containsSchemaStatistics("foo_schema"));
     }
 }

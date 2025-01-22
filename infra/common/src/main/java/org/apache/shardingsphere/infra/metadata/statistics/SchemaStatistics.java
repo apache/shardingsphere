@@ -23,49 +23,49 @@ import lombok.Getter;
 import java.util.Map;
 
 /**
- * ShardingSphere schema data.
+ * Schema statistics.
  */
 @Getter
-public final class ShardingSphereSchemaData {
+public final class SchemaStatistics {
     
-    private final Map<String, ShardingSphereTableData> tableData = new CaseInsensitiveMap<>();
+    private final Map<String, TableStatistics> tableStatisticsMap = new CaseInsensitiveMap<>();
     
     /**
-     * Get ShardingSphere table meta data via table name.
+     * Get table statistics.
      *
      * @param tableName tableName table name
-     * @return ShardingSphere table data
+     * @return table statistics
      */
-    public ShardingSphereTableData getTable(final String tableName) {
-        return tableData.get(tableName);
+    public TableStatistics getTableStatistics(final String tableName) {
+        return tableStatisticsMap.get(tableName);
     }
     
     /**
-     * Add ShardingSphere table data.
+     * Add table statistics.
      *
      * @param tableName table name
-     * @param table ShardingSphere table data
+     * @param tableStatistics table statistics
      */
-    public void putTable(final String tableName, final ShardingSphereTableData table) {
-        tableData.put(tableName, table);
+    public void putTableStatistics(final String tableName, final TableStatistics tableStatistics) {
+        tableStatisticsMap.put(tableName, tableStatistics);
     }
     
     /**
-     * Remove ShardingSphere table meta data.
+     * Remove table statistics.
      *
      * @param tableName table name
      */
-    public void removeTable(final String tableName) {
-        tableData.remove(tableName);
+    public void removeTableStatistics(final String tableName) {
+        tableStatisticsMap.remove(tableName);
     }
     
     /**
-     * Judge contains ShardingSphere table from table metadata or not.
+     * Judge whether contains table statistics.
      *
      * @param tableName table name
-     * @return contains ShardingSphere table from table metadata or not
+     * @return contains table statistics or not
      */
-    public boolean containsTable(final String tableName) {
-        return tableData.containsKey(tableName);
+    public boolean containsTableStatistics(final String tableName) {
+        return tableStatisticsMap.containsKey(tableName);
     }
 }

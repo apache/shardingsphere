@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -76,10 +76,10 @@ class PostgreSQLShardingStatisticsTableCollectorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        Optional<ShardingSphereTableData> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
+        Optional<TableStatistics> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sharding_table_statistics"));
-        List<ShardingSphereRowData> actualRows = new ArrayList<>(actual.get().getRows());
+        List<RowStatistics> actualRows = new ArrayList<>(actual.get().getRows());
         assertThat(actualRows.size(), is(2));
         assertThat(actualRows.get(0).getRows(), is(Arrays.asList(2, "foo_db", "foo_tbl", "ds_1", "foo_tbl", new BigDecimal("10"), new BigDecimal("100"))));
         assertThat(actualRows.get(1).getRows(), is(Arrays.asList(1, "foo_db", "foo_tbl", "ds_0", "foo_tbl", new BigDecimal("0"), new BigDecimal("0"))));

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
@@ -77,10 +77,10 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
             }
             persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
         }));
-        for (Entry<String, ShardingSphereDatabaseData> databaseDataEntry : metaDataContexts.getStatistics().getDatabaseData().entrySet()) {
-            for (Entry<String, ShardingSphereSchemaData> schemaDataEntry : databaseDataEntry.getValue().getSchemaData().entrySet()) {
-                persistService.getShardingSphereDataPersistService().persist(
-                        metaDataContexts.getMetaData().getDatabase(databaseDataEntry.getKey()), schemaDataEntry.getKey(), schemaDataEntry.getValue());
+        for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
+            for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {
+                persistService.getShardingSphereStatisticsPersistService().persist(
+                        metaDataContexts.getMetaData().getDatabase(databaseStatisticsEntry.getKey()), schemaStatisticsEntry.getKey(), schemaStatisticsEntry.getValue());
             }
         }
     }

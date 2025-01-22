@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereDefaultStatisticsBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +36,10 @@ class PostgreSQLStatisticsAppenderTest {
     @Test
     void assertAppend() {
         ShardingSphereDatabase database = mockDatabase();
-        ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(database);
-        new PostgreSQLStatisticsAppender().append(databaseData, database);
-        assertTrue(databaseData.getSchemaData().containsKey("pg_catalog"));
-        assertTrue(databaseData.getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
+        DatabaseStatistics databaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(database);
+        new PostgreSQLStatisticsAppender().append(databaseStatistics, database);
+        assertTrue(databaseStatistics.getSchemaStatisticsMap().containsKey("pg_catalog"));
+        assertTrue(databaseStatistics.getSchemaStatisticsMap().get("pg_catalog").getTableStatisticsMap().containsKey("pg_class"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

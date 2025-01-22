@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
@@ -29,28 +29,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * YAML ShardingSphere data swapper.
+ * YAML ShardingSphere statistics swapper.
  */
 @RequiredArgsConstructor
-public final class YamlShardingSphereTableDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, ShardingSphereTableData> {
+public final class YamlShardingSphereTableStatisticsSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, TableStatistics> {
     
     private final List<ShardingSphereColumn> columns;
     
     @Override
-    public YamlShardingSphereTableData swapToYamlConfiguration(final ShardingSphereTableData data) {
+    public YamlShardingSphereTableData swapToYamlConfiguration(final TableStatistics data) {
         YamlShardingSphereTableData result = new YamlShardingSphereTableData();
         result.setName(data.getName());
         Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
-        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(columns).swapToYamlConfiguration(rowData)));
+        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToYamlConfiguration(rowData)));
         result.setRowData(yamlShardingSphereRowData);
         return result;
     }
     
     @Override
-    public ShardingSphereTableData swapToObject(final YamlShardingSphereTableData yamlConfig) {
-        ShardingSphereTableData result = new ShardingSphereTableData(yamlConfig.getName());
+    public TableStatistics swapToObject(final YamlShardingSphereTableData yamlConfig) {
+        TableStatistics result = new TableStatistics(yamlConfig.getName());
         if (null != yamlConfig.getRowData()) {
-            yamlConfig.getRowData().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData)));
+            yamlConfig.getRowData().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToObject(yamlRowData)));
         }
         return result;
     }

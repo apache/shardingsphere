@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
@@ -31,15 +31,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * YAML ShardingSphere row data swapper.
+ * YAML ShardingSphere row statistics swapper.
  */
 @RequiredArgsConstructor
-public final class YamlShardingSphereRowDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereRowData, ShardingSphereRowData> {
+public final class YamlShardingSphereRowStatisticsSwapper implements YamlConfigurationSwapper<YamlShardingSphereRowData, RowStatistics> {
     
     private final List<ShardingSphereColumn> columns;
     
     @Override
-    public YamlShardingSphereRowData swapToYamlConfiguration(final ShardingSphereRowData data) {
+    public YamlShardingSphereRowData swapToYamlConfiguration(final RowStatistics data) {
         YamlShardingSphereRowData result = new YamlShardingSphereRowData();
         Collection<Object> rowData = null == data.getRows() ? Collections.emptyList() : data.getRows();
         List<Object> yamlRowData = new LinkedList<>();
@@ -61,7 +61,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
     }
     
     @Override
-    public ShardingSphereRowData swapToObject(final YamlShardingSphereRowData yamlConfig) {
+    public RowStatistics swapToObject(final YamlShardingSphereRowData yamlConfig) {
         Collection<Object> yamlRow = null == yamlConfig.getRows() ? Collections.emptyList() : yamlConfig.getRows();
         List<Object> rowData = new LinkedList<>();
         int count = 0;
@@ -69,7 +69,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
             ShardingSphereColumn column = columns.get(count++);
             rowData.add(convertByDataType(each, column.getDataType()));
         }
-        return new ShardingSphereRowData(yamlConfig.getUniqueKey(), rowData);
+        return new RowStatistics(yamlConfig.getUniqueKey(), rowData);
     }
     
     private Object convertByDataType(final Object data, final int dataType) {

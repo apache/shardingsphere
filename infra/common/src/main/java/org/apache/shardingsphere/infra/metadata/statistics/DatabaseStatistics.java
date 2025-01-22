@@ -23,49 +23,49 @@ import lombok.Getter;
 import java.util.Map;
 
 /**
- * ShardingSphere database data.
+ * Database statistics.
  */
 @Getter
-public final class ShardingSphereDatabaseData {
+public final class DatabaseStatistics {
     
-    private final Map<String, ShardingSphereSchemaData> schemaData = new CaseInsensitiveMap<>();
+    private final Map<String, SchemaStatistics> schemaStatisticsMap = new CaseInsensitiveMap<>();
     
     /**
-     * Judge whether to contains schema.
+     * Judge whether to contains schema statistics.
      *
      * @param schemaName schema name
-     * @return contains schema or not
+     * @return contains schema statistics or not
      */
-    public boolean containsSchema(final String schemaName) {
-        return schemaData.containsKey(schemaName);
+    public boolean containsSchemaStatistics(final String schemaName) {
+        return schemaStatisticsMap.containsKey(schemaName);
     }
     
     /**
-     * Get ShardingSphere schema data.
+     * Get schema statistics.
      *
      * @param schemaName schema name
-     * @return schema data
+     * @return schema statistics
      */
-    public ShardingSphereSchemaData getSchema(final String schemaName) {
-        return schemaData.get(schemaName);
+    public SchemaStatistics getSchemaStatistics(final String schemaName) {
+        return schemaStatisticsMap.get(schemaName);
     }
     
     /**
-     * Put schema data.
+     * Put schema statistics.
      *
      * @param schemaName schema name
-     * @param schema schema data
+     * @param schemaStatistics schema statistics
      */
-    public void putSchema(final String schemaName, final ShardingSphereSchemaData schema) {
-        schemaData.put(schemaName, schema);
+    public void putSchemaStatistics(final String schemaName, final SchemaStatistics schemaStatistics) {
+        schemaStatisticsMap.put(schemaName, schemaStatistics);
     }
     
     /**
-     * Remove schema data.
+     * Remove schema statistics.
      *
      * @param schemaName schema name
      */
-    public void removeSchema(final String schemaName) {
-        schemaData.remove(schemaName);
+    public void removeSchemaStatistics(final String schemaName) {
+        schemaStatisticsMap.remove(schemaName);
     }
 }

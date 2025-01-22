@@ -26,14 +26,14 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 /**
- * ShardingSphere table data.
+ * Table statistics.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class ShardingSphereTableData {
+public final class TableStatistics {
     
     private final String name;
     
-    private final Collection<ShardingSphereRowData> rows = new TreeSet<>(Comparator.comparing(ShardingSphereRowData::getUniqueKey));
+    private final Collection<RowStatistics> rows = new TreeSet<>(Comparator.comparing(RowStatistics::getUniqueKey));
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.metadata.persist.data;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -44,9 +44,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingSphereDataPersistServiceTest {
+class ShardingSphereStatisticsPersistServiceTest {
     
-    private ShardingSphereDataPersistService persistService;
+    private ShardingSphereStatisticsPersistService persistService;
     
     @Mock
     private PersistRepository repository;
@@ -56,13 +56,13 @@ class ShardingSphereDataPersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        persistService = new ShardingSphereDataPersistService(repository);
-        Plugins.getMemberAccessor().set(ShardingSphereDataPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
+        persistService = new ShardingSphereStatisticsPersistService(repository);
+        Plugins.getMemberAccessor().set(ShardingSphereStatisticsPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
     }
     
     @Test
     void assertLoadWithEmptyDatabases() {
-        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseData().isEmpty());
+        assertTrue(persistService.load(mock(ShardingSphereMetaData.class)).getDatabaseStatisticsMap().isEmpty());
     }
     
     @Test
@@ -70,7 +70,7 @@ class ShardingSphereDataPersistServiceTest {
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Arrays.asList("foo_db", "bar_db"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
         when(repository.getChildrenKeys("/statistics/databases/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("foo_tbl"));
-        assertFalse(persistService.load(mockMetaData()).getDatabaseData().isEmpty());
+        assertFalse(persistService.load(mockMetaData()).getDatabaseStatisticsMap().isEmpty());
     }
     
     private ShardingSphereMetaData mockMetaData() {
@@ -90,21 +90,21 @@ class ShardingSphereDataPersistServiceTest {
     void assertPersistWithEmptyTableData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        persistService.persist(database, "foo_schema", mock(ShardingSphereSchemaData.class));
+        persistService.persist(database, "foo_schema", mock(SchemaStatistics.class));
         verify(repository).persist("/statistics/databases/foo_db/schemas/foo_schema", "");
     }
     
     @Test
     void assertPersist() {
-        ShardingSphereSchemaData schemaData = mock(ShardingSphereSchemaData.class, RETURNS_DEEP_STUBS);
-        when(schemaData.getTableData().isEmpty()).thenReturn(false);
-        ShardingSphereTableData tableData = mock(ShardingSphereTableData.class);
-        when(tableData.getName()).thenReturn("foo_tbl");
-        when(schemaData.getTableData().values()).thenReturn(Collections.singleton(tableData));
+        SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
+        when(schemaStatistics.getTableStatisticsMap().isEmpty()).thenReturn(false);
+        TableStatistics tableStatistics = mock(TableStatistics.class);
+        when(tableStatistics.getName()).thenReturn("foo_tbl");
+        when(schemaStatistics.getTableStatisticsMap().values()).thenReturn(Collections.singleton(tableStatistics));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema").getTable("foo_tbl").getAllColumns()).thenReturn(Collections.singleton(mock(ShardingSphereColumn.class)));
-        persistService.persist(database, "foo_schema", schemaData);
+        persistService.persist(database, "foo_schema", schemaStatistics);
         verify(tableRowDataPersistService).persist("foo_db", "foo_schema", "foo_tbl", Collections.emptyList());
     }
     
