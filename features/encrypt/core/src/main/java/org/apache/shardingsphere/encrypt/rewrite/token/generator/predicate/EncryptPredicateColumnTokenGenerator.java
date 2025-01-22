@@ -100,12 +100,12 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         if (includesLike(andPredicates, columnSegment)) {
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
-            return new SubstitutableColumnNameToken(
-                    startIndex, stopIndex, createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType);
+            return new SubstitutableColumnNameToken(startIndex, stopIndex,
+                    createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType);
         }
-        Collection<Projection> columnProjections =
-                encryptColumn.getAssistedQuery().map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType))
-                        .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType));
+        Collection<Projection> columnProjections = encryptColumn.getAssistedQuery()
+                .map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType))
+                .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
     }
     

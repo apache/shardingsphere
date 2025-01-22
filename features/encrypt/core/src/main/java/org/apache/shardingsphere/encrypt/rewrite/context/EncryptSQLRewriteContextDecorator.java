@@ -60,7 +60,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
                     .build(new EncryptParameterRewritersRegistry(rule, sqlRewriteContext.getDatabase().getName(), encryptConditions));
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
-        SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = new EncryptTokenGenerateBuilder(rule, sqlStatementContext, encryptConditions, sqlRewriteContext.getDatabase());
+        SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = new EncryptTokenGenerateBuilder(sqlStatementContext, encryptConditions, rule, sqlRewriteContext.getDatabase());
         sqlRewriteContext.addSQLTokenGenerators(sqlTokenGeneratorBuilder.getSQLTokenGenerators());
     }
     
