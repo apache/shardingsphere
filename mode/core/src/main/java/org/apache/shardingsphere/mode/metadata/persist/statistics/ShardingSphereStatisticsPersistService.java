@@ -123,7 +123,7 @@ public final class ShardingSphereStatisticsPersistService {
         tableRowDataPersistService.persist(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(), alteredDatabaseStatistics.getUpdatedRows());
         tableRowDataPersistService.delete(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(), alteredDatabaseStatistics.getDeletedRows());
     }
-    
+     
     /**
      * Delete sharding sphere database data.
      *
