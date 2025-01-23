@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -124,7 +124,7 @@ public final class ShardingSphereStatisticsChangedHandler implements DataChanged
     private void handleRowDataChanged(final ShardingSphereDatabaseDataManager databaseManager, final Type type, final String eventValue,
                                       final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
         if ((Type.ADDED == type || Type.UPDATED == type) && !Strings.isNullOrEmpty(eventValue)) {
-            databaseManager.alterShardingSphereRowData(databaseName, schemaName, tableName, YamlEngine.unmarshal(eventValue, YamlShardingSphereRowData.class));
+            databaseManager.alterShardingSphereRowData(databaseName, schemaName, tableName, YamlEngine.unmarshal(eventValue, YamlRowStatistics.class));
         } else if (Type.DELETED == type) {
             databaseManager.deleteShardingSphereRowData(databaseName, schemaName, tableName, uniqueKey);
         }

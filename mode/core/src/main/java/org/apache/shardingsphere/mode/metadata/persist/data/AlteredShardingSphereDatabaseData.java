@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,9 +37,9 @@ public final class AlteredShardingSphereDatabaseData {
     
     private final String tableName;
     
-    private final Collection<YamlShardingSphereRowData> addedRows = new LinkedList<>();
+    private final Collection<YamlRowStatistics> addedRows = new LinkedList<>();
     
-    private final Collection<YamlShardingSphereRowData> updatedRows = new LinkedList<>();
+    private final Collection<YamlRowStatistics> updatedRows = new LinkedList<>();
     
-    private final Collection<YamlShardingSphereRowData> deletedRows = new LinkedList<>();
+    private final Collection<YamlRowStatistics> deletedRows = new LinkedList<>();
 }

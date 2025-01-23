@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.data.AlteredShardingSphereDatabaseData;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -187,7 +187,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
         AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableStatistics.getName());
         Map<String, RowStatistics> tableStatisticsMap = tableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
         Map<String, RowStatistics> changedTableStatisticsMap = changedTableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
-        YamlShardingSphereRowStatisticsSwapper swapper = new YamlShardingSphereRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
+        YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
         for (Entry<String, RowStatistics> entry : changedTableStatisticsMap.entrySet()) {
             if (!tableStatisticsMap.containsKey(entry.getKey())) {
                 result.getAddedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
