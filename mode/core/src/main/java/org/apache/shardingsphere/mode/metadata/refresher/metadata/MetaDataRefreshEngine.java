@@ -97,7 +97,7 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings("unchecked")
     public void refresh(final SQLStatementContext sqlStatementContext) {
-        getFederationMetaDataRefresher(sqlStatementContext).ifPresent(
+        findFederationMetaDataRefresher(sqlStatementContext).ifPresent(
                 optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
     
@@ -107,17 +107,17 @@ public final class MetaDataRefreshEngine {
     }
     
     /**
-     * SQL statement is federation or not.
+     * Judge whether SQL statement is federation.
      *
      * @param sqlStatementContext SQL statement context
      * @return is federation or not
      */
     public boolean isFederation(final SQLStatementContext sqlStatementContext) {
-        return getFederationMetaDataRefresher(sqlStatementContext).isPresent();
+        return findFederationMetaDataRefresher(sqlStatementContext).isPresent();
     }
     
     @SuppressWarnings("rawtypes")
-    private Optional<FederationMetaDataRefresher> getFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
+    private Optional<FederationMetaDataRefresher> findFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
         return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
     }
     
