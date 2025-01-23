@@ -68,6 +68,17 @@ public final class MetaDataRefreshEngine {
     private final ConfigurationProperties props;
     
     /**
+     * Whether to need refresh meta data.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is need refresh meta data or not
+     */
+    public boolean isNeedRefreshMetaData(final SQLStatementContext sqlStatementContext) {
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        return DDL_STATEMENT_CLASSES.contains(sqlStatementClass);
+    }
+    
+    /**
      * Refresh meta data.
      *
      * @param sqlStatementContext SQL statement context
@@ -76,10 +87,10 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Class sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        if (!DDL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+        if (!isNeedRefreshMetaData(sqlStatementContext)) {
             return;
         }
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
         Optional<MetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
         if (!metaDataRefresher.isPresent()) {
             return;
@@ -103,22 +114,8 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings("unchecked")
     public void refreshFederation(final SQLStatementContext sqlStatementContext) {
-        findFederationMetaDataRefresher(sqlStatementContext).ifPresent(
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(
                 optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private Optional<FederationMetaDataRefresher> findFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
-        return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
-    }
-    
-    /**
-     * Is refresh meta data required.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return is refresh meta data required or not
-     */
-    public static boolean isRefreshMetaDataRequired(final SQLStatementContext sqlStatementContext) {
-        return DDL_STATEMENT_CLASSES.contains(sqlStatementContext.getSqlStatement().getClass().getSuperclass());
     }
 }
