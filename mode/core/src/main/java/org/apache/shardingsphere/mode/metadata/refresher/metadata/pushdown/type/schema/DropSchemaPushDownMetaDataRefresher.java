@@ -23,10 +23,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Drop schema push down meta data refresher.
@@ -40,11 +39,7 @@ public final class DropSchemaPushDownMetaDataRefresher implements PushDownMetaDa
     }
     
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (IdentifierValue each : sqlStatement.getSchemaNames()) {
-            result.add(each.getValue().toLowerCase());
-        }
-        return result;
+        return sqlStatement.getSchemaNames().stream().map(each -> each.getValue().toLowerCase()).collect(Collectors.toList());
     }
     
     @Override

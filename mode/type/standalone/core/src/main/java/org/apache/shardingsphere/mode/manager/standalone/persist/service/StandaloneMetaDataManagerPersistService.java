@@ -195,9 +195,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = new ShardingSphereSchema(each, database.getSchema(each).getAllTables(), database.getSchema(each).getAllViews());
             database.dropSchema(each);
-            Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet())));
+            tobeRemovedTables.addAll(database.getSchema(each).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet()));
             tobeRemovedSchemas.add(each.toLowerCase());
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
