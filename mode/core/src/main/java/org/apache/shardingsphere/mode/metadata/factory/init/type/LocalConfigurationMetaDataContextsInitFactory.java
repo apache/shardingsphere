@@ -79,7 +79,7 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
         }));
         for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
             for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {
-                persistService.getShardingSphereStatisticsPersistService().persist(
+                persistService.getStatisticsPersistService().persist(
                         metaDataContexts.getMetaData().getDatabase(databaseStatisticsEntry.getKey()), schemaStatisticsEntry.getKey(), schemaStatisticsEntry.getValue());
             }
         }

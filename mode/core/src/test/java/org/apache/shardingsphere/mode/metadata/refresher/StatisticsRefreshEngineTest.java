@@ -61,7 +61,7 @@ class StatisticsRefreshEngineTest {
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
         when(contextManager.getComputeNodeInstanceContext().getLockContext().tryLock(any(), anyLong())).thenReturn(true);
         new StatisticsRefreshEngine(contextManager).refresh();
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereStatisticsPersistService()).update(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistService().getStatisticsPersistService()).update(any());
     }
     
     private ShardingSphereStatistics mockStatistics() {

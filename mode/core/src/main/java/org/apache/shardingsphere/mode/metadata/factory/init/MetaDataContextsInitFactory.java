@@ -54,7 +54,7 @@ public abstract class MetaDataContextsInitFactory {
                                             final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props, final MetaDataPersistService persistService) {
         Collection<ShardingSphereRule> globalRules = GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, new ResourceMetaData(globalDataSources), new RuleMetaData(globalRules), props);
-        ShardingSphereStatistics statistics = ShardingSphereStatisticsFactory.create(metaData, persistService.getShardingSphereStatisticsPersistService().load(metaData));
+        ShardingSphereStatistics statistics = ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsPersistService().load(metaData));
         return new MetaDataContexts(metaData, statistics);
     }
 }

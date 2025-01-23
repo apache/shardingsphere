@@ -34,15 +34,15 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere statistics persist service.
+ * Statistics persist service.
  */
-public final class ShardingSphereStatisticsPersistService {
+public final class StatisticsPersistService {
     
     private final PersistRepository repository;
     
     private final TableRowDataPersistService tableRowDataPersistService;
     
-    public ShardingSphereStatisticsPersistService(final PersistRepository repository) {
+    public StatisticsPersistService(final PersistRepository repository) {
         this.repository = repository;
         tableRowDataPersistService = new TableRowDataPersistService(repository);
     }

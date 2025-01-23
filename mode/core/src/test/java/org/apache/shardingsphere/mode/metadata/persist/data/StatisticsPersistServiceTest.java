@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredDatabaseStatistics;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.ShardingSphereStatisticsPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,9 +46,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingSphereStatisticsPersistServiceTest {
+class StatisticsPersistServiceTest {
     
-    private ShardingSphereStatisticsPersistService persistService;
+    private StatisticsPersistService persistService;
     
     @Mock
     private PersistRepository repository;
@@ -58,8 +58,8 @@ class ShardingSphereStatisticsPersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        persistService = new ShardingSphereStatisticsPersistService(repository);
-        Plugins.getMemberAccessor().set(ShardingSphereStatisticsPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
+        persistService = new StatisticsPersistService(repository);
+        Plugins.getMemberAccessor().set(StatisticsPersistService.class.getDeclaredField("tableRowDataPersistService"), persistService, tableRowDataPersistService);
     }
     
     @Test

@@ -76,6 +76,6 @@ public final class MetaDataContexts {
      */
     public void update(final ShardingSphereMetaData metaData, final MetaDataPersistService metaDataPersistService) {
         this.metaData.set(metaData);
-        this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getShardingSphereStatisticsPersistService().load(metaData)));
+        this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getStatisticsPersistService().load(metaData)));
     }
 }
