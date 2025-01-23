@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredDatabaseStatistics;
@@ -127,7 +127,7 @@ public final class ShardingSphereStatisticsRefreshEngine {
     
     private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                  final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        Optional<ShardingSphereStatisticsCollector> statisticsCollector = TypedSPILoader.findService(ShardingSphereStatisticsCollector.class, table.getName());
+        Optional<TableStatisticsCollector> statisticsCollector = TypedSPILoader.findService(TableStatisticsCollector.class, table.getName());
         Optional<TableStatistics> tableStatistics = Optional.empty();
         if (statisticsCollector.isPresent()) {
             try {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
 
 import java.sql.SQLException;
@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table pg_namespace data collector.
+ * Table statistics collector for pg_namespace.
  */
-public final class PgNamespaceTableCollector implements ShardingSphereStatisticsCollector {
+public final class PgNamespaceTableStatisticsCollector implements TableStatisticsCollector {
     
     private static final String PG_NAMESPACE = "pg_namespace";
     
