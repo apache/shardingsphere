@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Altered ShardingSphere database data.
+ * Altered database statistics.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlteredShardingSphereDatabaseData {
+public final class AlteredDatabaseStatistics {
     
     private final String databaseName;
     
