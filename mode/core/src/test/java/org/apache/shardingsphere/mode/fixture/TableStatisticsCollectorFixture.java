@@ -21,16 +21,16 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Statistics collector fixture.
+ * Table statistics collector fixture.
  */
-public final class StatisticsCollectorFixture implements ShardingSphereStatisticsCollector {
+public final class TableStatisticsCollectorFixture implements TableStatisticsCollector {
     
     @Override
     public Optional<TableStatistics> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {

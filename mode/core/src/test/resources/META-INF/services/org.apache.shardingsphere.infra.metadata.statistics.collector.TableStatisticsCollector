@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.metadata.data.ShardingStatisticsTableCollector
+org.apache.shardingsphere.mode.fixture.TableStatisticsCollectorFixture

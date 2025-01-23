@@ -27,13 +27,13 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * ShardingSphere statistics collector.
+ * Table statistics collector.
  */
 @SingletonSPI
-public interface ShardingSphereStatisticsCollector extends TypedSPI {
+public interface TableStatisticsCollector extends TypedSPI {
     
     /**
-     * Collect statistics.
+     * Collect table statistics.
      *
      * @param databaseName database name
      * @param table table

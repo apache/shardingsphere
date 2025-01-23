@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -45,9 +45,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Sharding statistics table data collector.
+ * Sharding table statistics collector.
  */
-public final class ShardingStatisticsTableCollector implements ShardingSphereStatisticsCollector {
+public final class ShardingTableStatisticsCollector implements TableStatisticsCollector {
     
     private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
