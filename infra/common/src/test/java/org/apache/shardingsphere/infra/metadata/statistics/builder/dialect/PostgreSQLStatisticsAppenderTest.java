@@ -38,8 +38,8 @@ class PostgreSQLStatisticsAppenderTest {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseStatistics databaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(database);
         new PostgreSQLStatisticsAppender().append(databaseStatistics, database);
-        assertTrue(databaseStatistics.getSchemaStatisticsMap().containsKey("pg_catalog"));
-        assertTrue(databaseStatistics.getSchemaStatisticsMap().get("pg_catalog").getTableStatisticsMap().containsKey("pg_class"));
+        assertTrue(databaseStatistics.containsSchemaStatistics("pg_catalog"));
+        assertTrue(databaseStatistics.getSchemaStatistics("pg_catalog").containsTableStatistics("pg_class"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
