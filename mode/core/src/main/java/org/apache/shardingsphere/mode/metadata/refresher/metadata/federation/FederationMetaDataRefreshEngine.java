@@ -19,10 +19,9 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
 /**
@@ -44,11 +43,6 @@ public final class FederationMetaDataRefreshEngine {
     public void refresh(final SQLStatementContext sqlStatementContext) {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
         TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(
-                optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
-    }
-    
-    private String getSchemaName(final SQLStatementContext sqlStatementContext) {
-        return ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
+                optional -> optional.refresh(metaDataManagerPersistService, database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
 }
