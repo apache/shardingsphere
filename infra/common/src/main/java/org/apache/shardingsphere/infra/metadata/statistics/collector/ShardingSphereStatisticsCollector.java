@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -37,9 +37,9 @@ public interface ShardingSphereStatisticsCollector extends TypedSPI {
      *
      * @param databaseName database name
      * @param table table
-     * @param metaData ShardingSphere meta data
-     * @return ShardingSphere table data
+     * @param metaData meta data
+     * @return table statistics
      * @throws SQLException SQL exception
      */
-    Optional<ShardingSphereTableData> collect(String databaseName, ShardingSphereTable table, ShardingSphereMetaData metaData) throws SQLException;
+    Optional<TableStatistics> collect(String databaseName, ShardingSphereTable table, ShardingSphereMetaData metaData) throws SQLException;
 }

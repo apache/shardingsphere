@@ -21,8 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
 
@@ -43,11 +43,11 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
     private static final Long PUBLIC_SCHEMA_OID = 0L;
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
+    public Optional<TableStatistics> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
+        TableStatistics result = new TableStatistics(PG_NAMESPACE);
         long oid = 1L;
         for (ShardingSphereSchema each : metaData.getDatabase(databaseName).getAllSchemas()) {
-            result.getRows().add(new ShardingSphereRowData(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(each.getName()) ? PUBLIC_SCHEMA_OID : oid++, each.getName(), table)));
+            result.getRows().add(new RowStatistics(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(each.getName()) ? PUBLIC_SCHEMA_OID : oid++, each.getName(), table)));
         }
         return Optional.of(result);
     }

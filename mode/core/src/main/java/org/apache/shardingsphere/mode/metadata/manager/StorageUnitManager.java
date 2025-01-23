@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -24,39 +25,30 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
  * Storage unit manager.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class StorageUnitManager {
     
-    private final AtomicReference<MetaDataContexts> metaDataContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final ResourceSwitchManager resourceSwitchManager;
     
     private final MetaDataPersistService metaDataPersistService;
-    
-    public StorageUnitManager(final AtomicReference<MetaDataContexts> metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                              final PersistRepository repository, final ResourceSwitchManager resourceSwitchManager) {
-        this.metaDataContexts = metaDataContexts;
-        this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.resourceSwitchManager = resourceSwitchManager;
-        metaDataPersistService = new MetaDataPersistService(repository);
-    }
     
     /**
      * Register storage unit.
@@ -67,7 +59,7 @@ public final class StorageUnitManager {
     public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -83,7 +75,7 @@ public final class StorageUnitManager {
     public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -100,7 +92,7 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(databaseName);
             SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(
-                    metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(storageUnitName));
+                    metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -108,10 +100,10 @@ public final class StorageUnitManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = MetaDataContextsFactory.createBySwitchResource(
-                databaseName, true, switchingResource, metaDataContexts.get(), metaDataPersistService, computeNodeInstanceContext);
-        metaDataContexts.set(reloadMetaDataContexts);
-        metaDataContexts.get().getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
+        MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService, computeNodeInstanceContext).createBySwitchResource(
+                databaseName, true, switchingResource, metaDataContexts);
+        metaDataContexts.update(reloadMetaDataContexts);
+        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();
     }
     
@@ -127,7 +119,7 @@ public final class StorageUnitManager {
     
     @SneakyThrows(Exception.class)
     private void closeStaleRules(final String databaseName) {
-        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
             }

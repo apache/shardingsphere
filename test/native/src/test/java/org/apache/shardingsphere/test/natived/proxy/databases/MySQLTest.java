@@ -23,8 +23,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
@@ -46,23 +46,23 @@ import java.util.Properties;
 class MySQLTest {
     
     @Container
-    private static final GenericContainer<?> MYSQL_CONTAINER = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
+    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(3306);
     
-    private static ProxyTestingServer proxyTestingServer;
+    private ProxyTestingServer proxyTestingServer;
     
     private TestShardingService testShardingService;
     
-    @BeforeAll
-    static void beforeAll() throws SQLException {
+    @BeforeEach
+    void beforeEach() throws SQLException {
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
-            openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306))
+            openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306))
                     .close();
             return true;
         });
         try (
-                Connection connection = openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306));
+                Connection connection = openConnection("root", "yourStrongPassword123!", "jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306));
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
@@ -76,8 +76,8 @@ class MySQLTest {
         });
     }
     
-    @AfterAll
-    static void afterAll() {
+    @AfterEach
+    void afterEach() {
         proxyTestingServer.close();
     }
     
@@ -96,15 +96,15 @@ class MySQLTest {
             statement.execute("CREATE DATABASE sharding_db");
             statement.execute("USE sharding_db");
             statement.execute("REGISTER STORAGE UNIT ds_0 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_0\",\n"
+                    + "  URL=\"jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_0\",\n"
                     + "  USER=\"root\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_1 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_1\",\n"
+                    + "  URL=\"jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_1\",\n"
                     + "  USER=\"root\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + "),ds_2 (\n"
-                    + "  URL=\"jdbc:mysql://127.0.0.1:" + MYSQL_CONTAINER.getMappedPort(3306) + "/demo_ds_2\",\n"
+                    + "  URL=\"jdbc:mysql://127.0.0.1:" + mysqlContainer.getMappedPort(3306) + "/demo_ds_2\",\n"
                     + "  USER=\"root\",\n"
                     + "  PASSWORD=\"yourStrongPassword123!\"\n"
                     + ")");

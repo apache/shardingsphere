@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>api</module>
+        <module>spi</module>
         <module>node</module>
         <module>core</module>
         <module>type</module>

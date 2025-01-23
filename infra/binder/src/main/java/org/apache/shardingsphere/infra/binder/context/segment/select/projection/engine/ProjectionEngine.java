@@ -120,7 +120,7 @@ public final class ProjectionEngine {
         IdentifierValue alias =
                 projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
-                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment.getExpression(), alias,
+                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), projectionSegment, alias,
                 projectionSegment.getDistinctInnerExpression(), databaseType, projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
@@ -130,7 +130,7 @@ public final class ProjectionEngine {
     
     private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
         AggregationProjection result =
-                new AggregationProjection(projectionSegment.getType(), projectionSegment.getExpression(), projectionSegment.getAlias().orElse(null), databaseType,
+                new AggregationProjection(projectionSegment.getType(), projectionSegment, projectionSegment.getAlias().orElse(null), databaseType,
                         projectionSegment.getSeparator().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
@@ -143,11 +143,13 @@ public final class ProjectionEngine {
         String distinctInnerExpression = averageDistinctProjection.getDistinctInnerExpression();
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
         String innerExpression = averageDistinctProjection.getExpression().substring(averageDistinctProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));
+        AggregationProjectionSegment countExpression = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression);
         AggregationDistinctProjection countDistinctProjection =
-                new AggregationDistinctProjection(0, 0, AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression, new IdentifierValue(countAlias), distinctInnerExpression, databaseType);
+                new AggregationDistinctProjection(0, 0, AggregationType.COUNT, countExpression, new IdentifierValue(countAlias), distinctInnerExpression, databaseType);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
+        AggregationProjectionSegment sumExpression = new AggregationProjectionSegment(0, 0, AggregationType.SUM, AggregationType.SUM.name() + innerExpression);
         AggregationDistinctProjection sumDistinctProjection =
-                new AggregationDistinctProjection(0, 0, AggregationType.SUM, AggregationType.SUM.name() + innerExpression, new IdentifierValue(sumAlias), distinctInnerExpression, databaseType);
+                new AggregationDistinctProjection(0, 0, AggregationType.SUM, sumExpression, new IdentifierValue(sumAlias), distinctInnerExpression, databaseType);
         averageDistinctProjection.getDerivedAggregationProjections().add(countDistinctProjection);
         averageDistinctProjection.getDerivedAggregationProjections().add(sumDistinctProjection);
         aggregationAverageDerivedColumnCount++;
@@ -156,9 +158,11 @@ public final class ProjectionEngine {
     private void appendAverageDerivedProjection(final AggregationProjection averageProjection) {
         String countAlias = DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
         String innerExpression = averageProjection.getExpression().substring(averageProjection.getExpression().indexOf(Paren.PARENTHESES.getLeftParen()));
-        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression, new IdentifierValue(countAlias), databaseType);
+        AggregationProjectionSegment countExpression = new AggregationProjectionSegment(0, 0, AggregationType.COUNT, AggregationType.COUNT.name() + innerExpression);
+        AggregationProjection countProjection = new AggregationProjection(AggregationType.COUNT, countExpression, new IdentifierValue(countAlias), databaseType);
         String sumAlias = DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(aggregationAverageDerivedColumnCount);
-        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, AggregationType.SUM.name() + innerExpression, new IdentifierValue(sumAlias), databaseType);
+        AggregationProjectionSegment sumExpression = new AggregationProjectionSegment(0, 0, AggregationType.SUM, AggregationType.SUM.name() + innerExpression);
+        AggregationProjection sumProjection = new AggregationProjection(AggregationType.SUM, sumExpression, new IdentifierValue(sumAlias), databaseType);
         averageProjection.getDerivedAggregationProjections().add(countProjection);
         averageProjection.getDerivedAggregationProjections().add(sumProjection);
         aggregationAverageDerivedColumnCount++;

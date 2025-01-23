@@ -57,9 +57,9 @@ public final class EncryptProjectionTokenGenerator {
     
     private final List<SQLToken> previousSQLTokens;
     
-    private final EncryptRule rule;
-    
     private final DatabaseType databaseType;
+    
+    private final EncryptRule rule;
     
     /**
      * Generate SQL tokens.

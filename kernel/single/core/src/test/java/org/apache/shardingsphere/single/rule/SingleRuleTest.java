@@ -58,6 +58,8 @@ class SingleRuleTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
+    private static final String PARTITIONED_TABLE_TYPE = "PARTITIONED TABLE";
+    
     private static final String VIEW_TYPE = "VIEW";
     
     private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
@@ -85,7 +87,8 @@ class SingleRuleTest {
         when(connection.getMetaData().getURL()).thenReturn(String.format("jdbc:h2:mem:%s", dataSourceName));
         DataSource result = new MockedDataSource(connection);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(result.getConnection().getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
+        when(result.getConnection().getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE}))
+                .thenReturn(resultSet);
         return result;
     }
     

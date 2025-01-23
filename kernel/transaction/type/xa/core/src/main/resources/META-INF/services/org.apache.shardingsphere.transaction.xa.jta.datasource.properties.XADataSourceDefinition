@@ -22,3 +22,4 @@ org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OpenG
 org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition
 org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition
 org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition
+org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.FirebirdXADataSourceDefinition
