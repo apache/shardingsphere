@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.RowStatisticsCollectorUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -56,7 +56,7 @@ public final class PgNamespaceTableStatisticsCollector implements TableStatistic
         Map<String, Object> columnValues = new CaseInsensitiveMap<>(2, 1F);
         columnValues.put("oid", oid);
         columnValues.put("nspname", schemaName);
-        return ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table);
+        return RowStatisticsCollectorUtils.createRowValue(columnValues, table);
     }
     
     @Override

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.RowStatisticsCollectorUtils;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public final class PgClassTableStatisticsCollector implements TableStatisticsCol
             columnValues.put("relnamespace", relNamespace);
             columnValues.put("relname", each.getName());
             columnValues.put("relkind", "r");
-            result.add(new RowStatistics(ShardingSphereTableDataCollectorUtils.createRowValue(columnValues, table)));
+            result.add(new RowStatistics(RowStatisticsCollectorUtils.createRowValue(columnValues, table)));
         }
         return result;
     }
