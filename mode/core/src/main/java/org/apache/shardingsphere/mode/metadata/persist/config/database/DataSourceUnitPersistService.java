@@ -43,9 +43,12 @@ public final class DataSourceUnitPersistService {
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
+    private final YamlDataSourceConfigurationSwapper yamlDataSourceConfigurationSwapper;
+    
     public DataSourceUnitPersistService(final PersistRepository repository) {
         this.repository = repository;
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        yamlDataSourceConfigurationSwapper = new YamlDataSourceConfigurationSwapper();
     }
     
     /**
@@ -69,7 +72,7 @@ public final class DataSourceUnitPersistService {
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
         String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
-        return new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
+        return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
     /**
@@ -86,7 +89,7 @@ public final class DataSourceUnitPersistService {
             List<String> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getStorageUnitVersionsPath(databaseName, entry.getKey()));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, entry.getKey(), nextActiveVersion),
-                    YamlEngine.marshal(new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue())));
+                    YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
             if (Strings.isNullOrEmpty(activeVersion)) {
                 repository.persist(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
             }
