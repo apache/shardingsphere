@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.row;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.sql.Types;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Row statistics collector utility class.
@@ -34,18 +33,14 @@ import java.util.Map;
 public final class RowStatisticsCollectorUtils {
     
     /**
-     * Create row value.
+     * Create row values.
      *
      * @param columnValues column values
-     * @param table sharding sphere table
-     * @return objects
+     * @param table table
+     * @return row values
      */
-    public static List<Object> createRowValue(final Map<String, Object> columnValues, final ShardingSphereTable table) {
-        List<Object> result = new LinkedList<>();
-        for (ShardingSphereColumn each : table.getAllColumns()) {
-            result.add(columnValues.getOrDefault(each.getName(), mockValue(each.getDataType())));
-        }
-        return result;
+    public static List<Object> createRowValues(final Map<String, Object> columnValues, final ShardingSphereTable table) {
+        return table.getAllColumns().stream().map(each -> columnValues.getOrDefault(each.getName(), mockValue(each.getDataType()))).collect(Collectors.toList());
     }
     
     private static Object mockValue(final int dataType) {
