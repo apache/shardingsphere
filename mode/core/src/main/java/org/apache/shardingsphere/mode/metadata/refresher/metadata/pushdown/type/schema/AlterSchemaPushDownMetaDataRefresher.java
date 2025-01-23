@@ -15,40 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.schema;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.schema;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
- * Schema refresher for drop schema statement.
+ * Alter schema push down meta data refresher.
  */
-public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
+public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterSchemaStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        metaDataManagerPersistService.dropSchema(database.getName(), getSchemaNames(sqlStatement));
-    }
-    
-    private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (IdentifierValue each : sqlStatement.getSchemaNames()) {
-            result.add(each.getValue().toLowerCase());
-        }
-        return result;
+                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> optional.getValue().toLowerCase());
+        Preconditions.checkArgument(renameSchemaName.isPresent(), "The renamed schema is not exist of schema '%s'.", schemaName);
+        metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(),
+                renameSchemaName.get(), logicDataSourceNames));
     }
     
     @Override
-    public Class<DropSchemaStatement> getType() {
-        return DropSchemaStatement.class;
+    public Class<AlterSchemaStatement> getType() {
+        return AlterSchemaStatement.class;
     }
 }

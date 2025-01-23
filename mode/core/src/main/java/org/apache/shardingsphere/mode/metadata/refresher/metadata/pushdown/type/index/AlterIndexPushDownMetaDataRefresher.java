@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.index;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.index;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
@@ -38,9 +38,9 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Schema refresher for alter index statement.
+ * Alter index push down meta data refresher.
  */
-public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
+public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterIndexStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,

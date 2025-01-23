@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.table;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -27,10 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -40,29 +41,26 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for alter table statement.
+ * Rename table push down meta data refresher.
  */
-public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
+public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<RenameTableStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String tableName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getTable().getTableName().getIdentifier());
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-        if (sqlStatement.getRenameTable().isPresent()) {
-            String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
-            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName, renameTable, props));
-            alterSchemaMetaDataPOJO.getDroppedTables().add(tableName);
-        } else {
-            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName, tableName, props));
+                        final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
+            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName,
+                    TableRefreshUtils.getTableName(databaseType, each.getRenameTable().getTableName().getIdentifier()), props));
+            alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
+            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
-        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
-    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName,
-                                         final String tableName, final ConfigurationProperties props) throws SQLException {
+    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName, final String tableName,
+                                         final ConfigurationProperties props) throws SQLException {
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(tableName, database)) {
+        if (TableRefreshUtils.isSingleTable(tableName, database) && !logicDataSourceNames.isEmpty()) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
@@ -72,7 +70,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public Class<AlterTableStatement> getType() {
-        return AlterTableStatement.class;
+    public Class<RenameTableStatement> getType() {
+        return RenameTableStatement.class;
     }
 }

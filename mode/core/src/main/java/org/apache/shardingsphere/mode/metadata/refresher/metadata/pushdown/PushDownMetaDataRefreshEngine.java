@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -36,10 +36,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Meta data refresh engine.
+ * Push down meta data refresh engine.
  */
 @RequiredArgsConstructor
-public final class MetaDataRefreshEngine {
+public final class PushDownMetaDataRefreshEngine {
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
@@ -55,7 +55,7 @@ public final class MetaDataRefreshEngine {
      */
     public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        return TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass).isPresent();
+        return TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass).isPresent();
     }
     
     /**
@@ -68,7 +68,7 @@ public final class MetaDataRefreshEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        Optional<MetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
+        Optional<PushDownMetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass);
         if (!metaDataRefresher.isPresent()) {
             return;
         }

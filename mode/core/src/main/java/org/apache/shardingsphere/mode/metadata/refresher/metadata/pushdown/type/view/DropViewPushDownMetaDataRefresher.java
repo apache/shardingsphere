@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.view;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
 
 /**
- * Schema refresher for drop view statement.
+ * Drop view push down meta data refresher.
  */
-public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
+public final class DropViewPushDownMetaDataRefresher implements PushDownMetaDataRefresher<DropViewStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
