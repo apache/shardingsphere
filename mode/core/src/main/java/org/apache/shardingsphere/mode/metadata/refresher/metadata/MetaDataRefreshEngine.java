@@ -54,7 +54,7 @@ public final class MetaDataRefreshEngine {
      * @param sqlStatementContext SQL statement context
      * @return is need refresh meta data or not
      */
-    public boolean isNeedRefreshMetaData(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
         return TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass).isPresent();
     }
