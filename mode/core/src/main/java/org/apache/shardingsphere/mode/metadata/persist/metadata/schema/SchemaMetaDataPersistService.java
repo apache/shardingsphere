@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.metadata.schema;
+package org.apache.shardingsphere.mode.metadata.persist.metadata.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.ViewMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;

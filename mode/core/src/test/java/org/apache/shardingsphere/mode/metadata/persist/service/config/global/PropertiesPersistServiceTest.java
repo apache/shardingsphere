@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service.config.global;
 
-import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;

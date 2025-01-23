@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.data;
+package org.apache.shardingsphere.mode.metadata.persist.statistics;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
