@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,9 +110,9 @@ class ShardingSphereStatisticsPersistServiceTest {
     
     @Test
     void assertUpdate() {
-        Collection<YamlShardingSphereRowData> addedRows = Collections.singletonList(mock(YamlShardingSphereRowData.class));
-        Collection<YamlShardingSphereRowData> updatedRows = Collections.singletonList(mock(YamlShardingSphereRowData.class));
-        Collection<YamlShardingSphereRowData> deletedRows = Collections.singletonList(mock(YamlShardingSphereRowData.class));
+        Collection<YamlRowStatistics> addedRows = Collections.singletonList(mock(YamlRowStatistics.class));
+        Collection<YamlRowStatistics> updatedRows = Collections.singletonList(mock(YamlRowStatistics.class));
+        Collection<YamlRowStatistics> deletedRows = Collections.singletonList(mock(YamlRowStatistics.class));
         AlteredShardingSphereDatabaseData alteredData = new AlteredShardingSphereDatabaseData("foo_db", "foo_schema", "foo_tbl");
         alteredData.getAddedRows().addAll(addedRows);
         alteredData.getUpdatedRows().addAll(updatedRows);

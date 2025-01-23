@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -88,7 +88,7 @@ class ShardingSphereStatisticsChangedHandlerTest {
     
     @Test
     void assertHandleWithShardingSphereRowChanged() {
-        YamlShardingSphereRowData rowData = new YamlShardingSphereRowData();
+        YamlRowStatistics rowData = new YamlRowStatistics();
         rowData.setUniqueKey("1");
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseManager()).alterShardingSphereRowData(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), refEq(rowData));

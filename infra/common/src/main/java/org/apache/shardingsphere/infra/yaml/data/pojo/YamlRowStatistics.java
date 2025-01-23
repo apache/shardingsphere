@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import java.util.List;
 
 /**
- * Yaml ShardingSphere row data.
+ * YAML row statistics.
  */
 @Getter
 @Setter
-public final class YamlShardingSphereRowData implements YamlConfiguration {
+public final class YamlRowStatistics implements YamlConfiguration {
     
     private String uniqueKey;
     

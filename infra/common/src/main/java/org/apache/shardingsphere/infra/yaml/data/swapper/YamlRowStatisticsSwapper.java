@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -31,16 +31,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * YAML ShardingSphere row statistics swapper.
+ * YAML row statistics swapper.
  */
 @RequiredArgsConstructor
-public final class YamlShardingSphereRowStatisticsSwapper implements YamlConfigurationSwapper<YamlShardingSphereRowData, RowStatistics> {
+public final class YamlRowStatisticsSwapper implements YamlConfigurationSwapper<YamlRowStatistics, RowStatistics> {
     
     private final List<ShardingSphereColumn> columns;
     
     @Override
-    public YamlShardingSphereRowData swapToYamlConfiguration(final RowStatistics data) {
-        YamlShardingSphereRowData result = new YamlShardingSphereRowData();
+    public YamlRowStatistics swapToYamlConfiguration(final RowStatistics data) {
+        YamlRowStatistics result = new YamlRowStatistics();
         Collection<Object> rowData = null == data.getRows() ? Collections.emptyList() : data.getRows();
         List<Object> yamlRowData = new LinkedList<>();
         int count = 0;
@@ -61,7 +61,7 @@ public final class YamlShardingSphereRowStatisticsSwapper implements YamlConfigu
     }
     
     @Override
-    public RowStatistics swapToObject(final YamlShardingSphereRowData yamlConfig) {
+    public RowStatistics swapToObject(final YamlRowStatistics yamlConfig) {
         Collection<Object> yamlRow = null == yamlConfig.getRows() ? Collections.emptyList() : yamlConfig.getRows();
         List<Object> rowData = new LinkedList<>();
         int count = 0;

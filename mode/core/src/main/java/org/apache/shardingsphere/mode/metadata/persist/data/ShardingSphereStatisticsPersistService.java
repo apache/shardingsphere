@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -103,13 +103,13 @@ public final class ShardingSphereStatisticsPersistService {
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
         schemaStatistics.getTableStatisticsMap().values().forEach(each -> {
-            YamlShardingSphereRowStatisticsSwapper swapper =
-                    new YamlShardingSphereRowStatisticsSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
+            YamlRowStatisticsSwapper swapper =
+                    new YamlRowStatisticsSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
             persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }
     
-    private void persistTableData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
+    private void persistTableData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlRowStatistics> rows) {
         tableRowDataPersistService.persist(databaseName, schemaName, tableName, rows);
     }
     
