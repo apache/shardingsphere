@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
