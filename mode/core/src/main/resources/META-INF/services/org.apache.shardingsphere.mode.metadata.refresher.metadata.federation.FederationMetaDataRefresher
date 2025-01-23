@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.metadata.refresher.federation.type.CreateViewFederationMetaDataRefresher
-org.apache.shardingsphere.mode.metadata.refresher.federation.type.AlterViewFederationMetaDataRefresher
-org.apache.shardingsphere.mode.metadata.refresher.federation.type.DropViewFederationMetaDataRefresher
+org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type.CreateViewFederationMetaDataRefresher
+org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type.AlterViewFederationMetaDataRefresher
+org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type.DropViewFederationMetaDataRefresher

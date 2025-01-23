@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;

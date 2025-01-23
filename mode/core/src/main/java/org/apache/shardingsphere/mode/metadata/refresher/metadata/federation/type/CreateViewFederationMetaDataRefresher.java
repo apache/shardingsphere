@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 
 /**
- * Meta data refresher for drop view statement.
+ * Meta data refresher for create view statement.
  */
-public final class DropViewFederationMetaDataRefresher implements FederationMetaDataRefresher<DropViewStatement> {
+public final class CreateViewFederationMetaDataRefresher implements FederationMetaDataRefresher<CreateViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final DropViewStatement sqlStatement) {
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final CreateViewStatement sqlStatement) {
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getDatabaseType(), sqlStatement.getView().getTableName().getIdentifier());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
-        for (SimpleTableSegment each : sqlStatement.getViews()) {
-            alterSchemaMetaDataPOJO.getDroppedViews().add(each.getTableName().getIdentifier().getValue());
-        }
+        alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     @Override
-    public Class<DropViewStatement> getType() {
-        return DropViewStatement.class;
+    public Class<CreateViewStatement> getType() {
+        return CreateViewStatement.class;
     }
 }
