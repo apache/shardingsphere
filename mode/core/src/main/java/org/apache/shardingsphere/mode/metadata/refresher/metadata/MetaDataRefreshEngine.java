@@ -29,23 +29,8 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,10 +41,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
-    
-    private static final Collection<Class<? extends DDLStatement>> DDL_STATEMENT_CLASSES = Arrays.asList(CreateTableStatement.class, AlterTableStatement.class, DropTableStatement.class,
-            CreateViewStatement.class, AlterViewStatement.class, DropViewStatement.class, CreateIndexStatement.class, AlterIndexStatement.class, DropIndexStatement.class, CreateSchemaStatement.class,
-            AlterSchemaStatement.class, DropSchemaStatement.class, RenameTableStatement.class);
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
@@ -73,9 +54,9 @@ public final class MetaDataRefreshEngine {
      * @param sqlStatementContext SQL statement context
      * @return is need refresh meta data or not
      */
-    public boolean isNeedRefreshMetaData(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        return DDL_STATEMENT_CLASSES.contains(sqlStatementClass);
+        return TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass).isPresent();
     }
     
     /**
@@ -87,9 +68,6 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        if (!isNeedRefreshMetaData(sqlStatementContext)) {
-            return;
-        }
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
         Optional<MetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
         if (!metaDataRefresher.isPresent()) {
