@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.version;
+package org.apache.shardingsphere.mode.metadata.persist.version;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
