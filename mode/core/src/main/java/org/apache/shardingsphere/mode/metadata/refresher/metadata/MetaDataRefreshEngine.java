@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
 import java.sql.SQLException;
@@ -73,14 +73,9 @@ public final class MetaDataRefreshEngine {
             return;
         }
         Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-        String schemaName = sqlStatementContext instanceof TableAvailable ? getSchemaName(sqlStatementContext) : null;
+        String schemaName = sqlStatementContext instanceof TableAvailable ? SchemaRefreshUtils.getSchemaName(database, sqlStatementContext) : null;
         DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
                 .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
         metaDataRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
-    }
-    
-    private String getSchemaName(final SQLStatementContext sqlStatementContext) {
-        return ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
     }
 }
