@@ -707,7 +707,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         OpenGaussInsertStatement result = (OpenGaussInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnDuplicateKey()) {
-            result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
+            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
         }
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
