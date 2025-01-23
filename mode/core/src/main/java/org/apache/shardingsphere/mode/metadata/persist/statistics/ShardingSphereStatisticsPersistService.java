@@ -119,9 +119,12 @@ public final class ShardingSphereStatisticsPersistService {
      * @param alteredDatabaseStatistics altered database statistics
      */
     public void update(final AlteredDatabaseStatistics alteredDatabaseStatistics) {
-        tableRowDataPersistService.persist(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(), alteredDatabaseStatistics.getAddedRows());
-        tableRowDataPersistService.persist(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(), alteredDatabaseStatistics.getUpdatedRows());
-        tableRowDataPersistService.delete(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(), alteredDatabaseStatistics.getDeletedRows());
+        tableRowDataPersistService.persist(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(),
+                alteredDatabaseStatistics.getAddedRows());
+        tableRowDataPersistService.persist(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(),
+                alteredDatabaseStatistics.getUpdatedRows());
+        tableRowDataPersistService.delete(alteredDatabaseStatistics.getDatabaseName(), alteredDatabaseStatistics.getSchemaName(), alteredDatabaseStatistics.getTableName(),
+                alteredDatabaseStatistics.getDeletedRows());
     }
     
     /**
