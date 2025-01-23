@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.table;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -25,13 +26,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,36 +40,31 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for rename table statement.
+ * Create table push down meta data refresher.
  */
-public final class RenameTableStatementSchemaRefresher implements MetaDataRefresher<RenameTableStatement> {
+public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateTableStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName,
-                    TableRefreshUtils.getTableName(databaseType, each.getRenameTable().getTableName().getIdentifier()), props));
-            alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
-            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
-        }
-    }
-    
-    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName, final String tableName,
-                                         final ConfigurationProperties props) throws SQLException {
+                        final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        String tableName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getTable().getTableName().getIdentifier());
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(tableName, database) && !logicDataSourceNames.isEmpty()) {
+        boolean isSingleTable = TableRefreshUtils.isSingleTable(tableName, database);
+        if (isSingleTable) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
-        return Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName))
-                .orElseGet(() -> new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName));
+        Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual table metadata '%s' failed.", tableName);
+        metaDataManagerPersistService.createTable(database.getName(), schemaName, actualTableMetaData.get(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
+        if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
+            metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+        }
     }
     
     @Override
-    public Class<RenameTableStatement> getType() {
-        return RenameTableStatement.class;
+    public Class<CreateTableStatement> getType() {
+        return CreateTableStatement.class;
     }
 }

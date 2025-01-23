@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
@@ -107,7 +107,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
                 connection.commit();
             }
-            new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
+            new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
                     .refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {

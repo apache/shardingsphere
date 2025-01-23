@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 
 /**
- * Meta data refresher for drop view statement.
+ * Drop view federation meta data refresher.
  */
 public final class DropViewFederationMetaDataRefresher implements FederationMetaDataRefresher<DropViewStatement> {
     

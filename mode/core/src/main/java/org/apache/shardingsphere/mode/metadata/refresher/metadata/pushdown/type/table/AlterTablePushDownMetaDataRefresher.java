@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.view;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -26,13 +25,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -42,30 +40,39 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for create view statement.
+ * Alter table push down meta data refresher.
  */
-public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
+public final class AlterTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterTableStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String viewName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getView().getTableName().getIdentifier());
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(viewName, database)) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
-        }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
-        Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
+                        final String schemaName, final DatabaseType databaseType, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        String tableName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getTable().getTableName().getIdentifier());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-        alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
-        alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
+        if (sqlStatement.getRenameTable().isPresent()) {
+            String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
+            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName, renameTable, props));
+            alterSchemaMetaDataPOJO.getDroppedTables().add(tableName);
+        } else {
+            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName, tableName, props));
+        }
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
+    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName,
+                                         final String tableName, final ConfigurationProperties props) throws SQLException {
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
+        if (TableRefreshUtils.isSingleTable(tableName, database)) {
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+        }
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
+        return Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName))
+                .orElseGet(() -> new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+    }
+    
     @Override
-    public Class<CreateViewStatement> getType() {
-        return CreateViewStatement.class;
+    public Class<AlterTableStatement> getType() {
+        return AlterTableStatement.class;
     }
 }

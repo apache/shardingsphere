@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 
 /**
- * Meta data refresher for create view statement.
+ * Create view federation meta data refresher.
  */
 public final class CreateViewFederationMetaDataRefresher implements FederationMetaDataRefresher<CreateViewStatement> {
     

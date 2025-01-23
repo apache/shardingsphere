@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterVi
 import java.util.Optional;
 
 /**
- * Meta data refresher for alter view statement.
+ * Alter view federation meta data refresher.
  */
 public final class AlterViewFederationMetaDataRefresher implements FederationMetaDataRefresher<AlterViewStatement> {
     

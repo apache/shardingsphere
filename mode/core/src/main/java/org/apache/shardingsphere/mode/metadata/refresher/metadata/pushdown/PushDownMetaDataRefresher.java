@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -29,12 +29,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Meta data refresher.
+ * Push down meta data refresher.
  *
  * @param <T> type of SQL statement
  */
 @SingletonSPI
-public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
+public interface PushDownMetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     
     /**
      * Refresh schema.

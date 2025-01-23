@@ -15,31 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.refresher.metadata.type.schema;
+package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Schema refresher for create schema statement.
+ * Drop schema push down meta data refresher.
  */
-public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefresher<CreateSchemaStatement> {
+public final class DropSchemaPushDownMetaDataRefresher implements PushDownMetaDataRefresher<DropSchemaStatement> {
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        (sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : sqlStatement.getUsername())
-                .ifPresent(optional -> metaDataManagerPersistService.createSchema(database.getName(), optional.getValue().toLowerCase()));
+                        final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
+        metaDataManagerPersistService.dropSchema(database.getName(), getSchemaNames(sqlStatement));
+    }
+    
+    private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (IdentifierValue each : sqlStatement.getSchemaNames()) {
+            result.add(each.getValue().toLowerCase());
+        }
+        return result;
     }
     
     @Override
-    public Class<CreateSchemaStatement> getType() {
-        return CreateSchemaStatement.class;
+    public Class<DropSchemaStatement> getType() {
+        return DropSchemaStatement.class;
     }
 }
