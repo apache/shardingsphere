@@ -84,7 +84,7 @@ public final class StatisticsRefreshEngine {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Collect data error", ex);
+            log.error("Collect statistics error.", ex);
         }
     }
     
@@ -92,10 +92,10 @@ public final class StatisticsRefreshEngine {
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
         if (lockContext.tryLock(lockDefinition, 5000L)) {
             try {
-                ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
+                ShardingSphereStatistics currentStatistics = contextManager.getMetaDataContexts().getStatistics();
                 ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
                 ShardingSphereStatistics changedStatistics = new ShardingSphereStatistics();
-                for (Entry<String, DatabaseStatistics> entry : statistics.getDatabaseStatisticsMap().entrySet()) {
+                for (Entry<String, DatabaseStatistics> entry : currentStatistics.getDatabaseStatisticsMap().entrySet()) {
                     if (metaData.containsDatabase(entry.getKey())) {
                         collectForDatabase(entry.getKey(), entry.getValue(), metaData, changedStatistics);
                     }
@@ -126,16 +126,19 @@ public final class StatisticsRefreshEngine {
     
     private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                  final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        Optional<TableStatisticsCollector> statisticsCollector = TypedSPILoader.findService(TableStatisticsCollector.class, table.getName());
-        Optional<TableStatistics> tableStatistics = Optional.empty();
-        if (statisticsCollector.isPresent()) {
+        Optional<TableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(TableStatisticsCollector.class, table.getName());
+        Optional<TableStatistics> tableStatistics;
+        if (tableStatisticsCollector.isPresent()) {
             try {
-                tableStatistics = statisticsCollector.get().collect(databaseName, table, metaData);
+                tableStatistics = tableStatisticsCollector.get().collect(databaseName, table, metaData);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error(String.format("Collect %s.%s.%s data failed", databaseName, schemaName, table.getName()), ex);
+                log.error("Collect {}.{}.{} statistics failed.", databaseName, schemaName, table.getName(), ex);
+                tableStatistics = Optional.empty();
             }
+        } else {
+            tableStatistics = Optional.empty();
         }
         DatabaseStatistics databaseStatistics = statistics.containsDatabaseStatistics(databaseName) ? statistics.getDatabaseStatistics(databaseName) : new DatabaseStatistics();
         SchemaStatistics schemaStatistics = databaseStatistics.containsSchemaStatistics(schemaName) ? databaseStatistics.getSchemaStatistics(schemaName) : new SchemaStatistics();
