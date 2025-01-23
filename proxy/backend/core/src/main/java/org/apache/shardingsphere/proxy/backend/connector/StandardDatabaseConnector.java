@@ -55,6 +55,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.MetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -112,6 +113,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private final MetaDataRefreshEngine metaDataRefreshEngine;
     
+    private final FederationMetaDataRefreshEngine federationMetaDataRefreshEngine;
+    
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -135,6 +138,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
         metaDataRefreshEngine = new MetaDataRefreshEngine(
                 contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
+        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database);
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
@@ -184,7 +188,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
             return processExecuteFederation(doExecuteFederation());
         }
         if (proxySQLExecutor.getSqlFederationEngine().enabled()) {
-            metaDataRefreshEngine.refreshFederation(queryContext.getSqlStatementContext());
+            federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         ExecutionContext executionContext = generateExecutionContext();
