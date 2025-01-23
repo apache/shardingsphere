@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
+package org.apache.shardingsphere.infra.metadata.statistics.collector.table.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -23,20 +23,21 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.RowStatisticsCollectorUtils;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.table.TableStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.row.RowStatisticsCollectorUtils;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table statistics collector for pg_namespace.
+ * Table statistics collector for pg_class.
  */
-public final class PgNamespaceTableStatisticsCollector implements TableStatisticsCollector {
+public final class PgClassTableStatisticsCollector implements TableStatisticsCollector {
     
-    private static final String PG_NAMESPACE = "pg_namespace";
+    private static final String PG_CLASS = "pg_class";
     
     private static final String PUBLIC_SCHEMA = "public";
     
@@ -44,23 +45,29 @@ public final class PgNamespaceTableStatisticsCollector implements TableStatistic
     
     @Override
     public Optional<TableStatistics> collect(final String databaseName, final ShardingSphereTable table, final ShardingSphereMetaData metaData) throws SQLException {
-        TableStatistics result = new TableStatistics(PG_NAMESPACE);
-        long oid = 1L;
-        for (ShardingSphereSchema each : metaData.getDatabase(databaseName).getAllSchemas()) {
-            result.getRows().add(new RowStatistics(getRow(PUBLIC_SCHEMA.equalsIgnoreCase(each.getName()) ? PUBLIC_SCHEMA_OID : oid++, each.getName(), table)));
+        TableStatistics result = new TableStatistics(PG_CLASS);
+        ShardingSphereSchema publicSchema = metaData.getDatabase(databaseName).getSchema(PUBLIC_SCHEMA);
+        if (null != publicSchema) {
+            result.getRows().addAll(collectForSchema(0L, PUBLIC_SCHEMA_OID, publicSchema, table));
         }
         return Optional.of(result);
     }
     
-    private List<Object> getRow(final Long oid, final String schemaName, final ShardingSphereTable table) {
-        Map<String, Object> columnValues = new CaseInsensitiveMap<>(2, 1F);
-        columnValues.put("oid", oid);
-        columnValues.put("nspname", schemaName);
-        return RowStatisticsCollectorUtils.createRowValue(columnValues, table);
+    private Collection<RowStatistics> collectForSchema(final Long oid, final Long relNamespace, final ShardingSphereSchema schema, final ShardingSphereTable table) {
+        Collection<RowStatistics> result = new LinkedList<>();
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            Map<String, Object> columnValues = new CaseInsensitiveMap<>(4, 1F);
+            columnValues.put("oid", oid);
+            columnValues.put("relnamespace", relNamespace);
+            columnValues.put("relname", each.getName());
+            columnValues.put("relkind", "r");
+            result.add(new RowStatistics(RowStatisticsCollectorUtils.createRowValues(columnValues, table)));
+        }
+        return result;
     }
     
     @Override
     public String getType() {
-        return PG_NAMESPACE;
+        return PG_CLASS;
     }
 }

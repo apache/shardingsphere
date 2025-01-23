@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.TableStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.table.TableStatisticsCollector;
 
 import java.sql.SQLException;
 import java.util.Arrays;
