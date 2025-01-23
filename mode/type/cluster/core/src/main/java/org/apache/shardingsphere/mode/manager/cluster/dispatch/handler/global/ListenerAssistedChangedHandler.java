@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -63,7 +63,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
         }
         contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(databaseName);
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager).asyncRefresh();
+            new StatisticsRefreshEngine(contextManager).asyncRefresh();
         }
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 
 /**
  * Table changed handler.
@@ -31,11 +31,11 @@ public final class TableChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ShardingSphereStatisticsRefreshEngine statisticsRefreshEngine;
+    private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public TableChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        statisticsRefreshEngine = new ShardingSphereStatisticsRefreshEngine(contextManager);
+        statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
     /**
