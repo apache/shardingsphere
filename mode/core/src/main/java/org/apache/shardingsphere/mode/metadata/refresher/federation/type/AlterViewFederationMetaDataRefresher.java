@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation.type;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
@@ -35,9 +34,8 @@ import java.util.Optional;
 public final class AlterViewFederationMetaDataRefresher implements FederationMetaDataRefresher<AlterViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName,
-                        final DatabaseType databaseType, final AlterViewStatement sqlStatement) {
-        String viewName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getView().getTableName().getIdentifier());
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getDatabaseType(), sqlStatement.getView().getTableName().getIdentifier());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         if (renameView.isPresent()) {
