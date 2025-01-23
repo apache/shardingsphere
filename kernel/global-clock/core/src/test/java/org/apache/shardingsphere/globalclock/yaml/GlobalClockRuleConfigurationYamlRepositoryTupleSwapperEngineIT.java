@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml;
+package org.apache.shardingsphere.globalclock.yaml;
 
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
+class GlobalClockRuleConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
     
-    EncryptConfigurationRepositoryTupleSwapperEngineIT() {
-        super("yaml/encrypt-rule.yaml");
+    GlobalClockRuleConfigurationYamlRepositoryTupleSwapperEngineIT() {
+        super("yaml/global-clock-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(3));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "encryptors/aes_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("aes_encryptor"));
-        assertRepositoryTuple(actualRepositoryTuples.get(1), "encryptors/assisted_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("assisted_encryptor"));
-        assertRepositoryTuple(actualRepositoryTuples.get(2), "tables/t_user", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
+        assertThat(actualRepositoryTuples.size(), is(1));
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "global_clock", expectedYamlRuleConfig);
     }
 }

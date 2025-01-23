@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml;
+package org.apache.shardingsphere.sqlfederation.yaml;
 
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class TransactionRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
+class SQLFederationRuleConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
     
-    TransactionRuleConfigurationRepositoryTupleSwapperEngineIT() {
-        super("yaml/transaction-rule.yaml");
+    SQLFederationRuleConfigurationYamlRepositoryTupleSwapperEngineIT() {
+        super("yaml/sql-federation-rule.yaml");
     }
     
     @Override
     protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualRepositoryTuples.size(), is(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "transaction", expectedYamlRuleConfig);
+        assertRepositoryTuple(actualRepositoryTuples.get(0), "sql_federation", expectedYamlRuleConfig);
     }
 }

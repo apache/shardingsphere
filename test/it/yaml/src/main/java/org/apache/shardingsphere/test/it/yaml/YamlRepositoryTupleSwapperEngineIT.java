@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.junit.jupiter.api.Test;
 
@@ -47,17 +47,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public abstract class RepositoryTupleSwapperEngineIT {
+public abstract class YamlRepositoryTupleSwapperEngineIT {
     
     private final File yamlFile;
     
-    private final RepositoryTupleSwapperEngine engine;
+    private final YamlRepositoryTupleSwapperEngine engine;
     
-    protected RepositoryTupleSwapperEngineIT(final String yamlFileName) {
+    protected YamlRepositoryTupleSwapperEngineIT(final String yamlFileName) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
-        engine = new RepositoryTupleSwapperEngine();
+        engine = new YamlRepositoryTupleSwapperEngine();
     }
     
     @Test

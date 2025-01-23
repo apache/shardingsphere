@@ -20,16 +20,16 @@ package org.apache.shardingsphere.single.yaml;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.RepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationRepositoryTupleSwapperEngineIT extends RepositoryTupleSwapperEngineIT {
+class SingleRuleConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
     
-    SingleRuleConfigurationRepositoryTupleSwapperEngineIT() {
+    SingleRuleConfigurationYamlRepositoryTupleSwapperEngineIT() {
         super("yaml/single-rule.yaml");
     }
     

@@ -51,9 +51,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Repository tuple swapper engine.
+ * YAML repository tuple swapper engine.
  */
-public final class RepositoryTupleSwapperEngine {
+public final class YamlRepositoryTupleSwapperEngine {
     
     /**
      * Swap to repository tuples.
