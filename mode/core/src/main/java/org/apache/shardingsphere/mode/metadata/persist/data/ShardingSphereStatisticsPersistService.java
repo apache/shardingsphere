@@ -60,7 +60,7 @@ public final class ShardingSphereStatisticsPersistService {
         }
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (String each : databaseNames.stream().filter(metaData::containsDatabase).collect(Collectors.toList())) {
-            result.getDatabaseStatisticsMap().put(each, load(metaData.getDatabase(each)));
+            result.putDatabaseStatistics(each, load(metaData.getDatabase(each)));
         }
         return result;
     }
@@ -77,7 +77,7 @@ public final class ShardingSphereStatisticsPersistService {
         SchemaStatistics result = new SchemaStatistics();
         for (String each : repository.getChildrenKeys(ShardingSphereStatisticsNodePath.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
                 .collect(Collectors.toList())) {
-            result.getTableStatisticsMap().put(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
+            result.putTableStatistics(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
         }
         return result;

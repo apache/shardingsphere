@@ -67,9 +67,9 @@ class ShardingSphereStatisticsRefreshEngineTest {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         DatabaseStatistics databaseStatistics = new DatabaseStatistics();
         SchemaStatistics schemaStatistics = new SchemaStatistics();
-        databaseStatistics.getSchemaStatisticsMap().put("foo_schema", schemaStatistics);
+        databaseStatistics.putSchemaStatistics("foo_schema", schemaStatistics);
         TableStatistics tableStatistics = new TableStatistics("test_table");
-        schemaStatistics.getTableStatisticsMap().put("test_table", tableStatistics);
+        schemaStatistics.putTableStatistics("test_table", tableStatistics);
         result.getDatabaseStatisticsMap().put("foo_db", databaseStatistics);
         return result;
     }
