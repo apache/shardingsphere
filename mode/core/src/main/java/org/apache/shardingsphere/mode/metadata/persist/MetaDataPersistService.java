@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.ShardingSphereStatisticsPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
@@ -68,7 +68,7 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final ShardingSphereStatisticsPersistService shardingSphereStatisticsPersistService;
+    private final StatisticsPersistService statisticsPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -78,7 +78,7 @@ public final class MetaDataPersistService {
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
         propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);
-        shardingSphereStatisticsPersistService = new ShardingSphereStatisticsPersistService(repository);
+        statisticsPersistService = new StatisticsPersistService(repository);
     }
     
     /**
