@@ -29,7 +29,6 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.state
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static io.netty.buffer.Unpooled.buffer;
 
@@ -206,14 +207,16 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    @SuppressWarnings("unchecked")
     private int processInfoItems(SQLStatementContext sqlStatementContext, MetaDataContexts metaDataContexts, ByteBuf buffer, boolean returnAll, List<FirebirdSQLInfoPacketType> requestedItems) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof InsertStatement)) {
-            return 0;
-        }
+//        if (!(sqlStatementContext.getSqlStatement() instanceof InsertStatement)) {
+//            return 0;
+//        }
         String databaseName = connectionSession.getCurrentDatabaseName();
         String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
-        List<String> affectedColumns = ((InsertStatementContext) sqlStatementContext).getColumnNames();
+        Optional<Object> columnNames = ReflectionUtils.getFieldValueByGetMethod(sqlStatementContext, "getColumnNames");
+        List<String> affectedColumns = columnNames.map(columns -> (List<String>) columns).orElseGet(() -> new ArrayList<>(0));
         int columnCount = 0;
         for (String tableName : tableNames) {
             ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
