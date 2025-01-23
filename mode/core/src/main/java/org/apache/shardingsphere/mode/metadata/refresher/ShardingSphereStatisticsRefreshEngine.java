@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredShardingSphereDatabaseData;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredDatabaseStatistics;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.refresher.lock.StatisticsLock;
@@ -177,14 +177,14 @@ public final class ShardingSphereStatisticsRefreshEngine {
                                           final TableStatistics changedTableStatistics, final ShardingSphereStatistics statistics, final ShardingSphereTable table) {
         if (!tableStatistics.equals(changedTableStatistics)) {
             statistics.getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).putTableStatistics(changedTableStatistics.getName(), changedTableStatistics);
-            AlteredShardingSphereDatabaseData alteredShardingSphereDatabaseData = createAlteredShardingSphereDatabaseData(databaseName, schemaName, tableStatistics, changedTableStatistics, table);
-            contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereStatisticsPersistService().update(alteredShardingSphereDatabaseData);
+            AlteredDatabaseStatistics alteredDatabaseStatistics = createAlteredDatabaseStatistics(databaseName, schemaName, tableStatistics, changedTableStatistics, table);
+            contextManager.getPersistServiceFacade().getMetaDataPersistService().getShardingSphereStatisticsPersistService().update(alteredDatabaseStatistics);
         }
     }
     
-    private AlteredShardingSphereDatabaseData createAlteredShardingSphereDatabaseData(final String databaseName, final String schemaName, final TableStatistics tableStatistics,
-                                                                                      final TableStatistics changedTableStatistics, final ShardingSphereTable table) {
-        AlteredShardingSphereDatabaseData result = new AlteredShardingSphereDatabaseData(databaseName, schemaName, tableStatistics.getName());
+    private AlteredDatabaseStatistics createAlteredDatabaseStatistics(final String databaseName, final String schemaName, final TableStatistics tableStatistics,
+                                                                      final TableStatistics changedTableStatistics, final ShardingSphereTable table) {
+        AlteredDatabaseStatistics result = new AlteredDatabaseStatistics(databaseName, schemaName, tableStatistics.getName());
         Map<String, RowStatistics> tableStatisticsMap = tableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
         Map<String, RowStatistics> changedTableStatisticsMap = changedTableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
