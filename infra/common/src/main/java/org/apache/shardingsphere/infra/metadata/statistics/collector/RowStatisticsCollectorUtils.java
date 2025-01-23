@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Table data collector utility class.
+ * Row statistics collector utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereTableDataCollectorUtils {
+public final class RowStatisticsCollectorUtils {
     
     /**
      * Create row value.
