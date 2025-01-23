@@ -32,7 +32,7 @@ public final class SchemaRefreshUtils {
     
     /**
      * Get schema name.
-     * 
+     *
      * @param database database
      * @param sqlStatementContext SQL statement context
      * @return schema name
