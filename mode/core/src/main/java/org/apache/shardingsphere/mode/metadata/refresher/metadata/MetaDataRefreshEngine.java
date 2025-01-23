@@ -97,8 +97,8 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings("unchecked")
     public void refresh(final SQLStatementContext sqlStatementContext) {
-        getFederationMetaDataRefresher(sqlStatementContext).ifPresent(optional -> optional.refresh(
-                metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getDatabaseType(), sqlStatementContext.getSqlStatement()));
+        getFederationMetaDataRefresher(sqlStatementContext).ifPresent(
+                optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext) {
