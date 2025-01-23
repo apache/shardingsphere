@@ -110,6 +110,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
+    private final MetaDataRefreshEngine metaDataRefreshEngine;
+    
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final Collection<ResultSet> cachedResultSets = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -131,6 +133,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext);
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
+        metaDataRefreshEngine = new MetaDataRefreshEngine(
+                contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
@@ -179,9 +183,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())) {
             return processExecuteFederation(doExecuteFederation());
         }
-        MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine();
-        if (proxySQLExecutor.getSqlFederationEngine().enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
-            metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+        if (proxySQLExecutor.getSqlFederationEngine().enabled()) {
+            metaDataRefreshEngine.refreshFederation(queryContext.getSqlStatementContext());
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         ExecutionContext executionContext = generateExecutionContext();
@@ -233,9 +236,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
                 : advancedExecutors.iterator().next().execute(executionContext, contextManager, database, this);
-        if (MetaDataRefreshEngine.isRefreshMetaDataRequired(queryContext.getSqlStatementContext())) {
-            getMetaDataRefreshEngine().refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        }
+        metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
@@ -269,10 +270,6 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         }
         mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet)));
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    private MetaDataRefreshEngine getMetaDataRefreshEngine() {
-        return new MetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
     private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

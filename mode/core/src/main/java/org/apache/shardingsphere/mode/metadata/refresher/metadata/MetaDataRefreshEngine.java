@@ -68,6 +68,17 @@ public final class MetaDataRefreshEngine {
     private final ConfigurationProperties props;
     
     /**
+     * Whether to need refresh meta data.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is need refresh meta data or not
+     */
+    public boolean isNeedRefreshMetaData(final SQLStatementContext sqlStatementContext) {
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        return DDL_STATEMENT_CLASSES.contains(sqlStatementClass);
+    }
+    
+    /**
      * Refresh meta data.
      *
      * @param sqlStatementContext SQL statement context
@@ -76,29 +87,19 @@ public final class MetaDataRefreshEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Class sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        if (!DDL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+        if (!isNeedRefreshMetaData(sqlStatementContext)) {
             return;
         }
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
-        if (schemaRefresher.isPresent()) {
-            Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            String schemaName = sqlStatementContext instanceof TableAvailable ? getSchemaName(sqlStatementContext) : null;
-            DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
-                    .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
-            schemaRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        Optional<MetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(MetaDataRefresher.class, sqlStatementClass);
+        if (!metaDataRefresher.isPresent()) {
+            return;
         }
-    }
-    
-    /**
-     * Refresh meta data for federation.
-     *
-     * @param sqlStatementContext SQL statement context
-     */
-    @SuppressWarnings("unchecked")
-    public void refresh(final SQLStatementContext sqlStatementContext) {
-        getFederationMetaDataRefresher(sqlStatementContext).ifPresent(
-                optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
+        Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+        String schemaName = sqlStatementContext instanceof TableAvailable ? getSchemaName(sqlStatementContext) : null;
+        DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
+                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
+        metaDataRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext) {
@@ -107,27 +108,14 @@ public final class MetaDataRefreshEngine {
     }
     
     /**
-     * SQL statement is federation or not.
+     * Refresh meta data for federation.
      *
      * @param sqlStatementContext SQL statement context
-     * @return is federation or not
      */
-    public boolean isFederation(final SQLStatementContext sqlStatementContext) {
-        return getFederationMetaDataRefresher(sqlStatementContext).isPresent();
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private Optional<FederationMetaDataRefresher> getFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
-        return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
-    }
-    
-    /**
-     * Is refresh meta data required.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return is refresh meta data required or not
-     */
-    public static boolean isRefreshMetaDataRequired(final SQLStatementContext sqlStatementContext) {
-        return DDL_STATEMENT_CLASSES.contains(sqlStatementContext.getSqlStatement().getClass().getSuperclass());
+    @SuppressWarnings("unchecked")
+    public void refreshFederation(final SQLStatementContext sqlStatementContext) {
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(
+                optional -> optional.refresh(metaDataManagerPersistService, database, getSchemaName(sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
 }

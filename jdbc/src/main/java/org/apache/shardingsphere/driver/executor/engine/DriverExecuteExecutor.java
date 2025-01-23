@@ -101,21 +101,16 @@ public final class DriverExecuteExecutor {
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
-        MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine(database);
-        if (sqlFederationEngine.enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
-            metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+        if (sqlFederationEngine.enabled()) {
+            new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
+                    .refreshFederation(queryContext.getSqlStatementContext());
             return true;
         }
         if (transactionExecutor.decide(queryContext)) {
             return transactionExecutor.execute((TCLStatement) queryContext.getSqlStatementContext().getSqlStatement());
         }
-        ExecutionContext executionContext =
-                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
         return executePushDown(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
-    }
-    
-    private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
-        return new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps());
     }
     
     @SuppressWarnings("rawtypes")
