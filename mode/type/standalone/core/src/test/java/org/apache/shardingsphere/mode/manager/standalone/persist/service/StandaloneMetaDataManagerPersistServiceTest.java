@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
@@ -101,7 +100,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertAlterSchema() {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchema(new AlterSchemaMetaDataPOJO("foo_db", "foo_schema", Collections.singleton("foo_ds")));
+        metaDataManagerPersistService.alterSchema("foo_db", "foo_schema", "foo_ds", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         verify(databaseMetaDataFacade.getTable()).persist("foo_db", "foo_schema", new LinkedList<>());
     }
     

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.ty
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+
+import java.util.Collections;
 
 /**
  * Create view federation meta data refresher.
@@ -33,9 +34,8 @@ public final class CreateViewFederationMetaDataRefresher implements FederationMe
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final CreateViewStatement sqlStatement) {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), sqlStatement.getDatabaseType());
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
-        alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, null,
+                Collections.emptyList(), Collections.singleton(new ShardingSphereView(viewName, sqlStatement.getViewDefinition())), Collections.emptyList(), Collections.emptyList());
     }
     
     @Override

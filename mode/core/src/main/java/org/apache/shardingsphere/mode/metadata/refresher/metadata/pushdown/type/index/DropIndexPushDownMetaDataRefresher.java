@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
@@ -58,9 +57,8 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
             ShardingSphereTable table = schema.getTable(logicTableName.get());
             ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
             newTable.removeIndex(each.getIndexName().getIdentifier().getValue());
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
-            metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+            metaDataManagerPersistService.alterSchema(database.getName(), actualSchemaName, null,
+                    Collections.singleton(newTable), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         }
     }
     

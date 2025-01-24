@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
@@ -49,11 +48,10 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName,
-                    TableRefreshUtils.getTableName(each.getRenameTable().getTableName().getIdentifier(), databaseType), props));
-            alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
-            metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+            ShardingSphereTable alteredTable = getTable(
+                    database, logicDataSourceNames, schemaName, TableRefreshUtils.getTableName(each.getRenameTable().getTableName().getIdentifier(), databaseType), props);
+            metaDataManagerPersistService.alterSchema(database.getName(), schemaName, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
+                    Collections.singleton(alteredTable), Collections.emptyList(), Collections.singleton(each.getTable().getTableName().getIdentifier().getValue()), Collections.emptyList());
         }
     }
     

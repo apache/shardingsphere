@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
@@ -50,24 +49,28 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
+        Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
+        Collection<ShardingSphereView> alteredViews = new LinkedList<>();
+        Collection<String> droppedTables = new LinkedList<>();
+        Collection<String> droppedViews = new LinkedList<>();
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
             ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, renameViewName, originalView, props);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(schema.getTable(renameViewName));
-            alterSchemaMetaDataPOJO.getAlteredViews().add(schema.getView(renameViewName));
-            alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
-            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
+            alteredTables.add(schema.getTable(renameViewName));
+            alteredViews.add(schema.getView(renameViewName));
+            droppedTables.add(viewName);
+            droppedViews.add(viewName);
         }
         Optional<String> viewDefinition = sqlStatement.getViewDefinition();
         if (viewDefinition.isPresent()) {
             ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
-            alterSchemaMetaDataPOJO.getAlteredTables().add(schema.getTable(viewName));
-            alterSchemaMetaDataPOJO.getAlteredViews().add(schema.getView(viewName));
+            alteredTables.add(schema.getTable(viewName));
+            alteredViews.add(schema.getView(viewName));
         }
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName,
+                logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(), alteredTables, alteredViews, droppedTables, droppedViews);
     }
     
     private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,

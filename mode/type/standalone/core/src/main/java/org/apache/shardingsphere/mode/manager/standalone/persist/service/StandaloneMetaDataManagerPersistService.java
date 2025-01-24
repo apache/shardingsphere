@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -95,18 +94,18 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSchema(final AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO) {
-        String databaseName = alterSchemaMetaDataPOJO.getDatabaseName();
-        String schemaName = alterSchemaMetaDataPOJO.getSchemaName();
+    public void alterSchema(final String databaseName, final String schemaName, final String logicDataSourceName,
+                            final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
+                            final Collection<String> droppedTables, final Collection<String> droppedViews) {
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, alterSchemaMetaDataPOJO.getAlteredTables(), alterSchemaMetaDataPOJO.getAlteredViews());
-        removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
+        addDataNode(database, logicDataSourceName, schemaName, alteredTables, alteredViews);
+        removeDataNode(database, schemaName, droppedTables, droppedViews);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredViews());
-        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
-        alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getView().delete(databaseName, schemaName, each));
+        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, alteredTables);
+        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, schemaName, alteredViews);
+        droppedTables.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
+        droppedViews.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getView().delete(databaseName, schemaName, each));
     }
     
     @Override
