@@ -10,7 +10,7 @@
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. Proxy Native: Add GraalVM Reachability Metadata and corresponding nativeTest for Firebird - [#34307](https://github.com/apache/shardingsphere/pull/34307)
 1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
-1. SQL Binder: Support column definition for the WITH clause in ColumnBind and ExternalTableBinderContext in WithSegmentBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
+1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 
 ### Bug Fixes
 
