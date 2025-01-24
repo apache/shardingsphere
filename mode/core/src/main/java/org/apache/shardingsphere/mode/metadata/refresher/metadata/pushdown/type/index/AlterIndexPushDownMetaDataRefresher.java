@@ -63,7 +63,7 @@ public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDa
         newTable.putIndex(new ShardingSphereIndex(renameIndexName, new LinkedList<>(), false));
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
         alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
-        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {
