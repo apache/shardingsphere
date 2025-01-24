@@ -36,17 +36,15 @@ public interface MetaDataManagerPersistService {
      * Create database.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    void createDatabase(String databaseName) throws SQLException;
+    void createDatabase(String databaseName);
     
     /**
      * Drop database.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    void dropDatabase(String databaseName) throws SQLException;
+    void dropDatabase(String databaseName);
     
     /**
      * Create schema.
@@ -70,9 +68,8 @@ public interface MetaDataManagerPersistService {
      * @param schemaName schema name
      * @param renameSchemaName rename schema name
      * @param logicDataSourceName logic data source name
-     * @throws SQLException SQL exception
      */
-    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName) throws SQLException;
+    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName);
     
     /**
      * Drop schema.
@@ -167,9 +164,8 @@ public interface MetaDataManagerPersistService {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
-     * @throws SQLException SQL exception
      */
-    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) throws SQLException;
+    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig);
     
     /**
      * Alter properties.
