@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
@@ -34,17 +35,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Database admin executor creator for openGauss.
  */
 public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private static final Set<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>();
     
-    private static final Set<String> SYSTEM_CATALOG_TABLES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>();
     
     static {
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
