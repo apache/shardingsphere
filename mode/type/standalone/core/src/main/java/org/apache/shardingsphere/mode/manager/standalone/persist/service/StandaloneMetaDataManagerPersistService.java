@@ -214,6 +214,31 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
+    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table, final String logicDataSourceName) {
+        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        addTableToDataNode(database, schemaName, logicDataSourceName, table);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
+    }
+    
+    @Override
+    public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
+        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        removeTablesToDataNode(database, schemaName, tableNames);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
+    }
+    
+    private void addTableToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final ShardingSphereTable table) {
+        if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(table.getName(), database)) {
+            database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, table.getName()));
+        }
+        database.getSchema(schemaName).putTable(table);
+    }
+    
+    @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
         SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByRegisterStorageUnit(metaDataContextManager.getMetaDataContexts()
                 .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
@@ -332,31 +357,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataContextManager.getGlobalConfigurationManager().alterProperties(props);
         metaDataPersistService.getPropsService().persist(props);
         clearServiceCache();
-    }
-    
-    @Override
-    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table, final String logicDataSourceName) {
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        addTableToDataNode(database, schemaName, logicDataSourceName, table);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
-    }
-    
-    @Override
-    public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        removeTablesToDataNode(database, schemaName, tableNames);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
-    }
-    
-    private void addTableToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final ShardingSphereTable table) {
-        if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(table.getName(), database)) {
-            database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, table.getName()));
-        }
-        database.getSchema(schemaName).putTable(table);
     }
     
     private void clearServiceCache() {

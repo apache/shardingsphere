@@ -83,6 +83,25 @@ public interface MetaDataManagerPersistService {
     void dropSchema(String databaseName, Collection<String> schemaNames);
     
     /**
+     * Create table.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table table
+     * @param logicDataSourceName logic data source name
+     */
+    void createTable(String databaseName, String schemaName, ShardingSphereTable table, String logicDataSourceName);
+    
+    /**
+     * Drop tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableNames table names
+     */
+    void dropTables(String databaseName, String schemaName, Collection<String> tableNames);
+    
+    /**
      * Register storage units.
      *
      * @param databaseName database name
@@ -159,23 +178,4 @@ public interface MetaDataManagerPersistService {
      * @throws SQLException SQL exception
      */
     void alterProperties(Properties props) throws SQLException;
-    
-    /**
-     * Create table.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param table table
-     * @param logicDataSourceName logic data source name
-     */
-    void createTable(String databaseName, String schemaName, ShardingSphereTable table, String logicDataSourceName);
-    
-    /**
-     * Drop tables.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableNames table names
-     */
-    void dropTables(String databaseName, String schemaName, Collection<String> tableNames);
 }
