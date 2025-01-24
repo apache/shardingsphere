@@ -60,7 +60,7 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
             newTable.removeIndex(each.getIndexName().getIdentifier().getValue());
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
             alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
-            metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+            metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
         }
     }
     

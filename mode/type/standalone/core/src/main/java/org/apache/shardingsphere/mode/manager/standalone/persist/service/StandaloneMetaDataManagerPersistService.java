@@ -98,6 +98,21 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
+    public void alterSchema(final AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO) {
+        String databaseName = alterSchemaMetaDataPOJO.getDatabaseName();
+        String schemaName = alterSchemaMetaDataPOJO.getSchemaName();
+        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, alterSchemaMetaDataPOJO.getAlteredTables(), alterSchemaMetaDataPOJO.getAlteredViews());
+        removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredTables());
+        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredViews());
+        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
+        alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getView().delete(databaseName, schemaName, each));
+    }
+    
+    @Override
     public void alterSchemaName(final AlterSchemaPOJO alterSchemaPOJO) {
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(alterSchemaPOJO.getDatabaseName());
@@ -201,21 +216,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-    }
-    
-    @Override
-    public void alterSchemaMetaData(final AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO) {
-        String databaseName = alterSchemaMetaDataPOJO.getDatabaseName();
-        String schemaName = alterSchemaMetaDataPOJO.getSchemaName();
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        addDataNode(database, alterSchemaMetaDataPOJO.getLogicDataSourceName(), schemaName, alterSchemaMetaDataPOJO.getAlteredTables(), alterSchemaMetaDataPOJO.getAlteredViews());
-        removeDataNode(database, schemaName, alterSchemaMetaDataPOJO.getDroppedTables(), alterSchemaMetaDataPOJO.getDroppedViews());
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredViews());
-        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
-        alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getView().delete(databaseName, schemaName, each));
     }
     
     @Override
