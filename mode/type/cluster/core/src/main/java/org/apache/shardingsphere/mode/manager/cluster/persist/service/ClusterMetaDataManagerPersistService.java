@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -208,10 +210,10 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
+    public void alterSingleRuleConfiguration(final String databaseName, final RuleMetaData ruleMetaData) {
+        SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
         metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, ruleConfigs));
+                .switchActiveVersion(metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(singleRuleConfig)));
     }
     
     @Override

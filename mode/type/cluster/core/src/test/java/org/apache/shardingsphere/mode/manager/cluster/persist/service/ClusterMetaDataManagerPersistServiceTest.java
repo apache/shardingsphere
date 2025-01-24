@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,14 +37,9 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
@@ -132,10 +129,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSingleRuleConfiguration() {
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>(Arrays.asList(new SingleRuleConfiguration(), mock(RuleConfiguration.class)));
-        when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", ruleConfigs)).thenReturn(Collections.emptyList());
-        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", ruleConfigs);
-        assertThat(ruleConfigs.size(), is(1));
+        SingleRule singleRule = mock(SingleRule.class);
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
+        when(metaDataPersistService.getDatabaseRulePersistService().persist("foo_db", Collections.singleton(singleRuleConfig))).thenReturn(Collections.emptyList());
+        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", new RuleMetaData(Collections.singleton(singleRule)));
         verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(Collections.emptyList());
     }
     

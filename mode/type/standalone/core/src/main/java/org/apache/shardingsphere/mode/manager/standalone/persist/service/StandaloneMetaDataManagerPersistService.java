@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -291,12 +293,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSingleRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        ruleConfigs.removeIf(each -> !each.getClass().isAssignableFrom(SingleRuleConfiguration.class));
+    public void alterSingleRuleConfiguration(final String databaseName, final RuleMetaData ruleMetaData) throws SQLException {
+        SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
-                .persist(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+                .persist(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(singleRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
-        metaDataContextManager.getDatabaseRuleConfigurationManager().alterRuleConfiguration(databaseName, ruleConfigs.iterator().next());
+        metaDataContextManager.getDatabaseRuleConfigurationManager().alterRuleConfiguration(databaseName, singleRuleConfig);
         clearServiceCache();
     }
     

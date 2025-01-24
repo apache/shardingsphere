@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 
@@ -135,10 +136,10 @@ public interface MetaDataManagerPersistService {
      * Alter single rule configuration.
      *
      * @param databaseName database name
-     * @param ruleConfigs rule configs
+     * @param ruleMetaData rule meta data
      * @throws SQLException SQL exception
      */
-    void alterSingleRuleConfiguration(String databaseName, Collection<RuleConfiguration> ruleConfigs) throws SQLException;
+    void alterSingleRuleConfiguration(String databaseName, RuleMetaData ruleMetaData) throws SQLException;
     
     /**
      * Alter rule configuration.
