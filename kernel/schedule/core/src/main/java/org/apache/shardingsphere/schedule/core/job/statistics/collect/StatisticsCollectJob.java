@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 
 /**
  * Statistics collect job.
@@ -34,7 +34,7 @@ public final class StatisticsCollectJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            new ShardingSphereStatisticsRefreshEngine(contextManager).refresh();
+            new StatisticsRefreshEngine(contextManager).refresh();
         }
     }
 }

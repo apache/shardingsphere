@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowStatisticsSwapper;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.ArrayList;
@@ -127,7 +127,7 @@ public final class ShardingSphereDatabaseDataManager {
      * @param tableName table name
      * @param yamlRowData yaml row data
      */
-    public synchronized void alterShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final YamlShardingSphereRowData yamlRowData) {
+    public synchronized void alterShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final YamlRowStatistics yamlRowData) {
         if (!metaDataContexts.getStatistics().containsDatabaseStatistics(databaseName) || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).containsSchemaStatistics(schemaName)
                 || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).containsTableStatistics(tableName)) {
             return;
@@ -138,7 +138,7 @@ public final class ShardingSphereDatabaseDataManager {
         }
         TableStatistics tableStatistics = metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).getTableStatistics(tableName);
         List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getAllColumns());
-        tableStatistics.getRows().add(new YamlShardingSphereRowStatisticsSwapper(columns).swapToObject(yamlRowData));
+        tableStatistics.getRows().add(new YamlRowStatisticsSwapper(columns).swapToObject(yamlRowData));
     }
     
     /**

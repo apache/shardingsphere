@@ -31,8 +31,8 @@ class ShardingSphereDefaultStatisticsBuilderTest {
     void assertBuild() {
         DatabaseStatistics databaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(mockDatabase());
         assertTrue(databaseStatistics.getSchemaStatisticsMap().containsKey("shardingsphere"));
-        assertTrue(databaseStatistics.getSchemaStatisticsMap().get("shardingsphere").getTableStatisticsMap().containsKey("cluster_information"));
-        assertTrue(databaseStatistics.getSchemaStatisticsMap().get("shardingsphere").getTableStatisticsMap().containsKey("sharding_table_statistics"));
+        assertTrue(databaseStatistics.getSchemaStatistics("shardingsphere").containsTableStatistics("cluster_information"));
+        assertTrue(databaseStatistics.getSchemaStatistics("shardingsphere").containsTableStatistics("sharding_table_statistics"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
