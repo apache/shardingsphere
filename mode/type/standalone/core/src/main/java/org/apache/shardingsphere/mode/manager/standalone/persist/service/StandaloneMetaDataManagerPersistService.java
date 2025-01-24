@@ -50,8 +50,6 @@ import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -205,16 +203,16 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
-        Collection<String> tobeRemovedTables = new LinkedList<>();
-        Collection<String> tobeRemovedSchemas = new LinkedList<>();
+        schemaNames.forEach(schemaName -> dropSchema(databaseName, schemaName));
+    }
+    
+    private void dropSchema(final String databaseName, final String schemaName) {
+        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        for (String each : schemaNames) {
-            database.dropSchema(each);
-            tobeRemovedTables.addAll(database.getSchema(each).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet()));
-            tobeRemovedSchemas.add(each.toLowerCase());
-        }
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), new HashSet<>(tobeRemovedSchemas), new HashSet<>(tobeRemovedTables));
+        database.dropSchema(schemaName);
+        Collection<String> tobeRemovedTables = database.getSchema(schemaName).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet());
+        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singleton(schemaName.toLowerCase()), tobeRemovedTables);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
