@@ -61,7 +61,7 @@ public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDa
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
         alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
         alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
-        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
     }
     
     @Override

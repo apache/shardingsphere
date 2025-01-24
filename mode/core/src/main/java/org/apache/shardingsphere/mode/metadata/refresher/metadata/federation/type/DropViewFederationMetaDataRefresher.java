@@ -35,7 +35,7 @@ public final class DropViewFederationMetaDataRefresher implements FederationMeta
         for (SimpleTableSegment each : sqlStatement.getViews()) {
             alterSchemaMetaDataPOJO.getDroppedViews().add(each.getTableName().getIdentifier().getValue());
         }
-        metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
     }
     
     @Override

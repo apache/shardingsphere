@@ -58,6 +58,13 @@ public interface MetaDataManagerPersistService {
     void createSchema(String databaseName, String schemaName);
     
     /**
+     * Alter schema.
+     *
+     * @param alterSchemaMetaDataPOJO alter schema metadata pojo
+     */
+    void alterSchema(AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO);
+    
+    /**
      * Alter schema name.
      *
      * @param alterSchemaPOJO alter schema pojo
@@ -72,13 +79,6 @@ public interface MetaDataManagerPersistService {
      * @param schemaNames schema names
      */
     void dropSchema(String databaseName, Collection<String> schemaNames);
-    
-    /**
-     * Alter schema metadata.
-     *
-     * @param alterSchemaMetaDataPOJO alter schema metadata pojo
-     */
-    void alterSchemaMetaData(AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO);
     
     /**
      * Register storage units.
