@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaData
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +44,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -149,8 +150,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSingleRuleConfiguration() throws SQLException {
-        RuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
-        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", new LinkedList<>(Arrays.asList(singleRuleConfig, mock(RuleConfiguration.class))));
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        SingleRule singleRule = mock(SingleRule.class);
+        when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
+        metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", new RuleMetaData(Collections.singleton(singleRule)));
         verify(metaDataPersistService.getMetaDataVersionPersistService()).switchActiveVersion(any());
         verify(metaDataContextManager.getDatabaseRuleConfigurationManager()).alterRuleConfiguration("foo_db", singleRuleConfig);
     }

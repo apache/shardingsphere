@@ -59,7 +59,7 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual table metadata '%s' failed.", tableName);
         metaDataManagerPersistService.createTable(database.getName(), schemaName, actualTableMetaData.get(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
         if (isSingleTable && TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, tableName)) {
-            metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+            metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData);
         }
     }
     
