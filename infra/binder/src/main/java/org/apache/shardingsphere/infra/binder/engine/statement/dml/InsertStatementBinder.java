@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -64,12 +63,6 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         result.getValues().addAll(sqlStatement.getValues());
         sqlStatement.getSetAssignment().ifPresent(result::setSetAssignment);
         sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
-        sqlStatement.getOnConflictKeyColumns().ifPresent(segment -> {
-            if (result instanceof PostgreSQLInsertStatement) {
-                ((PostgreSQLInsertStatement) result).setOnConflictKeyColumnsSegment(segment);
-            }
-        });
-        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
         sqlStatement.getMultiTableInsertIntoSegment().ifPresent(result::setMultiTableInsertIntoSegment);
