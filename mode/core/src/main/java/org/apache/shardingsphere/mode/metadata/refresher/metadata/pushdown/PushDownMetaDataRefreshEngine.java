@@ -68,14 +68,14 @@ public final class PushDownMetaDataRefreshEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        Optional<PushDownMetaDataRefresher> metaDataRefresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass);
-        if (!metaDataRefresher.isPresent()) {
+        Optional<PushDownMetaDataRefresher> refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass);
+        if (!refresher.isPresent()) {
             return;
         }
         Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
         String schemaName = sqlStatementContext instanceof TableAvailable ? SchemaRefreshUtils.getSchemaName(database, sqlStatementContext) : null;
         DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
                 .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
-        metaDataRefresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
+        refresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames, schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
     }
 }
