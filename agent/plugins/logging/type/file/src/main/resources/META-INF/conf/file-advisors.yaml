@@ -23,4 +23,4 @@ advisors:
         type: method
         params:
           - index: 0
-            type: org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter
+            type: org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter
