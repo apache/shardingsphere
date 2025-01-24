@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
@@ -111,21 +110,19 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSchemaName(final AlterSchemaPOJO alterSchemaPOJO) {
+    public void alterSchemaName(final String databaseName, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(alterSchemaPOJO.getDatabaseName());
-        putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());
-        removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        putSchemaMetaData(database, schemaName, renameSchemaName, logicDataSourceName);
+        removeSchemaMetaData(database, schemaName);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        ShardingSphereSchema alteredSchema = database.getSchema(alterSchemaPOJO.getRenameSchemaName());
-        String databaseName = alterSchemaPOJO.getDatabaseName();
-        String alteredSchemaName = alterSchemaPOJO.getRenameSchemaName();
+        ShardingSphereSchema alteredSchema = database.getSchema(renameSchemaName);
         if (alteredSchema.isEmpty()) {
-            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, alteredSchemaName);
+            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, renameSchemaName);
         }
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, alteredSchemaName, alteredSchema.getAllTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, alteredSchemaName, alteredSchema.getAllViews());
-        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, alterSchemaPOJO.getSchemaName());
+        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, renameSchemaName, alteredSchema.getAllTables());
+        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, alteredSchema.getAllViews());
+        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
     }
     
     private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renamedSchemaName, final String logicDataSourceName) {

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -67,10 +66,13 @@ public interface MetaDataManagerPersistService {
     /**
      * Alter schema name.
      *
-     * @param alterSchemaPOJO alter schema pojo
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param renameSchemaName rename schema name
+     * @param logicDataSourceName logic data source name
      * @throws SQLException SQL exception
      */
-    void alterSchemaName(AlterSchemaPOJO alterSchemaPOJO) throws SQLException;
+    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName) throws SQLException;
     
     /**
      * Drop schema.
