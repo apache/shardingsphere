@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
@@ -58,10 +57,9 @@ public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDa
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
-        alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
-        alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
+                Collections.singleton(actualTableMetaData.get()), Collections.singleton(new ShardingSphereView(viewName, sqlStatement.getViewDefinition())),
+                Collections.emptyList(), Collections.emptyList());
     }
     
     @Override

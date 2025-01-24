@@ -19,13 +19,15 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.ty
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -36,16 +38,17 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), sqlStatement.getDatabaseType());
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
+        Collection<ShardingSphereView> alteredViews = new LinkedList<>();
+        Collection<String> droppedViews = new LinkedList<>();
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
-            alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(renameViewName, originalView));
-            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
+            alteredViews.add(new ShardingSphereView(renameViewName, originalView));
+            droppedViews.add(viewName);
         }
-        sqlStatement.getViewDefinition().ifPresent(optional -> alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, optional)));
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+        sqlStatement.getViewDefinition().ifPresent(optional -> alteredViews.add(new ShardingSphereView(viewName, optional)));
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, null, Collections.emptyList(), alteredViews, droppedViews, Collections.emptyList());
     }
     
     @Override

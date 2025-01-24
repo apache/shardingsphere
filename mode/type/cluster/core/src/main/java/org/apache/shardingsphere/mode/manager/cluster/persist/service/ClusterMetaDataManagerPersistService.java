@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
@@ -87,14 +87,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSchema(final AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO) {
-        String databaseName = alterSchemaMetaDataPOJO.getDatabaseName();
-        String schemaName = alterSchemaMetaDataPOJO.getSchemaName();
+    public void alterSchema(final String databaseName, final String schemaName, final String logicDataSourceName,
+                            final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
+                            final Collection<String> droppedTables, final Collection<String> droppedViews) {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistService.getDatabaseMetaDataFacade();
-        databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredTables());
-        databaseMetaDataFacade.getView().persist(databaseName, schemaName, alterSchemaMetaDataPOJO.getAlteredViews());
-        alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
-        alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataFacade.getView().delete(databaseName, schemaName, each));
+        databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
+        databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
+        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
+        droppedViews.forEach(each -> databaseMetaDataFacade.getView().delete(databaseName, schemaName, each));
     }
     
     @Override

@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.type;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Drop view federation meta data refresher.
@@ -31,11 +33,8 @@ public final class DropViewFederationMetaDataRefresher implements FederationMeta
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final DropViewStatement sqlStatement) {
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
-        for (SimpleTableSegment each : sqlStatement.getViews()) {
-            alterSchemaMetaDataPOJO.getDroppedViews().add(each.getTableName().getIdentifier().getValue());
-        }
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+        Collection<String> droppedViews = sqlStatement.getViews().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), droppedViews);
     }
     
     @Override

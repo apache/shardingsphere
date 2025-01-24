@@ -20,12 +20,14 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Drop view push down meta data refresher.
@@ -35,13 +37,14 @@ public final class DropViewPushDownMetaDataRefresher implements PushDownMetaData
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
-        sqlStatement.getViews().forEach(each -> {
+        Collection<String> droppedTables = new LinkedList<>();
+        Collection<String> droppedViews = new LinkedList<>();
+        for (SimpleTableSegment each : sqlStatement.getViews()) {
             String viewName = each.getTableName().getIdentifier().getValue();
-            alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
-            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
-        });
-        metaDataManagerPersistService.alterSchema(alterSchemaMetaDataPOJO);
+            droppedTables.add(viewName);
+            droppedViews.add(viewName);
+        }
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, null, Collections.emptyList(), Collections.emptyList(), droppedTables, droppedViews);
     }
     
     @Override
