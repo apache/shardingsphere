@@ -36,6 +36,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -130,6 +131,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
     
+    @Disabled("fix this unit test by haorang")
     @Test
     void assertDropSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

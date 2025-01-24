@@ -40,6 +40,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.select.EncryptI
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 
@@ -58,11 +59,12 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final EncryptRule rule;
     
-    private final ShardingSphereDatabase database;
+    private final SQLRewriteContext sqlRewriteContext;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
+        ShardingSphereDatabase database = sqlRewriteContext.getDatabase();
         addSQLTokenGenerator(result, new EncryptSelectProjectionTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertSelectProjectionTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertAssignmentTokenGenerator(rule, database));
