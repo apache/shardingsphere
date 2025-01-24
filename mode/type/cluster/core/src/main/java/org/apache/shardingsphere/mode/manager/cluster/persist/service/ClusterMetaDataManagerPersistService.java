@@ -113,6 +113,16 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         schemaNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
     }
     
+    @Override
+    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table, final String logicDataSourceName) {
+        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
+    }
+    
+    @Override
+    public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
+        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
+    }
+    
     @SneakyThrows
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
@@ -253,16 +263,6 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void alterProperties(final Properties props) {
         metaDataPersistService.getPropsService().persist(props);
-    }
-    
-    @Override
-    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table, final String logicDataSourceName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
-    }
-    
-    @Override
-    public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
     }
     
     private MetaDataContexts buildOriginalMetaDataContexts() {
