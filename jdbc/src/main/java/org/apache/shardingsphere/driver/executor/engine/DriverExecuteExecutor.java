@@ -101,8 +101,10 @@ public final class DriverExecuteExecutor {
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
-        if (sqlFederationEngine.enabled()) {
-            new FederationMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database).refresh(queryContext.getSqlStatementContext());
+        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(
+                connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database);
+        if (sqlFederationEngine.enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
+            federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;
         }
         if (transactionExecutor.decide(queryContext)) {

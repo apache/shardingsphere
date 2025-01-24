@@ -35,6 +35,17 @@ public final class FederationMetaDataRefreshEngine {
     private final ShardingSphereDatabase database;
     
     /**
+     * Whether to need refresh meta data.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is need refresh meta data or not
+     */
+    public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
+        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
+        return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).isPresent();
+    }
+    
+    /**
      * Refresh federation meta data.
      *
      * @param sqlStatementContext SQL statement context
