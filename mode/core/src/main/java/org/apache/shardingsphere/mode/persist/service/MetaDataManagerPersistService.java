@@ -58,12 +58,12 @@ public interface MetaDataManagerPersistService {
     void createSchema(String databaseName, String schemaName);
     
     /**
-     * Alter schema.
+     * Alter schema name.
      *
      * @param alterSchemaPOJO alter schema pojo
      * @throws SQLException SQL exception
      */
-    void alterSchema(AlterSchemaPOJO alterSchemaPOJO) throws SQLException;
+    void alterSchemaName(AlterSchemaPOJO alterSchemaPOJO) throws SQLException;
     
     /**
      * Drop schema.

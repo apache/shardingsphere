@@ -88,7 +88,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
+    public void alterSchemaName(final AlterSchemaPOJO alterSchemaPOJO) {
         String databaseName = alterSchemaPOJO.getDatabaseName();
         String schemaName = alterSchemaPOJO.getSchemaName();
         ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);

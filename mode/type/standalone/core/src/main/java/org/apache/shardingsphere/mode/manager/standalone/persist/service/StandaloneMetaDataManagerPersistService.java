@@ -98,7 +98,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
+    public void alterSchemaName(final AlterSchemaPOJO alterSchemaPOJO) {
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(alterSchemaPOJO.getDatabaseName());
         putSchemaMetaData(database, alterSchemaPOJO.getSchemaName(), alterSchemaPOJO.getRenameSchemaName(), alterSchemaPOJO.getLogicDataSourceName());

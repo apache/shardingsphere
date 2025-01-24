@@ -99,21 +99,21 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNotEmptySchema() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        assertAlterSchema(schema);
+        assertAlterSchemaName(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema(), times(0)).add("foo_db", "bar_schema");
     }
     
     @Test
-    void assertAlterEmptySchema() {
+    void assertAlterEmptySchemaName() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.isEmpty()).thenReturn(true);
-        assertAlterSchema(schema);
+        assertAlterSchemaName(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "bar_schema");
     }
     
-    private void assertAlterSchema(final ShardingSphereSchema schema) {
+    private void assertAlterSchemaName(final ShardingSphereSchema schema) {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
-        metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
+        metaDataManagerPersistService.alterSchemaName(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
