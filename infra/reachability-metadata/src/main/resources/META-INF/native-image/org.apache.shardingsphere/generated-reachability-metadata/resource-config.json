@@ -329,7 +329,7 @@
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.ContextManagerBuilder\\E"
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener\\E"
