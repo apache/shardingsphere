@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 public interface DialectStatisticsAppender extends DatabaseTypedSPI {
     
     /**
-     * Append database data.
+     * Append database statistics.
      *
-     * @param databaseData to be appended database data 
+     * @param databaseStatistics to be appended database statistics 
      * @param database database
      */
-    void append(ShardingSphereDatabaseData databaseData, ShardingSphereDatabase database);
+    void append(DatabaseStatistics databaseStatistics, ShardingSphereDatabase database);
 }

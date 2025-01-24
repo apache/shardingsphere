@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -25,11 +26,14 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,15 +56,17 @@ public final class ShardingSphereStatisticsFactory {
             return result;
         }
         Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
-        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream().filter(each -> !loadedStatistics.containsDatabase(each.getName())).collect(Collectors.toList());
+        Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream()
+                .filter(each -> !loadedStatistics.containsDatabaseStatistics(each.getName())).collect(Collectors.toList());
         for (ShardingSphereDatabase each : unloadedDatabases) {
-            ShardingSphereDatabaseData databaseData = new ShardingSphereDefaultStatisticsBuilder().build(each);
-            dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseData, each));
-            if (!databaseData.getSchemaData().isEmpty()) {
-                result.putDatabase(each.getName(), databaseData);
+            DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+            dialectStatisticsAppender.ifPresent(optional -> optional.append(databaseStatistics, each));
+            if (!databaseStatistics.getSchemaStatisticsMap().isEmpty()) {
+                result.putDatabaseStatistics(each.getName(), databaseStatistics);
             }
         }
-        loadedStatistics.getDatabaseData().forEach(result::putDatabase);
+        loadedStatistics.getDatabaseStatisticsMap().forEach(result::putDatabaseStatistics);
+        fillDefaultStatistics(metaData, result);
         return result;
     }
     
@@ -69,5 +75,38 @@ public final class ShardingSphereStatisticsFactory {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
+    }
+    
+    private static void fillDefaultStatistics(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
+        for (ShardingSphereDatabase database : metaData.getAllDatabases()) {
+            DatabaseStatistics defaultDatabaseStatistics = new ShardingSphereDefaultStatisticsBuilder().build(database);
+            Collection<String> defaultSchemaNames = new CaseInsensitiveSet<>(defaultDatabaseStatistics.getSchemaStatisticsMap().keySet());
+            if (database.getAllSchemas().stream().noneMatch(optional -> defaultSchemaNames.contains(optional.getName()))) {
+                continue;
+            }
+            if (!statistics.containsDatabaseStatistics(database.getName())) {
+                statistics.putDatabaseStatistics(database.getName(), defaultDatabaseStatistics);
+                continue;
+            }
+            fillDefaultStatistics(defaultDatabaseStatistics, statistics.getDatabaseStatistics(database.getName()));
+        }
+    }
+    
+    private static void fillDefaultStatistics(final DatabaseStatistics defaultDatabaseStatistics, final DatabaseStatistics existedDatabaseStatistics) {
+        for (Entry<String, SchemaStatistics> entry : defaultDatabaseStatistics.getSchemaStatisticsMap().entrySet()) {
+            if (!existedDatabaseStatistics.containsSchemaStatistics(entry.getKey())) {
+                existedDatabaseStatistics.putSchemaStatistics(entry.getKey(), entry.getValue());
+                continue;
+            }
+            fillDefaultStatistics(entry.getValue(), existedDatabaseStatistics.getSchemaStatistics(entry.getKey()));
+        }
+    }
+    
+    private static void fillDefaultStatistics(final SchemaStatistics defaultSchemaStatistics, final SchemaStatistics existedSchemaStatistics) {
+        for (Entry<String, TableStatistics> entry : defaultSchemaStatistics.getTableStatisticsMap().entrySet()) {
+            if (!existedSchemaStatistics.containsTableStatistics(entry.getKey())) {
+                existedSchemaStatistics.putTableStatistics(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

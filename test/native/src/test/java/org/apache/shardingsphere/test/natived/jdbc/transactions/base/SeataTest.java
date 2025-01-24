@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -67,8 +69,15 @@ class SeataTest {
         assertThat(System.getProperty(serviceDefaultGroupListKey), is(nullValue()));
     }
     
+    /**
+     * TODO Apparently there is a real connection leak on Seata Client 2.2.0.
+     *  Waiting for <a href="https://github.com/apache/incubator-seata/pull/7044">apache/incubator-seata#7044</a>.
+     *
+     * @throws SQLException SQL exception
+     */
     @AfterEach
     void afterEach() throws SQLException {
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         try (Connection connection = logicDataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
             for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {

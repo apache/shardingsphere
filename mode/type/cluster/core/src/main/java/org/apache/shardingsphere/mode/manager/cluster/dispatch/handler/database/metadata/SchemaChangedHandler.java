@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 
 /**
  * Schema changed handler.
@@ -27,11 +27,11 @@ public final class SchemaChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ShardingSphereStatisticsRefreshEngine statisticsRefreshEngine;
+    private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public SchemaChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        statisticsRefreshEngine = new ShardingSphereStatisticsRefreshEngine(contextManager);
+        statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
     /**

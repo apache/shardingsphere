@@ -29,13 +29,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
-import org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import javax.sql.DataSource;
@@ -68,7 +68,7 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final ShardingSphereDataPersistService shardingSphereDataPersistService;
+    private final StatisticsPersistService statisticsPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -78,7 +78,7 @@ public final class MetaDataPersistService {
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
         propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);
-        shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
+        statisticsPersistService = new StatisticsPersistService(repository);
     }
     
     /**

@@ -29,11 +29,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;

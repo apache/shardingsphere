@@ -27,9 +27,9 @@ import java.util.Optional;
 public interface WithAvailable {
     
     /**
-     * Get with segement.
+     * Get with segment.
      *
-     * @return with segement
+     * @return with segment
      */
     Optional<WithSegment> getWith();
 }

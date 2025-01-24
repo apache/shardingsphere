@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedType;
-import org.apache.shardingsphere.mode.persist.service.unified.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
+import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,21 +99,21 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNotEmptySchema() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        assertAlterSchema(schema);
+        assertAlterSchemaName(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema(), times(0)).add("foo_db", "bar_schema");
     }
     
     @Test
-    void assertAlterEmptySchema() {
+    void assertAlterEmptySchemaName() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.isEmpty()).thenReturn(true);
-        assertAlterSchema(schema);
+        assertAlterSchemaName(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "bar_schema");
     }
     
-    private void assertAlterSchema(final ShardingSphereSchema schema) {
+    private void assertAlterSchemaName(final ShardingSphereSchema schema) {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
-        metaDataManagerPersistService.alterSchema(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
+        metaDataManagerPersistService.alterSchemaName(new AlterSchemaPOJO("foo_db", "foo_schema", "bar_schema", Collections.singleton("foo_ds")));
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");

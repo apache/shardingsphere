@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.DialectStatisticsAppender;
 
 import java.util.Arrays;
@@ -43,20 +43,20 @@ public final class PostgreSQLStatisticsAppender implements DialectStatisticsAppe
     }
     
     @Override
-    public void append(final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabase database) {
+    public void append(final DatabaseStatistics databaseStatistics, final ShardingSphereDatabase database) {
         for (Entry<String, Collection<String>> entry : INIT_DATA_SCHEMA_TABLES.entrySet()) {
-            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+            SchemaStatistics schemaStatistics = new SchemaStatistics();
             if (null != database.getSchema(entry.getKey())) {
-                initTables(database.getSchema(entry.getKey()), entry.getValue(), schemaData);
-                databaseData.putSchema(entry.getKey(), schemaData);
+                initTables(database.getSchema(entry.getKey()), entry.getValue(), schemaStatistics);
+                databaseStatistics.putSchemaStatistics(entry.getKey(), schemaStatistics);
             }
         }
     }
     
-    private void initTables(final ShardingSphereSchema schema, final Collection<String> tables, final ShardingSphereSchemaData schemaData) {
+    private void initTables(final ShardingSphereSchema schema, final Collection<String> tableNames, final SchemaStatistics schemaStatistics) {
         for (ShardingSphereTable each : schema.getAllTables()) {
-            if (tables.contains(each.getName().toLowerCase())) {
-                schemaData.putTable(each.getName().toLowerCase(), new ShardingSphereTableData(each.getName()));
+            if (tableNames.contains(each.getName().toLowerCase())) {
+                schemaStatistics.putTableStatistics(each.getName().toLowerCase(), new TableStatistics(each.getName()));
             }
         }
     }

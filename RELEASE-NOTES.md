@@ -9,9 +9,12 @@
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. Proxy Native: Add GraalVM Reachability Metadata and corresponding nativeTest for Firebird - [#34307](https://github.com/apache/shardingsphere/pull/34307)
+1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
 1. SQL Binder: Support column definition for the WITH clause in ColumnBind and ExternalTableBinderContext in WithSegmentBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 
 ### Bug Fixes
+
+1. Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
 
 ### Change Logs
 
