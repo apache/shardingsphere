@@ -99,7 +99,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNotEmptySchema() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        assertAlterSchema(schema);
+        assertAlterSchemaName(schema);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema(), times(0)).add("foo_db", "bar_schema");
     }
     
