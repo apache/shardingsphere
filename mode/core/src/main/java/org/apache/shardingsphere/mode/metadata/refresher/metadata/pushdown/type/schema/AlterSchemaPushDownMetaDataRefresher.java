@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
@@ -41,7 +40,8 @@ public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaD
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        metaDataManagerPersistService.alterSchemaName(new AlterSchemaPOJO(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get(), logicDataSourceNames));
+        metaDataManagerPersistService.alterSchemaName(
+                database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
     }
     
     @Override
