@@ -65,7 +65,7 @@ public interface MetaDataManagerPersistService {
     
     /**
      * Alter schema name.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param renameSchemaName rename schema name
