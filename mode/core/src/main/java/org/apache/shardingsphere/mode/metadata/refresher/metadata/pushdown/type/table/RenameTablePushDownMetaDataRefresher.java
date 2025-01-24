@@ -51,7 +51,7 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
             alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName,
-                    TableRefreshUtils.getTableName(databaseType, each.getRenameTable().getTableName().getIdentifier()), props));
+                    TableRefreshUtils.getTableName(each.getRenameTable().getTableName().getIdentifier(), databaseType), props));
             alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
             metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }

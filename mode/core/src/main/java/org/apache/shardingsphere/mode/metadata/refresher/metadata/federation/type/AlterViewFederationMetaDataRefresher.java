@@ -35,7 +35,7 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
-        String viewName = TableRefreshUtils.getTableName(sqlStatement.getDatabaseType(), sqlStatement.getView().getTableName().getIdentifier());
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), sqlStatement.getDatabaseType());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         if (renameView.isPresent()) {

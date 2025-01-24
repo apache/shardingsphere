@@ -48,13 +48,14 @@ public final class TableRefreshUtils {
     /**
      * Get table name.
      *
+     * @param tableIdentifierValue table identifier value
      * @param databaseType database type
-     * @param identifierValue identifier value
      * @return table name
      */
-    public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
-        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().formatTableNamePattern(identifierValue.getValue())
-                : identifierValue.getValue();
+    public static String getTableName(final IdentifierValue tableIdentifierValue, final DatabaseType databaseType) {
+        return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
+                ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().formatTableNamePattern(tableIdentifierValue.getValue())
+                : tableIdentifierValue.getValue();
     }
     
     /**
