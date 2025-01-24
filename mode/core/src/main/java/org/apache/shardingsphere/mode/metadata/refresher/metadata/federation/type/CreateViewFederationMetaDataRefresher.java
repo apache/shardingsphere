@@ -32,7 +32,7 @@ public final class CreateViewFederationMetaDataRefresher implements FederationMe
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final CreateViewStatement sqlStatement) {
-        String viewName = TableRefreshUtils.getTableName(sqlStatement.getDatabaseType(), sqlStatement.getView().getTableName().getIdentifier());
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), sqlStatement.getDatabaseType());
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
         metaDataManagerPersistService.alterSchemaMetaData(alterSchemaMetaDataPOJO);

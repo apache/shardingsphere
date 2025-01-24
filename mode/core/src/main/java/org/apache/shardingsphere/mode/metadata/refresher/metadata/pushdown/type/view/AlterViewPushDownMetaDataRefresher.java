@@ -49,7 +49,7 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String viewName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getView().getTableName().getIdentifier());
+        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         if (renameView.isPresent()) {
