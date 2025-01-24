@@ -72,7 +72,7 @@ public interface MetaDataManagerPersistService {
      * @param logicDataSourceName logic data source name
      * @throws SQLException SQL exception
      */
-    void alterSchemaName(final String databaseName, final String schemaName, final String renameSchemaName, final String logicDataSourceName) throws SQLException;
+    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName) throws SQLException;
     
     /**
      * Drop schema.
