@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.service;
+package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
 
 /**
- * Database changed listener assisted type.
+ * Database listener coordinator type.
  */
-public enum DatabaseChangedListenerAssistedType {
+public enum DatabaseListenerCoordinatorType {
     
     // TODO rename to CREATE and DROP after meta data compatible complete @haoran
     CREATE_DATABASE, DROP_DATABASE

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.DatabaseListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.DatabaseChangedListenerAssistedType;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,19 +50,19 @@ public final class DatabaseListenerChangedHandler implements DataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatesNodePath.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, DatabaseChangedListenerAssistedType.valueOf(event.getValue())));
+        StatesNodePath.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, DatabaseListenerCoordinatorType.valueOf(event.getValue())));
     }
     
-    private static void handle(final ContextManager contextManager, final String databaseName, final DatabaseChangedListenerAssistedType databaseChangedListenerAssistedType) {
+    private static void handle(final ContextManager contextManager, final String databaseName, final DatabaseListenerCoordinatorType databaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        if (DatabaseChangedListenerAssistedType.CREATE_DATABASE == databaseChangedListenerAssistedType) {
+        if (DatabaseListenerCoordinatorType.CREATE_DATABASE == databaseListenerCoordinatorType) {
             repository.watch(DatabaseMetaDataNodePath.getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(databaseName);
-        } else if (DatabaseChangedListenerAssistedType.DROP_DATABASE == databaseChangedListenerAssistedType) {
+        } else if (DatabaseListenerCoordinatorType.DROP_DATABASE == databaseListenerCoordinatorType) {
             repository.removeDataListener(DatabaseMetaDataNodePath.getDatabasePath(databaseName));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(databaseName);
         }
-        new DatabaseListenerAssistedPersistService(repository).delete(databaseName);
+        new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new StatisticsRefreshEngine(contextManager).asyncRefresh();
         }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,20 +29,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class DatabaseListenerAssistedPersistServiceTest {
+class ClusterDatabaseListenerPersistCoordinatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PersistRepository repository;
     
     @Test
     void assertPersist() {
-        new DatabaseListenerAssistedPersistService(repository).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE.name());
+        new ClusterDatabaseListenerPersistCoordinator(repository).persist("foo_db", DatabaseListenerCoordinatorType.CREATE_DATABASE);
+        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseListenerCoordinatorType.CREATE_DATABASE.name());
     }
     
     @Test
     void assertDelete() {
-        new DatabaseListenerAssistedPersistService(repository).delete("foo_db");
+        new ClusterDatabaseListenerPersistCoordinator(repository).delete("foo_db");
         verify(repository).delete("/states/listener_assisted/foo_db");
     }
 }
