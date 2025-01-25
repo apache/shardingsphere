@@ -94,7 +94,7 @@ public final class TableRefreshUtils {
         }
         Optional<DataNode> dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(schemaName, tableName);
         return dataNode.isPresent()
-                && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), SingleTableConstants.ASTERISK)) 
+                && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), SingleTableConstants.ASTERISK))
                 && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), SingleTableConstants.ALL_TABLES, SingleTableConstants.ASTERISK))
                 && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), dataNode.get().getSchemaName(), SingleTableConstants.ASTERISK));
     }
