@@ -39,7 +39,7 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
+        boolean isRuleRefreshRequired = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
         metaDataManagerPersistService.dropTables(database.getName(), schemaName, tableNames);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             if (isRuleRefreshRequired && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {

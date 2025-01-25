@@ -20,23 +20,20 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.util;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -70,55 +67,36 @@ public final class TableRefreshUtils {
     }
     
     /**
-     * Judge whether the rule need to be refreshed.
+     * Judge whether to need refresh.
      *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableSegments table segments
-     * @return whether the rule need to be refreshed
+     * @return need to refresh or not
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
+        return tableSegments.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue()));
     }
     
     /**
-     * Judge whether the rule need to be refreshed.
+     * Judge whether to need refresh.
      *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableName table name
-     * @return whether the rule need to be refreshed
+     * @return need to refresh or not
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        for (ShardingSphereRule each : ruleMetaData.getRules()) {
-            each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class).ifPresent(optional -> rules.add(each));
-        }
-        if (rules.isEmpty()) {
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+        SingleRule singleRule = ruleMetaData.getSingleRule(SingleRule.class);
+        Collection<String> singleTableNames = singleRule.getConfiguration().getTables();
+        if (singleTableNames.contains(SingleTableConstants.ALL_TABLES) || singleTableNames.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }
-        ShardingSphereRule rule = rules.iterator().next();
-        RuleConfiguration ruleConfig = rule.getConfiguration();
-        if (!(ruleConfig instanceof SingleRuleConfiguration)) {
-            return false;
-        }
-        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfig).getTables();
-        if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return false;
-        }
-        Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(schemaName, tableName);
-        if (!dataNode.isPresent()) {
-            return false;
-        }
-        DataNode actualNode = dataNode.get();
-        return !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK))
-                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK))
-                && !tablesConfig.contains(joinDataNodeSegments(actualNode.getDataSourceName(), actualNode.getSchemaName(), SingleTableConstants.ASTERISK));
+        Optional<DataNode> dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(schemaName, tableName);
+        return dataNode.isPresent()
+                && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), SingleTableConstants.ASTERISK))
+                && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), SingleTableConstants.ALL_TABLES, SingleTableConstants.ASTERISK))
+                && !singleTableNames.contains(joinDataNodeSegments(dataNode.get().getDataSourceName(), dataNode.get().getSchemaName(), SingleTableConstants.ASTERISK));
     }
     
     private static String joinDataNodeSegments(final String... segments) {
