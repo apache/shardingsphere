@@ -67,7 +67,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     void setUp() {
         metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, mock(PersistRepository.class));
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistService);
-        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("listenerAssistedPersistService"), metaDataManagerPersistService, databaseChangedListenerAssistedPersistService);
+        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("databaseChangedListenerAssistedPersistService"),
+                metaDataManagerPersistService, databaseChangedListenerAssistedPersistService);
     }
     
     @Test
