@@ -13,7 +13,8 @@
 
 ### Bug Fixes
 
-1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+1. JDBC: Alleviate the connection leak caused by Seata Client throwing exceptions in `MEMORY_STRICTLY` connection mode - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+1. JDBC: Alleviate the connection leak caused by Seata Client throwing exceptions in `CONNECTION_STRICTLY` connection mode - [#34498](https://github.com/apache/shardingsphere/pull/34498)
 
 ### Change Logs
 

@@ -360,16 +360,17 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                                                final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
+            Connection connection = createConnection(databaseName, dataSourceName, dataSource, transactionConnectionContext);
             try {
-                Connection connection = createConnection(databaseName, dataSourceName, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
-                result.add(connection);
             } catch (final SQLException ex) {
+                connection.close();
                 for (Connection each : result) {
                     each.close();
                 }
                 throw new OverallConnectionNotEnoughException(connectionSize, result.size(), ex).toSQLException();
             }
+            result.add(connection);
         }
         return result;
     }

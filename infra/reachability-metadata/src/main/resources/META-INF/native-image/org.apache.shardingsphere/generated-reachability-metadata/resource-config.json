@@ -91,7 +91,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f7c3fca2710"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f510bcc3d10"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -138,6 +138,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"\\QMETA-INF/services/javax.sql.rowset.RowSetFactory\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/javax.xml.datatype.DatatypeFactory\\E"
@@ -252,6 +255,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.resultset.ResultSetMapper"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.resultset.DialectResultSetMapper\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.props.TypedPropertyValue"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.type.DatabaseType\\E"
@@ -423,6 +429,15 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"\\Qcom/sun/rowset/RowSetResourceBundle_zh.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"\\Qcom/sun/rowset/RowSetResourceBundle_zh_Hans.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"\\Qcom/sun/rowset/RowSetResourceBundle_zh_Hans_CN.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
@@ -2104,6 +2119,24 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"},
     "pattern":"\\Qyarn-site.xml\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qcom/sun/rowset/RowSetResourceBundle.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qcom/sun/rowset/RowSetResourceBundle_zh.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qcom/sun/rowset/RowSetResourceBundle_zh_CN.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qcom/sun/rowset/RowSetResourceBundle_zh_Hans.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qcom/sun/rowset/RowSetResourceBundle_zh_Hans_CN.properties\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
+    "pattern":"java.sql.rowset:\\Qjavax/sql/rowset/rowset.properties\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"},
     "pattern":"java.xml:\\Qcom/sun/org/apache/xml/internal/serializer/Encodings.properties\\E"
   }, {
@@ -2127,6 +2160,9 @@
     "locales":["zh-CN"]
   }, {
     "name":"com.sun.org.apache.xml.internal.serializer.XMLEntities",
+    "locales":["zh-CN"]
+  }, {
+    "name":"com.sun.rowset.RowSetResourceBundle",
     "locales":["zh-CN"]
   }]
 }

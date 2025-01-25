@@ -5,17 +5,19 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
-  "name":"org.apache.shardingsphere.test.natived.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithmFactory"},
+  "name":"org.apache.shardingsphere.test.natived.commons.algorithm.TOrderShardingTableAlg",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allPublicMethods": true,
-  "allDeclaredFields": true
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithmFactory"},
+  "name":"org.apache.shardingsphere.test.natived.commons.algorithm.TOrderItemShardingTableAlg",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
+  "name":"org.apache.shardingsphere.test.natived.commons.algorithm.TestQueryAssistedShardingEncryptAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest"},
@@ -28,14 +30,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.AtomikosTest"},
   "name":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.AtomikosTest",
-  "allDeclaredConstructors": true,
-  "allDeclaredMethods": true,
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true,
@@ -178,16 +172,40 @@
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest"},
-  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest"},
-  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest",
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.databases.PostgresTest",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataWithShardingDatabaseTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataWithShardingDatabaseTest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataWithShardingTableTest"},
+  "name":"org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataWithShardingTableTest",
   "allDeclaredFields": true,
   "allDeclaredConstructors": true,
   "allDeclaredMethods": true,
