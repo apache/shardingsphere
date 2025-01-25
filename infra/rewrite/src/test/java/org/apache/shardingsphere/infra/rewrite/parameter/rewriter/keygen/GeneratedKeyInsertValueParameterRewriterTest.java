@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen;
 
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,12 +57,12 @@ class GeneratedKeyInsertValueParameterRewriterTest {
         assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
-        when(insertStatementContext.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         when(insertStatementContext.getGeneratedKeyContext().get().isGenerated()).thenReturn(Boolean.TRUE);
-        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.TRUE);
+        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.emptyList());
         assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
-        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.FALSE);
+        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.singletonList(mock()));
         assertTrue(paramRewriter.isNeedRewrite(insertStatementContext));
     }
     
@@ -84,7 +86,7 @@ class GeneratedKeyInsertValueParameterRewriterTest {
     
     private ParameterBuilder getParameterBuilder() {
         StandardParameterBuilder standardParamBuilder = mock(StandardParameterBuilder.class);
-        Map<Integer, Collection<Object>> addedIndexAndParams = new HashMap<>();
+        Map<Integer, Collection<Object>> addedIndexAndParams = new HashMap<>(1);
         when(standardParamBuilder.getAddedIndexAndParameters()).thenReturn(addedIndexAndParams);
         doAnswer((Answer<Void>) invocation -> {
             int index = invocation.getArgument(0);
@@ -98,7 +100,7 @@ class GeneratedKeyInsertValueParameterRewriterTest {
     
     private InsertStatementContext getInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getGeneratedKeyContext().isPresent()).thenReturn(true);
+        when(result.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         when(result.getGeneratedKeyContext().get().getColumnName()).thenReturn("testColumnName");
         when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.singleton(TEST_GENERATED_VALUE));
         when(result.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList("testGroupedParameter")));

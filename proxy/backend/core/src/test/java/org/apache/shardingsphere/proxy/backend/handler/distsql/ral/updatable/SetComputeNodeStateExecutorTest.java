@@ -19,9 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetComputeNodeStateStatement;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -48,7 +52,9 @@ class SetComputeNodeStateExecutorTest {
     void assertExecuteUpdateWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("currentInstance");
-        when(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find("instanceID").isPresent()).thenReturn(true);
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
+        when(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find("instanceID")).thenReturn(Optional.of(computeNodeInstance));
+        when(computeNodeInstance.getState()).thenReturn(mock(InstanceStateContext.class));
         when(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find("instanceID").get().getState().getCurrentState())
                 .thenReturn(InstanceState.CIRCUIT_BREAK);
         assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "instanceID"), contextManager));

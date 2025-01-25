@@ -21,9 +21,11 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +40,7 @@ class EncryptInsertSelectSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getInsertSelect().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getSqlStatement().getInsertSelect()).thenReturn(Optional.of(mock(SubquerySegment.class)));
         assertTrue(new EncryptInsertSelectSupportedChecker().isCheck(sqlStatementContext));
     }
     
