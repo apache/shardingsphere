@@ -68,7 +68,7 @@ public final class MetaDataImportExecutor {
         importProps(yamlServerConfig);
     }
     
-    private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) throws SQLException {
+    private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) {
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
         for (RuleConfiguration each : rules) {
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
@@ -91,9 +91,8 @@ public final class MetaDataImportExecutor {
      * Import database configurations.
      *
      * @param databaseConfigs YAML proxy database configuration
-     * @throws SQLException SQL exception
      */
-    public void importDatabaseConfigurations(final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) throws SQLException {
+    public void importDatabaseConfigurations(final Collection<YamlProxyDatabaseConfiguration> databaseConfigs) {
         for (YamlProxyDatabaseConfiguration each : databaseConfigs) {
             databaseConfigImportExecutor.importDatabaseConfiguration(each);
         }
