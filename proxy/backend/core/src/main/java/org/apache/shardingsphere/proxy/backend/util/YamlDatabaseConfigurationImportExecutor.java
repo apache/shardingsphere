@@ -86,7 +86,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             importDataSources(databaseName, yamlConfig.getDataSources());
             importRules(databaseName, yamlConfig.getRules());
         } catch (final ShardingSphereSQLException ex) {
-            dropDatabase(databaseName);
+            dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
             throw ex;
         }
     }
@@ -161,7 +161,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void dropDatabase(final String databaseName) throws SQLException {
+    private void dropDatabase(final String databaseName) {
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
     }
 }
