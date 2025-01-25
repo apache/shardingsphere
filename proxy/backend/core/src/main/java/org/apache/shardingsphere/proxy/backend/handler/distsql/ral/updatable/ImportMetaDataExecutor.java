@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Import meta data executor.
@@ -47,7 +48,7 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
     }
     
     private String getMetaDataFromFile(final ImportMetaDataStatement sqlStatement) {
-        File file = new File(sqlStatement.getFilePath().get());
+        File file = new File(Objects.requireNonNull(sqlStatement.getFilePath()).get());
         try {
             return FileUtils.readFileToString(file, Charset.defaultCharset());
         } catch (final IOException ignore) {
