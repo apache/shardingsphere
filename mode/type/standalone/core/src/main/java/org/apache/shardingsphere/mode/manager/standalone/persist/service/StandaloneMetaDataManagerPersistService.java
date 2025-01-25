@@ -89,10 +89,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        database.addSchema(new ShardingSphereSchema(schemaName));
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaDataContextManager.getSchemaMetaDataManager().addSchema(databaseName, schemaName);
     }
     
     @Override
@@ -201,7 +198,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
-        schemaNames.forEach(schemaName -> dropSchema(databaseName, schemaName));
+        schemaNames.forEach(each -> dropSchema(databaseName, each));
     }
     
     private void dropSchema(final String databaseName, final String schemaName) {
