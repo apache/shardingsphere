@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -60,24 +62,24 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private final MetaDataPersistService metaDataPersistService;
     
-    private final DatabaseChangedListenerAssistedPersistService databaseChangedListenerAssistedPersistService;
+    private final ClusterDatabaseListenerPersistCoordinator clusterDatabaseListenerPersistCoordinator;
     
     public ClusterMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
         this.metaDataContextManager = metaDataContextManager;
         metaDataPersistService = metaDataContextManager.getMetaDataPersistService();
-        databaseChangedListenerAssistedPersistService = new DatabaseChangedListenerAssistedPersistService(repository);
+        clusterDatabaseListenerPersistCoordinator = new ClusterDatabaseListenerPersistCoordinator(repository);
     }
     
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
-        databaseChangedListenerAssistedPersistService.persist(databaseName, DatabaseChangedListenerAssistedType.CREATE_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(databaseName, DatabaseListenerCoordinatorType.CREATE_DATABASE);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        databaseChangedListenerAssistedPersistService.persist(droppedDatabaseName, DatabaseChangedListenerAssistedType.DROP_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(droppedDatabaseName, DatabaseListenerCoordinatorType.DROP_DATABASE);
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(droppedDatabaseName);
     }
     

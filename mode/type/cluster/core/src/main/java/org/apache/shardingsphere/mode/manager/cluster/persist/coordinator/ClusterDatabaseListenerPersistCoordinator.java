@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.service;
+package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Database changed listener assisted persist service.
+ * Database listener persist coordinator.
  */
 @RequiredArgsConstructor
-public final class DatabaseChangedListenerAssistedPersistService {
+public final class ClusterDatabaseListenerPersistCoordinator {
     
     private final PersistRepository repository;
     
     /**
-     * Persist database changed listener assisted state.
+     * Persist database listener assisted state.
      *
      * @param databaseName database name
-     * @param databaseChangedListenerAssistedType database changed listener assisted type
+     * @param databaseListenerCoordinatorType database changed listener assisted type
      */
-    public void persist(final String databaseName, final DatabaseChangedListenerAssistedType databaseChangedListenerAssistedType) {
-        repository.persistEphemeral(StatesNodePath.getDatabaseChangedListenerAssistedNodePath(databaseName), databaseChangedListenerAssistedType.name());
+    public void persist(final String databaseName, final DatabaseListenerCoordinatorType databaseListenerCoordinatorType) {
+        repository.persistEphemeral(StatesNodePath.getDatabaseChangedListenerAssistedNodePath(databaseName), databaseListenerCoordinatorType.name());
     }
     
     /**
-     * Delete database changed listener assisted state.
+     * Delete database listener assisted state.
      *
      * @param databaseName database name
      */
