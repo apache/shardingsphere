@@ -33,13 +33,13 @@ class StatesNodePathTest {
     }
     
     @Test
-    void assertGetListenerAssistedNodeRootPath() {
-        assertThat(StatesNodePath.getListenerAssistedNodeRootPath(), is("/states/listener_assisted"));
+    void assertGetDatabaseChangedListenerAssistedNodeRootPath() {
+        assertThat(StatesNodePath.getDatabaseChangedListenerAssistedNodeRootPath(), is("/states/listener_assisted"));
     }
     
     @Test
-    void assertGetListenerAssistedNodePath() {
-        assertThat(StatesNodePath.getListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
+    void assertGetDatabaseChangedListenerAssistedNodePath() {
+        assertThat(StatesNodePath.getDatabaseChangedListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
     }
     
     @Test

@@ -62,7 +62,7 @@ class ListenerAssistedChangedHandlerTest {
     @Test
     void assertHandleWithoutDatabase() {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade(), times(0)).getListenerAssistedPersistService();
+        verify(contextManager.getPersistServiceFacade(), times(0)).getDatabaseChangedListenerAssistedPersistService();
     }
     
     @Test
@@ -71,7 +71,7 @@ class ListenerAssistedChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "CREATE_DATABASE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addDatabase("foo_db");
-        verify(contextManager.getPersistServiceFacade().getListenerAssistedPersistService()).deleteDatabaseNameListenerAssisted("foo_db");
+        verify(contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService()).delete("foo_db");
     }
     
     @Test
@@ -80,6 +80,6 @@ class ListenerAssistedChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "DROP_DATABASE", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropDatabase("foo_db");
-        verify(contextManager.getPersistServiceFacade().getListenerAssistedPersistService()).deleteDatabaseNameListenerAssisted("foo_db");
+        verify(contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService()).delete("foo_db");
     }
 }
