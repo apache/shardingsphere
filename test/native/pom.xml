@@ -123,6 +123,11 @@
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-pool2</artifactId>
                 </exclusion>
+                <!-- See https://github.com/apache/incubator-seata/issues/7045 -->
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -232,6 +237,13 @@
             <artifactId>jetcd-test</artifactId>
             <version>${jetcd.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- See https://github.com/testcontainers/testcontainers-java/issues/8338 -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     
