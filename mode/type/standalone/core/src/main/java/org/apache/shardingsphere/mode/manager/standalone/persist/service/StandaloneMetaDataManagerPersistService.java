@@ -219,6 +219,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (TableRefreshUtils.isSingleTable(table.getName(), database)) {
             database.reloadRules();
         }
+        database.getSchema(schemaName).putTable(table);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
