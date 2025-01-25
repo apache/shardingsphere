@@ -34,8 +34,8 @@ class DatabaseChangedListenerAssistedPersistServiceTest {
     
     @Test
     void assertPersist() {
-        new DatabaseChangedListenerAssistedPersistService(repository).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseChangedListenerAssistedType.CREATE.name());
+        new DatabaseChangedListenerAssistedPersistService(repository).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE);
+        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE.name());
     }
     
     @Test

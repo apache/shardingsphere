@@ -75,14 +75,14 @@ class ClusterMetaDataManagerPersistServiceTest {
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE);
+        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE);
     }
     
     @Test
     void assertDropDatabase() {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         metaDataManagerPersistService.dropDatabase("foo_db");
-        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.DROP);
+        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.DROP_DATABASE);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
     }
     
