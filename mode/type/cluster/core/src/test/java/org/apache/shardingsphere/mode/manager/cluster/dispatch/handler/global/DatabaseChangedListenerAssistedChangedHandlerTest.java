@@ -63,7 +63,7 @@ class DatabaseChangedListenerAssistedChangedHandlerTest {
     @Test
     void assertHandleWithoutDatabase() {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade(), times(0)).getDatabaseChangedListenerAssistedPersistService();
+        verify(contextManager.getPersistServiceFacade(), times(0)).getRepository();
     }
     
     @Test
