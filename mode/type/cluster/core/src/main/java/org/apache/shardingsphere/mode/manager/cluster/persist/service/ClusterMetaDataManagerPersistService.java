@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -73,13 +73,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
-        clusterDatabaseListenerPersistCoordinator.persist(databaseName, DatabaseListenerCoordinatorType.CREATE_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        clusterDatabaseListenerPersistCoordinator.persist(droppedDatabaseName, DatabaseListenerCoordinatorType.DROP_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(droppedDatabaseName, ClusterDatabaseListenerCoordinatorType.DROP_DATABASE);
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(droppedDatabaseName);
     }
     

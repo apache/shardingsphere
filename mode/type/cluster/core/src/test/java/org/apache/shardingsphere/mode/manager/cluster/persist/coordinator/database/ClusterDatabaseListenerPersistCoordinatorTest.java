@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
+package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database;
 
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.Test;
@@ -34,8 +34,8 @@ class ClusterDatabaseListenerPersistCoordinatorTest {
     
     @Test
     void assertPersist() {
-        new ClusterDatabaseListenerPersistCoordinator(repository).persist("foo_db", DatabaseListenerCoordinatorType.CREATE_DATABASE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseListenerCoordinatorType.CREATE_DATABASE.name());
+        new ClusterDatabaseListenerPersistCoordinator(repository).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE);
+        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE.name());
     }
     
     @Test

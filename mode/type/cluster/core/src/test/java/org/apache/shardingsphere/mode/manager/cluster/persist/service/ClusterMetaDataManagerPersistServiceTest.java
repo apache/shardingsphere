@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -75,14 +75,14 @@ class ClusterMetaDataManagerPersistServiceTest {
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", DatabaseListenerCoordinatorType.CREATE_DATABASE);
+        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE);
     }
     
     @Test
     void assertDropDatabase() {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         metaDataManagerPersistService.dropDatabase("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", DatabaseListenerCoordinatorType.DROP_DATABASE);
+        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP_DATABASE);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
     }
     
