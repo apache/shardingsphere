@@ -18,24 +18,25 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedType;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedType;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Listener assisted changed handler.
+ * Database changed listener assisted changed handler.
  */
-public final class ListenerAssistedChangedHandler implements DataChangedEventHandler {
+public final class DatabaseChangedListenerAssistedChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
@@ -61,7 +62,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
             repository.removeDataListener(DatabaseMetaDataNodePath.getDatabasePath(databaseName));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(databaseName);
         }
-        contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService().delete(databaseName);
+        new DatabaseChangedListenerAssistedPersistService(repository).delete(databaseName);
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new StatisticsRefreshEngine(contextManager).asyncRefresh();
         }

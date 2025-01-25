@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ListenerAssistedChangedHandlerTest {
+class DatabaseChangedListenerAssistedChangedHandlerTest {
     
     private DataChangedEventHandler handler;
     
@@ -71,7 +72,7 @@ class ListenerAssistedChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "CREATE_DATABASE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addDatabase("foo_db");
-        verify(contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService()).delete("foo_db");
+        verify(repository).delete(StatesNodePath.getDatabaseChangedListenerAssistedNodePath("foo_db"));
     }
     
     @Test
@@ -80,6 +81,6 @@ class ListenerAssistedChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/listener_assisted/foo_db", "DROP_DATABASE", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
         verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropDatabase("foo_db");
-        verify(contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService()).delete("foo_db");
+        verify(repository).delete(StatesNodePath.getDatabaseChangedListenerAssistedNodePath("foo_db"));
     }
 }
