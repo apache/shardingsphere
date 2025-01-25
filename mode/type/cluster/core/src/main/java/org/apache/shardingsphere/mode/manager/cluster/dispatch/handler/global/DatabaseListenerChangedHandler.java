@@ -55,10 +55,10 @@ public final class DatabaseListenerChangedHandler implements DataChangedEventHan
     
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        if (ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE == clusterDatabaseListenerCoordinatorType) {
+        if (ClusterDatabaseListenerCoordinatorType.CREATE == clusterDatabaseListenerCoordinatorType) {
             repository.watch(DatabaseMetaDataNodePath.getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(databaseName);
-        } else if (ClusterDatabaseListenerCoordinatorType.DROP_DATABASE == clusterDatabaseListenerCoordinatorType) {
+        } else if (ClusterDatabaseListenerCoordinatorType.DROP == clusterDatabaseListenerCoordinatorType) {
             repository.removeDataListener(DatabaseMetaDataNodePath.getDatabasePath(databaseName));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(databaseName);
         }
