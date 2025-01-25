@@ -78,12 +78,7 @@ public final class TableRefreshUtils {
      * @return need to refresh or not
      */
     public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            if (isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
-                return true;
-            }
-        }
-        return false;
+        return tableSegments.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue()));
     }
     
     /**
