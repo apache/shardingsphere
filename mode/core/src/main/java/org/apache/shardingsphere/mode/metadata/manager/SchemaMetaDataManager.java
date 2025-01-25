@@ -152,7 +152,7 @@ public final class SchemaMetaDataManager {
     
     /**
      * Drop view.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeDroppedViewName to be dropped view name
