@@ -15,7 +15,7 @@ CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 22.0.2，对应于 SDKMAN! 的 `22.0.2-graalce`
+- GraalVM CE For JDK 23.0.2，对应于 SDKMAN! 的 `23.0.2-graalce`
 
 用户依然可以使用 SDKMAN! 上的 `21.0.2-graalce` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
@@ -184,7 +184,7 @@ rules:
           algorithmClassName: org.example.test.TestShardingAlgorithmFixture
 ```
 
-在 `src/main/resources/META-INF/native-image/exmaple-test-metadata/reflect-config.json` 加入如下内容即可在正常在 GraalVM Native 
+在 `src/main/resources/META-INF/native-image/exmaple-test-metadata/reachability-metadata.json` 加入如下内容即可在正常在 GraalVM Native 
 Image 下使用。
 
 ```json
@@ -245,7 +245,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
 以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reflect-config.json`文件内定义如下 JSON，
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON，
 以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
 
 ```json
@@ -354,8 +354,8 @@ ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于�
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.2-graalce
-sdk use java 22.0.2-graalce
+sdk install java 23.0.2-graalce
+sdk use java 23.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
@@ -389,31 +389,30 @@ Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e -T 1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -e -T 1C clean test native:metadata-copy
 ```
 
 受 https://github.com/apache/shardingsphere/issues/33206 影响，
-贡献者执行 `./mvnw -PgenerateMetadata -DskipNativeTests -T 1C -e clean test native:metadata-copy` 后，
-`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` 会生成不必要的包含绝对路径的 JSON 条目，
+贡献者执行 `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy` 后，
+`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/reachability-metadata.json` 会生成不必要的包含绝对路径的 JSON 条目，
 类似如下，
 
 ```json
 {
-   "resources":{
-      "includes":[{
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding/\\E"
-      }]},
-   "bundles":[]
+   "resources": [
+      {
+         "condition": {
+            "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+         },
+         "glob": "home/root/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql/"
+      },
+      {
+         "condition": {
+            "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+         },
+         "glob": "home/root/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql//global.yaml"
+      }
+   ]
 }
 ```
 

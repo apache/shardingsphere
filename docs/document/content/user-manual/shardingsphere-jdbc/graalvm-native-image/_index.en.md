@@ -16,7 +16,7 @@ ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as https://sdkman.io/jdks#graal ,
 https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
-- GraalVM CE For JDK 22.0.2, corresponding to `22.0.2-graalce` of SDKMAN!
+- GraalVM CE For JDK 23.0.2, corresponding to `23.0.2-graalce` of SDKMAN!
 
 Users can still use the old versions of GraalVM CE such as `21.0.2-graalce` on SDKMAN! to build the GraalVM Native Image product of ShardingSphere. 
 However, this will cause the failure of building the GraalVM Native Image when integrating some third-party dependencies. 
@@ -190,7 +190,7 @@ rules:
            algorithmClassName: org.example.test.TestShardingAlgorithmFixture
 ```
 
-Add the following content to `src/main/resources/META-INF/native-image/exmaple-test-metadata/reflect-config.json` to used 
+Add the following content to `src/main/resources/META-INF/native-image/exmaple-test-metadata/reachability-metadata.json` to used 
 normally under GraalVM Native Image.
 
 ```json
@@ -258,7 +258,7 @@ or the corresponding JSON should be submitted to https://github.com/oracle/graal
 
 Take the `com.mysql.cj.jdbc.MysqlXADataSource` class of `com.mysql:mysql-connector-j:9.0.0` as an example,
 which is the implementation of `javax.sql.XADataSource` of MySQL JDBC Driver.
-Users need to define the following JSON in the `reflect-config.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their own project's claapath,
+Users need to define the following JSON in the `reachability-metadata.json` file in the `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` folder of their own project's claapath,
 to define the constructor of `com.mysql.cj.jdbc.MysqlXADataSource` inside the GraalVM Native Image.
 
 ```json
@@ -369,8 +369,8 @@ Assuming that the contributor is under a new Ubuntu 22.04.4 LTS instance, Contri
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.2-graalce
-sdk use java 22.0.2-graalce
+sdk install java 23.0.2-graalce
+sdk use java 23.0.2-graalce
 sudo apt-get install build-essential zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git
@@ -405,31 +405,30 @@ contributors should place it on the classpath of the `shardingsphere-test-native
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e -T 1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -e -T 1C clean test native:metadata-copy
 ```
 
 Affected by https://github.com/apache/shardingsphere/issues/33206 ,
-After the contributor executes `./mvnw -PgenerateMetadata -DskipNativeTests -T 1C -e clean test native:metadata-copy`,
-`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` will generate unnecessary JSON entries containing absolute paths,
+After the contributor executes `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy`,
+`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/reachability-metadata.json` will generate unnecessary JSON entries containing absolute paths,
 similar to the following.
 
 ```json
 {
-   "resources":{
-      "includes":[{
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding/\\E"
-      }]},
-   "bundles":[]
+   "resources": [
+      {
+         "condition": {
+            "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+         },
+         "glob": "home/root/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql/"
+      },
+      {
+         "condition": {
+            "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+         },
+         "glob": "home/root/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql//global.yaml"
+      }
+   ]
 }
 ```
 

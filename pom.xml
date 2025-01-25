@@ -149,7 +149,7 @@
         <testcontainers.version>1.20.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>24.1.0</graal-sdk.version>
+        <graal-sdk.version>24.1.2</graal-sdk.version>
         <jedis.version>4.4.6</jedis.version>
         
         <!-- 3rd party library plugin versions -->
@@ -1065,6 +1065,7 @@
                             <version>${native-maven-plugin.version}</version>
                             <extensions>true</extensions>
                             <configuration>
+                                <skipNativeTests>true</skipNativeTests>
                                 <agent>
                                     <enabled>true</enabled>
                                     <defaultMode>Conditional</defaultMode>
@@ -1072,7 +1073,6 @@
                                         <conditional>
                                             <userCodeFilterPath>${user.dir}/test/native/native-image-filter/user-code-filter.json</userCodeFilterPath>
                                             <extraFilterPath>${user.dir}/test/native/native-image-filter/extra-filter.json</extraFilterPath>
-                                            <parallel>true</parallel>
                                         </conditional>
                                     </modes>
                                     <metadataCopy>
@@ -1128,8 +1128,10 @@
                                     <buildArg>-H:+AddAllCharsets</buildArg>
                                     <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                                     <buildArg>-H:ThrowMissingRegistrationErrors=</buildArg>
-                                    <buildArg>-H:MissingRegistrationReportingMode=Warn</buildArg>
                                 </buildArgs>
+                                <runtimeArgs>
+                                    <runtimeArg>-XX:MissingRegistrationReportingMode=Warn</runtimeArg>
+                                </runtimeArgs>
                                 <quickBuild>true</quickBuild>
                             </configuration>
                             <executions>
