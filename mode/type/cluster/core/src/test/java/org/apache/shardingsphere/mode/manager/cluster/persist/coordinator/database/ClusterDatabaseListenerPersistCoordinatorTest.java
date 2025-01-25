@@ -35,12 +35,12 @@ class ClusterDatabaseListenerPersistCoordinatorTest {
     @Test
     void assertPersist() {
         new ClusterDatabaseListenerPersistCoordinator(repository).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE.name());
+        verify(repository).persistEphemeral("/states/database_listener_coordinator/foo_db", ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE.name());
     }
     
     @Test
     void assertDelete() {
         new ClusterDatabaseListenerPersistCoordinator(repository).delete("foo_db");
-        verify(repository).delete("/states/listener_assisted/foo_db");
+        verify(repository).delete("/states/database_listener_coordinator/foo_db");
     }
 }
