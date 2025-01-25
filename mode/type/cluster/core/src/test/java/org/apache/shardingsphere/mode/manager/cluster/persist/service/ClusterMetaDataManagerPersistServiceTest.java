@@ -80,7 +80,6 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertDropDatabase() {
-        when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         metaDataManagerPersistService.dropDatabase("foo_db");
         verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
