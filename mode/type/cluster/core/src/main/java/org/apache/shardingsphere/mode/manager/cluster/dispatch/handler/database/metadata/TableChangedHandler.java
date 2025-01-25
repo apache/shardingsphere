@@ -62,7 +62,7 @@ public final class TableChangedHandler {
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = TableMetaDataNodePath.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, tableName, null);
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }

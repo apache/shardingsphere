@@ -94,7 +94,7 @@ class MetaDataChangedHandlerTest {
     @Test
     void assertHandleTableDropped() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", "foo_tbl", null);
+        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropTable("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
@@ -120,7 +120,7 @@ class MetaDataChangedHandlerTest {
     @Test
     void assertHandleViewDropped() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, "foo_view");
+        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropView("foo_db", "foo_schema", "foo_view");
     }
     
     @Test

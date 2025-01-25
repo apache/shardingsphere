@@ -62,7 +62,7 @@ public final class ViewChangedHandler {
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = ViewMetaDataNodePath.findViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, null, viewName);
+        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }
