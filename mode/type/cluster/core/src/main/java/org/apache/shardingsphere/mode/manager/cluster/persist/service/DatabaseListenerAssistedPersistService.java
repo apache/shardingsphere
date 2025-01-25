@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Database changed listener assisted persist service.
+ * Database listener assisted persist service.
  */
 @RequiredArgsConstructor
-public final class DatabaseChangedListenerAssistedPersistService {
+public final class DatabaseListenerAssistedPersistService {
     
     private final PersistRepository repository;
     
