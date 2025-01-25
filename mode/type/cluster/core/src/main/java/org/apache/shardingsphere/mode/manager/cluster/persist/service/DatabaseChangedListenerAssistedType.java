@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.database;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 /**
  * Database changed listener assisted type.

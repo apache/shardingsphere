@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedType;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.DatabaseChangedListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.DatabaseChangedListenerAssistedType;
 
 import java.util.Arrays;
 import java.util.Collection;
