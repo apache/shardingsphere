@@ -27,20 +27,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ListenerAssistedPersistServiceTest {
+class DatabaseChangedListenerAssistedPersistServiceTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PersistRepository repository;
     
     @Test
-    void assertPersistDatabaseNameListenerAssisted() {
-        new ListenerAssistedPersistService(repository).persistDatabaseNameListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE);
-        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", ListenerAssistedType.CREATE_DATABASE.name());
+    void assertPersist() {
+        new DatabaseChangedListenerAssistedPersistService(repository).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE);
+        verify(repository).persistEphemeral("/states/listener_assisted/foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE.name());
     }
     
     @Test
-    void assertDeleteDatabaseNameListenerAssisted() {
-        new ListenerAssistedPersistService(repository).deleteDatabaseNameListenerAssisted("foo_db");
+    void assertDelete() {
+        new DatabaseChangedListenerAssistedPersistService(repository).delete("foo_db");
         verify(repository).delete("/states/listener_assisted/foo_db");
     }
 }

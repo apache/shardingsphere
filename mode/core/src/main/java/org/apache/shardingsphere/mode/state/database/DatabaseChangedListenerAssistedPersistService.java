@@ -22,29 +22,29 @@ import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Listener assisted persist service.
+ * Database changed listener assisted persist service.
  */
 @RequiredArgsConstructor
-public final class ListenerAssistedPersistService {
+public final class DatabaseChangedListenerAssistedPersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Persist database name listener assisted.
+     * Persist database changed listener assisted state.
      *
      * @param databaseName database name
-     * @param listenerAssistedType listener assisted type
+     * @param databaseChangedListenerAssistedType database changed listener assisted type
      */
-    public void persistDatabaseNameListenerAssisted(final String databaseName, final ListenerAssistedType listenerAssistedType) {
-        repository.persistEphemeral(StatesNodePath.getListenerAssistedNodePath(databaseName), listenerAssistedType.name());
+    public void persist(final String databaseName, final DatabaseChangedListenerAssistedType databaseChangedListenerAssistedType) {
+        repository.persistEphemeral(StatesNodePath.getDatabaseChangedListenerAssistedNodePath(databaseName), databaseChangedListenerAssistedType.name());
     }
     
     /**
-     * Delete database name listener assisted.
+     * Delete database changed listener assisted state.
      *
      * @param databaseName database name
      */
-    public void deleteDatabaseNameListenerAssisted(final String databaseName) {
-        repository.delete(StatesNodePath.getListenerAssistedNodePath(databaseName));
+    public void delete(final String databaseName) {
+        repository.delete(StatesNodePath.getDatabaseChangedListenerAssistedNodePath(databaseName));
     }
 }

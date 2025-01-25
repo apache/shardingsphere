@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.state.node.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedPersistService;
 import org.apache.shardingsphere.mode.state.node.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.state.cluster.ClusterStatePersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -50,7 +50,7 @@ public final class PersistServiceFacade {
     
     private final ProcessPersistService processPersistService;
     
-    private final ListenerAssistedPersistService listenerAssistedPersistService;
+    private final DatabaseChangedListenerAssistedPersistService databaseChangedListenerAssistedPersistService;
     
     private final QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
     
@@ -63,7 +63,7 @@ public final class PersistServiceFacade {
         PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
         processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
-        listenerAssistedPersistService = new ListenerAssistedPersistService(repository);
+        databaseChangedListenerAssistedPersistService = new DatabaseChangedListenerAssistedPersistService(repository);
     }
     
     /**

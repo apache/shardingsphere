@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedType;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;
@@ -39,7 +39,7 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return StatesNodePath.getListenerAssistedNodeRootPath();
+        return StatesNodePath.getDatabaseChangedListenerAssistedNodeRootPath();
     }
     
     @Override
@@ -49,19 +49,19 @@ public final class ListenerAssistedChangedHandler implements DataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatesNodePath.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ListenerAssistedType.valueOf(event.getValue())));
+        StatesNodePath.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, DatabaseChangedListenerAssistedType.valueOf(event.getValue())));
     }
     
-    private static void handle(final ContextManager contextManager, final String databaseName, final ListenerAssistedType listenerAssistedType) {
+    private static void handle(final ContextManager contextManager, final String databaseName, final DatabaseChangedListenerAssistedType databaseChangedListenerAssistedType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        if (ListenerAssistedType.CREATE_DATABASE == listenerAssistedType) {
+        if (DatabaseChangedListenerAssistedType.CREATE_DATABASE == databaseChangedListenerAssistedType) {
             repository.watch(DatabaseMetaDataNodePath.getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addDatabase(databaseName);
-        } else if (ListenerAssistedType.DROP_DATABASE == listenerAssistedType) {
+        } else if (DatabaseChangedListenerAssistedType.DROP_DATABASE == databaseChangedListenerAssistedType) {
             repository.removeDataListener(DatabaseMetaDataNodePath.getDatabasePath(databaseName));
             contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropDatabase(databaseName);
         }
-        contextManager.getPersistServiceFacade().getListenerAssistedPersistService().deleteDatabaseNameListenerAssisted(databaseName);
+        contextManager.getPersistServiceFacade().getDatabaseChangedListenerAssistedPersistService().delete(databaseName);
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
             new StatisticsRefreshEngine(contextManager).asyncRefresh();
         }

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.database.ListenerAssistedPersistService;
-import org.apache.shardingsphere.mode.state.database.ListenerAssistedType;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedPersistService;
+import org.apache.shardingsphere.mode.state.database.DatabaseChangedListenerAssistedType;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     private MetaDataPersistService metaDataPersistService;
     
     @Mock
-    private ListenerAssistedPersistService listenerAssistedPersistService;
+    private DatabaseChangedListenerAssistedPersistService databaseChangedListenerAssistedPersistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContextManager metaDataContextManager;
@@ -67,21 +67,22 @@ class ClusterMetaDataManagerPersistServiceTest {
     void setUp() {
         metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, mock(PersistRepository.class));
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistService);
-        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("listenerAssistedPersistService"), metaDataManagerPersistService, listenerAssistedPersistService);
+        Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("databaseChangedListenerAssistedPersistService"),
+                metaDataManagerPersistService, databaseChangedListenerAssistedPersistService);
     }
     
     @Test
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(listenerAssistedPersistService).persistDatabaseNameListenerAssisted("foo_db", ListenerAssistedType.CREATE_DATABASE);
+        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.CREATE_DATABASE);
     }
     
     @Test
     void assertDropDatabase() {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         metaDataManagerPersistService.dropDatabase("foo_db");
-        verify(listenerAssistedPersistService).persistDatabaseNameListenerAssisted("foo_db", ListenerAssistedType.DROP_DATABASE);
+        verify(databaseChangedListenerAssistedPersistService).persist("foo_db", DatabaseChangedListenerAssistedType.DROP_DATABASE);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
     }
     

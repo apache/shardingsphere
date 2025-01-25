@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mode.state.database;
 
 /**
- * Listener assisted type.
+ * Database changed listener assisted type.
  */
-public enum ListenerAssistedType {
+public enum DatabaseChangedListenerAssistedType {
     
+    // TODO rename to CREATE and DROP after meta data compatible complete @haoran
     CREATE_DATABASE, DROP_DATABASE
 }
