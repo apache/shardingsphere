@@ -22,6 +22,5 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.datab
  */
 public enum ClusterDatabaseListenerCoordinatorType {
     
-    // TODO rename to CREATE and DROP after meta data compatible complete @haoran
-    CREATE_DATABASE, DROP_DATABASE
+    CREATE, DROP
 }

@@ -73,13 +73,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
-        clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         String droppedDatabaseName = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        clusterDatabaseListenerPersistCoordinator.persist(droppedDatabaseName, ClusterDatabaseListenerCoordinatorType.DROP_DATABASE);
+        clusterDatabaseListenerPersistCoordinator.persist(droppedDatabaseName, ClusterDatabaseListenerCoordinatorType.DROP);
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(droppedDatabaseName);
     }
     
