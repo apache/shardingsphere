@@ -34,8 +34,7 @@ public final class StatesNodePath {
     
     private static final String CLUSTER_STATE_NODE = "cluster_state";
     
-    // TODO rename value to database_changed_listener_assisted after meta data compatible complete @haoran
-    private static final String DATABASE_CHANGED_LISTENER_ASSISTED_NODE = "listener_assisted";
+    private static final String DATABASE_LISTENER_COORDINATOR_NODE = "database_listener_coordinator";
     
     private static final String DATABASE_PATTERN = "(\\w+)";
     
@@ -49,33 +48,33 @@ public final class StatesNodePath {
     }
     
     /**
-     * Get database changed listener assisted node root path.
+     * Get database listener coordinator node root path.
      *
-     * @return database changed listener assisted node root path
+     * @return database listener coordinator node root path
      */
-    public static String getDatabaseChangedListenerAssistedNodeRootPath() {
-        return String.join("/", ROOT_NODE, DATABASE_CHANGED_LISTENER_ASSISTED_NODE);
+    public static String getDatabaseListenerCoordinatorNodeRootPath() {
+        return String.join("/", ROOT_NODE, DATABASE_LISTENER_COORDINATOR_NODE);
     }
     
     /**
-     * Get database changed listener assisted node path.
+     * Get database listener coordinator node path.
      *
      * @param databaseName database name
-     * @return database changed listener assisted node path
+     * @return database listener coordinator node path
      */
-    public static String getDatabaseChangedListenerAssistedNodePath(final String databaseName) {
-        return String.join("/", getDatabaseChangedListenerAssistedNodeRootPath(), databaseName);
+    public static String getDatabaseListenerCoordinatorNodePath(final String databaseName) {
+        return String.join("/", getDatabaseListenerCoordinatorNodeRootPath(), databaseName);
     }
     
     /**
-     * Find database name by changed listener assisted node path.
+     * Find database name by database listener coordinator node path.
      *
-     * @param databaseChangedListenerAssistedNodePath database changed listener assisted node path
+     * @param databaseListenerCoordinatorNodePath database listener coordinator node path
      * @return found database name
      */
-    public static Optional<String> findDatabaseName(final String databaseChangedListenerAssistedNodePath) {
-        Pattern pattern = Pattern.compile(getDatabaseChangedListenerAssistedNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(databaseChangedListenerAssistedNodePath);
+    public static Optional<String> findDatabaseName(final String databaseListenerCoordinatorNodePath) {
+        Pattern pattern = Pattern.compile(getDatabaseListenerCoordinatorNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(databaseListenerCoordinatorNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

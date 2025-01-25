@@ -40,7 +40,7 @@ public final class DatabaseListenerChangedHandler implements DataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return StatesNodePath.getDatabaseChangedListenerAssistedNodeRootPath();
+        return StatesNodePath.getDatabaseListenerCoordinatorNodeRootPath();
     }
     
     @Override

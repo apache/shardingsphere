@@ -33,18 +33,18 @@ class StatesNodePathTest {
     }
     
     @Test
-    void assertGetDatabaseChangedListenerAssistedNodeRootPath() {
-        assertThat(StatesNodePath.getDatabaseChangedListenerAssistedNodeRootPath(), is("/states/listener_assisted"));
+    void assertGetDatabaseListenerCoordinatorNodeRootPath() {
+        assertThat(StatesNodePath.getDatabaseListenerCoordinatorNodeRootPath(), is("/states/database_listener_coordinator"));
     }
     
     @Test
-    void assertGetDatabaseChangedListenerAssistedNodePath() {
-        assertThat(StatesNodePath.getDatabaseChangedListenerAssistedNodePath("foo_db"), is("/states/listener_assisted/foo_db"));
+    void assertGetDatabaseListenerCoordinatorNodePath() {
+        assertThat(StatesNodePath.getDatabaseListenerCoordinatorNodePath("foo_db"), is("/states/database_listener_coordinator/foo_db"));
     }
     
     @Test
     void assertFindDatabaseName() {
-        assertThat(StatesNodePath.findDatabaseName("/states/listener_assisted/foo_db"), is(Optional.of("foo_db")));
-        assertFalse(StatesNodePath.findDatabaseName("/states/listener_assisted").isPresent());
+        assertThat(StatesNodePath.findDatabaseName("/states/database_listener_coordinator/foo_db"), is(Optional.of("foo_db")));
+        assertFalse(StatesNodePath.findDatabaseName("/states/database_listener_coordinator").isPresent());
     }
 }
