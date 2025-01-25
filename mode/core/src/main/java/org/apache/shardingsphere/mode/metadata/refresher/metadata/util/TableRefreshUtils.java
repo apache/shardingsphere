@@ -79,7 +79,7 @@ public final class TableRefreshUtils {
      */
     public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
         for (SimpleTableSegment each : tableSegments) {
-            if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
+            if (isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
                 return true;
             }
         }
