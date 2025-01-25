@@ -34,9 +34,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Database changed listener assisted changed handler.
+ * Database listener changed handler.
  */
-public final class DatabaseChangedListenerAssistedChangedHandler implements DataChangedEventHandler {
+public final class DatabaseListenerChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

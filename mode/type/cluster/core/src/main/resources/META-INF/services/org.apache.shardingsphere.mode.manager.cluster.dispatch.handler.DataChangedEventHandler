@@ -22,6 +22,6 @@ org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.ComputeNo
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.ShardingSphereStatisticsChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalRuleChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.PropertiesChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DatabaseChangedListenerAssistedChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DatabaseListenerChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.ShowProcessListHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.KillProcessHandler
