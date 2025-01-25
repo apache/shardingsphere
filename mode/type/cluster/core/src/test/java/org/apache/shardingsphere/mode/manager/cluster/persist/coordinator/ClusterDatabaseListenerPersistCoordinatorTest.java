@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.service;
+package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
 
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.ClusterDatabaseListenerPersistCoordinator;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.DatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
