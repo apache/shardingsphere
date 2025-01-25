@@ -45,7 +45,6 @@ public final class SchemaChangedHandler {
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    
     /**
      * Handle schema dropped.
      *
