@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * ShardingSphere statistics changed handler.
+ * Statistics changed handler.
  */
-public final class ShardingSphereStatisticsChangedHandler implements DataChangedEventHandler {
+public final class StatisticsChangedHandler implements DataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

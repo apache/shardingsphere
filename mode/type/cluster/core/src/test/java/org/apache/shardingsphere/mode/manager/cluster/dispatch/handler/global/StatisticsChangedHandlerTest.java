@@ -37,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingSphereStatisticsChangedHandlerTest {
+class StatisticsChangedHandlerTest {
     
     private DataChangedEventHandler handler;
     
