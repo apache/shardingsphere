@@ -56,8 +56,8 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -243,6 +243,10 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
                 : advancedExecutors.iterator().next().execute(executionContext, contextManager, database, this);
+        if (isNeedImplicitCommit(queryContext.getSqlStatementContext())) {
+            BackendTransactionManager transactionManager = new BackendTransactionManager(databaseConnectionManager);
+            transactionManager.commit();
+        }
         pushDownMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
