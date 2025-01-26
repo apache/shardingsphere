@@ -208,8 +208,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        database.dropSchema(schemaName);
         Collection<String> tobeRemovedTables = database.getSchema(schemaName).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet());
+        database.dropSchema(schemaName);
         removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singleton(schemaName.toLowerCase()), tobeRemovedTables);
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
