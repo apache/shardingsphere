@@ -224,7 +224,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
-        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
+        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     

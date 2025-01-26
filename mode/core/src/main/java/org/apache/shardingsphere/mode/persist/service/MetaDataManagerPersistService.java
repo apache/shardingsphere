@@ -93,9 +93,8 @@ public interface MetaDataManagerPersistService {
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table
-     * @param logicDataSourceName logic data source name
      */
-    void createTable(String databaseName, String schemaName, ShardingSphereTable table, String logicDataSourceName);
+    void createTable(String databaseName, String schemaName, ShardingSphereTable table);
     
     /**
      * Drop tables.

@@ -184,7 +184,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateTable() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table, "foo_ds");
+        metaDataManagerPersistService.createTable("foo_db", "foo_schema", table);
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     

@@ -57,7 +57,7 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual table metadata '%s' failed.", tableName);
-        metaDataManagerPersistService.createTable(database.getName(), schemaName, actualTableMetaData.get(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
+        metaDataManagerPersistService.createTable(database.getName(), schemaName, actualTableMetaData.get());
         if (isSingleTable && TableRefreshUtils.isNeedRefresh(ruleMetaData, schemaName, tableName)) {
             metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData);
         }
