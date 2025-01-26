@@ -75,21 +75,21 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void createDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
-        metaDataContextManager.getSchemaMetaDataManager().addDatabase(databaseName);
+        metaDataContextManager.getDatabaseMetaDataManager().addDatabase(databaseName);
         clearServiceCache();
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(databaseName);
-        metaDataContextManager.getSchemaMetaDataManager().dropDatabase(databaseName);
+        metaDataContextManager.getDatabaseMetaDataManager().dropDatabase(databaseName);
         clearServiceCache();
     }
     
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
-        metaDataContextManager.getSchemaMetaDataManager().addSchema(databaseName, schemaName);
+        metaDataContextManager.getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
     }
     
     @Override

@@ -36,10 +36,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Schema meta data manager.
+ * Database meta data manager.
  */
 @RequiredArgsConstructor
-public final class SchemaMetaDataManager {
+public final class DatabaseMetaDataManager {
     
     private final MetaDataContexts metaDataContexts;
     

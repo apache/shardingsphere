@@ -54,12 +54,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class SchemaMetaDataManagerTest {
+class DatabaseMetaDataManagerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
-    private SchemaMetaDataManager schemaMetaDataManager;
+    private DatabaseMetaDataManager databaseMetaDataManager;
     
     @BeforeEach
     void setUp() {
@@ -67,7 +67,7 @@ class SchemaMetaDataManagerTest {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
-        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, mock(MetaDataPersistService.class));
+        databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, mock(MetaDataPersistService.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -80,14 +80,14 @@ class SchemaMetaDataManagerTest {
     
     @Test
     void assertAddNotExistedDatabase() {
-        schemaMetaDataManager.addDatabase("new_db");
+        databaseMetaDataManager.addDatabase("new_db");
         verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
     @Test
     void assertAddExistedDatabase() {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        schemaMetaDataManager.addDatabase("foo_db");
+        databaseMetaDataManager.addDatabase("foo_db");
         verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class), any(ConfigurationProperties.class));
     }
     
@@ -95,38 +95,38 @@ class SchemaMetaDataManagerTest {
     void assertDropExistedDatabase() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        schemaMetaDataManager.dropDatabase("foo_db");
+        databaseMetaDataManager.dropDatabase("foo_db");
         verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
     }
     
     @Test
     void assertDropNotExistedDatabase() {
-        schemaMetaDataManager.dropDatabase("not_existed_db");
+        databaseMetaDataManager.dropDatabase("not_existed_db");
         verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("not_existed_db");
     }
     
     @Test
     void assertAddNotExistedSchema() {
-        schemaMetaDataManager.addSchema("foo_db", "bar_schema");
+        databaseMetaDataManager.addSchema("foo_db", "bar_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db")).addSchema(any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertAddExistedSchema() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
-        schemaMetaDataManager.addSchema("foo_db", "foo_schema");
+        databaseMetaDataManager.addSchema("foo_db", "foo_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertDropNotExistedSchema() {
-        schemaMetaDataManager.dropSchema("foo_db", "bar_schema");
+        databaseMetaDataManager.dropSchema("foo_db", "bar_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).dropSchema(anyString());
     }
     
     @Test
     void assertDropExistedSchema() {
-        schemaMetaDataManager.dropSchema("foo_db", "foo_schema");
+        databaseMetaDataManager.dropSchema("foo_db", "foo_schema");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db")).dropSchema("foo_schema");
     }
     
@@ -135,7 +135,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "bar_schema", null, null);
+        databaseMetaDataManager.alterSchema("foo_db", "bar_schema", null, null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
     }
     
@@ -144,7 +144,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, null);
+        databaseMetaDataManager.alterSchema("foo_db", "foo_schema", null, null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
     }
     
@@ -155,7 +155,7 @@ class SchemaMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false, true, false, false);
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", toBeChangedTable, null);
+        databaseMetaDataManager.alterSchema("foo_db", "foo_schema", toBeChangedTable, null);
         ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl");
         assertThat(table.getAllColumns().size(), is(1));
         assertTrue(table.containsColumn("foo_col"));
@@ -167,7 +167,7 @@ class SchemaMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         ShardingSphereView toBeChangedView = new ShardingSphereView("foo_view", "select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`");
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, toBeChangedView);
+        databaseMetaDataManager.alterSchema("foo_db", "foo_schema", null, toBeChangedView);
         ShardingSphereView view = metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getView("foo_view");
         assertThat(view.getName(), is("foo_view"));
         assertThat(view.getViewDefinition(), is("select `foo_view`.`foo_view`.`id` AS `id` from `foo_view`.`foo_view`"));
@@ -176,14 +176,14 @@ class SchemaMetaDataManagerTest {
     @Test
     void assertDropTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        schemaMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl");
+        databaseMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
     void assertDropView() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        schemaMetaDataManager.dropView("foo_db", "foo_schema", "foo_view");
+        databaseMetaDataManager.dropView("foo_db", "foo_schema", "foo_view");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
     }
     
