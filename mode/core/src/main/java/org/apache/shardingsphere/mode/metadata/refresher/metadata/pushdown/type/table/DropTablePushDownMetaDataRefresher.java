@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTab
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Drop table push down meta data refresher.
@@ -38,13 +37,13 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         boolean needRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
-        metaDataManagerPersistService.dropTables(database.getName(), schemaName, tableNames);
+        boolean isRefreshed = false;
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            if (needRefresh && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
+            metaDataManagerPersistService.dropTable(database.getName(), schemaName, each.getTableName().getIdentifier().getValue());
+            if (!isRefreshed && needRefresh && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
                 metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), database.getRuleMetaData());
-                break;
+                isRefreshed = true;
             }
         }
     }
