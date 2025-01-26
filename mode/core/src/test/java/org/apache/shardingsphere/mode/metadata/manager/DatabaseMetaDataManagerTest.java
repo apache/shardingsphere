@@ -135,7 +135,7 @@ class DatabaseMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        databaseMetaDataManager.alterTable("foo_db", "bar_schema", null);
+        databaseMetaDataManager.alterTable("foo_db", "bar_schema", mock());
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
     }
     
