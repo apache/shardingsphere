@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Database meta data manager.
@@ -104,39 +103,43 @@ public final class DatabaseMetaDataManager {
     }
     
     /**
-     * Alter schema.
+     * Alter table.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeChangedTable to be changed table
-     * @param toBeChangedView to be changed view
      */
-    public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable, final ShardingSphereView toBeChangedView) {
+    public synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
         if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
-        Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
-        Optional.ofNullable(toBeChangedView).ifPresent(optional -> alterView(databaseName, schemaName, optional));
-        if (null != toBeChangedTable || null != toBeChangedView) {
-            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-        }
-    }
-    
-    private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
+        if (TableRefreshUtils.isSingleTable(toBeChangedTable.getName(), database)) {
             database.reloadRules();
         }
-        database.getSchema(schemaName).putTable(beBoChangedTable);
+        database.getSchema(schemaName).putTable(toBeChangedTable);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
-    private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
+    /**
+     * Alter view.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param toBeChangedView to be changed view
+     */
+    public synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView toBeChangedView) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+        if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
+            return;
+        }
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
+        if (TableRefreshUtils.isSingleTable(toBeChangedView.getName(), database)) {
             database.reloadRules();
         }
-        database.getSchema(schemaName).putView(beBoChangedView);
+        database.getSchema(schemaName).putView(toBeChangedView);
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     /**
@@ -157,7 +160,7 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param toBeDroppedViewName to be dropped view name
      */
-    public void dropView(final String databaseName, final String schemaName, final String toBeDroppedViewName) {
+    public synchronized void dropView(final String databaseName, final String schemaName, final String toBeDroppedViewName) {
         dropTableOrView(databaseName, schemaName, toBeDroppedViewName, false);
     }
     

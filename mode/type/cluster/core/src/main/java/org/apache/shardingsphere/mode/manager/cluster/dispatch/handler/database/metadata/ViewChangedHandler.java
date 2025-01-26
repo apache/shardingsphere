@@ -49,7 +49,7 @@ public final class ViewChangedHandler {
         String viewName = ViewMetaDataNodePath.getViewNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterSchema(databaseName, schemaName, null, view);
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();
     }
     
