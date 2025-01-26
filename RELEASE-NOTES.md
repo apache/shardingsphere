@@ -6,16 +6,15 @@
 
 ### Enhancements
 
+1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
-1. Proxy Native: Add GraalVM Reachability Metadata and corresponding nativeTest for Firebird - [#34307](https://github.com/apache/shardingsphere/pull/34307)
-1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
 
 ### Bug Fixes
 
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
-2. Mode: Drop schema from repository for standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
-3. Mode: Fixes the exception of missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
+2. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
+3. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
 
 ### Change Logs
 
@@ -78,7 +77,6 @@
 1. Agent: Simplify the use of Agent's Docker Image - [#33356](https://github.com/apache/shardingsphere/pull/33356)
 1. Mode: Support modifying Hikari-CP configurations via props in standalone mode [#34185](https://github.com/apache/shardingsphere/pull/34185)
 1. Encrypt: Support insert statement rewrite use quote [#34259](https://github.com/apache/shardingsphere/pull/34259)
-1. Infra: Support connecting to Firebird via jdbcUrl containing the absolute path to fdb - [#34335](https://github.com/apache/shardingsphere/pull/34335)
 
 ### Bug Fixes
 
