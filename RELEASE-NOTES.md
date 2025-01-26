@@ -14,6 +14,8 @@
 ### Bug Fixes
 
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+2. Mode: Drop schema from repository for standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
+3. Mode: Fixes the exception of missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
 
 ### Change Logs
 
