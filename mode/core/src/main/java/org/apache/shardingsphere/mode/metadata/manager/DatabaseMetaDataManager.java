@@ -104,7 +104,7 @@ public final class DatabaseMetaDataManager {
     
     /**
      * Alter table.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeChangedTable to be changed table
@@ -124,7 +124,7 @@ public final class DatabaseMetaDataManager {
     
     /**
      * Alter view.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeChangedView to be changed view
