@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -33,7 +33,7 @@ import java.util.Collection;
 /**
  * Compute node state changed handler.
  */
-public final class ComputeNodeStateChangedHandler implements DataChangedEventHandler {
+public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

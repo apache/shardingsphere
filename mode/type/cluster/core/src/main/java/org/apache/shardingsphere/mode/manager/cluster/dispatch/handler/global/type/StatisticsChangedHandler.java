@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Statistics changed handler.
  */
-public final class StatisticsChangedHandler implements DataChangedEventHandler {
+public final class StatisticsChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

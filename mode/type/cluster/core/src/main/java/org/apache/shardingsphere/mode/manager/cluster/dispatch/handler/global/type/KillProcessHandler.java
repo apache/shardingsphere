@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * Kill process handler.
  */
-public final class KillProcessHandler implements DataChangedEventHandler {
+public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

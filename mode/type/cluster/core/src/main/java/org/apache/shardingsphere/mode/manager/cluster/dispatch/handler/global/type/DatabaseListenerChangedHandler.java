@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
@@ -36,7 +36,7 @@ import java.util.Collection;
 /**
  * Database listener changed handler.
  */
-public final class DatabaseListenerChangedHandler implements DataChangedEventHandler {
+public final class DatabaseListenerChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

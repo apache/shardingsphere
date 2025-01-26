@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.state.cluster.ClusterState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,14 +35,14 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ClusterStateChangedHandlerTest {
     
-    private DataChangedEventHandler handler;
+    private GlobalDataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+        handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
                 .filter(each -> each.getSubscribedKey().equals("/states/cluster_state")).findFirst().orElse(null);
     }
     

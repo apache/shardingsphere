@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.Collection;
 
 /**
- * Data changed event handler.
+ * Global data changed event handler.
  */
 @SingletonSPI
-public interface DataChangedEventHandler {
+public interface GlobalDataChangedEventHandler {
     
     /**
      * Get subscribed key.

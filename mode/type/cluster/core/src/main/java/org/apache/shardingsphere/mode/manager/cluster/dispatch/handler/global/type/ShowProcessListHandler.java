@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 /**
  * Show process list handler.
  */
-public final class ShowProcessListHandler implements DataChangedEventHandler {
+public final class ShowProcessListHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
