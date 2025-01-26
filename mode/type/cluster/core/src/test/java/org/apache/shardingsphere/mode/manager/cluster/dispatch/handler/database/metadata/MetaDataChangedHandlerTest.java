@@ -78,7 +78,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterTable("foo_db", "foo_schema", table);
     }
     
     @Test
@@ -88,7 +88,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterTable("foo_db", "foo_schema", table);
     }
     
     @Test
@@ -104,7 +104,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterView("foo_db", "foo_schema", view);
     }
     
     @Test
@@ -114,7 +114,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterView("foo_db", "foo_schema", view);
     }
     
     @Test
