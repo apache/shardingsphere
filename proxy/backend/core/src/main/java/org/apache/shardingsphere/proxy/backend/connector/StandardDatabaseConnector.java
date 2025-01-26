@@ -236,10 +236,6 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
                 : advancedExecutors.iterator().next().execute(executionContext, contextManager, database, this);
-        if (isNeedImplicitCommit(queryContext.getSqlStatementContext())) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(databaseConnectionManager);
-            transactionManager.commit();
-        }
         pushDownMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
