@@ -174,34 +174,16 @@ class SchemaMetaDataManagerTest {
     }
     
     @Test
-    void assertAlterNotExistedSchemaForTableDropped() {
-        ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "bar_schema", "", "");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
-    }
-    
-    @Test
-    void assertAlterSchemaForNothingTableDropped() {
-        ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "", "");
-        verify(metaDataContexts.getMetaData().getGlobalRuleMetaData(), times(0)).getRules();
-    }
-    
-    @Test
-    void assertAlterSchemaForTableDropped() {
+    void assertDropTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_tbl", null);
+        schemaMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
     }
     
     @Test
-    void assertAlterSchemaForViewDropped() {
+    void assertDropView() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", "foo_view", null);
+        schemaMetaDataManager.dropView("foo_db", "foo_schema", "foo_view");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
     }
     
