@@ -189,8 +189,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertDropTables() {
-        metaDataManagerPersistService.dropTables("foo_db", "foo_schema", Collections.singleton("foo_tbl"));
+    void assertDropTable() {
+        metaDataManagerPersistService.dropTable("foo_db", "foo_schema", "foo_tbl");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
     }
 }

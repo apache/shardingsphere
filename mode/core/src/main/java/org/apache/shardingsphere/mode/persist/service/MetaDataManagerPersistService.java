@@ -101,9 +101,9 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param tableNames table names
+     * @param tableName table name
      */
-    void dropTables(String databaseName, String schemaName, Collection<String> tableNames);
+    void dropTable(String databaseName, String schemaName, String tableName);
     
     /**
      * Register storage units.
