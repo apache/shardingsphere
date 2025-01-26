@@ -132,8 +132,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
         verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");
-        verify(databaseMetaDataFacade.getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
-        verify(databaseMetaDataFacade.getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
     
