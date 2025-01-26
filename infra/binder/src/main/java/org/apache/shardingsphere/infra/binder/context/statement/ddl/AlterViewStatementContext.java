@@ -22,9 +22,13 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -39,7 +43,7 @@ import java.util.Optional;
  * Alter view statement context.
  */
 @Getter
-public final class AlterViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class AlterViewStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -81,5 +85,20 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     @Override
     public AlterViewStatement getSqlStatement() {
         return (AlterViewStatement) super.getSqlStatement();
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getWhereSegments() : Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getColumnSegments() : Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getJoinConditions() : Collections.emptyList();
     }
 }

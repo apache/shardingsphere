@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <test-case sql="SELECT 1=1, 1!=1" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT 1=1, 1!=1, 1&gt;1, 1&lt;1, 1&gt;=1, 1&lt;=1" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE remark LIKE '%张%'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation" >
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT count(*) > 0 from t_order" db-types="MySQL" scenario-types="db_tbl_sql_federation" >
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO open this comment when refresh metadata support view without push down execute -->
+    <!--<test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_subquery_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="1201:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_aggregation_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_aggregation_view WHERE max_price = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="8200:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_union_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+    </test-case>-->
+
+    <test-case sql="SELECT type_datetime FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT result.max_datetime FROM (SELECT MAX(type_datetime) AS max_datetime FROM t_product_extend) result" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_bit FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_blob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_mediumblob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_longblob FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_binary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_varbinary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT type_bit, type_blob, type_mediumblob, type_longblob, type_binary, type_varbinary FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIT_COUNT(NULL)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO fix these three sql federation case before 5.5.2 release in #33385 -->
+    <!--<test-case sql="SELECT bit_count(123456), bit_count('123456'), bit_count('abcdefg'), BIT_COUNT('abcdef1234'), bit_count(''), bit_count(1 + 1)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT bit_count(type_int), bit_count(type_smallint), bit_count(type_decimal), bit_count(type_float), bit_count(type_double), bit_count(type_bit),
+                    bit_count(type_tinyint), bit_count(type_mediumint), bit_count(type_bigint), bit_count(type_date), bit_count(type_time), bit_count(type_datetime),
+                    bit_count(type_timestamp), bit_count(type_year), bit_count(type_char), bit_count(type_text), bit_count(type_varchar), bit_count(type_longtext),
+                    bit_count(type_longblob), bit_count(type_mediumtext), bit_count(type_mediumblob), bit_count(type_binary), bit_count(type_varbinary), bit_count(type_blob),
+                    bit_count(type_enum), bit_count(type_set), bit_count(type_json), bit_count(type_unsigned_int), bit_count(type_unsigned_bigint), bit_count(type_unsigned_tinyint),
+                    bit_count(type_unsigned_smallint), bit_count(type_unsigned_float), bit_count(type_unsigned_double), bit_count(type_unsigned_decimal) FROM t_product_extend" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT t4.order_id, t3.item_id, bit_count(t4.order_id), bit_count(t3.item_id), t2.* FROM t_product t1
+                    INNER JOIN (
+                                SELECT product_id, bit_count(type_int), bit_count(type_smallint), bit_count(type_decimal), bit_count(type_float),
+                                bit_count(type_double), bit_count(type_bit), bit_count(type_tinyint), bit_count(type_mediumint), bit_count(type_bigint),
+                                bit_count(type_date), bit_count(type_time), bit_count(type_datetime), bit_count(type_timestamp), bit_count(type_year),
+                                bit_count(type_char), bit_count(type_text), bit_count(type_varchar), bit_count(type_longtext), bit_count(type_longblob),
+                                bit_count(type_mediumtext), bit_count(type_mediumblob), bit_count(type_binary), bit_count(type_varbinary),
+                                bit_count(type_blob), bit_count(type_enum), bit_count(type_set), bit_count(type_json), bit_count(type_unsigned_int),
+                                bit_count(type_unsigned_bigint), bit_count(type_unsigned_tinyint), bit_count(type_unsigned_smallint), bit_count(type_unsigned_float),
+                                bit_count(type_unsigned_double), bit_count(type_unsigned_decimal) FROM t_product_extend
+                               ) t2 ON t1.product_id = t2.product_id
+                    INNER JOIN t_order_item t3 ON t2.product_id = t3.product_id INNER JOIN t_order t4 ON t4.order_id = t3.order_id order by t1.product_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>-->
+
+    <test-case sql="SELECT ATAN(1.0), ATAN(1), ATAN('1'), ATAN(1.0, 2.0), ATAN(1, 2), ATAN(1, 2.0), ATAN(-2, 2)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT ATAN2(1.0), ATAN2(1), ATAN2('1'), ATAN2(1.0, 2.0), ATAN2(1, 2.0), ATAN2(-2, 2)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT ATAN(res1.order_id), ATAN(res1.order_id, res2.item_id), ATAN2(res1.order_id), ATAN2(res1.order_id, res2.item_id)
+                    FROM (SELECT order_id FROM t_order limit 10) res1
+                    INNER JOIN (SELECT item_id, order_id FROM t_order_item limit 10) res2 ON res1.order_id = res2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT bin(2), bin(-2), BIN(2.5), BIN(-2.5), BIN('2.5'), BIN('-2.5'), BIN('123hello world'), BIN('-123hello world')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIN('18446744073709551615'), BIN('-9223372036854775808'), BIN('-18446744073709551615')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT t4.order_id, t3.item_id, bin(t4.order_id), bin(t3.item_id), t2.* FROM t_product t1
+                    INNER JOIN (
+                                SELECT product_id, bin(type_int), bin(type_smallint), bin(type_decimal), bin(type_float),
+                                bin(type_double), bin(type_bit), bin(type_tinyint), bin(type_mediumint), bin(type_bigint),
+                                bin(type_date), bin(type_time), bin(type_datetime), bin(type_timestamp), bin(type_year),
+                                bin(type_char), bin(type_text), bin(type_varchar), bin(type_longtext), bin(type_longblob),
+                                bin(type_mediumtext), bin(type_mediumblob), bin(type_binary), bin(type_varbinary),
+                                bin(type_blob), bin(type_enum), bin(type_set), bin(type_json), bin(type_unsigned_int),
+                                bin(type_unsigned_bigint), bin(type_unsigned_tinyint), bin(type_unsigned_smallint), bin(type_unsigned_float),
+                                bin(type_unsigned_double), bin(type_unsigned_decimal) FROM t_product_extend
+                               ) t2 ON t1.product_id = t2.product_id
+                    INNER JOIN t_order_item t3 ON t2.product_id = t3.product_id INNER JOIN t_order t4 ON t4.order_id = t3.order_id order by t1.product_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIN(NULL)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIN('')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIN(NULL), BIN(''), BIN(' ')" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT NOT 1, not 0, NOT null" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT NOT order_id FROM t_order" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT NOT (t1.order_id + t2.order_id) FROM t_order t1 INNER JOIN t_order_item t2 ON t1.order_id = t2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT BIN(NOT 1), NOT BIT_COUNT(0)" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+</e2e-test-cases>

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -128,12 +129,12 @@ class ProjectionsContextTest {
     }
     
     private AggregationProjection getAggregationProjection() {
-        return new AggregationProjection(AggregationType.COUNT, "(column)", new IdentifierValue("c"), mock(DatabaseType.class));
+        return new AggregationProjection(AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(column)"), new IdentifierValue("c"), mock(DatabaseType.class));
     }
     
     private AggregationDistinctProjection getAggregationDistinctProjection() {
         return new AggregationDistinctProjection(
-                0, 0, AggregationType.COUNT, "(DISTINCT column)", new IdentifierValue("c"), "column", mock(DatabaseType.class));
+                0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(DISTINCT column)"), new IdentifierValue("c"), "column", mock(DatabaseType.class));
     }
     
     @Test

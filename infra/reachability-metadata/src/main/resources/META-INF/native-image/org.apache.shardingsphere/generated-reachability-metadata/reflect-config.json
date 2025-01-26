@@ -4,6 +4,10 @@
   "name":"JdkLogger"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
+  "name":"JdkLogger"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
   "name":"[Lcom.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
 },
@@ -24,7 +28,7 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f8e2be1b4b0"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f7c3fdf9c28"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -72,11 +76,11 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.MetaDataContexts"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.version.MetaDataVersionPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -363,22 +367,22 @@
   "allDeclaredFields":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"java.lang.Object",
   "allDeclaredFields":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService"},
   "name":"java.lang.Object",
   "allDeclaredFields":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableRowDataPersistService"},
   "name":"java.lang.Object",
   "allDeclaredFields":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.state.node.ComputeNodePersistService"},
   "name":"java.lang.Object",
   "allDeclaredFields":true
 },
@@ -871,7 +875,7 @@
   "name":"org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getAuthenticators","parameterTypes":[] }, {"name":"getDefaultAuthenticator","parameterTypes":[] }, {"name":"getPrivilege","parameterTypes":[] }, {"name":"getUsers","parameterTypes":[] }]
@@ -1309,7 +1313,7 @@
   "name":"org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getProvider","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"isEnabled","parameterTypes":[] }]
@@ -1363,6 +1367,11 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm"},
   "name":"org.apache.shardingsphere.infra.algorithm.cryptographic.aes.AESCryptographicAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.algorithm.cryptographic.aes.AESCryptographicAlgorithm"},
+  "name":"org.apache.shardingsphere.infra.algorithm.cryptographic.aes.props.DefaultAESPropertiesProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -1695,27 +1704,23 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.state.node.ComputeNodePersistService"},
   "name":"org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAttribute","parameterTypes":[] }, {"name":"getDatabaseName","parameterTypes":[] }, {"name":"getVersion","parameterTypes":[] }, {"name":"setAttribute","parameterTypes":["java.lang.String"] }, {"name":"setDatabaseName","parameterTypes":["java.lang.String"] }, {"name":"setVersion","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.state.node.ComputeNodePersistService"},
   "name":"org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataBeanInfo"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.state.node.ComputeNodePersistService"},
   "name":"org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.MySQLShardingSphereStatisticsBuilder"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
-  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLShardingSphereStatisticsBuilder"
+  "name":"org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLStatisticsAppender"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder"},
@@ -1740,7 +1745,7 @@
   "queryAllPublicMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.service.unified.ComputeNodePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.state.node.ComputeNodePersistService"},
   "name":"org.apache.shardingsphere.infra.util.yaml.YamlConfiguration",
   "queryAllPublicMethods":true
 },
@@ -1810,10 +1815,15 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableRowDataPersistService"},
-  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableRowDataPersistService"},
+  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getRows","parameterTypes":[] }, {"name":"getUniqueKey","parameterTypes":[] }, {"name":"setRows","parameterTypes":["java.util.List"] }, {"name":"setUniqueKey","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
+  "methods":[{"name":"setNullable","parameterTypes":["boolean"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
@@ -1822,12 +1832,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
-  "methods":[{"name":"setNullable","parameterTypes":["boolean"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setNullable","parameterTypes":["boolean"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
@@ -1846,18 +1851,18 @@
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
+  "methods":[{"name":"setColumns","parameterTypes":["java.util.Collection"] }, {"name":"setUnique","parameterTypes":["boolean"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
-  "methods":[{"name":"setColumns","parameterTypes":["java.util.Collection"] }, {"name":"setUnique","parameterTypes":["boolean"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setUnique","parameterTypes":["boolean"] }]
@@ -1876,18 +1881,18 @@
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
+  "methods":[{"name":"setType","parameterTypes":["org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.factory.ExternalMetaDataFactory"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
-  "methods":[{"name":"setType","parameterTypes":["org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.metadata.table.TableMetaDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getConstraints","parameterTypes":[] }, {"name":"getIndexes","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setType","parameterTypes":["org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"] }]
@@ -1922,7 +1927,7 @@
   "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getAppenders","parameterTypes":[] }, {"name":"getLoggers","parameterTypes":[] }]
@@ -2161,55 +2166,55 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.AlterIndexStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.index.AlterIndexPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.CreateIndexStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.index.CreateIndexPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.index.DropIndexStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.index.DropIndexPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.AlterSchemaStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.schema.AlterSchemaPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.CreateSchemaStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.schema.CreateSchemaPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.schema.DropSchemaStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.schema.DropSchemaPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.AlterTableStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table.AlterTablePushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.CreateTableStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table.CreateTablePushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.DropTableStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table.DropTablePushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.table.RenameTableStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.table.RenameTablePushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.AlterViewStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.view.AlterViewPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.CreateViewStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.view.CreateViewPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mode.metadata.refresher.type.view.DropViewStatementSchemaRefresher"
+  "name":"org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type.view.DropViewPushDownMetaDataRefresher"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
@@ -2279,7 +2284,7 @@
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getParseTreeCache","parameterTypes":[] }, {"name":"getSqlStatementCache","parameterTypes":[] }]
@@ -3257,8 +3262,28 @@
   "name":"org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheLoader"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.firebird.parser.FirebirdLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.firebird.parser.FirebirdParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDDLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3419,6 +3444,26 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdInsertStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdSelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3616,7 +3661,7 @@
   "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getExecutionPlanCache","parameterTypes":[] }, {"name":"isAllQueryUseSQLFederation","parameterTypes":[] }, {"name":"isSqlFederationEnabled","parameterTypes":[] }]
@@ -3655,7 +3700,7 @@
   "name":"org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"isUseOriginalSQLWhenTranslatingFailed","parameterTypes":[] }]
@@ -3735,7 +3780,7 @@
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]

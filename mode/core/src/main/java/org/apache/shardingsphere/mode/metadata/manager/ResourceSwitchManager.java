@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class ResourceSwitchManager {
     
     /**
-     * switch resource by register storage unit.
+     * Switch resource by register storage unit.
      *
      * @param resourceMetaData resource meta data
      * @param toBeRegisteredProps to be registered storage unit grouped data source pool properties map
@@ -68,7 +68,7 @@ public final class ResourceSwitchManager {
     }
     
     /**
-     * switch resource by alter storage unit.
+     * Switch resource by alter storage unit.
      *
      * @param resourceMetaData resource meta data
      * @param toBeAlteredProps to be altered data source pool properties map
@@ -103,7 +103,7 @@ public final class ResourceSwitchManager {
     }
     
     /**
-     * switch resource by unregister storage unit.
+     * Switch resource by unregister storage unit.
      *
      * @param resourceMetaData resource meta data
      * @param storageUnitNames storage unit names
@@ -114,12 +114,15 @@ public final class ResourceSwitchManager {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         SwitchingResource result = new SwitchingResource(Collections.emptyMap(),
                 getToBeRemovedStaleDataSource(resourceMetaData, storageUnitNames), storageUnitNames, mergedDataSourcePoolPropertiesMap);
-        removeToBeRemovedStorageUnitNames(resourceMetaData, mergedDataSourcePoolPropertiesMap, storageUnitNames);
+        for (String each : storageUnitNames) {
+            mergedDataSourcePoolPropertiesMap.remove(each);
+            resourceMetaData.getStorageUnits().remove(each);
+        }
         return result;
     }
     
     /**
-     * create switching resource by unregister storage unit.
+     * Create switching resource by unregister storage unit.
      *
      * @param resourceMetaData resource meta data
      * @param storageUnitNames storage unit names
@@ -129,8 +132,7 @@ public final class ResourceSwitchManager {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         storageUnitNames.forEach(mergedDataSourcePoolPropertiesMap::remove);
-        return new SwitchingResource(Collections.emptyMap(),
-                getToBeRemovedStaleDataSource(resourceMetaData, storageUnitNames), storageUnitNames, mergedDataSourcePoolPropertiesMap);
+        return new SwitchingResource(Collections.emptyMap(), getToBeRemovedStaleDataSource(resourceMetaData, storageUnitNames), storageUnitNames, mergedDataSourcePoolPropertiesMap);
     }
     
     private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
@@ -157,13 +159,5 @@ public final class ResourceSwitchManager {
     
     private boolean isStorageNodeInUsed(final Map<String, StorageUnit> reservedStorageUnits, final StorageNode storageNode) {
         return reservedStorageUnits.values().stream().anyMatch(each -> each.getStorageNode().equals(storageNode));
-    }
-    
-    private void removeToBeRemovedStorageUnitNames(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap,
-                                                   final Collection<String> storageUnitNames) {
-        for (String each : storageUnitNames) {
-            dataSourcePoolPropsMap.remove(each);
-            resourceMetaData.getStorageUnits().remove(each);
-        }
     }
 }

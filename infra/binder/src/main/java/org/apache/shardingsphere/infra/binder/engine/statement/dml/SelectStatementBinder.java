@@ -72,7 +72,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
                 GroupBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
                 OrderBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
-        sqlStatement.getHaving().ifPresent(optional -> result.setHaving(HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, outerTableBinderContexts)));
+        sqlStatement.getHaving().ifPresent(optional -> result.setHaving(
+                HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
     

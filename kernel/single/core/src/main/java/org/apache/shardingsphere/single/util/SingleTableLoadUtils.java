@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.util;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.single.constant.SingleTableConstants;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +49,7 @@ public final class SingleTableLoadUtils {
      * @return excluded tables
      */
     public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new CaseInsensitiveSet<>();
         for (ShardingSphereRule each : builtRules) {
             Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
             if (ruleAttribute.isPresent()) {
@@ -67,7 +67,7 @@ public final class SingleTableLoadUtils {
      * @return feature required single tables
      */
     public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new CaseInsensitiveSet<>();
         for (ShardingSphereRule each : builtRules) {
             Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
             if (!ruleAttribute.isPresent()) {

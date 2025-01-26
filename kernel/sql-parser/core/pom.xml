@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-core</artifactId>
     <name>${project.artifactId}</name>
@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mode-api</artifactId>
+            <artifactId>shardingsphere-mode-node</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

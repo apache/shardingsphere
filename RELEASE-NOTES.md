@@ -1,4 +1,26 @@
-## Release 5.5.2-SNAPSHOT
+## Release 5.5.3-SNAPSHOT
+
+### API Changes
+
+### New Features
+
+### Enhancements
+
+1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
+1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
+1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
+
+### Bug Fixes
+
+1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+2. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
+3. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/31)
+
+## Release 5.5.2
 
 ### API Changes
 

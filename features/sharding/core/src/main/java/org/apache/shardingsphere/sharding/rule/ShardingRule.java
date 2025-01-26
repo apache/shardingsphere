@@ -76,7 +76,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -331,8 +330,7 @@ public final class ShardingRule implements DatabaseRule {
         if (!bindingTableRule.isPresent()) {
             return false;
         }
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(bindingTableRule.get().getAllLogicTables());
+        Collection<String> result = new CaseInsensitiveSet<>(bindingTableRule.get().getAllLogicTables());
         return !result.isEmpty() && result.containsAll(logicTableNames);
     }
     

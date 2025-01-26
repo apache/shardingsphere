@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone.persist.coordinator;
 
 import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Standalone persist coordinator facade builder.

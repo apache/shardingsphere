@@ -49,7 +49,7 @@ public final class EncryptInsertSelectProjectionTokenGenerator implements Collec
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        return new EncryptProjectionTokenGenerator(
-                previousSQLTokens, rule, sqlStatementContext.getDatabaseType()).generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
+        return new EncryptProjectionTokenGenerator(previousSQLTokens, sqlStatementContext.getDatabaseType(), rule)
+                .generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

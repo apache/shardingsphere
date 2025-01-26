@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.metadata.persist.node.metadata.DataSourceMetaDataNodePath;
-import org.apache.shardingsphere.mode.metadata.persist.node.metadata.TableMetaDataNodePath;
-import org.apache.shardingsphere.mode.metadata.persist.node.metadata.ViewMetaDataNodePath;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.SchemaChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DataSourceMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.TableMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;

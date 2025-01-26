@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service.metadata.database;
 
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

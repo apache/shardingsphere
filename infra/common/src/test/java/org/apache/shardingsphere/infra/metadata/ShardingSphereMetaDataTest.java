@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShardingSphereDatabase.class)
+@StaticMockSettings(ShardingSphereDatabaseFactory.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSphereMetaDataTest {
     
@@ -68,7 +69,7 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
         DatabaseType databaseType = mock(DatabaseType.class);
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
-        when(ShardingSphereDatabase.create("foo_db", databaseType, configProps)).thenReturn(database);
+        when(ShardingSphereDatabaseFactory.create("foo_db", databaseType, configProps)).thenReturn(database);
         Collection<ShardingSphereDatabase> databases = new LinkedList<>(Collections.singleton(database));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-database-type</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-database-firebird</artifactId>
     <name>${project.artifactId}</name>
@@ -31,6 +31,13 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-database-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>

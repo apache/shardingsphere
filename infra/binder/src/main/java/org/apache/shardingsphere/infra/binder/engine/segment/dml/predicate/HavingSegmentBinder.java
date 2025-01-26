@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 
 /**
@@ -38,14 +40,25 @@ public final class HavingSegmentBinder {
      *
      * @param segment having segment
      * @param binderContext SQL statement binder context
+     * @param currentTableBinderContexts current table binder contexts
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound having segment
      */
     public static HavingSegment bind(final HavingSegment segment, final SQLStatementBinderContext binderContext,
+                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        return new HavingSegment(segment.getStartIndex(), segment.getStopIndex(),
-                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts));
+        return new HavingSegment(segment.getStartIndex(), segment.getStopIndex(), bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, segment.getExpr()));
+    }
+    
+    private static ExpressionSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final ExpressionSegment expressionSegment) {
+        try {
+            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, currentTableBinderContexts, outerTableBinderContexts);
+        } catch (final ColumnNotFoundException ignored) {
+            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
     }
 }

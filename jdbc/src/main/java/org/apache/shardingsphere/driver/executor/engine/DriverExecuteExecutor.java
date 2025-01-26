@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -101,21 +101,17 @@ public final class DriverExecuteExecutor {
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
-        MetaDataRefreshEngine metaDataRefreshEngine = getMetaDataRefreshEngine(database);
-        if (sqlFederationEngine.enabled() && metaDataRefreshEngine.isFederation(queryContext.getSqlStatementContext())) {
-            metaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
+        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(
+                connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database);
+        if (sqlFederationEngine.enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
+            federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;
         }
         if (transactionExecutor.decide(queryContext)) {
             return transactionExecutor.execute((TCLStatement) queryContext.getSqlStatementContext().getSqlStatement());
         }
-        ExecutionContext executionContext =
-                new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
         return executePushDown(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
-    }
-    
-    private MetaDataRefreshEngine getMetaDataRefreshEngine(final ShardingSphereDatabase database) {
-        return new MetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps());
     }
     
     @SuppressWarnings("rawtypes")

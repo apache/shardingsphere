@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <test-case sql="SELECT 1 FROM dual" db-types="MySQL,SQLServer,Oracle,H2" smoke="true" scenario-types="passthrough" >
+        <assertion />
+    </test-case>
+
+    <test-case sql="SELECT 1 as a" db-types="PostgreSQL,openGauss" smoke="true" scenario-types="passthrough" >
+        <assertion />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_data_type_money" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val = ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.01:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val != ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: not equal operator">
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val &lt;= ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: less than or equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$122.99:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val &gt;= ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: greater than or equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.01:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val &lt; ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: less than operator">
+        <assertion parameters="$122.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT val &gt; ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: greater than operator">
+        <assertion parameters="$122.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_data_type_date WHERE id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for MySQL/PostgreSQL/openGauss date type">
+        <assertion parameters="1:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+</e2e-test-cases>
