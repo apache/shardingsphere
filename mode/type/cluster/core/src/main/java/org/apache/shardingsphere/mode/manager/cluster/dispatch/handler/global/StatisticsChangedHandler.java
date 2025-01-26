@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.DatabaseDataManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public final class StatisticsChangedHandler implements DataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        ShardingSphereDatabaseDataManager databaseManager = contextManager.getMetaDataContextManager().getDatabaseManager();
+        DatabaseDataManager databaseManager = contextManager.getMetaDataContextManager().getDatabaseManager();
         Optional<String> databaseName = ShardingSphereStatisticsNodePath.findDatabaseName(event.getKey(), false);
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
@@ -82,7 +82,7 @@ public final class StatisticsChangedHandler implements DataChangedEventHandler {
         }
     }
     
-    private void handleDatabaseChanged(final ShardingSphereDatabaseDataManager databaseManager, final Type type, final String databaseName) {
+    private void handleDatabaseChanged(final DatabaseDataManager databaseManager, final Type type, final String databaseName) {
         switch (type) {
             case ADDED:
             case UPDATED:
@@ -95,7 +95,7 @@ public final class StatisticsChangedHandler implements DataChangedEventHandler {
         }
     }
     
-    private void handleSchemaChanged(final ShardingSphereDatabaseDataManager databaseManager, final Type type, final String databaseName, final String schemaName) {
+    private void handleSchemaChanged(final DatabaseDataManager databaseManager, final Type type, final String databaseName, final String schemaName) {
         switch (type) {
             case ADDED:
             case UPDATED:
@@ -108,7 +108,7 @@ public final class StatisticsChangedHandler implements DataChangedEventHandler {
         }
     }
     
-    private void handleTableChanged(final ShardingSphereDatabaseDataManager databaseManager, final Type type, final String databaseName, final String schemaName, final String tableName) {
+    private void handleTableChanged(final DatabaseDataManager databaseManager, final Type type, final String databaseName, final String schemaName, final String tableName) {
         switch (type) {
             case ADDED:
             case UPDATED:
@@ -121,7 +121,7 @@ public final class StatisticsChangedHandler implements DataChangedEventHandler {
         }
     }
     
-    private void handleRowDataChanged(final ShardingSphereDatabaseDataManager databaseManager, final Type type, final String eventValue,
+    private void handleRowDataChanged(final DatabaseDataManager databaseManager, final Type type, final String eventValue,
                                       final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
         if ((Type.ADDED == type || Type.UPDATED == type) && !Strings.isNullOrEmpty(eventValue)) {
             databaseManager.alterShardingSphereRowData(databaseName, schemaName, tableName, YamlEngine.unmarshal(eventValue, YamlRowStatistics.class));

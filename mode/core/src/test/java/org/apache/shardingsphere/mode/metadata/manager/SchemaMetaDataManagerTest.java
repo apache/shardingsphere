@@ -135,7 +135,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "bar_schema", null, (ShardingSphereView) null);
+        schemaMetaDataManager.alterSchema("foo_db", "bar_schema", null, null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
     }
     
@@ -144,7 +144,7 @@ class SchemaMetaDataManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, (ShardingSphereView) null);
+        schemaMetaDataManager.alterSchema("foo_db", "foo_schema", null, null);
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).getSchema(any());
     }
     

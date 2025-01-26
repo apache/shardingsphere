@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManage
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
-import org.apache.shardingsphere.mode.metadata.manager.ShardingSphereDatabaseDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.DatabaseDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -58,7 +58,7 @@ public class MetaDataContextManager {
     
     private final MetaDataPersistService metaDataPersistService;
     
-    private final ShardingSphereDatabaseDataManager databaseManager;
+    private final DatabaseDataManager databaseManager;
     
     private final SchemaMetaDataManager schemaMetaDataManager;
     
@@ -77,7 +77,7 @@ public class MetaDataContextManager {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataPersistService = new MetaDataPersistService(repository);
         resourceSwitchManager = new ResourceSwitchManager();
-        databaseManager = new ShardingSphereDatabaseDataManager(metaDataContexts);
+        databaseManager = new DatabaseDataManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistService);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistService);
         schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, metaDataPersistService);

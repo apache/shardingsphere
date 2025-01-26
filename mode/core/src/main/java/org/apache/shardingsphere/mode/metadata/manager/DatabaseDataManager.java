@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ShardingSphere database data manager.
+ * Database data manager.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereDatabaseDataManager {
+public final class DatabaseDataManager {
     
     private final MetaDataContexts metaDataContexts;
     
