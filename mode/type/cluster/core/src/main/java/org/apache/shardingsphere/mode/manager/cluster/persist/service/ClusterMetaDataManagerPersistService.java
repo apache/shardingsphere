@@ -126,7 +126,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
+        for (String each : tableNames) {
+            metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each);
+        }
     }
     
     @SneakyThrows

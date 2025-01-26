@@ -222,11 +222,10 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void dropTables(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        tableNames.forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each));
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        removeTablesToDataNode(database, schemaName, tableNames);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        for (String each : tableNames) {
+            metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, each);
+            metaDataContextManager.getDatabaseMetaDataManager().dropTable(databaseName, schemaName, each);
+        }
     }
     
     @Override
