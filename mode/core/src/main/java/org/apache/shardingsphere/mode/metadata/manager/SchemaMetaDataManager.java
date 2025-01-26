@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Resource meta data manager.
+ * Schema meta data manager.
  */
 @RequiredArgsConstructor
 public final class SchemaMetaDataManager {
