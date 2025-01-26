@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
 import org.apache.shardingsphere.mode.state.cluster.ClusterState;
 
 import java.util.Arrays;

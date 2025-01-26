@@ -15,54 +15,54 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mode.node.path.metadata.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 
 /**
- * View changed handler.
+ * Table changed handler.
  */
-public final class ViewChangedHandler {
+public final class TableChangedHandler {
     
     private final ContextManager contextManager;
     
     private final StatisticsRefreshEngine statisticsRefreshEngine;
     
-    public ViewChangedHandler(final ContextManager contextManager) {
+    public TableChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
     /**
-     * Handle view created or altered.
+     * Handle table created or altered.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNodePath.getViewNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
+        String tableName = TableMetaDataNodePath.getTableNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
+        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
         statisticsRefreshEngine.asyncRefresh();
     }
     
     /**
-     * Handle view dropped.
+     * Handle table dropped.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = ViewMetaDataNodePath.findViewName(event.getKey()).orElseThrow(() -> new IllegalStateException("View name not found."));
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
+        String tableName = TableMetaDataNodePath.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }

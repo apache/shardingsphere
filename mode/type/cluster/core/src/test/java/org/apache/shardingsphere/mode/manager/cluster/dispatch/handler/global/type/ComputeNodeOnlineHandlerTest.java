@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,15 +30,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GlobalRuleChangedHandlerTest {
+class ComputeNodeOnlineHandlerTest {
     
     private DataChangedEventHandler handler;
     
@@ -48,28 +47,26 @@ class GlobalRuleChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
-                .filter(each -> each.getSubscribedKey().equals("/rules")).findFirst().orElse(null);
+                .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes/online")).findFirst().orElse(null);
     }
     
     @Test
-    void assertHandleWithInvalidEventKey() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+    void assertHandleWithInvalidInstanceOnlinePath() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/foo", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
+        verify(contextManager, times(0)).getComputeNodeInstanceContext();
     }
     
     @Test
-    void assertHandleWithEmptyRuleName() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+    void assertHandleWithInstanceOnlineEvent() {
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
+        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(any())).thenReturn(computeNodeInstance);
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
+        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);
     }
     
     @Test
-    void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version"))
-                .thenReturn("rule_value");
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
+    void assertHandleWithInstanceOfflineEvent() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
+        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).delete(any());
     }
 }
