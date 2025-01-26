@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.manager;
+package org.apache.shardingsphere.mode.manager.standalone.changed;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;

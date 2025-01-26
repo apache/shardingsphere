@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.metadata.manager.RuleItemChangedBuilder;
+import org.apache.shardingsphere.mode.manager.standalone.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
