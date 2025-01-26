@@ -101,7 +101,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNotEmptySchemaName() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        assertAlterSchemaName(schema);
+        when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
+        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema(), times(0)).add("foo_db", "bar_schema");
     }
     
@@ -109,16 +113,10 @@ class ClusterMetaDataManagerPersistServiceTest {
     void assertAlterEmptySchemaName() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.isEmpty()).thenReturn(true);
-        assertAlterSchemaName(schema);
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "bar_schema");
-    }
-    
-    private void assertAlterSchemaName(final ShardingSphereSchema schema) {
         when(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(schema);
         metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
-        verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
+        verify(metaDataPersistService.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "bar_schema");
     }
     
     @Test

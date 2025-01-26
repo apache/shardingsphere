@@ -111,12 +111,13 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterSchemaName(final String databaseName, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSphereSchema alteredSchema = database.getSchema(renameSchemaName);
-        if (alteredSchema.isEmpty()) {
+        ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        if (schema.isEmpty()) {
             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, renameSchemaName);
+        } else {
+            metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, renameSchemaName, schema.getAllTables());
+            metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, schema.getAllViews());
         }
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, renameSchemaName, alteredSchema.getAllTables());
-        metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, alteredSchema.getAllViews());
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
         putSchemaMetaData(database, schemaName, renameSchemaName, logicDataSourceName);
         removeSchemaMetaData(database, schemaName);
