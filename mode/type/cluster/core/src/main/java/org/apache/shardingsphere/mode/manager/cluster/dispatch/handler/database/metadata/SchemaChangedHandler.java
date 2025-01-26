@@ -41,7 +41,7 @@ public final class SchemaChangedHandler {
      * @param schemaName schema name
      */
     public void handleCreated(final String databaseName, final String schemaName) {
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().addSchema(databaseName, schemaName);
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }
     
@@ -52,7 +52,7 @@ public final class SchemaChangedHandler {
      * @param schemaName schema name
      */
     public void handleDropped(final String databaseName, final String schemaName) {
-        contextManager.getMetaDataContextManager().getSchemaMetaDataManager().dropSchema(databaseName, schemaName);
+        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }
 }

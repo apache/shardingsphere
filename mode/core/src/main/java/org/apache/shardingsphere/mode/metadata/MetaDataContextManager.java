@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfiguration
 import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
-import org.apache.shardingsphere.mode.metadata.manager.SchemaMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.DatabaseMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
@@ -60,7 +60,7 @@ public class MetaDataContextManager {
     
     private final StatisticsManager databaseManager;
     
-    private final SchemaMetaDataManager schemaMetaDataManager;
+    private final DatabaseMetaDataManager databaseMetaDataManager;
     
     private final RuleItemManager ruleItemManager;
     
@@ -80,7 +80,7 @@ public class MetaDataContextManager {
         databaseManager = new StatisticsManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistService);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistService);
-        schemaMetaDataManager = new SchemaMetaDataManager(metaDataContexts, metaDataPersistService);
+        databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistService);
         ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistService);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistService);
     }

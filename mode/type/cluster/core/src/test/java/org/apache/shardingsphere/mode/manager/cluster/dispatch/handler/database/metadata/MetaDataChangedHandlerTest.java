@@ -61,14 +61,14 @@ class MetaDataChangedHandlerTest {
     void assertHandleSchemaCreated() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addSchema("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).addSchema("foo_db", "foo_schema");
     }
     
     @Test
     void assertHandleSchemaDropped() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropSchema("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropSchema("foo_db", "foo_schema");
     }
     
     @Test
@@ -78,7 +78,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
     }
     
     @Test
@@ -88,13 +88,13 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl"))
                 .thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version/0", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", table, null);
     }
     
     @Test
     void assertHandleTableDropped() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropTable("foo_db", "foo_schema", "foo_tbl");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropTable("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
@@ -104,7 +104,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
     }
     
     @Test
@@ -114,13 +114,13 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
                 .thenReturn(view);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version/0", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterSchema("foo_db", "foo_schema", null, view);
     }
     
     @Test
     void assertHandleViewDropped() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropView("foo_db", "foo_schema", "foo_view");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropView("foo_db", "foo_schema", "foo_view");
     }
     
     @Test

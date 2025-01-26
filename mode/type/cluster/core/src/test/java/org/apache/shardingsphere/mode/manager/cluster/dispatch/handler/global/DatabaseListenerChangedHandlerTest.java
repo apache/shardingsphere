@@ -71,7 +71,7 @@ class DatabaseListenerChangedHandlerTest {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.JDBC);
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "CREATE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).addDatabase("foo_db");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).addDatabase("foo_db");
         verify(repository).delete(StatesNodePath.getDatabaseListenerCoordinatorNodePath("foo_db"));
     }
     
@@ -80,7 +80,7 @@ class DatabaseListenerChangedHandlerTest {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "DROP", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
-        verify(contextManager.getMetaDataContextManager().getSchemaMetaDataManager()).dropDatabase("foo_db");
+        verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropDatabase("foo_db");
         verify(repository).delete(StatesNodePath.getDatabaseListenerCoordinatorNodePath("foo_db"));
     }
 }

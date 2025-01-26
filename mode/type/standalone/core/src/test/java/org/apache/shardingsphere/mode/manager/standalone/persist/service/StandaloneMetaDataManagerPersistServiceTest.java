@@ -80,14 +80,14 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
-        verify(metaDataContextManager.getSchemaMetaDataManager()).addDatabase("foo_db");
+        verify(metaDataContextManager.getDatabaseMetaDataManager()).addDatabase("foo_db");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
     }
     
     @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase("foo_db");
-        verify(metaDataContextManager.getSchemaMetaDataManager()).dropDatabase("foo_db");
+        verify(metaDataContextManager.getDatabaseMetaDataManager()).dropDatabase("foo_db");
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
     }
     
