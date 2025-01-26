@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.GlobalRuleNodePath;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Global rule changed handler.
  */
-public final class GlobalRuleChangedHandler implements DataChangedEventHandler {
+public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

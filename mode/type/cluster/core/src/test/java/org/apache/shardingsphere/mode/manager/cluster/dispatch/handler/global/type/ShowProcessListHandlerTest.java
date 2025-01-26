@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
 class ShowProcessListHandlerTest {
     
-    private DataChangedEventHandler handler;
+    private GlobalDataChangedEventHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -54,7 +54,7 @@ class ShowProcessListHandlerTest {
     @BeforeEach
     void setUp() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
-        handler = ShardingSphereServiceLoader.getServiceInstances(DataChangedEventHandler.class).stream()
+        handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
                 .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes/show_process_list_trigger")).findFirst().orElse(null);
     }
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 /**
  *  Compute node online handler.
  */
-public final class ComputeNodeOnlineHandler implements DataChangedEventHandler {
+public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataS
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.DataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * Qualified data source changed handler.
  */
-public final class QualifiedDataSourceChangedHandler implements DataChangedEventHandler {
+public final class QualifiedDataSourceChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
