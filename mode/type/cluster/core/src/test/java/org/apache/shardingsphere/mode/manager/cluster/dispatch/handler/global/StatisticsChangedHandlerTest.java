@@ -91,13 +91,13 @@ class StatisticsChangedHandlerTest {
         YamlRowStatistics rowData = new YamlRowStatistics();
         rowData.setUniqueKey("1");
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).alterShardingSphereRowData(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), refEq(rowData));
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).alterRowStatistics(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), refEq(rowData));
     }
     
     @Test
     void assertHandleWithShardingSphereRowDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).deleteShardingSphereRowData("foo_db", "foo_schema", "foo_tbl", "1");
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).deleteRowStatistics("foo_db", "foo_schema", "foo_tbl", "1");
     }
     
     @Test
@@ -121,6 +121,6 @@ class StatisticsChangedHandlerTest {
     @Test
     void assertHandleWithMissedRowEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).alterShardingSphereRowData(any(), any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).alterRowStatistics(any(), any(), any(), any());
     }
 }

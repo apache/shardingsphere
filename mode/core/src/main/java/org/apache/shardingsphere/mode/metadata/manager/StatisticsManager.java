@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Database data manager.
+ * Statistics manager.
  */
 @RequiredArgsConstructor
-public final class DatabaseDataManager {
+public final class StatisticsManager {
     
     private final MetaDataContexts metaDataContexts;
     
@@ -120,14 +120,14 @@ public final class DatabaseDataManager {
     }
     
     /**
-     * Alter ShardingSphere row data.
+     * Alter row statistics.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @param yamlRowData yaml row data
+     * @param yamlRowData YAML row data
      */
-    public synchronized void alterShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final YamlRowStatistics yamlRowData) {
+    public synchronized void alterRowStatistics(final String databaseName, final String schemaName, final String tableName, final YamlRowStatistics yamlRowData) {
         if (!metaDataContexts.getStatistics().containsDatabaseStatistics(databaseName) || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).containsSchemaStatistics(schemaName)
                 || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).containsTableStatistics(tableName)) {
             return;
@@ -142,14 +142,14 @@ public final class DatabaseDataManager {
     }
     
     /**
-     * Delete ShardingSphere row data.
+     * Delete row statistics.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey row uniqueKey
      */
-    public synchronized void deleteShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
+    public synchronized void deleteRowStatistics(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
         if (!metaDataContexts.getStatistics().containsDatabaseStatistics(databaseName) || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).containsSchemaStatistics(schemaName)
                 || !metaDataContexts.getStatistics().getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).containsTableStatistics(tableName)) {
             return;
