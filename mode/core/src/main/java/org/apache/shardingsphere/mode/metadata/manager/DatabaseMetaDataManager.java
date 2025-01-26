@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /**
  * Database meta data manager.
@@ -107,19 +108,10 @@ public final class DatabaseMetaDataManager {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param toBeChangedTable to be changed table
+     * @param toBeAlteredTable to be altered table
      */
-    public synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
-        if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
-            return;
-        }
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(toBeChangedTable.getName(), database)) {
-            database.reloadRules();
-        }
-        database.getSchema(schemaName).putTable(toBeChangedTable);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+    public synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable toBeAlteredTable) {
+        alterTableOrView(databaseName, schemaName, toBeAlteredTable.getName(), schema -> schema.putTable(toBeAlteredTable));
     }
     
     /**
@@ -127,18 +119,22 @@ public final class DatabaseMetaDataManager {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param toBeChangedView to be changed view
+     * @param toBeAlteredView to be altered view
      */
-    public synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView toBeChangedView) {
+    public synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView toBeAlteredView) {
+        alterTableOrView(databaseName, schemaName, toBeAlteredView.getName(), schema -> schema.putView(toBeAlteredView));
+    }
+    
+    private void alterTableOrView(final String databaseName, final String schemaName, final String tableOrViewName, final Consumer<ShardingSphereSchema> alterAction) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
         if (!metaData.getDatabase(databaseName).containsSchema(schemaName)) {
             return;
         }
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        if (TableRefreshUtils.isSingleTable(toBeChangedView.getName(), database)) {
+        if (TableRefreshUtils.isSingleTable(tableOrViewName, database)) {
             database.reloadRules();
         }
-        database.getSchema(schemaName).putView(toBeChangedView);
+        alterAction.accept(database.getSchema(schemaName));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
