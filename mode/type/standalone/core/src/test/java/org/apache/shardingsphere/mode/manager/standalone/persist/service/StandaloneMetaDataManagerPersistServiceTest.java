@@ -113,7 +113,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
+        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
         verify(databaseMetaDataFacade.getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
@@ -130,7 +130,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
+        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }
