@@ -106,14 +106,14 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertAlterSchemaNameWithEmptyAlteredSchema() {
+    void assertRenameSchemaNameWithEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
+        metaDataManagerPersistService.renameSchema("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
         verify(databaseMetaDataFacade.getTable()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
         verify(databaseMetaDataFacade.getView()).persist(eq("foo_db"), eq("bar_schema"), anyCollection());
@@ -121,7 +121,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertAlterSchemaNameWithNotEmptyAlteredSchema() {
+    void assertRenameSchemaNameWithNotEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema"));
@@ -130,7 +130,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
-        metaDataManagerPersistService.alterSchemaName("foo_db", "foo_schema", "bar_schema", "foo_ds");
+        metaDataManagerPersistService.renameSchema("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");
         verify(databaseMetaDataFacade.getSchema()).drop("foo_db", "foo_schema");
     }

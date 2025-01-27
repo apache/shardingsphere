@@ -99,7 +99,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSchemaName(final String databaseName, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
+    public void renameSchema(final String databaseName, final String schemaName, final String renameSchemaName) {
         ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         if (schema.isEmpty()) {
             metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, renameSchemaName);

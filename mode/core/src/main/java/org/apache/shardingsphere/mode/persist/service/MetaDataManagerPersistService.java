@@ -70,14 +70,13 @@ public interface MetaDataManagerPersistService {
                      Collection<ShardingSphereTable> alteredTables, Collection<ShardingSphereView> alteredViews, Collection<String> droppedTables, Collection<String> droppedViews);
     
     /**
-     * Alter schema name.
+     * Rename schema.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param renameSchemaName rename schema name
-     * @param logicDataSourceName logic data source name
      */
-    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName);
+    void renameSchema(String databaseName, String schemaName, String renameSchemaName);
     
     /**
      * Drop schema.

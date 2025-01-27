@@ -40,8 +40,7 @@ public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaD
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        metaDataManagerPersistService.alterSchemaName(
-                database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
+        metaDataManagerPersistService.renameSchema(database.getName(), sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get());
     }
     
     @Override
