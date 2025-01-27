@@ -37,7 +37,7 @@ public interface GlobalRule extends ShardingSphereRule {
     }
     
     /**
-     * Global rule changed type enum.
+     * Global rule changed type.
      */
     enum GlobalRuleChangedType {
         

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-native</artifactId>
     <name>${project.artifactId}</name>
@@ -122,6 +122,11 @@
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-pool2</artifactId>
+                </exclusion>
+                <!-- See https://github.com/apache/incubator-seata/issues/7045 -->
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -232,6 +237,13 @@
             <artifactId>jetcd-test</artifactId>
             <version>${jetcd.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- See https://github.com/testcontainers/testcontainers-java/issues/8338 -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     

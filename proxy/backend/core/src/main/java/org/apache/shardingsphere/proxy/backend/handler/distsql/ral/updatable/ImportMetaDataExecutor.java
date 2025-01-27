@@ -47,6 +47,9 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
     }
     
     private String getMetaDataFromFile(final ImportMetaDataStatement sqlStatement) {
+        if (!sqlStatement.getFilePath().isPresent()) {
+            return "";
+        }
         File file = new File(sqlStatement.getFilePath().get());
         try {
             return FileUtils.readFileToString(file, Charset.defaultCharset());
