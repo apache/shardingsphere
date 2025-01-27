@@ -34,7 +34,7 @@ public final class StatesNodePath {
     
     private static final String CLUSTER_STATE_NODE = "cluster_state";
     
-    private static final String LISTENER_ASSISTED_NODE = "listener_assisted";
+    private static final String DATABASE_LISTENER_COORDINATOR_NODE = "database_listener_coordinator";
     
     private static final String DATABASE_PATTERN = "(\\w+)";
     
@@ -48,33 +48,33 @@ public final class StatesNodePath {
     }
     
     /**
-     * Get listener assisted node root path.
+     * Get database listener coordinator node root path.
      *
-     * @return listener assisted node root path
+     * @return database listener coordinator node root path
      */
-    public static String getListenerAssistedNodeRootPath() {
-        return String.join("/", ROOT_NODE, LISTENER_ASSISTED_NODE);
+    public static String getDatabaseListenerCoordinatorNodeRootPath() {
+        return String.join("/", ROOT_NODE, DATABASE_LISTENER_COORDINATOR_NODE);
     }
     
     /**
-     * Get database name listener assisted node path.
+     * Get database listener coordinator node path.
      *
      * @param databaseName database name
-     * @return database name listener assisted node path
+     * @return database listener coordinator node path
      */
-    public static String getListenerAssistedNodePath(final String databaseName) {
-        return String.join("/", getListenerAssistedNodeRootPath(), databaseName);
+    public static String getDatabaseListenerCoordinatorNodePath(final String databaseName) {
+        return String.join("/", getDatabaseListenerCoordinatorNodeRootPath(), databaseName);
     }
     
     /**
-     * Find database name by listener assisted node path.
+     * Find database name by database listener coordinator node path.
      *
-     * @param listenerAssistedNodePath listener assisted node path
+     * @param databaseListenerCoordinatorNodePath database listener coordinator node path
      * @return found database name
      */
-    public static Optional<String> findDatabaseName(final String listenerAssistedNodePath) {
-        Pattern pattern = Pattern.compile(getListenerAssistedNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(listenerAssistedNodePath);
+    public static Optional<String> findDatabaseName(final String databaseListenerCoordinatorNodePath) {
+        Pattern pattern = Pattern.compile(getDatabaseListenerCoordinatorNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(databaseListenerCoordinatorNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

@@ -340,7 +340,12 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                                                final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
             Connection connection = createConnection(databaseName, dataSourceName, dataSource, connectionContext.getTransactionContext());
-            methodInvocationRecorder.replay(connection);
+            try {
+                methodInvocationRecorder.replay(connection);
+            } catch (final SQLException ex) {
+                connection.close();
+                throw ex;
+            }
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {

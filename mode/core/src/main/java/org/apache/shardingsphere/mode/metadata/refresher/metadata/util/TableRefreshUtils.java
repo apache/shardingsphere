@@ -59,31 +59,26 @@ public final class TableRefreshUtils {
     }
     
     /**
-     * Judge whether single table.
+     * Judge whether to need refresh.
      *
      * @param tableName table name
      * @param database database
-     * @return whether single table
+     * @return need to refresh or not
      */
     public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
         return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class).stream().noneMatch(each -> each.getDistributedTableNames().contains(tableName));
     }
     
     /**
-     * Judge whether the rule need to be refreshed.
+     * Judge whether to need refresh.
      *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
      * @param tableSegments table segments
-     * @return whether the rule need to be refreshed
+     * @return need to refresh or not
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
+        return tableSegments.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue()));
     }
     
     /**
@@ -94,7 +89,7 @@ public final class TableRefreshUtils {
      * @param tableName table name
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         for (ShardingSphereRule each : ruleMetaData.getRules()) {
             each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class).ifPresent(optional -> rules.add(each));
