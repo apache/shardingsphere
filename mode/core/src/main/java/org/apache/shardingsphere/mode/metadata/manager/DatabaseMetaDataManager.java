@@ -100,6 +100,27 @@ public final class DatabaseMetaDataManager {
             return;
         }
         database.dropSchema(schemaName);
+        if (database.getSchema(schemaName).getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
+            database.reloadRules();
+        }
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+    }
+    
+    /**
+     * Rename schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param renamedSchemaName renamed schema name
+     */
+    public synchronized void renameSchema(final String databaseName, final String schemaName, final String renamedSchemaName) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
+        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews());
+        database.addSchema(renamedSchema);
+        database.dropSchema(schemaName);
+        database.reloadRules();
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
@@ -131,10 +152,10 @@ public final class DatabaseMetaDataManager {
             return;
         }
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        alterAction.accept(database.getSchema(schemaName));
         if (TableRefreshUtils.isSingleTable(tableOrViewName, database)) {
             database.reloadRules();
         }
-        alterAction.accept(database.getSchema(schemaName));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     

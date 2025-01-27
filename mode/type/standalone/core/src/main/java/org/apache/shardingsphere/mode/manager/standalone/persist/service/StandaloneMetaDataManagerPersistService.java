@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
@@ -52,7 +51,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Standalone meta data manager persist service.
@@ -118,18 +116,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, schema.getAllViews());
         }
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
-        renameSchemaMetaData(databaseName, schemaName, renameSchemaName);
-    }
-    
-    private void renameSchemaMetaData(final String databaseName, final String schemaName, final String renamedSchemaName) {
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews());
-        database.addSchema(renamedSchema);
-        database.dropSchema(schemaName);
-        database.reloadRules();
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaDataContextManager.getDatabaseMetaDataManager().renameSchema(databaseName, schemaName, renameSchemaName);
     }
     
     @Override
@@ -139,16 +126,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private void dropSchema(final String databaseName, final String schemaName) {
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        Collection<String> tobeRemovedTables = database.getSchema(schemaName).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toSet());
-        database.dropSchema(schemaName);
-        removeDataNode(database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class), Collections.singleton(schemaName.toLowerCase()), tobeRemovedTables);
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
-    }
-    
-    private void removeDataNode(final Collection<MutableDataNodeRuleAttribute> ruleAttributes, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {
-        tobeRemovedTables.forEach(each -> ruleAttributes.forEach(rule -> rule.remove(schemaNames, each)));
+        metaDataContextManager.getDatabaseMetaDataManager().dropSchema(databaseName, schemaName);
     }
     
     @Override
