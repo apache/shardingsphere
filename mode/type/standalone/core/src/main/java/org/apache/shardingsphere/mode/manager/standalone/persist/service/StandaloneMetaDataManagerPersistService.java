@@ -118,18 +118,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, schema.getAllViews());
         }
         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
-        renameSchemaMetaData(databaseName, schemaName, renameSchemaName);
-    }
-    
-    private void renameSchemaMetaData(final String databaseName, final String schemaName, final String renamedSchemaName) {
-        ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews());
-        database.addSchema(renamedSchema);
-        database.dropSchema(schemaName);
-        database.reloadRules();
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        metaDataContextManager.getDatabaseMetaDataManager().renameSchema(databaseName, schemaName, renameSchemaName);
     }
     
     @Override

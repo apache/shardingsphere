@@ -104,6 +104,24 @@ public final class DatabaseMetaDataManager {
     }
     
     /**
+     * Rename schema.
+     * 
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param renamedSchemaName renamed schema name
+     */
+    public synchronized void renameSchema(final String databaseName, final String schemaName, final String renamedSchemaName) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
+        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews());
+        database.addSchema(renamedSchema);
+        database.dropSchema(schemaName);
+        database.reloadRules();
+        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+    }
+    
+    /**
      * Alter table.
      *
      * @param databaseName database name
