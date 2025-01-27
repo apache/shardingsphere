@@ -100,6 +100,9 @@ public final class DatabaseMetaDataManager {
             return;
         }
         database.dropSchema(schemaName);
+        if (database.getSchema(schemaName).getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
+            database.reloadRules();
+        }
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
@@ -149,10 +152,10 @@ public final class DatabaseMetaDataManager {
             return;
         }
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        alterAction.accept(database.getSchema(schemaName));
         if (TableRefreshUtils.isSingleTable(tableOrViewName, database)) {
             database.reloadRules();
         }
-        alterAction.accept(database.getSchema(schemaName));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
