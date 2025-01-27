@@ -108,7 +108,7 @@ public final class DatabaseMetaDataManager {
     
     /**
      * Rename schema.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param renamedSchemaName renamed schema name
