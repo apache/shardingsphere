@@ -50,7 +50,7 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             ShardingSphereTable alteredTable = getTable(
                     database, logicDataSourceNames, schemaName, TableRefreshUtils.getTableName(each.getRenameTable().getTableName().getIdentifier(), databaseType), props);
-            metaDataManagerPersistService.alterSchema(database.getName(), schemaName, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
+            metaDataManagerPersistService.alterSchema(database.getName(), schemaName,
                     Collections.singleton(alteredTable), Collections.emptyList(), Collections.singleton(each.getTable().getTableName().getIdentifier().getValue()), Collections.emptyList());
         }
     }

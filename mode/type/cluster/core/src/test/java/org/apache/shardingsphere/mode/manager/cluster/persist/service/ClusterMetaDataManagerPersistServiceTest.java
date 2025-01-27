@@ -93,7 +93,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSchema() {
-        metaDataManagerPersistService.alterSchema("foo_db", "foo_schema", "foo_ds", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterSchema("foo_db", "foo_schema", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.emptyList());
         verify(metaDataPersistService.getDatabaseMetaDataFacade().getView()).persist("foo_db", "foo_schema", Collections.emptyList());
     }

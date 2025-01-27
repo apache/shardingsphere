@@ -48,7 +48,7 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
             droppedViews.add(viewName);
         }
         sqlStatement.getViewDefinition().ifPresent(optional -> alteredViews.add(new ShardingSphereView(viewName, optional)));
-        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, null, Collections.emptyList(), alteredViews, Collections.emptyList(), droppedViews);
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, Collections.emptyList(), alteredViews, Collections.emptyList(), droppedViews);
     }
     
     @Override
