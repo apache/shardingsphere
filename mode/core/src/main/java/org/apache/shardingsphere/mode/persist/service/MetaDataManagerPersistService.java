@@ -60,13 +60,12 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param logicDataSourceName logic data source name
      * @param alteredTables altered tables
      * @param alteredViews altered views
      * @param droppedTables dropped tables
      * @param droppedViews dropped views
      */
-    void alterSchema(String databaseName, String schemaName, String logicDataSourceName,
+    void alterSchema(String databaseName, String schemaName,
                      Collection<ShardingSphereTable> alteredTables, Collection<ShardingSphereView> alteredViews, Collection<String> droppedTables, Collection<String> droppedViews);
     
     /**
