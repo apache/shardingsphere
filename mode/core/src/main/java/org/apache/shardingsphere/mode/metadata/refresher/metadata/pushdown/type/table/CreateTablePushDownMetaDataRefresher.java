@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
@@ -46,14 +47,18 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
+        boolean isSingleTable = TableRefreshUtils.isSingleTable(tableName, database);
+        if (isSingleTable) {
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+        }
         ShardingSphereTable loadedTable = loadTable(database, schemaName, tableName, ruleMetaData, props);
         metaDataManagerPersistService.createTable(database.getName(), schemaName, loadedTable);
-        if (TableRefreshUtils.isSingleTable(tableName, database) && TableRefreshUtils.isNeedRefresh(ruleMetaData, schemaName, tableName)) {
+        if (isSingleTable && TableRefreshUtils.isNeedRefresh(ruleMetaData, schemaName, tableName)) {
             metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData);
         }
     }
     
-    private static ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName,
+    private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName,
                                                  final RuleMetaData ruleMetaData, final ConfigurationProperties props) throws SQLException {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
