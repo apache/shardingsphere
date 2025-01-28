@@ -20,14 +20,8 @@ package org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.type
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
@@ -36,8 +30,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Rename table push down meta data refresher.
@@ -47,24 +39,16 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
+        Collection<String> droppedTables = new LinkedList<>();
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            ShardingSphereTable alteredTable = getTable(
-                    database, logicDataSourceNames, schemaName, TableRefreshUtils.getTableName(each.getRenameTable().getTableName().getIdentifier(), databaseType), props);
-            metaDataManagerPersistService.alterSchema(database.getName(), schemaName,
-                    Collections.singleton(alteredTable), Collections.emptyList(), Collections.singleton(each.getTable().getTableName().getIdentifier().getValue()), Collections.emptyList());
+            String toBeRenamedTableName = each.getTable().getTableName().getIdentifier().getValue();
+            ShardingSphereTable toBeRenamedTable = database.getSchema(schemaName).getTable(toBeRenamedTableName);
+            alteredTables.add(new ShardingSphereTable(
+                    each.getRenameTable().getTableName().getIdentifier().getValue(), toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
+            droppedTables.add(toBeRenamedTableName);
         }
-    }
-    
-    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName, final String tableName,
-                                         final ConfigurationProperties props) throws SQLException {
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(tableName, database) && !logicDataSourceNames.isEmpty()) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
-        }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
-        return Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(tableName))
-                .orElseGet(() -> new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, alteredTables, Collections.emptyList(), droppedTables, Collections.emptyList());
     }
     
     @Override
