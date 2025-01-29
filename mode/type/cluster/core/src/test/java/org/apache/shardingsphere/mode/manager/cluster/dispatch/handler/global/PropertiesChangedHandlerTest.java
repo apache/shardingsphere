@@ -58,7 +58,7 @@ class PropertiesChangedHandlerTest {
     
     @Test
     void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath("/props/active_version")).thenReturn("key=value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("/props/active_version")).thenReturn("key=value");
         Properties props = mock(Properties.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load()).thenReturn(props);
         handler.handle(contextManager, new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));

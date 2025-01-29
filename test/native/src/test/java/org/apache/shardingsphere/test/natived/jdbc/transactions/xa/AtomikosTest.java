@@ -19,23 +19,42 @@ package org.apache.shardingsphere.test.natived.jdbc.transactions.xa;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 class AtomikosTest {
     
+    private DataSource logicDataSource;
+    
     private TestShardingService testShardingService;
+    
+    @AfterEach
+    void afterEach() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
+        }
+    }
     
     @Test
     void assertShardingInAtomikosTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/transactions/xa/atomikos.yaml");
-        DataSource dataSource = new HikariDataSource(config);
-        testShardingService = new TestShardingService(dataSource);
+        logicDataSource = new HikariDataSource(config);
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
         testShardingService.cleanEnvironment();

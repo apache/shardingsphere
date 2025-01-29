@@ -23,10 +23,14 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.InstanceSpec;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
@@ -54,13 +58,13 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class ZookeeperServiceDiscoveryTest {
     
-    private static final int RANDOM_PORT_FIRST = InstanceSpec.getRandomPort();
+    private final int randomPortFirst = InstanceSpec.getRandomPort();
     
-    private static final Network NETWORK = Network.newNetwork();
+    private final Network network = Network.newNetwork();
     
     @Container
-    private static final GenericContainer<?> ZOOKEEPER_CONTAINER = new GenericContainer<>("zookeeper:3.9.3-jre-17")
-            .withNetwork(NETWORK)
+    private final GenericContainer<?> zookeeperContainer = new GenericContainer<>("zookeeper:3.9.3-jre-17")
+            .withNetwork(network)
             .withNetworkAliases("foo")
             .withExposedPorts(2181);
     
@@ -70,58 +74,67 @@ class ZookeeperServiceDiscoveryTest {
      * See <a href="https://github.com/testcontainers/testcontainers-java/issues/9553">testcontainers/testcontainers-java#9553</a>.
      */
     @Container
-    private static final GenericContainer<?> HS2_1_CONTAINER = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
-            .withNetwork(NETWORK)
+    private final GenericContainer<?> hs21Container = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
+            .withNetwork(network)
             .withEnv("SERVICE_NAME", "hiveserver2")
             .withEnv("SERVICE_OPTS", "-Dhive.server2.support.dynamic.service.discovery=true" + " "
-                    + "-Dhive.zookeeper.quorum=" + ZOOKEEPER_CONTAINER.getNetworkAliases().get(0) + ":2181" + " "
+                    + "-Dhive.zookeeper.quorum=" + zookeeperContainer.getNetworkAliases().get(0) + ":2181" + " "
                     + "-Dhive.server2.thrift.bind.host=0.0.0.0" + " "
-                    + "-Dhive.server2.thrift.port=" + RANDOM_PORT_FIRST)
-            .withFixedExposedPort(RANDOM_PORT_FIRST, RANDOM_PORT_FIRST)
-            .dependsOn(ZOOKEEPER_CONTAINER);
+                    + "-Dhive.server2.thrift.port=" + randomPortFirst)
+            .withFixedExposedPort(randomPortFirst, randomPortFirst)
+            .dependsOn(zookeeperContainer);
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.hive.zsd.";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.hive.zsd.";
     
     // Due to https://issues.apache.org/jira/browse/HIVE-28317 , the `initFile` parameter of HiveServer2 JDBC Driver must be an absolute path.
-    private static final String ABSOLUTE_PATH = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-iceberg.sql").toAbsolutePath().toString();
+    private final String absolutePath = Paths.get("src/test/resources/test-native/sql/test-native-databases-hive-iceberg.sql").toAbsolutePath().toString();
+    
+    private DataSource logicDataSource;
     
     private final String jdbcUrlSuffix = ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2";
     
     private String jdbcUrlPrefix;
     
-    @BeforeAll
-    static void beforeAll() {
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
+    @BeforeEach
+    void beforeEach() {
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"), is(nullValue()));
+        assertThat(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"), is(nullValue()));
     }
     
-    @AfterAll
-    static void afterAll() {
-        NETWORK.close();
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
-        System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
+    @AfterEach
+    void afterEach() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
+        }
+        network.close();
+        System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
+        System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
     }
     
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        jdbcUrlPrefix = "jdbc:hive2://" + ZOOKEEPER_CONTAINER.getHost() + ":" + ZOOKEEPER_CONTAINER.getMappedPort(2181) + "/";
-        DataSource dataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(dataSource);
+        jdbcUrlPrefix = "jdbc:hive2://" + zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181) + "/";
+        logicDataSource = createDataSource();
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
         testShardingService.processSuccessInHive();
-        HS2_1_CONTAINER.stop();
+        hs21Container.stop();
         int randomPortSecond = InstanceSpec.getRandomPort();
         try (
                 GenericContainer<?> hs2SecondContainer = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
-                        .withNetwork(NETWORK)
+                        .withNetwork(network)
                         .withEnv("SERVICE_NAME", "hiveserver2")
                         .withEnv("SERVICE_OPTS", "-Dhive.server2.support.dynamic.service.discovery=true" + " "
-                                + "-Dhive.zookeeper.quorum=" + ZOOKEEPER_CONTAINER.getNetworkAliases().get(0) + ":2181" + " "
+                                + "-Dhive.zookeeper.quorum=" + zookeeperContainer.getNetworkAliases().get(0) + ":2181" + " "
                                 + "-Dhive.server2.thrift.bind.host=0.0.0.0" + " "
                                 + "-Dhive.server2.thrift.port=" + randomPortSecond)
                         .withFixedExposedPort(randomPortSecond, randomPortSecond)
-                        .dependsOn(ZOOKEEPER_CONTAINER)) {
+                        .dependsOn(zookeeperContainer)) {
             hs2SecondContainer.start();
             extracted(hs2SecondContainer.getMappedPort(randomPortSecond));
             testShardingService.processSuccessInHive();
@@ -134,18 +147,18 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     private DataSource createDataSource() throws SQLException {
-        extracted(HS2_1_CONTAINER.getMappedPort(RANDOM_PORT_FIRST));
+        extracted(hs21Container.getMappedPort(randomPortFirst));
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/zsd.yaml?placeholder-type=system_props");
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
-        System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + ABSOLUTE_PATH + jdbcUrlSuffix);
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0" + ";initFile=" + absolutePath + jdbcUrlSuffix);
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1" + ";initFile=" + absolutePath + jdbcUrlSuffix);
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2" + ";initFile=" + absolutePath + jdbcUrlSuffix);
         return new HikariDataSource(config);
     }
     
     private void extracted(final int hiveServer2Port) throws SQLException {
-        String connectionString = ZOOKEEPER_CONTAINER.getHost() + ":" + ZOOKEEPER_CONTAINER.getMappedPort(2181);
+        String connectionString = zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181);
         Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
             try (
                     CuratorFramework client = CuratorFrameworkFactory.builder().connectString(connectionString)

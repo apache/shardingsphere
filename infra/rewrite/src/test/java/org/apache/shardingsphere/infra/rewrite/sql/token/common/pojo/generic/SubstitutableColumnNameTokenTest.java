@@ -41,14 +41,20 @@ class SubstitutableColumnNameTokenTest {
     @Test
     void assertToString() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null, "id", null, mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("id"));
+        assertThat(
+                new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL"))
+                        .toString(mock(RouteUnit.class)),
+                is("id"));
     }
     
     @Test
     void assertToStringWithQuote() {
         Collection<Projection> projections = Collections.singletonList(new ColumnProjection(null,
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), mock(DatabaseType.class)));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL")).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
+        assertThat(
+                new SubstitutableColumnNameToken(0, 1, projections, TypedSPILoader.getService(DatabaseType.class, "MySQL"))
+                        .toString(mock(RouteUnit.class)),
+                is("`id` AS `id`"));
     }
     
     @Test

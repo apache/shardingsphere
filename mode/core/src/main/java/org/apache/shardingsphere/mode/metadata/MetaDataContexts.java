@@ -17,43 +17,65 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Meta data contexts.
  */
-@Getter
-public final class MetaDataContexts implements AutoCloseable {
+@ThreadSafe
+public final class MetaDataContexts {
     
-    private final ShardingSphereMetaData metaData;
+    private final AtomicReference<ShardingSphereMetaData> metaData = new AtomicReference<>();
     
-    private final ShardingSphereStatistics statistics;
+    private final AtomicReference<ShardingSphereStatistics> statistics = new AtomicReference<>();
     
     public MetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        this.metaData = metaData;
-        this.statistics = statistics;
+        this.metaData.set(metaData);
+        this.statistics.set(statistics);
     }
     
-    @SneakyThrows(Exception.class)
-    @Override
-    public void close() {
-        for (ShardingSphereRule each : getAllRules()) {
-            if (each instanceof AutoCloseable) {
-                ((AutoCloseable) each).close();
-            }
-        }
+    /**
+     * Get ShardingSphere meta data.
+     *
+     * @return got meta data
+     */
+    public ShardingSphereMetaData getMetaData() {
+        return metaData.get();
     }
     
-    private Collection<ShardingSphereRule> getAllRules() {
-        Collection<ShardingSphereRule> result = new LinkedList<>(metaData.getGlobalRuleMetaData().getRules());
-        metaData.getAllDatabases().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
-        return result;
+    /**
+     * Get ShardingSphere statistics.
+     *
+     * @return got statistics
+     */
+    public ShardingSphereStatistics getStatistics() {
+        return statistics.get();
+    }
+    
+    /**
+     * Update meta data contexts.
+     *
+     * @param newMetaDataContexts new meta data contexts
+     */
+    public void update(final MetaDataContexts newMetaDataContexts) {
+        this.metaData.set(newMetaDataContexts.getMetaData());
+        this.statistics.set(newMetaDataContexts.getStatistics());
+    }
+    
+    /**
+     * Update meta data contexts.
+     *
+     * @param metaData meta data
+     * @param metaDataPersistService meta data persist service
+     */
+    public void update(final ShardingSphereMetaData metaData, final MetaDataPersistService metaDataPersistService) {
+        this.metaData.set(metaData);
+        this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getStatisticsPersistService().load(metaData)));
     }
 }

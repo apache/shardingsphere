@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -58,7 +59,10 @@ class EncryptProjectionTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        generator = new EncryptProjectionTokenGenerator(Collections.emptyList(), mockEncryptRule(), databaseType);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        generator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule());
     }
     
     private EncryptRule mockEncryptRule() {

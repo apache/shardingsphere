@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer drop view statement.
  */
+@Getter
+@Setter
 public final class SQLServerDropViewStatement extends DropViewStatement implements SQLServerStatement {
+    
+    private boolean ifExists;
 }

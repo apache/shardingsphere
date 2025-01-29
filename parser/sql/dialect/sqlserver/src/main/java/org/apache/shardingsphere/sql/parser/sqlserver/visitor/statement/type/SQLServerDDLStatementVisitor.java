@@ -389,6 +389,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         SQLServerCreateViewStatement result = new SQLServerCreateViewStatement();
+        result.setReplaceView(null != ctx.ALTER());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
         result.setSelect((SQLServerSelectStatement) visit(ctx.createOrAlterViewClause().select()));
@@ -489,6 +490,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         SQLServerDropViewStatement result = new SQLServerDropViewStatement();
+        result.setIfExists(null != ctx.ifExists());
         for (ViewNameContext each : ctx.viewName()) {
             result.getViews().add((SimpleTableSegment) visit(each));
         }

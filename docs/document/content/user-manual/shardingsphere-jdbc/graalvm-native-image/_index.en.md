@@ -336,6 +336,8 @@ Args=--initialize-at-run-time=\
     io.grpc.netty.shaded.io.netty.util.AttributeKey
 ```
 
+ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability under GraalVM Native Image.
+
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
 

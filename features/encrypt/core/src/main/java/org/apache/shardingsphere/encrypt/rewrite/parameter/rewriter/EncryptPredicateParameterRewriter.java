@@ -25,8 +25,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -53,25 +51,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty()) {
-            return true;
-        }
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            return isSubqueryNeedRewrite((SelectStatementContext) sqlStatementContext);
-        }
-        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            return isSubqueryNeedRewrite(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
-        }
-        return false;
-    }
-    
-    private boolean isSubqueryNeedRewrite(final SelectStatementContext selectStatementContext) {
-        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
-            if (isNeedRewrite(each)) {
-                return true;
-            }
-        }
-        return false;
+        return sqlStatementContext instanceof WhereAvailable;
     }
     
     @Override
@@ -85,7 +65,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalTable().getValue();
-        String columnName = encryptCondition.getColumnSegment().getIdentifier().getValue();
+        String columnName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalColumn().getValue();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equals(((EncryptBinaryCondition) encryptCondition).getOperator()) && encryptColumn.getLikeQuery().isPresent()) {

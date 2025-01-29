@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.metadata.persist.node.metadata.TableMetaDataNode;
+import org.apache.shardingsphere.mode.node.path.metadata.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.ShardingSphereStatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 
 /**
  * Table changed handler.
@@ -31,11 +31,11 @@ public final class TableChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ShardingSphereStatisticsRefreshEngine statisticsRefreshEngine;
+    private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public TableChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        statisticsRefreshEngine = new ShardingSphereStatisticsRefreshEngine(contextManager);
+        statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
     /**
@@ -46,10 +46,8 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = TableMetaDataNode.getTableNameByActiveVersionNode(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
-        Preconditions.checkArgument(event.getValue().equals(
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getKey())),
-                "Invalid active version: %s of key: %s", event.getValue(), event.getKey());
+        String tableName = TableMetaDataNodePath.getTableNameByActiveVersionPath(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, table, null);
         statisticsRefreshEngine.asyncRefresh();
@@ -63,7 +61,7 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = TableMetaDataNode.getTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = TableMetaDataNodePath.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         contextManager.getMetaDataContextManager().getSchemaMetaDataManager().alterSchema(databaseName, schemaName, tableName, null);
         statisticsRefreshEngine.asyncRefresh();
     }

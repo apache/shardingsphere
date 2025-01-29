@@ -60,6 +60,7 @@ public final class SQLValue {
             case "longtext":
             case "mediumtext":
             case "json":
+            case "clob":
                 return value;
             case "tinyint":
                 return Byte.parseByte(value);

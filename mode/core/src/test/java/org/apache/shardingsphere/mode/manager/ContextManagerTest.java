@@ -37,9 +37,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -118,13 +118,6 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertRenewMetaDataContexts() {
-        MetaDataContexts contexts = mock(MetaDataContexts.class);
-        contextManager.renewMetaDataContexts(contexts);
-        assertThat(contextManager.getMetaDataContexts(), is(contexts));
-    }
-    
-    @Test
     void assertGetDatabase() {
         assertNotNull(contextManager.getDatabase("foo_db"));
     }
@@ -185,6 +178,6 @@ class ContextManagerTest {
     @Test
     void assertClose() {
         contextManager.close();
-        verify(metaDataContexts).close();
+        verify(metaDataContexts.getMetaData()).close();
     }
 }

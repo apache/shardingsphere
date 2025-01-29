@@ -20,20 +20,24 @@ package org.apache.shardingsphere.test.natived.commons.proxy;
 import lombok.Getter;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.shardingsphere.proxy.Bootstrap;
+import org.awaitility.Awaitility;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is designed to start ShardingSphere Proxy directly in the current process,
  * whether it is HotSpot VM or GraalVM Native Image,
  * so this class intentionally uses fewer than a few dozen JVM parameters.
+ * It is necessary to avoid creating multiple ShardingSphere Proxy instances in parallel in Junit5 unit tests.
+ * Currently, Junit5 unit tests are all executed serially.
  */
 @Getter
 public final class ProxyTestingServer {
     
-    private final int proxyPort = InstanceSpec.getRandomPort();
+    private final int proxyPort;
     
     private final CompletableFuture<Void> completableFuture;
     
@@ -43,6 +47,7 @@ public final class ProxyTestingServer {
      * @param configAbsolutePath The absolute path to the directory where {@code global.yaml} is located.
      */
     public ProxyTestingServer(final String configAbsolutePath) {
+        proxyPort = InstanceSpec.getRandomPort();
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
                 Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0", "false"});
@@ -56,6 +61,7 @@ public final class ProxyTestingServer {
      * Force close ShardingSphere Proxy.
      */
     public void close() {
-        completableFuture.cancel(true);
+        completableFuture.cancel(false);
+        Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(completableFuture::isDone);
     }
 }

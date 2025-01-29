@@ -19,6 +19,10 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.natived.commons.entity.Address;
 import org.apache.shardingsphere.test.natived.commons.entity.Order;
 import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
@@ -26,9 +30,11 @@ import org.apache.shardingsphere.test.natived.commons.repository.AddressReposito
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
 import org.h2.jdbc.JdbcSQLSyntaxErrorException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,21 +43,34 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReadWriteSplittingTest {
     
+    private DataSource logicDataSource;
+    
     private OrderRepository orderRepository;
     
     private OrderItemRepository orderItemRepository;
     
     private AddressRepository addressRepository;
     
+    @AfterEach
+    void afterEach() throws SQLException {
+        try (Connection connection = logicDataSource.getConnection()) {
+            ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
+            for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
+                each.getDataSource().unwrap(HikariDataSource.class).close();
+            }
+            contextManager.close();
+        }
+    }
+    
     @Test
     void assertReadWriteSplittingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/features/readwrite-splitting.yaml");
-        DataSource dataSource = new HikariDataSource(config);
-        orderRepository = new OrderRepository(dataSource);
-        orderItemRepository = new OrderItemRepository(dataSource);
-        addressRepository = new AddressRepository(dataSource);
+        logicDataSource = new HikariDataSource(config);
+        orderRepository = new OrderRepository(logicDataSource);
+        orderItemRepository = new OrderItemRepository(logicDataSource);
+        addressRepository = new AddressRepository(logicDataSource);
         initEnvironment();
         processSuccess();
         cleanEnvironment();
@@ -113,8 +132,8 @@ class ReadWriteSplittingTest {
     }
     
     private void cleanEnvironment() throws SQLException {
-        orderRepository.dropTable();
-        orderItemRepository.dropTable();
-        addressRepository.dropTable();
+        orderRepository.dropTableInMySQL();
+        orderItemRepository.dropTableInMySQL();
+        addressRepository.dropTableInMySQL();
     }
 }

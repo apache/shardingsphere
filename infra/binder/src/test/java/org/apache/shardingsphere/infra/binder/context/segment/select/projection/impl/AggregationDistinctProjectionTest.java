@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.mock;
 class AggregationDistinctProjectionTest {
     
     private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(
-            0, 0, AggregationType.COUNT, "(DISTINCT order_id)", new IdentifierValue("c"), "order_id", mock(DatabaseType.class));
+            0, 0, AggregationType.COUNT, new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(DISTINCT order_id)"), new IdentifierValue("c"), "order_id", mock(DatabaseType.class));
     
     @Test
     void assertGetDistinctColumnName() {

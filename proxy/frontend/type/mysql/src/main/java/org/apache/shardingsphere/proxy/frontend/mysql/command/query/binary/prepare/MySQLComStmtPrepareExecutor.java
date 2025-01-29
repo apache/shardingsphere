@@ -133,7 +133,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
         Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
         for (int index = 0; index < parameterMarkerSegments.size(); index++) {
-            ShardingSphereColumn column = columnsOfParameterMarkers.isEmpty() ? null : columnsOfParameterMarkers.get(index);
+            ShardingSphereColumn column = null;
+            if (!columnsOfParameterMarkers.isEmpty() && index < columnsOfParameterMarkers.size()) {
+                column = columnsOfParameterMarkers.get(index);
+            }
             if (null != column) {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
                 result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())));

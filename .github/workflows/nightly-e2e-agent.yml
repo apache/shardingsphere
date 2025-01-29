@@ -79,7 +79,7 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     needs: [ global-environment, build-e2e-image ]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     strategy:
       max-parallel: 20
       fail-fast: false

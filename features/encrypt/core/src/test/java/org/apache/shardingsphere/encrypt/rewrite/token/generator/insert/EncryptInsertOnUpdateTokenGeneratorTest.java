@@ -59,8 +59,7 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        generator = new EncryptInsertOnUpdateTokenGenerator(mockEncryptRule());
-        generator.setDatabase(mock(ShardingSphereDatabase.class));
+        generator = new EncryptInsertOnUpdateTokenGenerator(mockEncryptRule(), mock(ShardingSphereDatabase.class));
     }
     
     private EncryptRule mockEncryptRule() {

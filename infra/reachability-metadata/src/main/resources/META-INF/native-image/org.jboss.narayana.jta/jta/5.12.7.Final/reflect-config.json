@@ -61,6 +61,11 @@
   "methods":[{"name":"<init>","parameterTypes":["com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean"] }]
 },
 {
+  "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.TransactionStatusManagerItem"},
+  "name":"com.arjuna.ats.internal.arjuna.objectstore.ShadowNoFileLockStore",
+  "queryAllPublicConstructors":true
+},
+{
   "condition":{"typeReachable":"com.arjuna.ats.arjuna.common.CoreEnvironmentBean"},
   "name":"com.arjuna.ats.internal.arjuna.utils.SocketProcessId",
   "queryAllPublicConstructors":true,
@@ -120,5 +125,46 @@
 {
   "condition":{"typeReachable":"com.arjuna.common.logging.commonLogger"},
   "name":"com.arjuna.common.logging.commonI18NLogger_$logger_zh_CN"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.common.util.propertyservice.PropertiesFactory"},
+  "name":"com.arjuna.common.util.propertyservice.PropertiesFactory",
+  "fields":[{"name":"delegatePropertiesFactory"}]
+},
+{
+  "condition":{"typeReachable":"com.arjuna.common.internal.util.propertyservice.BeanPopulator"},
+  "name":"com.arjuna.common.internal.util.propertyservice.BeanPopulator",
+  "fields":[{"name":"beanInstances"}]
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule"},
+  "name":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
+  "fields":[{"name":"_recoveryStore"}]
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule",
+  "fields":[{"name":"registeredXARecoveryModule"}]
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.arjuna.objectstore.StoreManager"},
+  "name":"com.arjuna.ats.arjuna.objectstore.StoreManager",
+  "allDeclaredFields":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.common.logging.commonI18NLogger"},
+  "name":"com.arjuna.common.logging.commonI18NLogger_$logger_en"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger"},
+  "name":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_en"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger"},
+  "name":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_en"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.jta.logging.jtaI18NLogger"},
+  "name":"com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_en"
 }
 ]
