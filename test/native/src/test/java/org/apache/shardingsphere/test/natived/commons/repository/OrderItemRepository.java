@@ -321,22 +321,36 @@ public final class OrderItemRepository {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void assertRollbackWithTransactions() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try {
-                connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate("INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (2024, 2024, '13800000001', 'INSERT_TEST')");
-                connection.createStatement().executeUpdate("INSERT INTO t_order_item_does_not_exist (test_id_does_not_exist) VALUES (2024)");
-                connection.commit();
+                conn.setAutoCommit(false);
+                conn.createStatement().executeUpdate("INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (2024, 2024, '13800000001', 'INSERT_TEST')");
+                conn.createStatement().executeUpdate("INSERT INTO t_order_item_does_not_exist (test_id_does_not_exist) VALUES (2024)");
+                conn.commit();
             } catch (final SQLException ignored) {
-                connection.rollback();
+                conn.rollback();
             } finally {
-                connection.setAutoCommit(true);
+                conn.setAutoCommit(true);
             }
         }
-        try (
-                Connection conn = dataSource.getConnection();
-                ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024")) {
+        try (Connection conn = dataSource.getConnection()) {
+            ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024");
             assertThat(resultSet.next(), is(false));
+        }
+        try (Connection conn = dataSource.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                conn.createStatement().executeUpdate("INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (2025, 2025, '13800000001', 'INSERT_TEST')");
+                conn.commit();
+            } catch (final SQLException ignored) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+        try (Connection conn = dataSource.getConnection()) {
+            ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2025");
+            assertThat(resultSet.next(), is(true));
         }
     }
 }

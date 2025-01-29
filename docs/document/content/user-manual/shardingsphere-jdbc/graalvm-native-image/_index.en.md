@@ -405,11 +405,11 @@ contributors should place it on the classpath of the `shardingsphere-test-native
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -DskipNativeTests -e -T 1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -e -T 1C clean test native:metadata-copy
 ```
 
 Affected by https://github.com/apache/shardingsphere/issues/33206 ,
-After the contributor executes `./mvnw -PgenerateMetadata -DskipNativeTests -T 1C -e clean test native:metadata-copy`,
+After the contributor executes `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy`,
 `infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` will generate unnecessary JSON entries containing absolute paths,
 similar to the following.
 
