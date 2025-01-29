@@ -143,8 +143,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
-        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByRegisterStorageUnit(metaDataContextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
+        SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
+                .switchByRegisterStorageUnit(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistService, metaDataContextManager.getComputeNodeInstanceContext()).createChangedDatabase(
                 databaseName, false, switchingResource, null, metaDataContextManager.getMetaDataContexts());
         metaDataContextManager.getMetaDataContexts().getMetaData().putDatabase(changedDatabase);
@@ -154,12 +154,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .forEach(each -> {
                     if (each.isEmpty()) {
                         metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, each.getName());
+                    } else {
+                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, each.getName(), each.getAllTables());
                     }
-                    metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, each.getName(), each.getAllTables());
                 });
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
-        metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(dataSourceService.persist(databaseName, toBeRegisteredProps));
+        metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persist(databaseName, toBeRegisteredProps));
         clearServiceCache();
     }
     
