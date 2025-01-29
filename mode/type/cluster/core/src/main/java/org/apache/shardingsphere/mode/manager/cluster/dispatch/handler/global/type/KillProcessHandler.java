@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -64,7 +65,7 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
             } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
-            contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().cleanProcess(instanceId, processId);
+            new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).cleanProcess(instanceId, processId);
         } else if (Type.DELETED == event.getType()) {
             ProcessOperationLockRegistry.getInstance().notify(processId);
         }
