@@ -39,13 +39,12 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class OnConflictUpdateContextTest {
+class OnConflictUpdateContextTest {
     
     @Test
     void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         OnConflictUpdateContext onConflictUpdateContext = new OnConflictUpdateContext(Collections.emptyList(), Collections.emptyList(), 0, Optional.empty());
-        assertThat(onConflictUpdateContext.getValueExpressions(), is(Plugins.getMemberAccessor()
-                .invoke(OnConflictUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onConflictUpdateContext, Collections.emptyList())));
+        assertThat(onConflictUpdateContext.getValueExpressions(), is(Collections.emptyList()));
         assertThat(onConflictUpdateContext.getParameters(), is(Plugins.getMemberAccessor()
                 .invoke(OnConflictUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class), onConflictUpdateContext, Collections.emptyList(), 0)));
     }

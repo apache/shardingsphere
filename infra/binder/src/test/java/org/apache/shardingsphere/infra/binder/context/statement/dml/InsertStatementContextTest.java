@@ -177,7 +177,7 @@ class InsertStatementContextTest {
         actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertNull(actual.getOnConflictKeyUpdateValueContext());
-        assertTrue(actual.getOnConflictKeyUpdateParameters().isEmpty());
+        assertTrue(actual.getOnDuplicateKeyUpdateParameters().isEmpty());
     }
     
     @Test
@@ -190,7 +190,7 @@ class InsertStatementContextTest {
         actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", "onConflictKeyUpdateColumnValue"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertThat(actual.getOnConflictKeyUpdateValueContext().getColumnSegments().size(), is(2));
-        assertThat(actual.getOnConflictKeyUpdateParameters().size(), is(1));
+        assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));
     }
     
     @Test
@@ -245,7 +245,7 @@ class InsertStatementContextTest {
         columnAssignmentSegments.add(literalExpressionAssignment);
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         OnConflictKeyColumnsSegment onConflictKeyColumnsSegment = new OnConflictKeyColumnsSegment(0, 0, columnAssignmentSegments, whereSegment);
-        insertStatement.setOnConflictKeyColumnsSegment(onConflictKeyColumnsSegment);
+        insertStatement.setOnConflictKeyColumns(onConflictKeyColumnsSegment);
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {

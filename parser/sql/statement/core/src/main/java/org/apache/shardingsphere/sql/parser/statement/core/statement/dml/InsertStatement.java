@@ -124,6 +124,14 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
     }
     
     /**
+     * Set on duplicate key columns segment.
+     *
+     * @param onConflictKeyColumns on duplicate key columns segment
+     */
+    public void setOnConflictKeyColumns(final OnConflictKeyColumnsSegment onConflictKeyColumns) {
+    }
+    
+    /**
      * Get set assignment segment.
      *
      * @return set assignment segment

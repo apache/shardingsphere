@@ -704,7 +704,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         PostgreSQLInsertStatement result = (PostgreSQLInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnConflict()) {
-            result.setOnConflictKeyColumnsSegment((OnConflictKeyColumnsSegment) visit(ctx.optOnConflict()));
+            result.setOnConflictKeyColumns((OnConflictKeyColumnsSegment) visit(ctx.optOnConflict()));
         }
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
@@ -720,7 +720,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             assignments = ((SetAssignmentSegment) visit(ctx.setClauseList())).getAssignments();
         }
         WhereSegment whereSegment =
-                ctx.whereClause() != null
+                null != ctx.whereClause()
                         ? new WhereSegment(ctx.whereClause().getStart().getStartIndex(), ctx.whereClause().getStop().getStopIndex(), (ExpressionSegment) visit(ctx.whereClause().aExpr()))
                         : null;
         return new OnConflictKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments, whereSegment);

@@ -243,16 +243,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        return null == onDuplicateKeyUpdateValueContext ? new ArrayList<>() : onDuplicateKeyUpdateValueContext.getParameters();
-    }
-    
-    /**
-     * Get on duplicate key update parameters.
-     *
-     * @return on duplicate key update parameters
-     */
-    public List<Object> getOnConflictKeyUpdateParameters() {
-        return null == onConflictKeyUpdateValueContext ? new ArrayList<>() : onConflictKeyUpdateValueContext.getParameters();
+        return onConflictKeyUpdateValueContext != null
+                ? onConflictKeyUpdateValueContext.getParameters()
+                : (onDuplicateKeyUpdateValueContext != null
+                        ? onDuplicateKeyUpdateValueContext.getParameters()
+                        : new ArrayList<>());
     }
     
     /**

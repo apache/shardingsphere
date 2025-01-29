@@ -58,36 +58,17 @@ public final class OnConflictUpdateContext {
     public OnConflictUpdateContext(final Collection<ColumnAssignmentSegment> assignments, final List<Object> params, final int parametersOffset, final Optional<WhereSegment> segment) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(ColumnAssignmentSegment::getValue).collect(Collectors.toList());
         segment.ifPresent(whereSegments::add);
-        for (WhereSegment whereSegment : whereSegments) {
-            expressionSegments.add(whereSegment.getExpr());
+        for (WhereSegment each : whereSegments) {
+            expressionSegments.add(each.getExpr());
         }
         columnSegments = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        valueExpressions = getValueExpressions(expressionSegments);
+        valueExpressions = new ArrayList<>(expressionSegments);
         parameterMarkerExpressions = ExpressionExtractor.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
         parameters = getParameters(params, parametersOffset);
     }
     
-    /**
-     * get value expressions from expression segments.
-     *
-     * @param assignments Collection of expression segments
-     * @return List of value expressions
-     */
-    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
-        List<ExpressionSegment> result = new ArrayList<>(assignments.size());
-        result.addAll(assignments);
-        return result;
-    }
-    
-    /**
-     * get list of parameters.
-     *
-     * @param params List of parameters
-     * @param paramsOffset Offset in the parameter list
-     * @return List of parameters
-     */
     private List<Object> getParameters(final List<Object> params, final int paramsOffset) {
         if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
@@ -114,12 +95,6 @@ public final class OnConflictUpdateContext {
         return ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
-    /**
-     * get index of a parameter.
-     *
-     * @param paramMarkerExpression Parameter marker expression.
-     * @return Index of the parameter in the parameter list.
-     */
     private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
         int result = parameterMarkerExpressions.indexOf(paramMarkerExpression);
         Preconditions.checkArgument(result >= 0, "Can not get parameter index.");
