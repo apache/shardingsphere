@@ -216,8 +216,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void alterSingleRuleConfiguration(final String databaseName, final RuleMetaData ruleMetaData) {
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
-        metaDataPersistService.getMetaDataVersionPersistService()
-                .switchActiveVersion(metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(singleRuleConfig)));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(singleRuleConfig));
+        metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
     }
     
     @Override
