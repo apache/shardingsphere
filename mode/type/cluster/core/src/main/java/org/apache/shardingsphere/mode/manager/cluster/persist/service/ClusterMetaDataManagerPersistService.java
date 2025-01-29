@@ -129,9 +129,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, tableName);
     }
     
-    @SneakyThrows
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
         MetaDataContexts originalMetaDataContexts = buildOriginalMetaDataContexts();
         Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeRegisteredProps.size());
         try {
