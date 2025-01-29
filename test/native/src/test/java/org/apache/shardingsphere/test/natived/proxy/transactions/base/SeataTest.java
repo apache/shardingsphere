@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -45,18 +45,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-/**
- * TODO Executing this unit test in the GraalVM Native Image of the Github Actions device results in a connection leak
- *  in {@code org.apache.shardingsphere.test.natived.jdbc.databases.FirebirdTest}.
- *  This requires further investigation.
- */
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
-@Disabled
+@EnabledInNativeImage
 @Testcontainers
 class SeataTest {
     
@@ -94,8 +90,13 @@ class SeataTest {
         });
     }
     
+    /**
+     * TODO Apparently there is a real connection leak on Seata Client 2.2.0.
+     *  Waiting for <a href="https://github.com/apache/incubator-seata/pull/7044">apache/incubator-seata#7044</a>.
+     */
     @AfterEach
     void afterEach() {
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         proxyTestingServer.close();
         TmNettyRemotingClient.getInstance().destroy();
         RmNettyRemotingClient.getInstance().destroy();

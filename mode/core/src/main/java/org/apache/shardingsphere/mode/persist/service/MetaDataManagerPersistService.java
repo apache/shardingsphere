@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,17 +37,15 @@ public interface MetaDataManagerPersistService {
      * Create database.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    void createDatabase(String databaseName) throws SQLException;
+    void createDatabase(String databaseName);
     
     /**
      * Drop database.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    void dropDatabase(String databaseName) throws SQLException;
+    void dropDatabase(String databaseName);
     
     /**
      * Create schema.
@@ -60,10 +58,26 @@ public interface MetaDataManagerPersistService {
     /**
      * Alter schema.
      *
-     * @param alterSchemaPOJO alter schema pojo
-     * @throws SQLException SQL exception
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param logicDataSourceName logic data source name
+     * @param alteredTables altered tables
+     * @param alteredViews altered views
+     * @param droppedTables dropped tables
+     * @param droppedViews dropped views
      */
-    void alterSchema(AlterSchemaPOJO alterSchemaPOJO) throws SQLException;
+    void alterSchema(String databaseName, String schemaName, String logicDataSourceName,
+                     Collection<ShardingSphereTable> alteredTables, Collection<ShardingSphereView> alteredViews, Collection<String> droppedTables, Collection<String> droppedViews);
+    
+    /**
+     * Alter schema name.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param renameSchemaName rename schema name
+     * @param logicDataSourceName logic data source name
+     */
+    void alterSchemaName(String databaseName, String schemaName, String renameSchemaName, String logicDataSourceName);
     
     /**
      * Drop schema.
@@ -74,11 +88,22 @@ public interface MetaDataManagerPersistService {
     void dropSchema(String databaseName, Collection<String> schemaNames);
     
     /**
-     * Alter schema metadata.
+     * Create table.
      *
-     * @param alterSchemaMetaDataPOJO alter schema metadata pojo
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table table
      */
-    void alterSchemaMetaData(AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO);
+    void createTable(String databaseName, String schemaName, ShardingSphereTable table);
+    
+    /**
+     * Drop tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    void dropTable(String databaseName, String schemaName, String tableName);
     
     /**
      * Register storage units.
@@ -110,10 +135,10 @@ public interface MetaDataManagerPersistService {
      * Alter single rule configuration.
      *
      * @param databaseName database name
-     * @param ruleConfigs rule configs
+     * @param ruleMetaData rule meta data
      * @throws SQLException SQL exception
      */
-    void alterSingleRuleConfiguration(String databaseName, Collection<RuleConfiguration> ruleConfigs) throws SQLException;
+    void alterSingleRuleConfiguration(String databaseName, RuleMetaData ruleMetaData) throws SQLException;
     
     /**
      * Alter rule configuration.
@@ -146,9 +171,8 @@ public interface MetaDataManagerPersistService {
      * Alter global rule configuration.
      *
      * @param globalRuleConfig global rule config
-     * @throws SQLException SQL exception
      */
-    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) throws SQLException;
+    void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig);
     
     /**
      * Alter properties.
@@ -157,23 +181,4 @@ public interface MetaDataManagerPersistService {
      * @throws SQLException SQL exception
      */
     void alterProperties(Properties props) throws SQLException;
-    
-    /**
-     * Create table.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param table table
-     * @param logicDataSourceName logic data source name
-     */
-    void createTable(String databaseName, String schemaName, ShardingSphereTable table, String logicDataSourceName);
-    
-    /**
-     * Drop tables.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableNames table names
-     */
-    void dropTables(String databaseName, String schemaName, Collection<String> tableNames);
 }

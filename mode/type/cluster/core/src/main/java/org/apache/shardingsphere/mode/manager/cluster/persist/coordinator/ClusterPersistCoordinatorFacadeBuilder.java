@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator;
 
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder;
 import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
