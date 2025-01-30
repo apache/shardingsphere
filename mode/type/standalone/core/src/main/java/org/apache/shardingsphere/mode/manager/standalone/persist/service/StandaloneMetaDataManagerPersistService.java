@@ -212,7 +212,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
         for (MetaDataVersion each : metaDataVersions) {
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
-            Optional<RuleChangedItem> ruleItemChanged = buildAlterRuleItemChanged(databaseName, each, Type.UPDATED);
+            Optional<RuleChangedItem> ruleItemChanged = buildRuleChangedItem(databaseName, each, Type.UPDATED);
             if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof AlterRuleItem) {
                 metaDataContextManager.getRuleItemManager().alterRuleItem((AlterRuleItem) ruleItemChanged.get());
             }
@@ -220,7 +220,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         clearServiceCache();
     }
     
-    private Optional<RuleChangedItem> buildAlterRuleItemChanged(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
+    private Optional<RuleChangedItem> buildRuleChangedItem(final String databaseName, final MetaDataVersion metaDataVersion, final Type type) {
         return ruleItemChangedBuilder.build(databaseName, metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), type);
     }
     
@@ -231,7 +231,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion metaDataVersion : metaDataVersions) {
-            Optional<RuleChangedItem> ruleItemChanged = buildAlterRuleItemChanged(databaseName, metaDataVersion, Type.DELETED);
+            Optional<RuleChangedItem> ruleItemChanged = buildRuleChangedItem(databaseName, metaDataVersion, Type.DELETED);
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
             if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof DropRuleItem) {
                 metaDataContextManager.getRuleItemManager().dropRuleItem((DropRuleItem) ruleItemChanged.get());
