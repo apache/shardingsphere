@@ -74,7 +74,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @SneakyThrows(ReflectiveOperationException.class)
     void setUp() {
         metaDataManagerPersistService = new StandaloneMetaDataManagerPersistService(metaDataContextManager);
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistService"), metaDataManagerPersistService, metaDataPersistFacade);
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistFacade"), metaDataManagerPersistService, metaDataPersistFacade);
     }
     
     @Test
