@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mode.metadata.manager.DatabaseMetaDataManager;
 import org.apache.shardingsphere.mode.metadata.manager.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
@@ -56,7 +56,7 @@ public class MetaDataContextManager {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataPersistFacade;
     
     private final StatisticsManager databaseManager;
     
@@ -75,14 +75,14 @@ public class MetaDataContextManager {
     public MetaDataContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        metaDataPersistService = new MetaDataPersistService(repository);
+        metaDataPersistFacade = new MetaDataPersistFacade(repository);
         resourceSwitchManager = new ResourceSwitchManager();
         databaseManager = new StatisticsManager(metaDataContexts);
-        storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistService);
-        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistService);
-        databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistService);
-        ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistService);
-        globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistService);
+        storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistFacade);
+        databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistFacade);
+        databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistFacade);
+        ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistFacade);
+        globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistFacade);
     }
     
     /**
@@ -93,7 +93,7 @@ public class MetaDataContextManager {
      * @param currentDatabase current database
      */
     public void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
+        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
     }
     
     /**
@@ -107,25 +107,25 @@ public class MetaDataContextManager {
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
             metaDataContexts.update(reloadedMetaDataContexts);
             metaDataContexts.getMetaData().getDatabase(database.getName()).getAllSchemas()
-                    .forEach(each -> metaDataPersistService.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), each));
+                    .forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), each));
         } catch (final SQLException ex) {
             log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
     }
     
     private MetaDataContexts createMetaDataContexts(final ShardingSphereDatabase database) throws SQLException {
-        Map<String, DataSourcePoolProperties> dataSourcePoolProps = metaDataPersistService.getDataSourceUnitService().load(database.getName());
+        Map<String, DataSourcePoolProperties> dataSourcePoolProps = metaDataPersistFacade.getDataSourceUnitService().load(database.getName());
         SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), dataSourcePoolProps);
-        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(database.getName());
-        ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistService, computeNodeInstanceContext)
+        Collection<RuleConfiguration> ruleConfigs = metaDataPersistFacade.getDatabaseRuleService().load(database.getName());
+        ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext)
                 .createChangedDatabase(database.getName(), false, switchingResource, ruleConfigs, metaDataContexts);
         metaDataContexts.getMetaData().putDatabase(changedDatabase);
-        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistFacade.getPropsService().load());
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistFacade.getGlobalRuleService().load();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataContexts.getMetaData().getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, metaDataPersistService.getStatisticsPersistService().load(metaData)));
+        MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
         switchingResource.closeStaleDataSources();
         return result;
     }

@@ -41,7 +41,7 @@ import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInit
 import org.apache.shardingsphere.mode.metadata.factory.init.type.LocalConfigurationMetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.factory.init.type.RegisterCenterMetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MetaDataContextsFactory {
     
-    private final MetaDataPersistService persistService;
+    private final MetaDataPersistFacade persistFacade;
     
     private final ComputeNodeInstanceContext instanceContext;
     
@@ -70,13 +70,13 @@ public final class MetaDataContextsFactory {
      */
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         MetaDataContextsInitFactory initFactory = containsRegisteredDatabases()
-                ? new RegisterCenterMetaDataContextsInitFactory(persistService, instanceContext)
-                : new LocalConfigurationMetaDataContextsInitFactory(persistService, instanceContext);
+                ? new RegisterCenterMetaDataContextsInitFactory(persistFacade, instanceContext)
+                : new LocalConfigurationMetaDataContextsInitFactory(persistFacade, instanceContext);
         return initFactory.create(param);
     }
     
     private boolean containsRegisteredDatabases() {
-        return !persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty();
+        return !persistFacade.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty();
     }
     
     /**
@@ -98,7 +98,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsPersistService().load(metaData)));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistFacade.getStatisticsService().load(metaData)));
     }
     
     /**
@@ -120,7 +120,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsPersistService().load(metaData)));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistFacade.getStatisticsService().load(metaData)));
     }
     
     private ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
@@ -155,7 +155,7 @@ public final class MetaDataContextsFactory {
                                                          final ConfigurationProperties props) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return isLoadSchemasFromRegisterCenter
-                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName))
                 : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     

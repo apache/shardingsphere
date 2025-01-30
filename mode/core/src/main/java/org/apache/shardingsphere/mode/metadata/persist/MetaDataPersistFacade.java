@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourc
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -52,33 +52,33 @@ import java.util.stream.Collectors;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService {
+public final class MetaDataPersistFacade {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionService;
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
-    private final MetaDataPersistFacade databaseMetaDataFacade;
+    private final DatabaseMetaDataPersistFacade databaseMetaDataFacade;
     
-    private final DatabaseRulePersistService databaseRulePersistService;
+    private final DatabaseRulePersistService databaseRuleService;
     
     private final GlobalRulePersistService globalRuleService;
     
     private final PropertiesPersistService propsService;
     
-    private final StatisticsPersistService statisticsPersistService;
+    private final StatisticsPersistService statisticsService;
     
-    public MetaDataPersistService(final PersistRepository repository) {
+    public MetaDataPersistFacade(final PersistRepository repository) {
         this.repository = repository;
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        metaDataVersionService = new MetaDataVersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
-        databaseMetaDataFacade = new MetaDataPersistFacade(repository, metaDataVersionPersistService);
-        databaseRulePersistService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);
-        statisticsPersistService = new StatisticsPersistService(repository);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, metaDataVersionService);
+        databaseRuleService = new DatabaseRulePersistService(repository);
+        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionService);
+        propsService = new PropertiesPersistService(repository, metaDataVersionService);
+        statisticsService = new StatisticsPersistService(repository);
     }
     
     /**
@@ -106,7 +106,7 @@ public final class MetaDataPersistService {
             databaseMetaDataFacade.getDatabase().add(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
-            databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
+            databaseRuleService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
     }
     

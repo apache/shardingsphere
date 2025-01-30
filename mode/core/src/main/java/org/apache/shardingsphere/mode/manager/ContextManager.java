@@ -110,10 +110,10 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereSchema reloadedSchema = loadSchema(database, schemaName, dataSourceName);
             if (reloadedSchema.getAllTables().isEmpty()) {
                 database.dropSchema(schemaName);
-                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getSchema().drop(database.getName(), schemaName);
+                persistServiceFacade.getMetaDataPersistFacade().getDatabaseMetaDataFacade().getSchema().drop(database.getName(), schemaName);
             } else {
                 database.addSchema(reloadedSchema);
-                persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), reloadedSchema);
+                persistServiceFacade.getMetaDataPersistFacade().getDatabaseMetaDataFacade().getSchema().alterByRefresh(database.getName(), reloadedSchema);
             }
         } catch (final SQLException ex) {
             log.error("Reload meta data of database: {} schema: {} with data source: {} failed", database.getName(), schemaName, dataSourceName, ex);
@@ -125,7 +125,7 @@ public final class ContextManager implements AutoCloseable {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName)),
                 database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(database.getProtocolType(), material).get(schemaName);
-        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
+        persistServiceFacade.getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
         return result;
     }
     
@@ -167,7 +167,7 @@ public final class ContextManager implements AutoCloseable {
     
     private void persistTable(final ShardingSphereDatabase database, final String schemaName, final String tableName, final GenericSchemaBuilderMaterial material) throws SQLException {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName), database.getProtocolType(), material).getOrDefault(schemaName, new ShardingSphereSchema(schemaName));
-        persistServiceFacade.getMetaDataPersistService().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
+        persistServiceFacade.getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
     }
     
     /**

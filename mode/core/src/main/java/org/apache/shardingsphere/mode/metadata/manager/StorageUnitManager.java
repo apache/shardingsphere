@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public final class StorageUnitManager {
     
     private final ResourceSwitchManager resourceSwitchManager;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataPersistFacade;
     
     /**
      * Register storage unit.
@@ -100,7 +100,7 @@ public final class StorageUnitManager {
     }
     
     private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
-        MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistService, computeNodeInstanceContext).createBySwitchResource(
+        MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createBySwitchResource(
                 databaseName, true, switchingResource, metaDataContexts);
         metaDataContexts.update(reloadMetaDataContexts);
         metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
@@ -114,7 +114,7 @@ public final class StorageUnitManager {
     
     private Collection<ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {
         return originalDatabase.getAllSchemas().stream().map(each -> new ShardingSphereSchema(
-                each.getName(), each.getAllTables(), metaDataPersistService.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), each.getName()))).collect(Collectors.toList());
+                each.getName(), each.getAllTables(), metaDataPersistFacade.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), each.getName()))).collect(Collectors.toList());
     }
     
     @SneakyThrows(Exception.class)
