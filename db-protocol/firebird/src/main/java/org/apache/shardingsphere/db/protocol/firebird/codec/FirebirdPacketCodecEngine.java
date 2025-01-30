@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.db.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 
 import java.nio.charset.Charset;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,6 +39,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
 
     private static final int MESSAGE_TYPE_LENGTH = 4;
     
+    private final List<ByteBuf> pendingMessages = new LinkedList<>();
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
         return readableBytes >= MESSAGE_TYPE_LENGTH;
@@ -45,20 +49,38 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (isValidHeader(in.readableBytes())) {
-            int type = in.getInt(in.readerIndex());
-            FirebirdCommandPacketType commandPacketType = FirebirdCommandPacketType.valueOf(type);
-            if (commandPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                handleAllocateStatement(in, out);
-                return;
+            if (pendingMessages.isEmpty()) {
+                int type = in.getInt(in.readerIndex());
+                FirebirdCommandPacketType commandPacketType = FirebirdCommandPacketType.valueOf(type);
+                if (commandPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
+                    handleAllocateStatement(context, in, out);
+                    return;
+                }
             }
-            out.add(in.readRetainedSlice(in.readableBytes()));
+            addToBuffer(context, in, out);
+//            out.add(in.readRetainedSlice(in.readableBytes()));
+//            out.add(context.alloc().ioBuffer().writeBytes(in.readRetainedSlice(in.writerIndex())));
         }
     }
 
-    private void handleAllocateStatement(final ByteBuf in, final List<Object> out) {
+    private void handleAllocateStatement(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         out.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
+            addToBuffer(context, in, out);
+//            out.add(in.readRetainedSlice(in.readableBytes()));
+        }
+    }
+    
+    private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+        if (in.writerIndex() == in.capacity()) {
+            pendingMessages.add(in.readRetainedSlice(in.readableBytes()));
+        } else if (pendingMessages.isEmpty()) {
             out.add(in.readRetainedSlice(in.readableBytes()));
+        } else {
+            CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+            result.addComponents(true, pendingMessages).addComponent(true, in.readRetainedSlice(in.readableBytes()));
+            out.add(result);
+            pendingMessages.clear();
         }
     }
     
