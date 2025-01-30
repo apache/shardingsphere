@@ -73,13 +73,13 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getAllDatabases().forEach(each -> each.getAllSchemas().forEach(schema -> {
             if (schema.isEmpty()) {
-                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
+                persistService.getMetaDataService().getSchema().add(each.getName(), schema.getName());
             }
-            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            persistService.getMetaDataService().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
         }));
         for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
             for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {
-                persistService.getStatisticsPersistService().persist(
+                persistService.getStatisticsService().persist(
                         metaDataContexts.getMetaData().getDatabase(databaseStatisticsEntry.getKey()), schemaStatisticsEntry.getKey(), schemaStatisticsEntry.getValue());
             }
         }

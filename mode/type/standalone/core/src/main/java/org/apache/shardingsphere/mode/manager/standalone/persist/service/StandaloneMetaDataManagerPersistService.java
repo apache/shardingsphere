@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.InternalMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
@@ -71,21 +71,21 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void createDatabase(final String databaseName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
+        metaDataPersistService.getMetaDataService().getDatabase().add(databaseName);
         metaDataContextManager.getDatabaseMetaDataManager().addDatabase(databaseName);
         clearServiceCache();
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().drop(databaseName);
+        metaDataPersistService.getMetaDataService().getDatabase().drop(databaseName);
         metaDataContextManager.getDatabaseMetaDataManager().dropDatabase(databaseName);
         clearServiceCache();
     }
     
     @Override
     public void createSchema(final String databaseName, final String schemaName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
+        metaDataPersistService.getMetaDataService().getSchema().add(databaseName, schemaName);
         metaDataContextManager.getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
     }
     
@@ -93,7 +93,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterSchema(final String databaseName, final String schemaName,
                             final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
                             final Collection<String> droppedTables, final Collection<String> droppedViews) {
-        MetaDataPersistFacade databaseMetaDataFacade = metaDataPersistService.getDatabaseMetaDataFacade();
+        InternalMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistService.getMetaDataService();
         databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
         databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
         droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
@@ -110,12 +110,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void renameSchema(final String databaseName, final String schemaName, final String renameSchemaName) {
         ShardingSphereSchema schema = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         if (schema.isEmpty()) {
-            metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, renameSchemaName);
+            metaDataPersistService.getMetaDataService().getSchema().add(databaseName, renameSchemaName);
         } else {
-            metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, renameSchemaName, schema.getAllTables());
-            metaDataPersistService.getDatabaseMetaDataFacade().getView().persist(databaseName, renameSchemaName, schema.getAllViews());
+            metaDataPersistService.getMetaDataService().getTable().persist(databaseName, renameSchemaName, schema.getAllTables());
+            metaDataPersistService.getMetaDataService().getView().persist(databaseName, renameSchemaName, schema.getAllViews());
         }
-        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
+        metaDataPersistService.getMetaDataService().getSchema().drop(databaseName, schemaName);
         metaDataContextManager.getDatabaseMetaDataManager().renameSchema(databaseName, schemaName, renameSchemaName);
     }
     
@@ -125,19 +125,19 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private void dropSchema(final String databaseName, final String schemaName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().drop(databaseName, schemaName);
+        metaDataPersistService.getMetaDataService().getSchema().drop(databaseName, schemaName);
         metaDataContextManager.getDatabaseMetaDataManager().dropSchema(databaseName, schemaName);
     }
     
     @Override
     public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
+        metaDataPersistService.getMetaDataService().getTable().persist(databaseName, schemaName, Collections.singleton(table));
         metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
     }
     
     @Override
     public void dropTable(final String databaseName, final String schemaName, final String tableName) {
-        metaDataPersistService.getDatabaseMetaDataFacade().getTable().drop(databaseName, schemaName, tableName);
+        metaDataPersistService.getMetaDataService().getTable().drop(databaseName, schemaName, tableName);
         metaDataContextManager.getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
     }
     
@@ -153,9 +153,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getAllSchemas()
                 .forEach(each -> {
                     if (each.isEmpty()) {
-                        metaDataPersistService.getDatabaseMetaDataFacade().getSchema().add(databaseName, each.getName());
+                        metaDataPersistService.getMetaDataService().getSchema().add(databaseName, each.getName());
                     } else {
-                        metaDataPersistService.getDatabaseMetaDataFacade().getTable().persist(databaseName, each.getName(), each.getAllTables());
+                        metaDataPersistService.getMetaDataService().getTable().persist(databaseName, each.getName(), each.getAllTables());
                     }
                 });
         DataSourceUnitPersistService dataSourceService = metaDataPersistService.getDataSourceUnitService();
@@ -196,7 +196,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void alterSingleRuleConfiguration(final String databaseName, final RuleMetaData ruleMetaData) throws SQLException {
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().persist(databaseName, Collections.singleton(singleRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRuleService().persist(databaseName, Collections.singleton(singleRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         metaDataContextManager.getDatabaseRuleConfigurationManager().alterRuleConfiguration(databaseName, singleRuleConfig);
         clearServiceCache();
@@ -207,7 +207,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService()
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRuleService()
                 .persist(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistService.getMetaDataVersionPersistService().switchActiveVersion(metaDataVersions);
         for (MetaDataVersion each : metaDataVersions) {
@@ -229,7 +229,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (null == toBeRemovedRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistService.getDatabaseRuleService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion metaDataVersion : metaDataVersions) {
             Optional<RuleChangedItem> ruleItemChanged = buildAlterRuleItemChanged(databaseName, metaDataVersion, Type.DELETED);
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
@@ -242,7 +242,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     @Override
     public void removeRuleConfiguration(final String databaseName, final String ruleName) {
-        metaDataPersistService.getDatabaseRulePersistService().delete(databaseName, ruleName);
+        metaDataPersistService.getDatabaseRuleService().delete(databaseName, ruleName);
         clearServiceCache();
     }
     

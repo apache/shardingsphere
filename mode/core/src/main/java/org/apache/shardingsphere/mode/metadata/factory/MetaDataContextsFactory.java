@@ -76,7 +76,7 @@ public final class MetaDataContextsFactory {
     }
     
     private boolean containsRegisteredDatabases() {
-        return !persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames().isEmpty();
+        return !persistService.getMetaDataService().getDatabase().loadAllDatabaseNames().isEmpty();
     }
     
     /**
@@ -98,7 +98,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsPersistService().load(metaData)));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsService().load(metaData)));
     }
     
     /**
@@ -120,7 +120,7 @@ public final class MetaDataContextsFactory {
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
-        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsPersistService().load(metaData)));
+        return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistService.getStatisticsService().load(metaData)));
     }
     
     private ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
@@ -155,7 +155,7 @@ public final class MetaDataContextsFactory {
                                                          final ConfigurationProperties props) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         return isLoadSchemasFromRegisterCenter
-                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getDatabaseMetaDataFacade().getSchema().load(databaseName))
+                ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, persistService.getMetaDataService().getSchema().load(databaseName))
                 : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, instanceContext);
     }
     

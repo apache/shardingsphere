@@ -64,7 +64,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     private Collection<String> getDatabaseNames(final Map<String, DatabaseConfiguration> databaseConfigs) {
         return instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
                 ? databaseConfigs.keySet()
-                : persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
+                : persistService.getMetaDataService().getDatabase().loadAllDatabaseNames();
     }
     
     private Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames, final Map<String, DatabaseConfiguration> databaseConfigs) {
@@ -74,7 +74,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     private DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName, final Map<String, DatabaseConfiguration> databaseConfigs) {
         closeGeneratedDataSources(databaseName, databaseConfigs);
         Map<String, DataSourceConfiguration> dataSources = persistService.loadDataSourceConfigurations(databaseName);
-        Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
+        Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRuleService().load(databaseName);
         return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
@@ -85,6 +85,6 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     }
     
     private Map<String, Collection<ShardingSphereSchema>> loadSchemas(final Collection<String> databaseNames) {
-        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistService.getDatabaseMetaDataFacade().getSchema().load(each)));
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistService.getMetaDataService().getSchema().load(each)));
     }
 }

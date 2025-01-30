@@ -114,7 +114,7 @@ public final class StorageUnitManager {
     
     private Collection<ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {
         return originalDatabase.getAllSchemas().stream().map(each -> new ShardingSphereSchema(
-                each.getName(), each.getAllTables(), metaDataPersistService.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), each.getName()))).collect(Collectors.toList());
+                each.getName(), each.getAllTables(), metaDataPersistService.getMetaDataService().getView().load(originalDatabase.getName(), each.getName()))).collect(Collectors.toList());
     }
     
     @SneakyThrows(Exception.class)

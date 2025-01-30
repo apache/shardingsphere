@@ -86,7 +86,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Collection<String> getDatabaseNames(final ContextManagerBuilderParameter param, final MetaDataPersistService metaDataPersistService) {
         return param.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? param.getDatabaseConfigs().keySet()
-                : metaDataPersistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
+                : metaDataPersistService.getMetaDataService().getDatabase().loadAllDatabaseNames();
     }
     
     private Collection<DeliverEventSubscriber> createDeliverEventSubscribers(final PersistRepository repository) {
