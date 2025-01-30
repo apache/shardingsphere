@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.persist.service;
+package org.apache.shardingsphere.mode.manager.cluster.workerid;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;

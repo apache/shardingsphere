@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.lock;
 
 import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.persist.service.GlobalLockPersistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
