@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.data;
+package org.apache.shardingsphere.mode.metadata.persist.statistics;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredDatabaseStatistics;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
