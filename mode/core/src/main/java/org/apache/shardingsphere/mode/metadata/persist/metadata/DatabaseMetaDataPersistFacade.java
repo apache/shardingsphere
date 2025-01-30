@@ -26,10 +26,10 @@ import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPe
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Meta data persist facade.
+ * Database meta data persist facade.
  */
 @Getter
-public final class InternalMetaDataPersistFacade {
+public final class DatabaseMetaDataPersistFacade {
     
     private final DatabaseMetaDataPersistService database;
     
@@ -39,7 +39,7 @@ public final class InternalMetaDataPersistFacade {
     
     private final ViewMetaDataPersistService view;
     
-    public InternalMetaDataPersistFacade(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
+    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         database = new DatabaseMetaDataPersistService(repository);
         schema = new SchemaMetaDataPersistService(repository, metaDataVersionPersistService);
         table = new TableMetaDataPersistService(repository, metaDataVersionPersistService);

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -46,7 +46,7 @@ public final class GlobalConfigurationManager {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataPersistFacade;
     
     /**
      * Alter global rule configuration.
@@ -64,8 +64,7 @@ public final class GlobalConfigurationManager {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()),
-                metaDataPersistService);
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()), metaDataPersistFacade);
     }
     
     // Optimize string comparison rule type.
@@ -85,6 +84,6 @@ public final class GlobalConfigurationManager {
      */
     public synchronized void alterProperties(final Properties props) {
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistService);
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistFacade);
     }
 }

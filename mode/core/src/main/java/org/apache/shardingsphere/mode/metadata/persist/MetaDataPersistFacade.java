@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourc
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.InternalMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -52,15 +52,15 @@ import java.util.stream.Collectors;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService {
+public final class MetaDataPersistFacade {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionService;
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
-    private final InternalMetaDataPersistFacade metaDataService;
+    private final DatabaseMetaDataPersistFacade databaseMetaDataFacade;
     
     private final DatabaseRulePersistService databaseRuleService;
     
@@ -70,14 +70,14 @@ public final class MetaDataPersistService {
     
     private final StatisticsPersistService statisticsService;
     
-    public MetaDataPersistService(final PersistRepository repository) {
+    public MetaDataPersistFacade(final PersistRepository repository) {
         this.repository = repository;
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        metaDataVersionService = new MetaDataVersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
-        metaDataService = new InternalMetaDataPersistFacade(repository, metaDataVersionPersistService);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, metaDataVersionService);
         databaseRuleService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);
+        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionService);
+        propsService = new PropertiesPersistService(repository, metaDataVersionService);
         statisticsService = new StatisticsPersistService(repository);
     }
     
@@ -103,7 +103,7 @@ public final class MetaDataPersistService {
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfig);
         if (propsMap.isEmpty() && databaseConfig.getRuleConfigurations().isEmpty()) {
-            metaDataService.getDatabase().add(databaseName);
+            databaseMetaDataFacade.getDatabase().add(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
             databaseRuleService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
@@ -147,8 +147,8 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> metaDataService.getSchema().alterByRuleAltered(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> metaDataService.getTable().drop(databaseName, each.getName(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleAltered(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
     }
     
     /**
@@ -161,7 +161,7 @@ public final class MetaDataPersistService {
     public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> metaDataService.getSchema().alterByRuleDropped(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> metaDataService.getTable().drop(databaseName, each.getName(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleDropped(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
     }
 }

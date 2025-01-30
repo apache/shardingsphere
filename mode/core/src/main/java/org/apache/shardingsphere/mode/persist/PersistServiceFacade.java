@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
@@ -39,7 +39,7 @@ public final class PersistServiceFacade {
     
     private final PersistRepository repository;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataPersistFacade;
     
     private final ComputeNodePersistService computeNodePersistService;
     
@@ -53,7 +53,7 @@ public final class PersistServiceFacade {
     
     public PersistServiceFacade(final PersistRepository repository, final ModeConfiguration modeConfig, final MetaDataContextManager metaDataContextManager) {
         this.repository = repository;
-        metaDataPersistService = new MetaDataPersistService(repository);
+        metaDataPersistFacade = new MetaDataPersistFacade(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
         clusterStatePersistService = new ClusterStatePersistService(repository);
         qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);

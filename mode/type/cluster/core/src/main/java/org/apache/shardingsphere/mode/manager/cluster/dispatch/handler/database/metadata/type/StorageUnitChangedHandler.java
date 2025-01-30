@@ -43,7 +43,7 @@ public final class StorageUnitChangedHandler {
      */
     public void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().registerStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
     }
     
@@ -56,7 +56,7 @@ public final class StorageUnitChangedHandler {
      */
     public void handleAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistService().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().alterStorageUnit(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
     }
     

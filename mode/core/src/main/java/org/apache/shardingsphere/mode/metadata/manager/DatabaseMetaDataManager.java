@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 
 import java.util.Collections;
@@ -43,7 +43,7 @@ public final class DatabaseMetaDataManager {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistFacade metaDataPersistFacade;
     
     /**
      * Add database.
@@ -56,7 +56,7 @@ public final class DatabaseMetaDataManager {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
         metaDataContexts.getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.getMetaData().getProps());
-        metaDataContexts.update(metaDataContexts.getMetaData(), metaDataPersistService);
+        metaDataContexts.update(metaDataContexts.getMetaData(), metaDataPersistFacade);
     }
     
     /**

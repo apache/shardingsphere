@@ -68,7 +68,7 @@ class GlobalRuleChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version"))
                 .thenReturn("rule_value");
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
     }
