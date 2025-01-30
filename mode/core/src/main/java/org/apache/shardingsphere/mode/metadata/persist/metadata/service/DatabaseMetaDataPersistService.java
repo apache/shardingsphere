@@ -37,7 +37,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be added database name
      */
     public void add(final String databaseName) {
-        repository.persist(DatabaseMetaDataNodePath.getDatabasePath(databaseName), "");
+        repository.persist(DatabaseMetaDataNodePath.getDatabasePath(databaseName), ""); 
     }
     
     /**
