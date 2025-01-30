@@ -147,11 +147,11 @@ class SQLRewriteContextTest {
     }
     
     private QueryContext createMockQueryContext(final SQLStatementContext statementContext, final List<Object> parameters) {
-        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
-        when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");
-        when(queryContext.getParameters()).thenReturn(parameters);
-        when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
-        return queryContext;
+        QueryContext result = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatementContext()).thenReturn(statementContext);
+        when(result.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");
+        when(result.getParameters()).thenReturn(parameters);
+        when(result.getHintValueContext()).thenReturn(hintValueContext);
+        return result;
     }
 }
