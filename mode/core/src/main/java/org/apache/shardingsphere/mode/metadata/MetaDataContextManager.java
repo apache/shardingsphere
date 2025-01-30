@@ -58,7 +58,7 @@ public class MetaDataContextManager {
     
     private final MetaDataPersistFacade metaDataPersistFacade;
     
-    private final StatisticsManager databaseManager;
+    private final StatisticsManager statisticsManager;
     
     private final DatabaseMetaDataManager databaseMetaDataManager;
     
@@ -77,7 +77,7 @@ public class MetaDataContextManager {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataPersistFacade = new MetaDataPersistFacade(repository);
         resourceSwitchManager = new ResourceSwitchManager();
-        databaseManager = new StatisticsManager(metaDataContexts);
+        statisticsManager = new StatisticsManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistFacade);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistFacade);
         databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistFacade);

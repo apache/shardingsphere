@@ -48,7 +48,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getDatabaseManager();
+        StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getStatisticsManager();
         Optional<String> databaseName = ShardingSphereStatisticsNodePath.findDatabaseName(event.getKey(), false);
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
