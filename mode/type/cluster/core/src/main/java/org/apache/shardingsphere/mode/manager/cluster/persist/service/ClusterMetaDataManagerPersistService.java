@@ -93,7 +93,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
         databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
         droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
-        droppedViews.forEach(each -> databaseMetaDataFacade.getView().delete(databaseName, schemaName, each));
+        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(databaseName, schemaName, each));
     }
     
     @Override

@@ -82,8 +82,8 @@ class ViewMetaDataPersistServiceTest {
     }
     
     @Test
-    void assertDelete() {
-        persistService.delete("foo_db", "foo_schema", "foo_view");
+    void assertDrop() {
+        persistService.drop("foo_db", "foo_schema", "foo_view");
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema/views/foo_view");
     }
 }
