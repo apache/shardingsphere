@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.config;
+package org.apache.shardingsphere.mode.metadata.persist.config;
 
-import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

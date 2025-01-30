@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.metadata.database;
+package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;

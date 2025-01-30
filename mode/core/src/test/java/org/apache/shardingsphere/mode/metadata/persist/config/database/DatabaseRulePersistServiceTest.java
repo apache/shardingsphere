@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.config.database;
+package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
