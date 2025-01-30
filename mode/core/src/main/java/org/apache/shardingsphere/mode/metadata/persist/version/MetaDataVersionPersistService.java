@@ -72,7 +72,7 @@ public final class MetaDataVersionPersistService {
     public List<String> getVersions(final String path) {
         List<String> result = repository.getChildrenKeys(path);
         if (result.size() > 2) {
-            log.warn("There are multiple versions of ：{}, please check the configuration.", path);
+            log.warn("There are multiple versions of: {}, please check the configuration.", path);
             result.sort((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)));
         }
         return result;
