@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -73,7 +73,7 @@ class MetaDataContextsFactoryTest {
     private MetaDataPersistService metaDataPersistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DatabaseMetaDataPersistFacade databaseMetaDataPersistFacade;
+    private MetaDataPersistFacade metaDataPersistFacade;
     
     @BeforeEach
     void setUp() {
@@ -85,7 +85,7 @@ class MetaDataContextsFactoryTest {
         PropertiesPersistService propertiesPersistService = mock(PropertiesPersistService.class);
         when(propertiesPersistService.load()).thenReturn(new Properties());
         when(metaDataPersistService.getPropsService()).thenReturn(propertiesPersistService);
-        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
+        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(metaDataPersistFacade);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(databaseType);
@@ -119,8 +119,8 @@ class MetaDataContextsFactoryTest {
     
     @Test
     void assertCreateWithProxyInstanceMetaData() throws SQLException {
-        when(databaseMetaDataPersistFacade.getDatabase().loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
-        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
+        when(metaDataPersistFacade.getDatabase().loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
+        when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(metaDataPersistFacade);
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistService, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS)).create(createContextManagerBuilderParameter());
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));

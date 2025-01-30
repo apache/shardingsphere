@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -89,7 +89,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void alterSchema(final String databaseName, final String schemaName,
                             final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
                             final Collection<String> droppedTables, final Collection<String> droppedViews) {
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistService.getDatabaseMetaDataFacade();
+        MetaDataPersistFacade databaseMetaDataFacade = metaDataPersistService.getDatabaseMetaDataFacade();
         databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
         databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
         droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));

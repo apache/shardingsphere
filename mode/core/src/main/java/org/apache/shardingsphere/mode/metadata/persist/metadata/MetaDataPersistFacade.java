@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.database.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.schema.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Database meta data persist facade.
+ * Meta data persist facade.
  */
 @Getter
-public final class DatabaseMetaDataPersistFacade {
+public final class MetaDataPersistFacade {
     
     private final DatabaseMetaDataPersistService database;
     
@@ -39,7 +39,7 @@ public final class DatabaseMetaDataPersistFacade {
     
     private final ViewMetaDataPersistService view;
     
-    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
+    public MetaDataPersistFacade(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         database = new DatabaseMetaDataPersistService(repository);
         schema = new SchemaMetaDataPersistService(repository, metaDataVersionPersistService);
         table = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
