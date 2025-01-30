@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -99,7 +99,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSchema() {
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        MetaDataPersistFacade databaseMetaDataFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.alterSchema("foo_db", "foo_schema", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         verify(databaseMetaDataFacade.getTable()).persist("foo_db", "foo_schema", new LinkedList<>());
@@ -111,7 +111,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        MetaDataPersistFacade databaseMetaDataFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.renameSchema("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema(), times(0)).add("foo_db", "bar_schema");
@@ -128,7 +128,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(database.getSchema("bar_schema")).thenReturn(new ShardingSphereSchema("bar_schema"));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        MetaDataPersistFacade databaseMetaDataFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
         when(metaDataPersistService.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataFacade);
         metaDataManagerPersistService.renameSchema("foo_db", "foo_schema", "bar_schema");
         verify(databaseMetaDataFacade.getSchema()).add("foo_db", "bar_schema");

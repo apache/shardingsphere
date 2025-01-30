@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.metadata.table;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;

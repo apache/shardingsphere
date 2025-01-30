@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourc
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -68,7 +68,7 @@ class MetaDataPersistServiceTest {
     private DataSourceUnitPersistService dataSourceUnitService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DatabaseMetaDataPersistFacade databaseMetaDataFacade;
+    private MetaDataPersistFacade databaseMetaDataFacade;
     
     @Mock
     private DatabaseRulePersistService databaseRulePersistService;

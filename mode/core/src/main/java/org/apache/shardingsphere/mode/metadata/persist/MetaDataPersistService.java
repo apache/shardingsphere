@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourc
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -60,7 +60,7 @@ public final class MetaDataPersistService {
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
-    private final DatabaseMetaDataPersistFacade databaseMetaDataFacade;
+    private final MetaDataPersistFacade databaseMetaDataFacade;
     
     private final DatabaseRulePersistService databaseRulePersistService;
     
@@ -74,7 +74,7 @@ public final class MetaDataPersistService {
         this.repository = repository;
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, metaDataVersionPersistService);
+        databaseMetaDataFacade = new MetaDataPersistFacade(repository, metaDataVersionPersistService);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
         propsService = new PropertiesPersistService(repository, metaDataVersionPersistService);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.metadata.database;
+package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
