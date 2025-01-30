@@ -43,6 +43,8 @@ public final class ViewMetaDataPersistService {
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
+    private final YamlViewSwapper swapper = new YamlViewSwapper();
+    
     /**
      * Load views.
      *
@@ -63,9 +65,8 @@ public final class ViewMetaDataPersistService {
      * @return loaded view
      */
     public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
-        String view = repository.query(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName,
-                repository.query(ViewMetaDataNodePath.getViewActiveVersionPath(databaseName, schemaName, viewName))));
-        return new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
+        String view = repository.query(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName, getActiveVersion(databaseName, schemaName, viewName)));
+        return swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
     }
     
     /**
@@ -81,8 +82,7 @@ public final class ViewMetaDataPersistService {
             String viewName = each.getName().toLowerCase();
             List<String> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNodePath.getViewVersionsPath(databaseName, schemaName, viewName));
             String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName, nextActiveVersion),
-                    YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(each)));
+            repository.persist(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName, nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
                 repository.persist(ViewMetaDataNodePath.getViewActiveVersionPath(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);
             }
@@ -96,13 +96,13 @@ public final class ViewMetaDataPersistService {
     }
     
     /**
-     * Delete view.
+     * Drop view.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param viewName view name
+     * @param viewName to be dropped view name
      */
-    public void delete(final String databaseName, final String schemaName, final String viewName) {
+    public void drop(final String databaseName, final String schemaName, final String viewName) {
         repository.delete(ViewMetaDataNodePath.getViewPath(databaseName, schemaName, viewName.toLowerCase()));
     }
 }

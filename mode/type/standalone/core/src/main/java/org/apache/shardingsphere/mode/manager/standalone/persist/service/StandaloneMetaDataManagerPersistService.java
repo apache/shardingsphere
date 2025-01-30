@@ -97,7 +97,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
         databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
         droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
-        droppedViews.forEach(each -> databaseMetaDataFacade.getView().delete(databaseName, schemaName, each));
+        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(databaseName, schemaName, each));
         alteredTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, schemaName, each));
         alteredViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterView(databaseName, schemaName, each));
         droppedTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropTable(databaseName, schemaName, each));
