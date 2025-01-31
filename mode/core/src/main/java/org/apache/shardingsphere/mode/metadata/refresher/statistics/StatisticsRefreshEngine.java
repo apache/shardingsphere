@@ -154,7 +154,7 @@ public final class StatisticsRefreshEngine {
         for (Entry<String, DatabaseStatistics> entry : currentStatistics.getDatabaseStatisticsMap().entrySet()) {
             if (!changedStatistics.containsDatabaseStatistics(entry.getKey())) {
                 currentStatistics.dropDatabaseStatistics(entry.getKey());
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getStatisticsPersistService().delete(entry.getKey());
+                contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
             }
         }
     }
@@ -178,7 +178,7 @@ public final class StatisticsRefreshEngine {
         if (!currentTableStatistics.equals(changedTableStatistics)) {
             currentStatistics.getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).putTableStatistics(changedTableStatistics.getName(), changedTableStatistics);
             AlteredDatabaseStatistics alteredDatabaseStatistics = createAlteredDatabaseStatistics(databaseName, schemaName, table, currentTableStatistics, changedTableStatistics);
-            contextManager.getPersistServiceFacade().getMetaDataPersistService().getStatisticsPersistService().update(alteredDatabaseStatistics);
+            contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().update(alteredDatabaseStatistics);
         }
     }
     

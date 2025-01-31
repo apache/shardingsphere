@@ -60,7 +60,7 @@ class PropertiesChangedHandlerTest {
     void assertHandle() {
         when(contextManager.getPersistServiceFacade().getRepository().query("/props/active_version")).thenReturn("key=value");
         Properties props = mock(Properties.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load()).thenReturn(props);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load()).thenReturn(props);
         handler.handle(contextManager, new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterProperties(props);
     }

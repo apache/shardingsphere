@@ -53,37 +53,37 @@ class StatisticsChangedHandlerTest {
     @Test
     void assertHandleWithDatabaseAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addDatabaseStatistics("foo_db");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).addDatabaseStatistics("foo_db");
     }
     
     @Test
     void assertHandleWithDatabaseDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropDatabaseStatistics("foo_db");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).dropDatabaseStatistics("foo_db");
     }
     
     @Test
     void assertHandleWithSchemaAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addSchemaStatistics("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).addSchemaStatistics("foo_db", "foo_schema");
     }
     
     @Test
     void assertHandleWithSchemaDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropSchemaStatistics("foo_db", "foo_schema");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).dropSchemaStatistics("foo_db", "foo_schema");
     }
     
     @Test
     void assertHandleWithTableAdded() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).addTableStatistics("foo_db", "foo_schema", "foo_tbl");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).addTableStatistics("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
     void assertHandleWithTableDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).dropTableStatistics("foo_db", "foo_schema", "foo_tbl");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).dropTableStatistics("foo_db", "foo_schema", "foo_tbl");
     }
     
     @Test
@@ -91,36 +91,36 @@ class StatisticsChangedHandlerTest {
         YamlRowStatistics rowData = new YamlRowStatistics();
         rowData.setUniqueKey("1");
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).alterRowStatistics(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), refEq(rowData));
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).alterRowStatistics(eq("foo_db"), eq("foo_schema"), eq("foo_tbl"), refEq(rowData));
     }
     
     @Test
     void assertHandleWithShardingSphereRowDeleted() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/1", "{uniqueKey: 1}", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager()).deleteRowStatistics("foo_db", "foo_schema", "foo_tbl", "1");
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager()).deleteRowStatistics("foo_db", "foo_schema", "foo_tbl", "1");
     }
     
     @Test
     void assertHandleWithMissedDatabaseNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addDatabaseStatistics(any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addDatabaseStatistics(any());
     }
     
     @Test
     void assertHandleWithMissedSchemaNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas", "=", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addSchemaStatistics(any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addSchemaStatistics(any(), any());
     }
     
     @Test
     void assertHandleWithMissedTableNameEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).addTableStatistics(any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).addTableStatistics(any(), any(), any());
     }
     
     @Test
     void assertHandleWithMissedRowEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseManager(), times(0)).alterRowStatistics(any(), any(), any(), any());
+        verify(contextManager.getMetaDataContextManager().getStatisticsManager(), times(0)).alterRowStatistics(any(), any(), any(), any());
     }
 }
