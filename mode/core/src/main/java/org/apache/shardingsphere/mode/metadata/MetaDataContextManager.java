@@ -86,11 +86,11 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Refresh database meta data.
+     * Reload database.
      *
      * @param database to be reloaded database
      */
-    public void refreshDatabaseMetaData(final ShardingSphereDatabase database) {
+    public void reloadDatabase(final ShardingSphereDatabase database) {
         try {
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             dropSchemas(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
