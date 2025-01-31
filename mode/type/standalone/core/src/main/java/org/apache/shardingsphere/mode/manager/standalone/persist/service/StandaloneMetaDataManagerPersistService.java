@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -184,10 +185,10 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 .getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
         MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
                 databaseName, false, switchingResource, metaDataContextManager.getMetaDataContexts());
-        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
-        metaDataContextManager.dropSchemas(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
+        ShardingSphereDatabase reloadDatabase = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase currentDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, reloadDatabase, currentDatabase);
+        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
         metaDataContextManager.getMetaDataContexts().update(reloadMetaDataContexts);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
