@@ -66,7 +66,7 @@ public final class ContextManager implements AutoCloseable {
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
     private final ExecutorEngine executorEngine;
-     
+    
     private final ClusterStateContext stateContext;
     
     private final PersistServiceFacade persistServiceFacade;
