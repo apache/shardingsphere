@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,13 +55,13 @@ class GlobalRuleChangedHandlerTest {
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
     void assertHandleWithEmptyRuleName() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
