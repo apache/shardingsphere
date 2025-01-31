@@ -88,12 +88,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.recovery.OltpLogFactory\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager"},
-    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f7c3fca2710"},
-    "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/com.clickhouse.client.ClickHouseClient\\E"
   }, {
@@ -339,9 +333,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacade"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.coordinator.PersistCoordinatorFacadeBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder\\E"
