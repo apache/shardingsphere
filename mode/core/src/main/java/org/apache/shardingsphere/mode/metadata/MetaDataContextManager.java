@@ -86,17 +86,6 @@ public class MetaDataContextManager {
     }
     
     /**
-     * Drop schemas.
-     *
-     * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     */
-    public void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
-    }
-    
-    /**
      * Refresh database meta data.
      *
      * @param database to be reloaded database
@@ -128,5 +117,9 @@ public class MetaDataContextManager {
         MetaDataContexts result = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
         switchingResource.closeStaleDataSources();
         return result;
+    }
+    
+    private void dropSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
     }
 }
