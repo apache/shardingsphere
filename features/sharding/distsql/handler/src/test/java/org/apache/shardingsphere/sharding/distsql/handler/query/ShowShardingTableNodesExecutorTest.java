@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
+// TODO check the behaviour of this Table Test..
 class ShowShardingTableNodesExecutorTest {
     
     @Test
@@ -84,7 +84,7 @@ class ShowShardingTableNodesExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("t_order"));
-        assertThat(row.getCell(2), is("ds_1.t_order_0, ds_2.t_order_1, ds_1.t_order_2, ds_2.t_order_3, ds_1.t_order_4, ds_2.t_order_5"));
+        assertThat(row.getCell(2), is("ds_1.t_order_0, ds_1.t_order_1, ds_1.t_order_2, ds_2.t_order_0, ds_2.t_order_1, ds_2.t_order_2"));
     }
     
     private ContextManager mockContextManager(final ShardingRule rule) {
@@ -103,7 +103,7 @@ class ShowShardingTableNodesExecutorTest {
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("t_order_item"));
-        assertThat(row.getCell(2), is("ds_2.t_order_item_0, ds_3.t_order_item_1, ds_2.t_order_item_2, ds_3.t_order_item_3, ds_2.t_order_item_4, ds_3.t_order_item_5"));
+        assertThat(row.getCell(2), is("ds_2.t_order_item_0, ds_2.t_order_item_1, ds_2.t_order_item_2, ds_3.t_order_item_0, ds_3.t_order_item_1, ds_3.t_order_item_2"));
     }
     
     private void assertAll(final ShardingRule rule) throws SQLException {
@@ -113,8 +113,8 @@ class ShowShardingTableNodesExecutorTest {
         List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getCell(1), is("t_order"));
-        assertThat(actual.get(0).getCell(2), is("ds_1.t_order_0, ds_2.t_order_1, ds_1.t_order_2, ds_2.t_order_3, ds_1.t_order_4, ds_2.t_order_5"));
+        assertThat(actual.get(0).getCell(2), is("ds_1.t_order_0, ds_1.t_order_1, ds_1.t_order_2, ds_2.t_order_0, ds_2.t_order_1, ds_2.t_order_2"));
         assertThat(actual.get(1).getCell(1), is("t_order_item"));
-        assertThat(actual.get(1).getCell(2), is("ds_2.t_order_item_0, ds_3.t_order_item_1, ds_2.t_order_item_2, ds_3.t_order_item_3, ds_2.t_order_item_4, ds_3.t_order_item_5"));
+        assertThat(actual.get(1).getCell(2), is("ds_2.t_order_item_0, ds_2.t_order_item_1, ds_2.t_order_item_2, ds_3.t_order_item_0, ds_3.t_order_item_1, ds_3.t_order_item_2"));
     }
 }

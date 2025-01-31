@@ -76,7 +76,7 @@ class ShowShardingTableRulesUsedAuditorExecutorTest extends DistSQLDatabaseRuleQ
             result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
             result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
             result.getShardingAlgorithms().put("t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
-            result.getShardingAlgorithms().put("auto_mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+            result.getShardingAlgorithms().put("auto_mod", new AlgorithmConfiguration("MOD", null));
             result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
             return result;
         }
@@ -89,7 +89,7 @@ class ShowShardingTableRulesUsedAuditorExecutorTest extends DistSQLDatabaseRuleQ
         }
         
         private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
+            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_${0..1}.t_order_auto_${0..1}");
             result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
             result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("shardingKeyAudit"), true));
             return result;

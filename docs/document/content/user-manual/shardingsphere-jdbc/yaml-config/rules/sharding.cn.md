@@ -36,7 +36,7 @@ rules:
         allowHintDisable: true # 是否禁用分片审计hint
   autoTables: # 自动分片表规则配置
     t_order_auto: # 逻辑表名称
-      actualDataSources (?): # 数据源名称
+      actualDataNodes (?): # 由数据源名 + 表名组成（参考 Inline 语法规则）
       shardingStrategy: # 切分策略
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称

@@ -23,7 +23,7 @@ Attributes:
 
 | *Name*         | *DataType* | *Description*  |
 |----------------|------------|----------------|
-| sharding-count | int        | Sharding count |
+
 
 #### Hash Modulo Sharding Algorithm
 
@@ -33,7 +33,7 @@ Attributes:
 
 | *Name*         | *DataType* | *Description*  |
 |----------------|------------|----------------|
-| sharding-count | int        | Sharding count |
+
 
 #### Volume Based Range Sharding Algorithm
 

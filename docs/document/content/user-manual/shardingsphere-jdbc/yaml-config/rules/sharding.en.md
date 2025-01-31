@@ -36,7 +36,7 @@ rules:
         allowHintDisable: true # Enable or disable sharding audit hint
   autoTables: # Auto Sharding table configuration
     t_order_auto: # Logic table name
-      actualDataSources (?): # Data source names
+      actualDataNodes (?): # Describe data source names and actual tables (refer to Inline syntax rules)
       shardingStrategy: # Sharding strategy
         standard: # For single sharding column scenario
           shardingColumn: # Sharding column name

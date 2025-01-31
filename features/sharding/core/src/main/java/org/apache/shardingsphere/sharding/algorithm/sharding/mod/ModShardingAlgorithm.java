@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Properties;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetException;
 
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Properties;
-
 /**
  * Modulo sharding algorithm.
  */
-public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
-    
-    private static final String SHARDING_COUNT_KEY = "sharding-count";
+public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>{
     
     private static final String START_OFFSET_INDEX_KEY = "start-offset";
     
@@ -46,7 +42,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private static final String ZERO_PADDING_KEY = "zero-padding";
     
     private int shardingCount;
-    
+
     private int startOffset;
     
     private int stopOffset;
@@ -57,18 +53,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public void init(final Properties props) {
-        shardingCount = getShardingCount(props);
         startOffset = getStartOffset(props);
         stopOffset = getStopOffset(props);
         zeroPadding = isZeroPadding(props);
-        maxPaddingSize = calculateMaxPaddingSize();
-    }
-    
-    private int getShardingCount(final Properties props) {
-        ShardingSpherePreconditions.checkContainsKey(props, SHARDING_COUNT_KEY, () -> new AlgorithmInitializationException(this, "Sharding count can not be null."));
-        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
-        ShardingSpherePreconditions.checkState(result > 0, () -> new AlgorithmInitializationException(this, "Sharding count must be a positive integer."));
-        return result;
     }
     
     private int getStartOffset(final Properties props) {
@@ -100,12 +87,16 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
+        shardingCount = availableTargetNames.size();
+        maxPaddingSize = calculateMaxPaddingSize();
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+        shardingCount = availableTargetNames.size();
+        maxPaddingSize = calculateMaxPaddingSize();
         return containsAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
@@ -142,8 +133,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private BigInteger getBigInteger(final Comparable<?> value) {
         return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
     }
-    
-    @Override
+
     public int getAutoTablesAmount() {
         return shardingCount;
     }

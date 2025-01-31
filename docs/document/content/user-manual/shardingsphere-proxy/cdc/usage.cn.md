@@ -140,9 +140,9 @@ REGISTER STORAGE UNIT ds_0 (
 
 ```sql
 CREATE SHARDING TABLE RULE t_order(
-STORAGE_UNITS(ds_0,ds_1),
+DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_0.t_order_1,ds_1.t_order_1),
 SHARDING_COLUMN=order_id,
-TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="2")),
+TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```

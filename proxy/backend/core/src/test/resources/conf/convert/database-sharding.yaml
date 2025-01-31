@@ -69,7 +69,7 @@ rules:
        keyGeneratorName: snowflake
  autoTables:
    t_account:
-     actualDataSources: ds_0,ds_1
+     actualDataNodes: ds_${1..1}.t_order_${0..1}
      shardingStrategy:
        standard:
          shardingAlgorithmName: auto_mod
@@ -110,8 +110,6 @@ rules:
        algorithm-expression: ds_${Integer.valueOf(value) % 2}
    auto_mod:
      type: MOD
-     props:
-       sharding-count: 4
 
  keyGenerators:
    snowflake:

@@ -34,7 +34,7 @@ public final class ShardingAutoTableRuleConfiguration {
     
     private final String logicTable;
     
-    private final String actualDataSources;
+    private final String actualDataNodes;
     
     private ShardingStrategyConfiguration shardingStrategy;
     

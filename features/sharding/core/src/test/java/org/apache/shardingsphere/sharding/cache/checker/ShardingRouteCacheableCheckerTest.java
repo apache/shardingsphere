@@ -95,12 +95,12 @@ class ShardingRouteCacheableCheckerTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
-        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", null));
         ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
         ruleConfig.getShardingAlgorithms().put("table-inline",
                 new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_non_cacheable_table_sharding_${id % 2}"))));
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("warehouse_id", "inline"));
-        ShardingAutoTableRuleConfiguration warehouse = new ShardingAutoTableRuleConfiguration("t_warehouse", "ds_${0..1}");
+        ShardingAutoTableRuleConfiguration warehouse = new ShardingAutoTableRuleConfiguration("t_warehouse", "ds_${0..1}.t_warehouse");
         warehouse.setShardingStrategy(new StandardShardingStrategyConfiguration("id", "mod"));
         ruleConfig.getAutoTables().add(warehouse);
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order"));

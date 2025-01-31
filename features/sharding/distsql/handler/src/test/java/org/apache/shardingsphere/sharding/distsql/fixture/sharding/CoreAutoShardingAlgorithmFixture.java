@@ -18,22 +18,20 @@
 package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
+import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-public final class CoreAutoShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class CoreAutoShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String SHARDING_COUNT_KEY = "sharding-count";
+    private static final String ACTUAL_DATA_NODES = "actualDataNodes";
     
     private static final String START_OFFSET_INDEX_KEY = "start-offset";
     
@@ -53,20 +51,11 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public void init(final Properties props) {
-        shardingCount = getShardingCount(props);
         startOffset = getStartOffset(props);
         stopOffset = getStopOffset(props);
         zeroPadding = isZeroPadding(props);
-        maxPaddingSize = calculateMaxPaddingSize();
     }
-    
-    private int getShardingCount(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count can not be null.");
-        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
-        ShardingSpherePreconditions.checkState(result > 0, () -> new AlgorithmInitializationException(this, "Sharding count must be a positive integer."));
-        return result;
-    }
-    
+
     private int getStartOffset(final Properties props) {
         int result = Integer.parseInt(String.valueOf(props.getProperty(START_OFFSET_INDEX_KEY, "0")));
         ShardingSpherePreconditions.checkState(result >= 0, () -> new AlgorithmInitializationException(this, "Start offset can not be less than 0."));
@@ -95,12 +84,16 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        shardingCount = availableTargetNames.size();
+        maxPaddingSize = calculateMaxPaddingSize();
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+        shardingCount = availableTargetNames.size();
+        maxPaddingSize = calculateMaxPaddingSize();
         return containsAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
@@ -142,11 +135,6 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     private BigInteger getBigInteger(final Comparable<?> value) {
         return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        return shardingCount;
     }
     
     @Override

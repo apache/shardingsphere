@@ -238,8 +238,6 @@ rules:
     shardingAlgorithms:
       mod_4:
         type: MOD
-        props:
-          sharding-count: 4
 ```
 
 ## BenchmarkSQL 5.0 PostgreSQL statement list

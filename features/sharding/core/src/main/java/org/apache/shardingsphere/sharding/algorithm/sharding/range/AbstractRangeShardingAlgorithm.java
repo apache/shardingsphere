@@ -21,7 +21,6 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -36,7 +35,7 @@ import java.util.Properties;
 /**
  * Abstract range sharding algorithm.
  */
-public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>{
     
     private Map<Integer, Range<Comparable<?>>> partitionRange;
     
@@ -86,8 +85,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     private Long getLongValue(final Comparable<?> value) {
         return Long.parseLong(value.toString());
     }
-    
-    @Override
+
     public final int getAutoTablesAmount() {
         return partitionRange.size();
     }

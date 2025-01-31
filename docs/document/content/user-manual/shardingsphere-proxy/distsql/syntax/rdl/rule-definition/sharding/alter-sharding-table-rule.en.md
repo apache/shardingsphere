@@ -19,7 +19,7 @@ tableRuleDefinition ::=
   ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 autoTableRuleDefinition ::=
-  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'DATANODES' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
@@ -81,8 +81,8 @@ algorithmType ::=
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
-    - `STORAGE_UNITS` can only use storage units that have been registered to the current database, and the required storage units can be
-      specified by enumeration or INLINE expression;
+    - `DATANODES` can only use resources that have been added to the current database, and can only use INLINE
+      expressions to specify required resources;
     - Only auto sharding algorithm can be used, please refer
       to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
 - `algorithmType` is the sharding algorithm type, please refer
@@ -114,8 +114,8 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
-SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
+DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_2.t_order_0,ds_3.t_order_0,ds_0.t_order_1,ds_1.t_order_1,ds_2.t_order_1,ds_3.t_order_1,ds_0.t_order_2,ds_1.t_order_2,ds_2.t_order_2,ds_3.t_order_2,ds_0.t_order_3,ds_1.t_order_3,ds_2.t_order_3,ds_3.t_order_3),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
@@ -123,7 +123,7 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 
 ### Reserved word
 
-`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
+`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
 
 ### Related links
 

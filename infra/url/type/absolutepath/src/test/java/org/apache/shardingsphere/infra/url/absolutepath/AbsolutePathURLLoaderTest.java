@@ -38,7 +38,7 @@ class AbsolutePathURLLoaderTest {
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1839);
+        assertGetContent(1803);
     }
     
     private void assertGetContent(final int expectedLength) {

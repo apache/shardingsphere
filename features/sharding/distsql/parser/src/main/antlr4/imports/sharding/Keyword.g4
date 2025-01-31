@@ -51,10 +51,6 @@ FROM
     : F R O M
     ;
 
-STORAGE_UNITS
-    : S T O R A G E UL_ U N I T S
-    ;
-
 KEY_GENERATE_STRATEGY
     : K E Y UL_ G E N E R A T E UL_ S T R A T E G Y
     ;

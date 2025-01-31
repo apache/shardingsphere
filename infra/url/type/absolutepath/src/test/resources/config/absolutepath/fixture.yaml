@@ -35,7 +35,7 @@ rules:
   - !SHARDING
     autoTables:
       t_order:
-        actualDataSources: ds_0,ds_1
+        actualDataNodes: ds_${0..1}.t_order_0
         shardingStrategy:
           standard:
             shardingColumn: order_id
@@ -46,8 +46,6 @@ rules:
     shardingAlgorithms:
       auto_mod:
         type: HASH_MOD
-        props:
-          sharding-count: 2
     
     keyGenerators:
       snowflake:

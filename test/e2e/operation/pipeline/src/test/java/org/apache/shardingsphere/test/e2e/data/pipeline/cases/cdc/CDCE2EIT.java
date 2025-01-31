@@ -80,11 +80,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/opengauss.xml")})
 @Slf4j
 class CDCE2EIT {
-    
+    //TODO changed this auto table for dataNodes %s,%s see for those values.
     private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
-            + "STORAGE_UNITS(%s,%s),"
+            + "DATANODES(%s,%s),"
             + "SHARDING_COLUMN=user_id,"
-            + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')),"
+            + "TYPE(NAME='hash_mod'),"
             + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))"
             + ")", PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1);
     

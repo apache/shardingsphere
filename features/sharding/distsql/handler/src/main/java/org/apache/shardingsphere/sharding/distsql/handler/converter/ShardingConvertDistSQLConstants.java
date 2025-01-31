@@ -44,9 +44,7 @@ public final class ShardingConvertDistSQLConstants {
     
     public static final String SHARDING_AUTO_TABLE_RULE = " %s ("
             + System.lineSeparator()
-            + "STORAGE_UNITS(%s),"
-            + System.lineSeparator()
-            + "%s"
+            + "DATANODES('%s')%s"
             + System.lineSeparator()
             + ")";
     

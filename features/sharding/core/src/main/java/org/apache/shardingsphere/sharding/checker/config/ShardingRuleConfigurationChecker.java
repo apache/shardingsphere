@@ -18,6 +18,12 @@
 package org.apache.shardingsphere.sharding.checker.config;
 
 import com.google.common.base.Joiner;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
@@ -39,14 +45,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration checker.
@@ -140,7 +138,8 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        return new HashSet<>(InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate());
+        Collection<String> actualDataNodes = InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
     @Override

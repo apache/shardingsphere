@@ -50,7 +50,7 @@ public final class AutoTableRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getDataSourceNodes(), is(expected.getDataSources()));
+                    actual.getDataSourceNodes(), is(expected.getDataNodes()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
             assertNotNull(actual.getKeyGenerateStrategySegment(), assertContext.getText("key generate should exist."));

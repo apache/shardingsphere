@@ -41,7 +41,7 @@ rules:
   - !SHARDING
     autoTables:
       t_order:
-        actualDataSources: ds_0,ds_1
+        actualDataNodes: ds_${1..1}.t_order_${0..1}
         shardingStrategy:
           standard:
             shardingColumn: order_id
@@ -54,7 +54,7 @@ rules:
             - sharding_key_required_auditor
           allowHintDisable: true
       t_order_item:
-        actualDataSources: ds_0,ds_1
+        actualDataNodes: ds_${1..1}.t_order_item_${0..1}
         shardingStrategy:
           standard:
             shardingColumn: order_id
@@ -63,7 +63,7 @@ rules:
           column: order_item_id
           keyGeneratorName: snowflake
       t_account:
-        actualDataSources: ds_0,ds_1
+        actualDataNodes: ds_${1..1}.t_account_${0..1}
         shardingStrategy:
           standard:
             shardingAlgorithmName: auto_mod
@@ -74,8 +74,6 @@ rules:
     shardingAlgorithms:
       auto_mod:
         type: MOD
-        props:
-          sharding-count: 4
 
     defaultAuditStrategy:
       auditorNames:

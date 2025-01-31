@@ -115,7 +115,7 @@ class CreateShardingTableRuleExecutorTest {
         Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = actual.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item_input"));
-        assertThat(autoTableRule.getActualDataSources(), is("logic_ds"));
+        //TODD CREATE A ASSERT FOR DATA NODE
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -125,9 +125,9 @@ class CreateShardingTableRuleExecutorTest {
     @Test
     void assertCheckCreateShardingStatement() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "STORAGE_UNITS(ds_0,ds_1),"
+                + "DATANODES(ds_${0..1}.t_order_${0..2}),"
                 + "SHARDING_COLUMN=order_id,"
-                + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
+                + "TYPE(NAME='hash_mod'),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         executor.checkBeforeUpdate(distSQLStatement);
@@ -136,7 +136,7 @@ class CreateShardingTableRuleExecutorTest {
     @Test
     void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "STORAGE_UNITS(ds_0,ds_1),"
+                + "DATANODES(ds_${0..1}.t_order_${0..3}),"
                 + "SHARDING_COLUMN=order_id,"
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
@@ -250,7 +250,7 @@ class CreateShardingTableRuleExecutorTest {
         Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = actual.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item_input"));
-        assertThat(autoTableRule.getActualDataSources(), is("logic_ds"));
+        //TODD CREATE A ASSERT FOR DATA NODE
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -258,8 +258,8 @@ class CreateShardingTableRuleExecutorTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
-        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds"));
-        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        KeyGenerateStrategySegment keyGenerateStrategySegment = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds")); result.setKeyGenerateStrategySegment(keyGenerateStrategySegment);
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;
@@ -278,7 +278,7 @@ class CreateShardingTableRuleExecutorTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
         result.getAutoTables().add(createAutoTableRuleConfiguration());
-        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", null));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         return result;
     }

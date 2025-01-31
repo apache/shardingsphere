@@ -236,7 +236,7 @@ rules:
   - !SHARDING
     autoTables:
       t_user:
-        actualDataSources: write_ds_${0..9}
+        actualDataNodes: write_ds_${0..9}.t_user_${0..3}
         shardingStrategy:
           standard:
             shardingColumn: user_id
@@ -249,7 +249,7 @@ rules:
             - auditor_constant
           allowHintDisable: true
       t_user_item:
-        actualDataSources: write_ds_${0..9}
+        actualDataNodes: write_ds_${0..9}.t_user_item_${0..3}
         shardingStrategy:
           standard:
             shardingColumn: user_id
@@ -261,8 +261,6 @@ rules:
     shardingAlgorithms:
       mod:
         type: MOD
-        props:
-          sharding-count: 40
 
     keyGenerators:
       constant:

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -25,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Collections;
 
-public final class BarDistSQLShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer>, ShardingAutoTableAlgorithm {
+public final class BarDistSQLShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
@@ -41,8 +40,7 @@ public final class BarDistSQLShardingAlgorithmFixture implements StandardShardin
     public String getType() {
         return "BAR.DISTSQL.FIXTURE";
     }
-    
-    @Override
+
     public int getAutoTablesAmount() {
         return 4;
     }

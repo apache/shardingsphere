@@ -42,7 +42,7 @@ weight = 5
 
 #### Database Discovery
 
-`DB_DISCOVERY`, `STORAGE_UNITS`, `HEARTBEAT`
+`DB_DISCOVERY`, `HEARTBEAT`
 
 #### Shadow
 

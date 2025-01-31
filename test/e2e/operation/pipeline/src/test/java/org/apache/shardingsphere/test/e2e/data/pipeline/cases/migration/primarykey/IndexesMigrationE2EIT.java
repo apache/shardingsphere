@@ -66,9 +66,9 @@ import static org.mockito.Mockito.mock;
 class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
-            + "STORAGE_UNITS(ds_2,ds_3,ds_4),\n"
+            + "DATANODES(ds_{[2,3,4]}.t_order_${0..1}),\n"
             + "SHARDING_COLUMN=%s,\n"
-            + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"6\"))\n"
+            + "TYPE(NAME=\"hash_mod\")\n"
             + ");";
     
     private static final String SOURCE_TABLE_NAME = "t_order";

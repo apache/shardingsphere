@@ -72,7 +72,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP_ storageUnits COMMA_ autoShardingColumnDefinition COMMA_ algorithmDefinition (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
+    : tableName LP_ dataNodes COMMA_ autoShardingColumnDefinition COMMA_ algorithmDefinition (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
     ;
 
 shardingTableRule
@@ -89,14 +89,6 @@ auditorDefinition
 
 auditorName
     : IDENTIFIER_
-    ;
-
-storageUnits
-    : STORAGE_UNITS LP_ storageUnit (COMMA_ storageUnit)* RP_
-    ;
-
-storageUnit
-    : IDENTIFIER_ | STRING_
     ;
 
 dataNodes

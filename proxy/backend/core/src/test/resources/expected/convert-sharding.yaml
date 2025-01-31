@@ -42,9 +42,9 @@ TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, SHARDING_ALGO
 KEY_GENERATE_STRATEGY(COLUMN=order_item_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_account (
-STORAGE_UNITS(ds_0,ds_1),
+DATANODES('ds_${0..1}.t_account_${0..1}'),
 SHARDING_COLUMN=null,
-TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
+TYPE(NAME='mod'),
 KEY_GENERATE_STRATEGY(COLUMN=account_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 );

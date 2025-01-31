@@ -41,7 +41,7 @@ rules:
         keyGeneratorName: jdbc_reset_increment_fixture
   autoTables:
     t_order_auto:
-      actualDataSources: jdbc_0, jdbc_1
+      actualDataNodes: jdbc_0.t_order_auto, jdbc_1.t_order_auto
       shardingStrategy:
         standard:
           shardingColumn: order_id
@@ -71,8 +71,6 @@ rules:
         algorithm-expression: t_user_${id % 2}
     mod:
       type: MOD
-      props:
-        sharding-count: 2
   
   keyGenerators:
     jdbc_increment_fixture:

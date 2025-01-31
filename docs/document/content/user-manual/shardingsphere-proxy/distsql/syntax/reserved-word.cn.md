@@ -41,7 +41,7 @@ weight = 5
 
 #### 数据库发现
 
-`DB_DISCOVERY`、`STORAGE_UNITS`、`HEARTBEAT`
+`DB_DISCOVERY`、`HEARTBEAT`
 
 #### 影子压测
 

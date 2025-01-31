@@ -19,7 +19,7 @@ rules:
   - !SHARDING
     autoTables:
       t_order:
-        actualDataSources: ds_1,ds_2
+        actualDataNodes: ds_${1..2}.t_order_${0..2}
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: t_order_snowflake
@@ -29,7 +29,7 @@ rules:
             shardingAlgorithmName: t_order_hash_mod
             shardingColumn: order_id
       t_order_item:
-        actualDataSources: ds_2,ds_3
+        actualDataNodes: ds_${2..3}.t_order_item_${0..2}
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: t_order_item_snowflake
@@ -45,10 +45,6 @@ rules:
         type: snowflake
     shardingAlgorithms:
       t_order_hash_mod:
-        props:
-          sharding-count: '6'
         type: hash_mod
       t_order_item_hash_mod:
-        props:
-          sharding-count: '6'
         type: hash_mod

@@ -17,42 +17,23 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
-import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import java.util.Collection;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
-import java.util.Collection;
-import java.util.Properties;
-
 /**
  * Hash sharding algorithm.
  */
-public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
-    
-    private static final String SHARDING_COUNT_KEY = "sharding-count";
-    
-    private int shardingCount;
-    
-    @Override
-    public void init(final Properties props) {
-        shardingCount = getShardingCount(props);
-    }
-    
-    private int getShardingCount(final Properties props) {
-        ShardingSpherePreconditions.checkContainsKey(props, SHARDING_COUNT_KEY, () -> new AlgorithmInitializationException(this, "Sharding count cannot be null."));
-        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
-        ShardingSpherePreconditions.checkState(result > 0, () -> new AlgorithmInitializationException(this, "Sharding count must be a positive integer."));
-        return result;
-    }
-    
+public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>{
+
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
+        int shardingCount = availableTargetNames.size();
         String suffix = String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount);
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
@@ -64,11 +45,6 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private long hashShardingValue(final Object shardingValue) {
         return Math.abs((long) shardingValue.hashCode());
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        return shardingCount;
     }
     
     @Override

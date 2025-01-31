@@ -74,10 +74,11 @@
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-source>ms_group_0</data-source>
-            <data-source>ms_group_1</data-source>
+            <data-node>ms_group_0.t_order_0</data-node>
+            <data-node>ms_group_0.t_order_1</data-node>
+            <data-node>ms_group_1.t_order_0</data-node>
+            <data-node>ms_group_1.t_order_1</data-node>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -85,10 +86,11 @@
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-if-not-exists" if-not-exists="true">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-source>ms_group_0</data-source>
-            <data-source>ms_group_1</data-source>
+            <data-node>ms_group_0.t_order_0</data-node>
+            <data-node>ms_group_0.t_order_1</data-node>
+            <data-node>ms_group_1.t_order_0</data-node>
+            <data-node>ms_group_1.t_order_1</data-node>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -96,10 +98,11 @@
 
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-with-quota">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-source>ms_group_0</data-source>
-            <data-source>ms_group_1</data-source>
+            <data-node>ms_group_0.t_order_0</data-node>
+            <data-node>ms_group_0.t_order_1</data-node>
+            <data-node>ms_group_1.t_order_0</data-node>
+            <data-node>ms_group_1.t_order_1</data-node>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -107,9 +110,8 @@
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-with-inline-expression">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -117,9 +119,8 @@
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-with-auditor">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
             <audit-strategy allow-hint-disable="true">

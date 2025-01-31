@@ -52,7 +52,7 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     
     @Override
     public Collection<String> getColumnNames(final ShowShardingTableRulesStatement sqlStatement) {
-        return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
+        return Arrays.asList("table", "actual_data_nodes", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
                 "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
                 "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");
     }
@@ -82,7 +82,7 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     private LocalDataQueryResultRow buildTableRowData(final ShardingRuleConfiguration ruleConfig, final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         Optional<ShardingStrategyConfiguration> databaseShardingStrategyConfig = getDatabaseShardingStrategy(ruleConfig, shardingTableRuleConfig);
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(ruleConfig, shardingTableRuleConfig.getTableShardingStrategy());
-        return new LocalDataQueryResultRow(shardingTableRuleConfig.getLogicTable(), shardingTableRuleConfig.getActualDataNodes(), "",
+        return new LocalDataQueryResultRow(shardingTableRuleConfig.getLogicTable(), shardingTableRuleConfig.getActualDataNodes(),
                 databaseShardingStrategyConfig.map(this::getStrategyType), databaseShardingStrategyConfig.map(this::getShardingColumn),
                 databaseShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)),
                 databaseShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)),
@@ -96,7 +96,7 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     
     private LocalDataQueryResultRow buildAutoTableRowData(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(ruleConfig, shardingAutoTableRuleConfig.getShardingStrategy());
-        return new LocalDataQueryResultRow(shardingAutoTableRuleConfig.getLogicTable(), "", shardingAutoTableRuleConfig.getActualDataSources(), "", "", "", "",
+        return new LocalDataQueryResultRow(shardingAutoTableRuleConfig.getLogicTable(), shardingAutoTableRuleConfig.getActualDataNodes(), "", "", "", "",
                 tableShardingStrategyConfig.map(this::getStrategyType), tableShardingStrategyConfig.map(this::getShardingColumn),
                 tableShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)),
                 tableShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)),

@@ -40,7 +40,7 @@ rules:
       shardingColumn: user_id
   autoTables:
     t_order:
-      actualDataSources: ds_1,ds_2
+      actualDataNodes: ds_${[1,2]}.t_order_${0..2}
       shardingStrategy:
         standard:
           shardingAlgorithmName: t_order_hash_mod
@@ -63,8 +63,6 @@ rules:
         algorithm-expression: t_order_${order_id % 2}
       type: INLINE
     t_order_hash_mod:
-      props:
-        sharding-count: '6'
       type: hash_mod
     new_t_order_item_inline:
       type: INLINE

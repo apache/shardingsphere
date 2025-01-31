@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
@@ -25,15 +28,12 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingRouteAlgorithmException;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Standard sharding strategy.
@@ -73,7 +73,9 @@ public final class StandardShardingStrategy implements ShardingStrategy {
                     new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
-            }
+            } else if (null != target && !availableTargetNames.contains(target)) {
+            throw new ShardingRouteAlgorithmException(target, availableTargetNames);
+        }
             // TODO add ShardingRouteAlgorithmException check when autoTables support config actualDataNodes in #33364
         }
         return result;

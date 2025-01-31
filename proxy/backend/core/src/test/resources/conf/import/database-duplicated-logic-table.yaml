@@ -62,7 +62,7 @@ rules:
           keyGeneratorName: snowflake
     autoTables:
       t_order:
-        actualDataSources: ds_0,ds_1
+        actualDataNodes: ds_${1..1}.t_order_${0..1}
         shardingStrategy:
           standard:
             shardingColumn: order_id
@@ -94,8 +94,6 @@ rules:
           algorithm-expression: t_order_item_${order_id % 2}
       auto_mod:
         type: MOD
-        props:
-          sharding-count: 4
 
     keyGenerators:
       snowflake:

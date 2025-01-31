@@ -91,7 +91,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
             return "";
         }
         return ruleConfig.getAutoTables().stream()
-                .map(each -> String.format(ShardingConvertDistSQLConstants.SHARDING_AUTO_TABLE_RULE, each.getLogicTable(), each.getActualDataSources(), convertAutoTableStrategy(each, ruleConfig)))
+                .map(each -> String.format(ShardingConvertDistSQLConstants.SHARDING_AUTO_TABLE_RULE, each.getLogicTable(), each.getActualDataNodes(), convertAutoTableStrategy(each, ruleConfig)))
                 .collect(Collectors.joining(DistSQLConstants.COMMA));
     }
     

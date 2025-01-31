@@ -33,7 +33,7 @@ public final class YamlShardingAutoTableRuleConfiguration implements YamlConfigu
     
     private String logicTable;
     
-    private String actualDataSources;
+    private String actualDataNodes;
     
     private YamlShardingStrategyConfiguration shardingStrategy;
     

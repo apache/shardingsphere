@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
+import java.util.*;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedShardingDataSourceRouteInfoException;
@@ -45,14 +46,6 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Sharding standard route engine.
@@ -248,19 +241,28 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     private Collection<DataNode> route0(final ShardingTable shardingTable,
                                         final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues,
                                         final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
-        Collection<String> routedDataSources = routeDataSources(shardingTable, databaseShardingStrategy, databaseShardingValues);
+        Collection<String> routedDataSources = routeDataSources(shardingTable, databaseShardingStrategy, tableShardingStrategy, databaseShardingValues, tableShardingValues);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
             result.addAll(routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues));
         }
+
+
         return result;
     }
     
-    private Collection<String> routeDataSources(final ShardingTable shardingTable, final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues) {
-        if (databaseShardingValues.isEmpty()) {
-            return shardingTable.getActualDataSourceNames();
+    private Collection<String> routeDataSources(final ShardingTable shardingTable, final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> databaseShardingValues, List<ShardingConditionValue> tableShardingValues) {
+        Collection<String> result;
+        if ( databaseShardingValues.isEmpty()  ) {
+            if( shardingTable.isAutoTable() && !tableShardingValues.isEmpty() )
+            result = tableShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), tableShardingValues, shardingTable.getDataSourceDataNode(), props);
+            else {
+                return shardingTable.getActualDataSourceNames();
+            }
+        } else {
+            result = databaseShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), databaseShardingValues, shardingTable.getDataSourceDataNode(), props);
         }
-        Collection<String> result = databaseShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), databaseShardingValues, shardingTable.getDataSourceDataNode(), props);
+
         ShardingSpherePreconditions.checkNotEmpty(result, NoShardingDatabaseRouteInfoException::new);
         ShardingSpherePreconditions.checkState(shardingTable.getActualDataSourceNames().containsAll(result),
                 () -> new MismatchedShardingDataSourceRouteInfoException(result, shardingTable.getActualDataSourceNames()));
@@ -277,6 +279,19 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));
         }
+
+        boolean isAllDataNodesWithoutTables = true;
+        for(DataNode each : result)
+        {
+            if(!each.getTableName().isEmpty())
+            {
+                isAllDataNodesWithoutTables = false;
+
+            }
+        }
+
+        //TODO Verify if this only works for SQL that contains table names....
+//        ShardingSpherePreconditions.checkState( isAllDataNodesWithoutTables , NoShardingDatabaseRouteInfoException::new );
         return result;
     }
     

@@ -33,8 +33,8 @@ import java.util.List;
 @Setter
 public final class ExpectedAutoTableRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    @XmlElement(name = "data-node")
+    private List<String> dataNodes;
     
     @XmlAttribute(name = "table-strategy-column")
     private String tableStrategyColumn;

@@ -66,7 +66,7 @@ class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryE
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
             result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-            result.getShardingAlgorithms().put("t_order_hash_mod", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+            result.getShardingAlgorithms().put("t_order_hash_mod", new AlgorithmConfiguration("hash_mod", null));
             result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
             return result;
         }

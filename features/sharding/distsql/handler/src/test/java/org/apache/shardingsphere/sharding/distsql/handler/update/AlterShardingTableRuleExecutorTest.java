@@ -90,7 +90,7 @@ class AlterShardingTableRuleExecutorTest {
                 + "DATANODES('ds_${0..1}.t_order'),"
                 + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
                 + "), t_order_item("
-                + "DATANODES('ds_${0..1}.t_order'),"
+                + "DATANODES('ds_${0..1}.t_order_item'),"
                 + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
                 + ");";
         AlterShardingTableRuleStatement sqlStatement = (AlterShardingTableRuleStatement) getDistSQLStatement(sql);
@@ -114,7 +114,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
-        assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getActualDataNodes(), is("\"ds_${0..1}.t_order${0..1}\""));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -129,7 +129,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("T_ORDER"));
-        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
+        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_core.standard.fixture"));
@@ -138,7 +138,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("T_ORDER_ITEM"));
-        assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_item"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -162,7 +162,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
-        assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_0,ds_1"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -190,7 +190,7 @@ class AlterShardingTableRuleExecutorTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
         result.getAutoTables().add(createAutoTableRuleConfiguration());
-        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
+        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", null));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         return result;
     }

@@ -30,21 +30,21 @@ PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetim
 );
 
 CREATE SHARDING TABLE RULE t_order (
-STORAGE_UNITS(ds_0,ds_1),
+DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_0.t_order_1,ds_1.t_order_1),
 SHARDING_COLUMN=order_id,
-TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
+TYPE(NAME='mod'),
 KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_order_item (
-STORAGE_UNITS(ds_0,ds_1),
+DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_0.t_order_1,ds_1.t_order_1),
 SHARDING_COLUMN=order_id,
-TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
+TYPE(NAME='mod'),
 KEY_GENERATE_STRATEGY(COLUMN=order_item_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_account (
-STORAGE_UNITS(ds_0,ds_1),
+DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_0.t_order_1,ds_1.t_order_1),
 SHARDING_COLUMN=account_id,
-TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
+TYPE(NAME='mod'),
 KEY_GENERATE_STRATEGY(COLUMN=account_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 );
