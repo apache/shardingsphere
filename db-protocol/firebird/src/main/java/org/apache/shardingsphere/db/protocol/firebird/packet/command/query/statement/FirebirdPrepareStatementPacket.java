@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     private int currentItemIdx = -1;
     private final int maxLength;
     
-    private final Charset charset;
+    private final FirebirdPacketPayload payload;
     
     public FirebirdPrepareStatementPacket(FirebirdPacketPayload payload) {
         payload.skipReserved(4);
@@ -57,7 +56,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         sql = SQLHintUtils.removeHint(originSQL);
         parseInfo(payload.readBuffer());
         maxLength = payload.readInt4();
-        charset = payload.getCharset();
+        this.payload = payload;
     }
     
     private void parseInfo(ByteBuf buffer) {

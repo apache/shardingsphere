@@ -43,6 +43,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
     
     private final List<ByteBuf> pendingMessages  = new LinkedList<>();
+    
     private FirebirdCommandPacketType pendingPacketType;
     
     @Override
@@ -65,8 +66,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 }
             }
             addToBuffer(context, in, out);
-//            out.add(in.readRetainedSlice(in.readableBytes()));
-//            out.add(context.alloc().ioBuffer().writeBytes(in.readRetainedSlice(in.writerIndex())));
         }
     }
 
@@ -76,7 +75,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             int type = in.getInt(in.readerIndex());
             pendingPacketType = FirebirdCommandPacketType.valueOf(type);
             addToBuffer(context, in, out);
-//            out.add(in.readRetainedSlice(in.readableBytes()));
         }
     }
     

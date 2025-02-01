@@ -134,7 +134,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @return ByteBuf consisting of a specified number of bytes
      */
     public ByteBuf readBytes(final int count) {
-        return byteBuf.readBytes(count);
+        return byteBuf.readRetainedSlice(count);
     }
     
     /**
@@ -153,7 +153,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public ByteBuf readBuffer() {
         int length = byteBuf.readInt();
-        ByteBuf buffer = byteBuf.readBytes(length);
+        ByteBuf buffer = byteBuf.readRetainedSlice(length);
         skipPadding(length);
         return buffer;
     }
@@ -167,6 +167,17 @@ public final class FirebirdPacketPayload implements PacketPayload {
         byteBuf.writeInt(value.length);
         byteBuf.writeBytes(value);
         byteBuf.writeBytes(new byte[(4 - value.length) & 3]);
+    }
+    
+    /**
+     * Write variable length bytes to byte buffers.
+     *
+     * @param buffer buffer containing data
+     */
+    public void writeBuffer(final ByteBuf buffer) {
+        byteBuf.writeInt(buffer.writerIndex());
+        byteBuf.writeBytes(buffer);
+        byteBuf.writeBytes(new byte[(4 - buffer.writerIndex()) & 3]);
     }
     
     /**

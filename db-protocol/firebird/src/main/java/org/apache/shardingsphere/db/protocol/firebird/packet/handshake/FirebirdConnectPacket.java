@@ -28,23 +28,28 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCom
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Connect packet for Firebird.
  */
 @Getter
 public final class FirebirdConnectPacket extends FirebirdPacket {
-
+    
     private final FirebirdCommandPacketType opCode; //should be op_attach, but IDK why it's here.
     private final int connectVersion;
     private final FirebirdArchType archType;
     private final String database;
     private final int protocolsCount;
-
+    
     private final Map<FirebirdUserDataType, String> userInfoMap = new HashMap<>();
     private final List<FirebirdProtocol> userProtocols = new ArrayList<>();
-
+    
     public FirebirdConnectPacket(final FirebirdPacketPayload payload) {
         opCode = FirebirdCommandPacketType.valueOf(payload.readInt4());
         connectVersion = payload.readInt4();
@@ -54,57 +59,57 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
         parseUserInfo(payload.readBuffer());
         parseProtocols(payload.getByteBuf());
     }
-
+    
     private void parseUserInfo(final ByteBuf userInfo) {
         SortedMap<Integer, String> pendingData = new TreeMap<>();
         while (userInfo.isReadable()) {
             FirebirdUserDataType type = FirebirdUserDataType.valueOf(userInfo.readUnsignedByte());
             int length = userInfo.readUnsignedByte();
-            ByteBuf data = userInfo.readBytes(length);
-            if (type != FirebirdUserDataType.CNCT_SPECIFIC_DATA) {
-                userInfoMap.put(type, data.toString(StandardCharsets.UTF_8));
-            } else {
+            ByteBuf data = userInfo.readRetainedSlice(length);
+            if (type == FirebirdUserDataType.CNCT_SPECIFIC_DATA) {
                 //specific data can be split into chunks and (i think) can be in payload in random order
                 int step = data.readUnsignedByte();
                 pendingData.put(step, data.toString(StandardCharsets.US_ASCII));
+            } else {
+                userInfoMap.put(type, data.toString(StandardCharsets.UTF_8));
             }
         }
         if (!pendingData.isEmpty())
             userInfoMap.put(FirebirdUserDataType.CNCT_SPECIFIC_DATA, String.join("", pendingData.values()));
     }
-
+    
     private void parseProtocols(final ByteBuf protocolBuf) {
         for (int i = 0; i < protocolsCount; i++) {
             userProtocols.add(new FirebirdProtocol(protocolBuf));
         }
     }
-
+    
     public String getUsername() {
         return userInfoMap.get(FirebirdUserDataType.CNCT_USER);
     }
-
+    
     public String getHost() {
         return userInfoMap.get(FirebirdUserDataType.CNCT_HOST);
     }
-
+    
     public String getLogin() {
         return userInfoMap.get(FirebirdUserDataType.CNCT_LOGIN);
     }
-
+    
     public String getAuthData() {
         return userInfoMap.get(FirebirdUserDataType.CNCT_SPECIFIC_DATA);
     }
-
+    
     public String getPluginName() {
         return userInfoMap.get(FirebirdUserDataType.CNCT_PLUGIN_NAME);
     }
-
+    
     public FirebirdAuthenticationMethod getPlugin() {
-        return FirebirdAuthenticationMethod.valueOf(this.getPluginName().toUpperCase());
+        return FirebirdAuthenticationMethod.valueOf(getPluginName().toUpperCase());
     }
-
+    
     @Override
     protected void write(FirebirdPacketPayload payload) {
-
+    
     }
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -51,7 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Firebird prepare transaction command executor
+ * Firebird execute statement command executor
  */
 @RequiredArgsConstructor
 public final class FirebirdExecuteStatementCommandExecutor implements QueryCommandExecutor {
@@ -102,10 +103,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
         QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
         BinaryRow row = createBinaryRow(queryResponseRow);
-        FirebirdSQLResponsePacket result = new FirebirdSQLResponsePacket();
-        result.setMessageCount(1);
-        result.setData(packet.getReturnData(row));
-        return result;
+        return new FirebirdSQLResponsePacket(packet.getReturnData(row));
     }
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
@@ -122,8 +120,10 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     }
 
     @Override
-    public FirebirdPacket getQueryRowPacket() {
-        return null;
+    public FirebirdPacket getQueryRowPacket() throws SQLException {
+        QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
+        BinaryRow row = createBinaryRow(queryResponseRow);
+        return new FirebirdFetchPacket(row, packet.getPayload());
     }
 
     @Override

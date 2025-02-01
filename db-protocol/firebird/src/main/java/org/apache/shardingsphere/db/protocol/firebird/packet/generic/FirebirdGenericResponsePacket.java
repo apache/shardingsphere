@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
@@ -32,9 +33,9 @@ import java.util.Arrays;
 @NoArgsConstructor
 public final class FirebirdGenericResponsePacket extends FirebirdPacket {
 
-    private int handle = 0;
-    private long id = 0;
-    private byte[] data = new byte[0];
+    private int handle;
+    private long id;
+    private ByteBuf data;
     private byte[] statusVector = getEmptyStatusVector();
 
     public FirebirdGenericResponsePacket setHandle(final int objectHandle) {
@@ -46,8 +47,8 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         id = objectId;
         return this;
     }
-
-    public FirebirdGenericResponsePacket setData(final byte[] buffer) {
+    
+    public FirebirdGenericResponsePacket setData(final ByteBuf buffer) {
         data = buffer;
         return this;
     }
@@ -62,7 +63,11 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
         payload.writeInt4(handle);
         payload.writeInt8(id);
-        payload.writeBuffer(data);
+        if (data != null) {
+            payload.writeBuffer(data);
+        } else {
+            payload.writeBuffer(new byte[0]);
+        }
         payload.writeBytes(statusVector);
     }
 

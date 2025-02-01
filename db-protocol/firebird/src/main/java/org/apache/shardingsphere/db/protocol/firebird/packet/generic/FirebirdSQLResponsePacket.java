@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
@@ -27,30 +27,27 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
  * SQL response packet for Firebird.
  */
 @Getter
-@NoArgsConstructor
 public final class FirebirdSQLResponsePacket extends FirebirdPacket {
 
-    private int messageCount = 0;
-    private byte[] data = new byte[0];
-
-    public FirebirdSQLResponsePacket setMessageCount(final int messageCount) {
-        this.messageCount = messageCount;
-        return this;
+    private final int messageCount;
+    private final ByteBuf data;
+    
+    public FirebirdSQLResponsePacket() {
+        messageCount = 0;
+        data = null;
     }
-
-    public FirebirdSQLResponsePacket setData(final byte[] buffer) {
-        data = buffer;
-        return this;
+    
+    public FirebirdSQLResponsePacket(ByteBuf data) {
+        messageCount = 1;
+        this.data = data;
     }
-
+    
     @Override
     protected void write(FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.SQL_RESPONSE.getValue());
         payload.writeInt4(messageCount);
-        payload.writeBytes(data);
-    }
-
-    public static FirebirdSQLResponsePacket getPacket() {
-        return new FirebirdSQLResponsePacket();
+        if (data != null) {
+            payload.getByteBuf().writeBytes(data);
+        }
     }
 }

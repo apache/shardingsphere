@@ -24,6 +24,8 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCom
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
@@ -35,6 +37,8 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdU
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdAllocateStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdFetchStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdFreeStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdPrepareStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitTransactionCommandExecutor;
@@ -73,12 +77,16 @@ public final class FirebirdCommandExecutorFactory {
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);
+            case FETCH:
+                return new FirebirdFetchStatementCommandExecutor((FirebirdFetchStatementPacket) commandPacket, connectionSession);
             case INFO_SQL:
                 return new FirebirdSQLInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
             case COMMIT:
                 return new FirebirdCommitTransactionCommandExecutor((FirebirdCommitTransactionPacket) commandPacket, connectionSession);
             case ROLLBACK:
                 return new FirebirdRollbackTransactionCommandExecutor((FirebirdRollbackTransactionPacket) commandPacket, connectionSession);
+            case FREE_STATEMENT:
+                return new FirebirdFreeStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
             default:
                 return new FirebirdUnsupportedCommandExecutor();
         }

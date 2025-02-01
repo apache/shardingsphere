@@ -33,8 +33,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import java.util.Collection;
 import java.util.Collections;
 
-import static io.netty.buffer.Unpooled.buffer;
-
 /**
  * Database info command executor for Firebird.
  */
@@ -46,18 +44,18 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
 
     @Override
     public Collection<DatabasePacket> execute() {
-        ByteBuf data = buffer(packet.getMaxLength());
+        ByteBuf data = packet.getPayload().getByteBuf().alloc().buffer();
         for (FirebirdInfoPacketType type : packet.getInfoItems()) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(data, (FirebirdCommonInfoPacketType) type);
             } else {
-                parseDatabaseInfo(data, (FirebirdSQLInfoPacketType) type);
+                parseSQLInfo(data, (FirebirdSQLInfoPacketType) type);
             }
         }
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(data.capacity(data.writerIndex()).array()));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(data));
     }
     
-    private void parseDatabaseInfo(ByteBuf data, FirebirdSQLInfoPacketType type) {
+    private void parseSQLInfo(ByteBuf data, FirebirdSQLInfoPacketType type) {
         //TODO implement other request types handle
         switch (type) {
             case RECORDS:

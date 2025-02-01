@@ -34,21 +34,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static io.netty.buffer.Unpooled.buffer;
-
 /**
  * Firebird allocate statement packet.
  */
 @Getter
 public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket {
-
+    
     private final FirebirdCommandPacketType type;
     private final int statementId;
     private final int transactionId;
     private final List<FirebirdBinaryColumnType> parameterTypes;
     private final int message;
     private final FirebirdPacketPayload payload;
-
+    
     public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
@@ -104,7 +102,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 return 0;
         }
     }
-
+    
     /**
      * Read parameter values from packet.
      *
@@ -142,9 +140,9 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      * @param row Returned row
      * @return Return data
      */
-    public byte[] getReturnData(BinaryRow row) {
+    public ByteBuf getReturnData(BinaryRow row) {
         List<FirebirdBinaryColumnType> returnColumns = parseBLR(payload.readBuffer());
-        ByteBuf writeBuffer = buffer(payload.getByteBuf().capacity());
+        ByteBuf writeBuffer = payload.getByteBuf().alloc().buffer();
         FirebirdPacketPayload writePayload = new FirebirdPacketPayload(writeBuffer, payload.getCharset());
         int nullBits = (returnColumns.size() + 7) / 8;
         nullBits += (4 - nullBits) & 3;
@@ -156,9 +154,10 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 type.write(writePayload, cell.getData());
             }
         }
-        return writePayload.getByteBuf().capacity(writePayload.getByteBuf().writerIndex()).array();
+        return writeBuffer;
     }
-
+    
     @Override
-    protected void write(final FirebirdPacketPayload payload) {}
+    protected void write(final FirebirdPacketPayload payload) {
+    }
 }

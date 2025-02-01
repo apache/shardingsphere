@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -30,28 +29,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird start transaction command executor
+ * Firebird fetch statement command executor
  */
 @RequiredArgsConstructor
-public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
+public final class FirebirdFetchStatementCommandExecutor implements CommandExecutor {
 
-    private final FirebirdFreeStatementPacket packet;
+    private final FirebirdFetchStatementPacket packet;
     private final ConnectionSession connectionSession;
-    
+
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        switch (packet.getOption()) {
-            case FirebirdFreeStatementPacket.DROP:
-            case FirebirdFreeStatementPacket.UNPREPARE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                break;
-            case FirebirdFreeStatementPacket.CLOSE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                //TODO add close cursor
-                break;
-            default:
-                throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
-        }
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+        return Collections.singleton(new FirebirdFetchPacket());
     }
 }

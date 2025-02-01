@@ -34,8 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
-import static io.netty.buffer.Unpooled.buffer;
-
 /**
  * Database info command executor for Firebird.
  */
@@ -63,7 +61,7 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
 
     @Override
     public Collection<DatabasePacket> execute() {
-        ByteBuf data = buffer(packet.getMaxLength());
+        ByteBuf data = packet.getPayload().getByteBuf().alloc().buffer();
         for (FirebirdInfoPacketType type : packet.getInfoItems()) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(data, (FirebirdCommonInfoPacketType) type);
@@ -71,7 +69,7 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
                 parseDatabaseInfo(data, (FirebirdDatabaseInfoPacketType) type);
             }
         }
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(data.capacity(data.writerIndex()).array()));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(data));
     }
     
     private void parseDatabaseInfo(ByteBuf data, FirebirdDatabaseInfoPacketType type) {

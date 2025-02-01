@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.admin.Fireb
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
@@ -57,6 +58,8 @@ public final class FirebirdCommandPacketFactory {
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementPacket(payload);
+            case FETCH:
+                return new FirebirdFetchStatementPacket(payload);
             case INFO_SQL:
                 return FirebirdSQLInfoPacketType.createPacket(payload);
             case COMMIT:
