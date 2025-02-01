@@ -56,13 +56,13 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param propsMap data source pool properties map
      */
-    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+    public synchronized void register(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
             SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     
@@ -72,13 +72,13 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param propsMap data source pool properties map
      */
-    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+    public synchronized void alter(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
         try {
             closeStaleRules(databaseName);
             SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
     }
     
@@ -88,14 +88,14 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param storageUnitName storage unit name
      */
-    public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
+    public synchronized void unregister(final String databaseName, final String storageUnitName) {
         try {
             closeStaleRules(databaseName);
             SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(
-                    metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(storageUnitName));
+                    metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singleton(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     

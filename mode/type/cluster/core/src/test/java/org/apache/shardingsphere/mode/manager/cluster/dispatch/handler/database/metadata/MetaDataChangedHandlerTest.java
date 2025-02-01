@@ -128,7 +128,7 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version/0", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).registerStorageUnit(eq("foo_db"), any());
+        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).register(eq("foo_db"), any());
     }
     
     @Test
@@ -136,13 +136,13 @@ class MetaDataChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version/0", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alterStorageUnit(eq("foo_db"), any());
+        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alter(eq("foo_db"), any());
     }
     
     @Test
     void assertHandleStorageUnitUnregistered() {
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).unregisterStorageUnit("foo_db", "foo_unit");
+        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).unregister("foo_db", "foo_unit");
     }
 }
