@@ -60,7 +60,8 @@ public final class StorageUnitManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
             closeStaleRules(database);
-            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap));
+            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap);
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
@@ -76,7 +77,8 @@ public final class StorageUnitManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
             closeStaleRules(database);
-            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap));
+            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap);
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
@@ -92,7 +94,8 @@ public final class StorageUnitManager {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
             closeStaleRules(database);
-            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName)));
+            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName));
+            buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
