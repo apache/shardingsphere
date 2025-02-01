@@ -66,9 +66,8 @@ public final class DatabaseRuleConfigurationManager {
             return;
         }
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-        rules.addAll(DatabaseRulesBuilder.build(
-                databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-        refreshMetadata(databaseName, getRuleConfigurations(rules));
+        rules.add(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        refreshMetadata(databaseName, rules);
     }
     
     /**
@@ -89,17 +88,14 @@ public final class DatabaseRuleConfigurationManager {
         }
         rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
         if (!TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) ruleConfig)) {
-            rules.addAll(DatabaseRulesBuilder.build(
+            rules.add(DatabaseRulesBuilder.build(
                     databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }
-        refreshMetadata(databaseName, getRuleConfigurations(rules));
+        refreshMetadata(databaseName, rules);
     }
     
-    private void refreshMetadata(final String databaseName, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
-        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, false, ruleConfigurations, metaDataContexts));
-    }
-    
-    private Collection<RuleConfiguration> getRuleConfigurations(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    private void refreshMetadata(final String databaseName, final Collection<ShardingSphereRule> rules) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigs = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+        metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, false, ruleConfigs, metaDataContexts));
     }
 }
