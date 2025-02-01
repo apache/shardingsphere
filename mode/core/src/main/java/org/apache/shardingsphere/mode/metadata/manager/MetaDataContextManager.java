@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
-import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.rule.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.ResourceSwitchManager;
-import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleItemManager;
-import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.StorageUnitManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleItemManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.GlobalConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
  * Meta data context manager.
  */
 @Getter
-@Slf4j
 public class MetaDataContextManager {
     
     private final MetaDataContexts metaDataContexts;
