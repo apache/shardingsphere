@@ -30,25 +30,25 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import java.sql.SQLException;
 
 /**
- * Rule item manager.
+ * Database rule item manager.
  */
 @RequiredArgsConstructor
-public final class RuleItemManager {
+public final class DatabaseRuleItemManager {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final DatabaseRuleConfigurationManager ruleConfigManager;
+    private final DatabaseRuleConfigurationManager databaseRuleConfigManager;
     
     private final MetaDataPersistFacade metaDataPersistFacade;
     
     /**
-     * Alter with rule item.
+     * Alter rule item.
      *
      * @param alterRuleItem alter rule item
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void alterRuleItem(final AlterRuleItem alterRuleItem) throws SQLException {
+    public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
         Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
@@ -57,25 +57,25 @@ public final class RuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
-            ruleConfigManager.alterRuleConfiguration(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.alterRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
     
     /**
-     * Drop with rule item.
+     * Drop rule item.
      *
      * @param dropRuleItem drop rule item
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void dropRuleItem(final DropRuleItem dropRuleItem) throws SQLException {
+    public void drop(final DropRuleItem dropRuleItem) throws SQLException {
         String databaseName = dropRuleItem.getDatabaseName();
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, dropRuleItem.getType());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
-            ruleConfigManager.dropRuleConfiguration(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.dropRuleConfiguration(databaseName, currentRuleConfig);
         }
     }
 }

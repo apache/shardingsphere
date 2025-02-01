@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaData
 import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.rule.GlobalConfigurationManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.ResourceSwitchManager;
-import org.apache.shardingsphere.mode.metadata.manager.rule.RuleItemManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleItemManager;
 import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.StorageUnitManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -48,7 +48,7 @@ public class MetaDataContextManager {
     
     private final DatabaseMetaDataManager databaseMetaDataManager;
     
-    private final RuleItemManager ruleItemManager;
+    private final DatabaseRuleItemManager databaseRuleItemManager;
     
     private final ResourceSwitchManager resourceSwitchManager;
     
@@ -67,7 +67,7 @@ public class MetaDataContextManager {
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistFacade);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistFacade);
         databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistFacade);
-        ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistFacade);
+        databaseRuleItemManager = new DatabaseRuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistFacade);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistFacade);
     }
 }
