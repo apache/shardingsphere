@@ -41,10 +41,10 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.cluster.ClusterStateContext;

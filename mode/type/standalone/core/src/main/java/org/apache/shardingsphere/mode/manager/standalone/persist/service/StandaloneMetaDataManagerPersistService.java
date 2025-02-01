@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedTy
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.standalone.changed.RuleItemChangedBuilder;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.manager.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;

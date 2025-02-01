@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.manager;
+package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -67,7 +67,7 @@ public final class GlobalConfigurationManager {
                 metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()), metaDataPersistFacade);
     }
     
-    // Optimize string comparison rule type.
+    // TODO Optimize string comparison rule type.
     @SneakyThrows(Exception.class)
     private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
         YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
