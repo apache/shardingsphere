@@ -215,7 +215,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
             Optional<RuleChangedItem> ruleItemChanged = buildRuleChangedItem(databaseName, each, Type.UPDATED);
             if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof AlterRuleItem) {
-                metaDataContextManager.getRuleItemManager().alterRuleItem((AlterRuleItem) ruleItemChanged.get());
+                metaDataContextManager.getDatabaseRuleItemManager().alter((AlterRuleItem) ruleItemChanged.get());
             }
         }
         clearServiceCache();
@@ -235,7 +235,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             Optional<RuleChangedItem> ruleItemChanged = buildRuleChangedItem(databaseName, metaDataVersion, Type.DELETED);
             // TODO double check here, when ruleItemEvent not existed or not AlterRuleItemEvent @haoran
             if (ruleItemChanged.isPresent() && ruleItemChanged.get() instanceof DropRuleItem) {
-                metaDataContextManager.getRuleItemManager().dropRuleItem((DropRuleItem) ruleItemChanged.get());
+                metaDataContextManager.getDatabaseRuleItemManager().drop((DropRuleItem) ruleItemChanged.get());
             }
         }
         clearServiceCache();

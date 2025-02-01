@@ -178,7 +178,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
         verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(metaDataVersion);
-        verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(any(AlterRuleItem.class));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(any(AlterRuleItem.class));
     }
     
     @Test
@@ -197,7 +197,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(dropRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
-        verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(any(DropRuleItem.class));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(any(DropRuleItem.class));
     }
     
     @Test
