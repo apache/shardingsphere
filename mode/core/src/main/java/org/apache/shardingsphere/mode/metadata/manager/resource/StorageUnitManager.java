@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.manager;
+package org.apache.shardingsphere.mode.metadata.manager.resource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
