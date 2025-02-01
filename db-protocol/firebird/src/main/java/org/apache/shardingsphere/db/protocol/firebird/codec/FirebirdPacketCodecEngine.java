@@ -22,6 +22,7 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -35,11 +36,14 @@ import java.util.List;
  */
 public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngine {
 
-    private static final int ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH = 4;
-
     private static final int MESSAGE_TYPE_LENGTH = 4;
     
-    private final List<ByteBuf> pendingMessages = new LinkedList<>();
+    private static final int ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 4;
+    
+    private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
+    
+    private final List<ByteBuf> pendingMessages  = new LinkedList<>();
+    private FirebirdCommandPacketType pendingPacketType;
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
@@ -51,9 +55,12 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         if (isValidHeader(in.readableBytes())) {
             if (pendingMessages.isEmpty()) {
                 int type = in.getInt(in.readerIndex());
-                FirebirdCommandPacketType commandPacketType = FirebirdCommandPacketType.valueOf(type);
-                if (commandPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                    handleAllocateStatement(context, in, out);
+                pendingPacketType = FirebirdCommandPacketType.valueOf(type);
+                if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
+                    handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                    return;
+                } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
+                    handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
                     return;
                 }
             }
@@ -63,9 +70,11 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
     }
 
-    private void handleAllocateStatement(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        out.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH));
+    private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
+        out.add(in.readRetainedSlice(firstPacketLength));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
+            int type = in.getInt(in.readerIndex());
+            pendingPacketType = FirebirdCommandPacketType.valueOf(type);
             addToBuffer(context, in, out);
 //            out.add(in.readRetainedSlice(in.readableBytes()));
         }
@@ -73,8 +82,20 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (in.writerIndex() == in.capacity()) {
-            pendingMessages.add(in.readRetainedSlice(in.readableBytes()));
-        } else if (pendingMessages.isEmpty()) {
+            try {
+                FirebirdPacketPayload payload = new FirebirdPacketPayload(in.copy(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+                FirebirdCommandPacketFactory.newInstance(pendingPacketType, payload);
+                writePendingMessages(context, in, out);
+            } catch (IndexOutOfBoundsException ignored) {
+                pendingMessages.add(in.readRetainedSlice(in.readableBytes()));
+            }
+        } else {
+            writePendingMessages(context, in, out);
+        }
+    }
+    
+    private void writePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+        if (pendingMessages.isEmpty()) {
             out.add(in.readRetainedSlice(in.readableBytes()));
         } else {
             CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
