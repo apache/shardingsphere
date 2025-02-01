@@ -57,10 +57,10 @@ public final class StorageUnitManager {
      * @param propsMap data source pool properties map
      */
     public synchronized void register(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
+            closeStaleRules(database);
+            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap));
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
@@ -73,10 +73,10 @@ public final class StorageUnitManager {
      * @param propsMap data source pool properties map
      */
     public synchronized void alter(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
+            closeStaleRules(database);
+            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap));
         } catch (final SQLException ex) {
             log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
@@ -89,11 +89,10 @@ public final class StorageUnitManager {
      * @param storageUnitName storage unit name
      */
     public synchronized void unregister(final String databaseName, final String storageUnitName) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(
-                    metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singleton(storageUnitName));
-            buildNewMetaDataContext(databaseName, switchingResource);
+            closeStaleRules(database);
+            buildNewMetaDataContext(databaseName, resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName)));
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
@@ -118,8 +117,8 @@ public final class StorageUnitManager {
     }
     
     @SneakyThrows(Exception.class)
-    private void closeStaleRules(final String databaseName) {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+    private void closeStaleRules(final ShardingSphereDatabase database) {
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
             }
