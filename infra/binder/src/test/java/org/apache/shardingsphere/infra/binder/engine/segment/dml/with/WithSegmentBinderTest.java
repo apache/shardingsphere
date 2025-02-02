@@ -73,7 +73,7 @@ class WithSegmentBinderTest {
         WithSegment withSegment = new WithSegment(0, 33, commonTableExpressionSegments);
         mySQLSelectStatement.setWithSegment(withSegment);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mySQLSelectStatement);
-        WithSegment actual = WithSegmentBinder.bind(withSegment, binderContext, binderContext.getExternalTableBinderContexts());
+        WithSegment actual = WithSegmentBinder.bind(withSegment, binderContext);
         assertThat(binderContext.getExternalTableBinderContexts().size(), is(1));
         assertThat(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().size(), is(1));
         assertThat(actual.getStartIndex(), is(0));
@@ -87,9 +87,9 @@ class WithSegmentBinderTest {
         assertThat(columnProjectionSegments.get(0).getColumn().getIdentifier().getValue(), is("user_id"));
         assertThat(columnProjectionSegments.get(1).getColumn().getIdentifier().getValue(), is("name"));
         assertTrue(columnProjectionSegments.get(1).getColumn().getOwner().isPresent());
-        assertThat(columnProjectionSegments.get(1).getColumn().getOwner().get().getIdentifier().getValue(), is("t_user"));
+        assertThat(columnProjectionSegments.get(1).getColumn().getOwner().get().getIdentifier().getValue(), is("cte"));
         assertTrue(columnProjectionSegments.get(0).getColumn().getOwner().isPresent());
-        assertThat(columnProjectionSegments.get(0).getColumn().getOwner().get().getIdentifier().getValue(), is("t_user"));
+        assertThat(columnProjectionSegments.get(0).getColumn().getOwner().get().getIdentifier().getValue(), is("cte"));
         assertThat(columnProjectionSegments.get(0).getColumn().getIdentifier().getValue(), is("user_id"));
         assertThat(columnProjectionSegments.get(1).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
         assertThat(columnProjectionSegments.get(0).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
