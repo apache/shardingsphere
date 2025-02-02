@@ -30,6 +30,7 @@
 
 1. Build: Support compiling and using ShardingSphere under OpenJDK 24 - [#35145](https://github.com/apache/shardingsphere/pull/35145)
 1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
+1. Infra: Eliminate HiveServer2 integration's dependency on Hive Metastore Client - [#36114](https://github.com/apache/shardingsphere/pull/36114)
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
 1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)

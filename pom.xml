@@ -134,7 +134,6 @@
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive-jdbc.version>4.0.1</hive-jdbc.version>
         <hive-server2-jdbc-driver-thin.version>1.7.0</hive-server2-jdbc-driver-thin.version>
-        <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.292</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
         

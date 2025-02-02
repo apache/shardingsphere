@@ -2,12 +2,6 @@
   "reflection": [
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "type": "com.sun.security.auth.NTUserPrincipal"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
       },
       "type": "java.beans.PropertyVetoException"
@@ -338,13 +332,6 @@
         "typeReached": "org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor"
       },
       "type": "java.lang.Object"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "type": "java.lang.Object",
-      "allDeclaredFields": true
     },
     {
       "condition": {
@@ -1853,9 +1840,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor"
+        "typeReached": "org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor"
       },
       "type": "org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor"
     },
     {
       "condition": {
@@ -1937,85 +1930,85 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.CheckMigrationJobExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.CommitMigrationExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.DropMigrationCheckExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.MigrateTableExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.RegisterMigrationSourceStorageUnitExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.RollbackMigrationExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StartMigrationCheckExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StartMigrationExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StopMigrationCheckExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StopMigrationExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.UnregisterMigrationSourceStorageUnitExecutor"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
       "type": "org.apache.shardingsphere.data.pipeline.distsql.handler.transmission.update.AlterTransmissionRuleExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.CheckMigrationJobExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.CommitMigrationExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.DropMigrationCheckExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.MigrateTableExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.RegisterMigrationSourceStorageUnitExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.RollbackMigrationExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.StartMigrationCheckExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.StartMigrationExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.StopMigrationCheckExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.StopMigrationExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+      },
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update.UnregisterMigrationSourceStorageUnitExecutor"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.parser.core.featured.DistSQLParserEngine"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer",
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLLexer",
       "methods": [
         {
           "name": "<init>",
@@ -2029,25 +2022,25 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLLexer"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLLexer"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLLexer"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.parser.core.featured.DistSQLParserEngine"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser",
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLParser",
       "methods": [
         {
           "name": "<init>",
@@ -2061,31 +2054,25 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLParser"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLParser"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.core.MigrationDistSQLParser"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade.MigrationDistSQLParserFacade"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor"
-      },
-      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI"
+      "type": "org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parser.facade.MigrationDistSQLParserFacade"
     },
     {
       "condition": {
@@ -12305,12 +12292,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets"
       },
       "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
@@ -12329,12 +12310,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "META-INF/services/javax.xml.parsers.DocumentBuilderFactory"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
       },
       "glob": "META-INF/services/javax.xml.stream.XMLInputFactory"
@@ -12344,12 +12319,6 @@
         "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
       },
       "glob": "META-INF/services/javax.xml.stream.XMLOutputFactory"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "META-INF/services/javax.xml.transform.TransformerFactory"
     },
     {
       "condition": {
@@ -12425,7 +12394,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor"
+        "typeReached": "org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI"
     },
@@ -12851,18 +12820,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "core-default.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "core-site.xml"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion"
       },
       "glob": "current-git-commit.properties"
@@ -12872,30 +12829,6 @@
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
       },
       "glob": "docker-java.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "hive-default.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "hive-site.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "hivemetastore-site.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "hiveserver2-site.xml"
     },
     {
       "condition": {
@@ -12917,27 +12850,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "mapred-default.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "mapred-site.xml"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
       },
       "glob": "mozilla/public-suffix-list.txt"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "org/apache/hadoop/hive/conf/HiveConf.class"
     },
     {
       "condition": {
@@ -16099,7 +16014,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
-      "glob": "test-native/yaml/jdbc/databases/hive/standalone-hms.yaml"
+      "glob": "test-native/yaml/jdbc/databases/hive/system-schemas.yaml"
     },
     {
       "condition": {
@@ -16220,68 +16135,7 @@
         "typeReached": "org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"
       },
       "glob": "vertx-default-jul-logging.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "yarn-default.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "glob": "yarn-site.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/Encodings.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/XMLEntities.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/XMLEntities_zh.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/XMLEntities_zh_CN.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/XMLEntities_zh_Hans.properties"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-      },
-      "module": "java.xml",
-      "glob": "com/sun/org/apache/xml/internal/serializer/XMLEntities_zh_Hans_CN.properties"
     }
   ],
-  "bundles": [
-    {
-      "name": "com.sun.org.apache.xml.internal.serializer.XMLEntities",
-      "locales": [
-        "zh-CN"
-      ]
-    }
-  ]
+  "bundles": []
 }
