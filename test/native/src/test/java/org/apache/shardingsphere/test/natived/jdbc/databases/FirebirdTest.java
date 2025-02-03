@@ -56,7 +56,7 @@ class FirebirdTest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/fdcastel/firebird:5.0.1")
+    private final GenericContainer<?> container = new GenericContainer<>("firebirdsql/firebird:5.0.1")
             .withEnv("FIREBIRD_ROOT_PASSWORD", password)
             .withEnv("FIREBIRD_USER", "alice")
             .withEnv("FIREBIRD_PASSWORD", password)

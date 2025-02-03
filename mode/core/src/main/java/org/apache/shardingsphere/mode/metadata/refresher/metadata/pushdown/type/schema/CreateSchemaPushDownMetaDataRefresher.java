@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Create schema push down meta data refresher.
@@ -34,8 +36,11 @@ public final class CreateSchemaPushDownMetaDataRefresher implements PushDownMeta
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        (sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : sqlStatement.getUsername())
-                .ifPresent(optional -> metaDataManagerPersistService.createSchema(database.getName(), optional.getValue().toLowerCase()));
+        getSchemaName(sqlStatement).ifPresent(optional -> metaDataManagerPersistService.createSchema(database.getName(), optional.getValue().toLowerCase()));
+    }
+    
+    private static Optional<IdentifierValue> getSchemaName(final CreateSchemaStatement sqlStatement) {
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : sqlStatement.getUsername();
     }
     
     @Override

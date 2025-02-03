@@ -52,7 +52,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load(ruleTypeName.get());
+        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleTypeName.get());
         Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleTypeName.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig.get());
     }

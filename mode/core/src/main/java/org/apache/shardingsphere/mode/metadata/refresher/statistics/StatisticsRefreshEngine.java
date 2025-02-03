@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.statistics;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -50,19 +51,13 @@ import java.util.stream.Collectors;
 /**
  * Statistics refresh engine.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class StatisticsRefreshEngine {
     
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("statistics-collect-%d"));
     
     private final ContextManager contextManager;
-    
-    private final LockContext lockContext;
-    
-    public StatisticsRefreshEngine(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
-    }
     
     /**
      * Async refresh.
@@ -89,6 +84,7 @@ public final class StatisticsRefreshEngine {
     }
     
     private void collectAndRefresh() {
+        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
         if (lockContext.tryLock(lockDefinition, 5000L)) {
             try {
@@ -154,7 +150,7 @@ public final class StatisticsRefreshEngine {
         for (Entry<String, DatabaseStatistics> entry : currentStatistics.getDatabaseStatisticsMap().entrySet()) {
             if (!changedStatistics.containsDatabaseStatistics(entry.getKey())) {
                 currentStatistics.dropDatabaseStatistics(entry.getKey());
-                contextManager.getPersistServiceFacade().getMetaDataPersistService().getStatisticsPersistService().delete(entry.getKey());
+                contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
             }
         }
     }
@@ -178,7 +174,7 @@ public final class StatisticsRefreshEngine {
         if (!currentTableStatistics.equals(changedTableStatistics)) {
             currentStatistics.getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).putTableStatistics(changedTableStatistics.getName(), changedTableStatistics);
             AlteredDatabaseStatistics alteredDatabaseStatistics = createAlteredDatabaseStatistics(databaseName, schemaName, table, currentTableStatistics, changedTableStatistics);
-            contextManager.getPersistServiceFacade().getMetaDataPersistService().getStatisticsPersistService().update(alteredDatabaseStatistics);
+            contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().update(alteredDatabaseStatistics);
         }
     }
     
