@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.standalone.persist.builder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneProcessPersistService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.Test;

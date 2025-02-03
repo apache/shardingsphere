@@ -19,9 +19,6 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -33,13 +30,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -61,25 +55,9 @@ import static org.hamcrest.Matchers.nullValue;
 @Testcontainers
 class ClickHouseTest {
     
-    private final Network network = Network.newNetwork();
-    
-    @Container
-    private final GenericContainer<?> clickhouseKeeperContainer = new GenericContainer<>("clickhouse/clickhouse-keeper:24.11.1.2557")
-            .withCopyFileToContainer(
-                    MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/keeper_config.xml").toAbsolutePath()),
-                    "/etc/clickhouse-keeper/keeper_config.xml")
-            .withNetwork(network)
-            .withExposedPorts(9181)
-            .withNetworkAliases("clickhouse-keeper-01");
-    
     @Container
     private final GenericContainer<?> container = new GenericContainer<>("clickhouse/clickhouse-server:24.11.1.2557")
-            .withCopyFileToContainer(
-                    MountableFile.forHostPath(Paths.get("src/test/resources/test-native/xml/transactions.xml").toAbsolutePath()),
-                    "/etc/clickhouse-server/config.d/transactions.xml")
-            .withNetwork(network)
-            .withExposedPorts(8123)
-            .dependsOn(clickhouseKeeperContainer);
+            .withExposedPorts(8123);
     
     private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.clickhouse.";
     
@@ -103,7 +81,6 @@ class ClickHouseTest {
             }
             contextManager.close();
         }
-        network.close();
         System.clearProperty(systemPropKeyPrefix + "ds0.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds1.jdbc-url");
         System.clearProperty(systemPropKeyPrefix + "ds2.jdbc-url");
@@ -125,13 +102,7 @@ class ClickHouseTest {
     }
     
     private DataSource createDataSource() throws SQLException {
-        String connectionString = clickhouseKeeperContainer.getHost() + ":" + clickhouseKeeperContainer.getMappedPort(9181);
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            try (
-                    CuratorFramework client = CuratorFrameworkFactory.builder().connectString(connectionString)
-                            .retryPolicy(new ExponentialBackoffRetry(1000, 3)).build()) {
-                client.start();
-            }
             openConnection("default").close();
             return true;
         });
@@ -146,9 +117,9 @@ class ClickHouseTest {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/clickhouse.yaml?placeholder-type=system_props");
-        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0?transactionSupport=true");
-        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1?transactionSupport=true");
-        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2?transactionSupport=true");
+        System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
+        System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
+        System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
     }
     

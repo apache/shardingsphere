@@ -53,7 +53,7 @@ class PropertiesChangedHandlerTest {
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService(), times(0)).load();
     }
     
     @Test

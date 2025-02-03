@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
@@ -154,7 +154,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
         metaDataManagerPersistService.alterSingleRuleConfiguration("foo_db", new RuleMetaData(Collections.singleton(singleRule)));
         verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(any());
-        verify(metaDataContextManager.getDatabaseRuleConfigurationManager()).alterRuleConfiguration("foo_db", singleRuleConfig);
+        verify(metaDataContextManager.getDatabaseRuleConfigurationManager()).alter("foo_db", singleRuleConfig);
     }
     
     @Test
@@ -178,7 +178,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
         verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(metaDataVersion);
-        verify(metaDataContextManager.getRuleItemManager()).alterRuleItem(any(AlterRuleItem.class));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(any(AlterRuleItem.class));
     }
     
     @Test
@@ -197,7 +197,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(dropRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
-        verify(metaDataContextManager.getRuleItemManager()).dropRuleItem(any(DropRuleItem.class));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(any(DropRuleItem.class));
     }
     
     @Test

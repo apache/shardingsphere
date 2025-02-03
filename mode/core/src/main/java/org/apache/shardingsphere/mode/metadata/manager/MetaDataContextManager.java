@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata;
+package org.apache.shardingsphere.mode.metadata.manager;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.metadata.manager.DatabaseMetaDataManager;
-import org.apache.shardingsphere.mode.metadata.manager.DatabaseRuleConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.GlobalConfigurationManager;
-import org.apache.shardingsphere.mode.metadata.manager.ResourceSwitchManager;
-import org.apache.shardingsphere.mode.metadata.manager.RuleItemManager;
-import org.apache.shardingsphere.mode.metadata.manager.StatisticsManager;
-import org.apache.shardingsphere.mode.metadata.manager.StorageUnitManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
+import org.apache.shardingsphere.mode.metadata.manager.resource.ResourceSwitchManager;
+import org.apache.shardingsphere.mode.metadata.manager.resource.StorageUnitManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.DatabaseRuleItemManager;
+import org.apache.shardingsphere.mode.metadata.manager.rule.GlobalConfigurationManager;
+import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
  * Meta data context manager.
  */
 @Getter
-@Slf4j
 public class MetaDataContextManager {
     
     private final MetaDataContexts metaDataContexts;
@@ -47,7 +46,7 @@ public class MetaDataContextManager {
     
     private final DatabaseMetaDataManager databaseMetaDataManager;
     
-    private final RuleItemManager ruleItemManager;
+    private final DatabaseRuleItemManager databaseRuleItemManager;
     
     private final ResourceSwitchManager resourceSwitchManager;
     
@@ -66,7 +65,7 @@ public class MetaDataContextManager {
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistFacade);
         databaseRuleConfigurationManager = new DatabaseRuleConfigurationManager(metaDataContexts, computeNodeInstanceContext, metaDataPersistFacade);
         databaseMetaDataManager = new DatabaseMetaDataManager(metaDataContexts, metaDataPersistFacade);
-        ruleItemManager = new RuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistFacade);
+        databaseRuleItemManager = new DatabaseRuleItemManager(metaDataContexts, databaseRuleConfigurationManager, metaDataPersistFacade);
         globalConfigurationManager = new GlobalConfigurationManager(metaDataContexts, metaDataPersistFacade);
     }
 }

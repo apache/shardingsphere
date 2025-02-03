@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.manager;
+package org.apache.shardingsphere.mode.metadata.manager.resource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -56,13 +56,14 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param propsMap data source pool properties map
      */
-    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+    public synchronized void register(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            closeStaleRules(database);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     
@@ -72,13 +73,14 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param propsMap data source pool properties map
      */
-    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+    public synchronized void alter(final String databaseName, final Map<String, DataSourcePoolProperties> propsMap) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), propsMap);
+            closeStaleRules(database);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap);
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
     }
     
@@ -88,14 +90,14 @@ public final class StorageUnitManager {
      * @param databaseName database name
      * @param storageUnitName storage unit name
      */
-    public synchronized void unregisterStorageUnit(final String databaseName, final String storageUnitName) {
+    public synchronized void unregister(final String databaseName, final String storageUnitName) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         try {
-            closeStaleRules(databaseName);
-            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(
-                    metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(storageUnitName));
+            closeStaleRules(database);
+            SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
-            log.error("Alter database: {} register storage unit failed", databaseName, ex);
+            log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     
@@ -118,8 +120,8 @@ public final class StorageUnitManager {
     }
     
     @SneakyThrows(Exception.class)
-    private void closeStaleRules(final String databaseName) {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+    private void closeStaleRules(final ShardingSphereDatabase database) {
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
             }

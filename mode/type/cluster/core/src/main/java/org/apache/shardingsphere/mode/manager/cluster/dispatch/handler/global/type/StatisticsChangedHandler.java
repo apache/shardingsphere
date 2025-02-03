@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatistic
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.manager.StatisticsManager;
+import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 
 import java.util.Arrays;
 import java.util.Collection;
