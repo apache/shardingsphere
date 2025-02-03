@@ -56,9 +56,9 @@ class HashModShardingAlgorithmTest {
         assertThat(actual.size(), is(4));
     }
     
-//    @Test
-//    void assertRangeDoShardingWithWrongArgumentForShardingCount() {
-//        Properties props = PropertiesBuilder.build(new Property("sharding-count", "0"));
-//        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "HASH_MOD", props));
-//    }
+    // @Test
+    // void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+    // Properties props = PropertiesBuilder.build(new Property("sharding-count", "0"));
+    // assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "HASH_MOD", props));
+    // }
 }

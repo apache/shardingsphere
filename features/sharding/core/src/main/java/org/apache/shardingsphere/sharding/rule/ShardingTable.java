@@ -62,8 +62,9 @@ public final class ShardingTable {
     
     @Getter(AccessLevel.NONE)
     private final Set<String> actualTables;
-
-    private boolean isAutoTable;
+    
+    private final boolean isAutoTable;
+    
     @Getter(AccessLevel.NONE)
     private final Map<DataNode, Integer> dataNodeIndexMap;
     
@@ -87,6 +88,7 @@ public final class ShardingTable {
     private final DataNodeInfo tableDataNode;
     
     public ShardingTable(final Collection<String> dataSourceNames, final String logicTableName) {
+        isAutoTable = false;
         logicTable = logicTableName;
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1F);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
@@ -101,6 +103,8 @@ public final class ShardingTable {
     }
     
     public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+        isAutoTable = false;
+        
         logicTable = tableRuleConfig.getLogicTable();
         List<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
@@ -148,7 +152,7 @@ public final class ShardingTable {
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
         return new DataNodeInfo(prefix, suffixMinLength, ShardingTableConstants.DEFAULT_PADDING_CHAR);
     }
-
+    
     private Set<String> getActualTables() {
         return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
     }

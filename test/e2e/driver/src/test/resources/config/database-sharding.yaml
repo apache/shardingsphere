@@ -41,12 +41,13 @@ rules:
         keyGeneratorName: jdbc_reset_increment_fixture
   autoTables:
     t_order_auto:
-      actualDataNodes: jdbc_0.t_order_auto, jdbc_1.t_order_auto
+      actualDataNodes: jdbc_0.t_order_auto_0,jdbc_0.t_order_auto_1
       shardingStrategy:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: mod
     t_order_item_auto:
+      actualDataNodes: jdbc_0.t_order_item_auto_0,jdbc_0.t_order_item_auto_1
       shardingStrategy:
         standard:
           shardingColumn: order_id

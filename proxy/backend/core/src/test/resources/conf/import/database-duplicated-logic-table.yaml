@@ -62,7 +62,7 @@ rules:
           keyGeneratorName: snowflake
     autoTables:
       t_order:
-        actualDataNodes: ds_${1..1}.t_order_${0..1}
+        actualDataNodes: ds_${0..1}.t_order_${0..1}
         shardingStrategy:
           standard:
             shardingColumn: order_id

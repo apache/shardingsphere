@@ -236,7 +236,7 @@ public final class ShardingTableRuleStatementConverter {
      */
     public static Collection<DataNode> getActualDataNodes(final AutoTableRuleSegment ruleSegment) {
         Collection<DataNode> result = new LinkedList<>();
-        for( String each : ruleSegment.getDataSourceNodes() ) {
+        for (String each : ruleSegment.getDataSourceNodes()) {
             List<String> dataNodes = InlineExpressionParserFactory.newInstance(each).splitAndEvaluate();
             result.addAll(dataNodes.stream().map(DataNode::new).collect(Collectors.toList()));
         }

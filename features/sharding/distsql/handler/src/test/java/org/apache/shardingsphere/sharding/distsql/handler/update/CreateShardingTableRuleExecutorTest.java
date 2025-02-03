@@ -115,7 +115,7 @@ class CreateShardingTableRuleExecutorTest {
         Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = actual.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item_input"));
-        //TODD CREATE A ASSERT FOR DATA NODE
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_item_input${0..1}"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -123,9 +123,9 @@ class CreateShardingTableRuleExecutorTest {
     }
     
     @Test
-    void assertCheckCreateShardingStatement() {
+    void assertCheckCreateShardingStatement1() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "DATANODES(ds_${0..1}.t_order_${0..2}),"
+                + "DATANODES('ds_${0..1}.t_order_${0..2}'),"
                 + "SHARDING_COLUMN=order_id,"
                 + "TYPE(NAME='hash_mod'),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
@@ -134,14 +134,14 @@ class CreateShardingTableRuleExecutorTest {
     }
     
     @Test
-    void assertCheckCreateShardingStatementThrows() {
+    void assertCheckCreateShardingStatement2() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "DATANODES(ds_${0..1}.t_order_${0..3}),"
+                + "DATANODES('ds_${0..1}.t_order_item_${0..3}'),"
                 + "SHARDING_COLUMN=order_id,"
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(AlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(distSQLStatement));
+        executor.checkBeforeUpdate(distSQLStatement);
     }
     
     @Test
@@ -250,7 +250,7 @@ class CreateShardingTableRuleExecutorTest {
         Iterator<ShardingAutoTableRuleConfiguration> autoTableIterator = actual.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableIterator.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item_input"));
-        //TODD CREATE A ASSERT FOR DATA NODE
+        // TODD CREATE A ASSERT FOR DATA NODE
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -259,7 +259,8 @@ class CreateShardingTableRuleExecutorTest {
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
         KeyGenerateStrategySegment keyGenerateStrategySegment = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds")); result.setKeyGenerateStrategySegment(keyGenerateStrategySegment);
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("ds_${0..1}.t_order_item_input${0..1}"));
+        result.setKeyGenerateStrategySegment(keyGenerateStrategySegment);
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;

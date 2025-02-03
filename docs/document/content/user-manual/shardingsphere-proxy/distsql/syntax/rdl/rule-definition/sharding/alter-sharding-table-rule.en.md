@@ -19,7 +19,7 @@ tableRuleDefinition ::=
   ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 autoTableRuleDefinition ::=
-  ruleName '(' 'DATANODES' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
@@ -114,7 +114,7 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_2.t_order_0,ds_3.t_order_0,ds_0.t_order_1,ds_1.t_order_1,ds_2.t_order_1,ds_3.t_order_1,ds_0.t_order_2,ds_1.t_order_2,ds_2.t_order_2,ds_3.t_order_2,ds_0.t_order_3,ds_1.t_order_3,ds_2.t_order_3,ds_3.t_order_3),
+DATANODES(ds_${0..3}.t_order_${0..3}),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)

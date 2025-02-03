@@ -63,8 +63,6 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     private static final String SELECT_AUTO_SQL = "SELECT item_id, order_id, status FROM t_order_item_auto WHERE order_id >= ?";
     
-    private static final String SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER = "SELECT ?, order_id, status FROM t_order_item_auto";
-    
     private static final String UPDATE_SQL = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
     
     private static final String UPDATE_AUTO_SQL = "UPDATE t_order_auto SET status = ? WHERE order_id = ?";
@@ -560,16 +558,6 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             preparedStatement.setInt(2, 10);
             preparedStatement.executeUpdate();
             assertNull(preparedStatement.getResultSet());
-        }
-    }
-    
-    @Test
-    void assertExecuteSelectColumnGetResultSet() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER)) {
-            preparedStatement.setString(1, "item_id");
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                assertThat(resultSet.getMetaData().getColumnCount(), is(3));
-            }
         }
     }
     

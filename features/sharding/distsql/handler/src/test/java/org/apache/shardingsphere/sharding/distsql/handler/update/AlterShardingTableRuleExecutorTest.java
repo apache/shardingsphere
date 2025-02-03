@@ -90,7 +90,7 @@ class AlterShardingTableRuleExecutorTest {
                 + "DATANODES('ds_${0..1}.t_order'),"
                 + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
                 + "), t_order_item("
-                + "DATANODES('ds_${0..1}.t_order_item'),"
+                + "DATANODES('ds_${0..1}.t_order'),"
                 + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}'))))"
                 + ");";
         AlterShardingTableRuleStatement sqlStatement = (AlterShardingTableRuleStatement) getDistSQLStatement(sql);
@@ -114,7 +114,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order_item"));
-        assertThat(autoTableRule.getActualDataNodes(), is("\"ds_${0..1}.t_order${0..1}\""));
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_item${0..1}"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -129,7 +129,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("T_ORDER"));
-        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order}"));
+        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.T_ORDER${0..1}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_core.standard.fixture"));
@@ -138,7 +138,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("T_ORDER_ITEM"));
-        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.t_order_item"));
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.T_ORDER_ITEM${0..1}"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -153,7 +153,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = toBeAlteredRuleConfig.getTables().iterator().next();
         assertThat(tableRule.getLogicTable(), is("t_order_item"));
-        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
+        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order_item${0..1}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_item_table_core.standard.fixture"));
@@ -162,7 +162,7 @@ class AlterShardingTableRuleExecutorTest {
         assertThat(toBeAlteredRuleConfig.getTables().size(), is(1));
         ShardingAutoTableRuleConfiguration autoTableRule = toBeAlteredRuleConfig.getAutoTables().iterator().next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
-        assertThat(autoTableRule.getActualDataNodes(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
@@ -170,7 +170,7 @@ class AlterShardingTableRuleExecutorTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule(final String logicTableName) {
-        AutoTableRuleSegment result = new AutoTableRuleSegment(logicTableName, Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment result = new AutoTableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}." + logicTableName + "${0..1}"));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
@@ -179,7 +179,7 @@ class AlterShardingTableRuleExecutorTest {
     
     private TableRuleSegment createCompleteTableRule(final String logicTableName) {
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singleton("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
+        TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}." + logicTableName + "${0..1}"), keyGenerator, null);
         result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
@@ -202,7 +202,7 @@ class AlterShardingTableRuleExecutorTest {
     }
     
     private ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item${0..1}");
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_MOD_TEST"));
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_snowflake_test"));
         return result;

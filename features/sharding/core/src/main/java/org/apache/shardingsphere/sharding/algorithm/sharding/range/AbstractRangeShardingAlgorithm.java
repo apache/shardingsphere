@@ -35,7 +35,7 @@ import java.util.Properties;
 /**
  * Abstract range sharding algorithm.
  */
-public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>{
+public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
     private Map<Integer, Range<Comparable<?>>> partitionRange;
     
@@ -85,7 +85,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     private Long getLongValue(final Comparable<?> value) {
         return Long.parseLong(value.toString());
     }
-
+    
     public final int getAutoTablesAmount() {
         return partitionRange.size();
     }

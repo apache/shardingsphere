@@ -67,7 +67,8 @@ class ShardingTableTest {
     
     @Test
     void assertCreateAutoTableRuleWithModAlgorithm() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0.logic_table_0,ds1.logic_table_0,ds0.logic_table_1,ds1.logic_table_1");
+        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig =
+                new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0.logic_table_0,ds1.logic_table_0,ds0.logic_table_1,ds1.logic_table_1");
         shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ShardingTable actual = new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
@@ -77,7 +78,7 @@ class ShardingTableTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
     }
-
+    
     // TODO will update these when maintainer response for future of Mod Algorithms
     @Disabled("Will depend on the future behaviour Mod Algorithms")
     @Test

@@ -40,5 +40,5 @@ public final class TableRuleSegment extends AbstractTableRuleSegment {
                             final KeyGenerateStrategySegment keyGenerateStrategySegment, final AuditStrategySegment auditStrategySegment) {
         super(logicTable, dataSourcesNode, keyGenerateStrategySegment, auditStrategySegment);
     }
-
+    
 }

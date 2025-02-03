@@ -56,7 +56,7 @@ class ModShardingAlgorithmTest {
     @Test
     void assertPreciseDoShardingWhenOffsetOverload() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(
-                 new Property("start-offset", "10"), new Property("stop-offset", "1")));
+                new Property("start-offset", "10"), new Property("stop-offset", "1")));
         assertThrows(ShardingValueOffsetException.class, () -> algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "1")));
     }
     
@@ -95,13 +95,13 @@ class ModShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
-//     TODO remove @Disabled when autoTables support config actualDataNodes in #33364
-//    @Disabled("FIXME")
-//    @Test
-//    void assertRangeDoShardingWithWrongArgumentForShardingCount() {
-//        assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "0"))));
-//    }
-//
+    // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
+    // @Disabled("FIXME")
+    // @Test
+    // void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+    // assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "0"))));
+    // }
+    //
     @Test
     void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties props = createZeroPaddingProperties();

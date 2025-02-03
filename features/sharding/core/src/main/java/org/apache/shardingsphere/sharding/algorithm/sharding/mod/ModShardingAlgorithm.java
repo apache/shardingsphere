@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetExce
 /**
  * Modulo sharding algorithm.
  */
-public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>{
+public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
     private static final String START_OFFSET_INDEX_KEY = "start-offset";
     
@@ -42,7 +42,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private static final String ZERO_PADDING_KEY = "zero-padding";
     
     private int shardingCount;
-
+    
     private int startOffset;
     
     private int stopOffset;
@@ -133,7 +133,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private BigInteger getBigInteger(final Comparable<?> value) {
         return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
     }
-
+    
     public int getAutoTablesAmount() {
         return shardingCount;
     }

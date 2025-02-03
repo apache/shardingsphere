@@ -55,7 +55,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
         stopOffset = getStopOffset(props);
         zeroPadding = isZeroPadding(props);
     }
-
+    
     private int getStartOffset(final Properties props) {
         int result = Integer.parseInt(String.valueOf(props.getProperty(START_OFFSET_INDEX_KEY, "0")));
         ShardingSpherePreconditions.checkState(result >= 0, () -> new AlgorithmInitializationException(this, "Start offset can not be less than 0."));

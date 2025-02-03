@@ -80,7 +80,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/opengauss.xml")})
 @Slf4j
 class CDCE2EIT {
-    //TODO changed this auto table for dataNodes %s,%s see for those values.
+    
+    // TODO changed this auto table for dataNodes %s,%s see for those values.
     private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
             + "DATANODES(%s,%s),"
             + "SHARDING_COLUMN=user_id,"

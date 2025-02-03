@@ -64,7 +64,7 @@ class ShowShardingTableRuleExecutorTest extends DistSQLDatabaseRuleQueryExecutor
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShardingTableRulesStatement(null, null),
-                    Collections.singleton(new LocalDataQueryResultRow("t_order", "ds_${0..1}.t_order_${0..1}", "",
+                    Collections.singleton(new LocalDataQueryResultRow("t_order", "ds_${0..1}.t_order_${0..1}",
                             "STANDARD", "user_id",
                             "INLINE", "{\"algorithm-expression\":\"ds_${user_id % 2}\"}", "STANDARD", "order_id",
                             "INLINE", "{\"algorithm-expression\":\"t_order_${order_id % 2}\"}",

@@ -182,7 +182,7 @@ public final class ShardingTableRuleStatementChecker {
         return InlineExpressionParserFactory.newInstance(shardingTableRuleConfig.getActualDataNodes())
                 .splitAndEvaluate().stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
-
+    
     private static Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration) {
         return InlineExpressionParserFactory.newInstance(shardingAutoTableRuleConfiguration.getActualDataNodes())
                 .splitAndEvaluate().stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
@@ -203,12 +203,12 @@ public final class ShardingTableRuleStatementChecker {
     private static Map<String, ShardingTable> createShardingTables(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
                                                                    final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig,
                                                                    final Collection<String> dataSourceNames) {
-        return tableRuleConfigs.stream().map(each -> createShardingTable( defaultKeyGenerateStrategyConfig , each , dataSourceNames ))
+        return tableRuleConfigs.stream().map(each -> createShardingTable(defaultKeyGenerateStrategyConfig, each, dataSourceNames))
                 .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
-
-    public static ShardingTable createShardingTable( final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingTableRuleConfiguration shardingTableRuleConfiguration, final Collection<String> dataSourceNames )
-    {
+    
+    public static ShardingTable createShardingTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingTableRuleConfiguration shardingTableRuleConfiguration,
+                                                    final Collection<String> dataSourceNames) {
         return new ShardingTable(shardingTableRuleConfiguration, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     
@@ -222,8 +222,9 @@ public final class ShardingTableRuleStatementChecker {
                 .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static ShardingTable createShardingAutoTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig, final Collection<String> dataSourceNames) {
-
+    private static ShardingTable createShardingAutoTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig,
+                                                         final Collection<String> dataSourceNames) {
+        
         return new ShardingTable(autoTableRuleConfig, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     

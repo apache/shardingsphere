@@ -98,6 +98,7 @@ public final class ShardingRuleConfigurationToDistSQLConverter implements RuleCo
     private String convertAutoTableStrategy(final ShardingAutoTableRuleConfiguration autoTableRuleConfig, final ShardingRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) autoTableRuleConfig.getShardingStrategy();
+        result.append(DistSQLConstants.COMMA).append(System.lineSeparator());
         String shardingColumn = Strings.isNullOrEmpty(strategyConfig.getShardingColumn()) ? ruleConfig.getDefaultShardingColumn() : strategyConfig.getShardingColumn();
         result.append(String.format(ShardingConvertDistSQLConstants.AUTO_TABLE_STRATEGY,
                 shardingColumn, AlgorithmDistSQLConverter.getAlgorithmType(ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName()))));

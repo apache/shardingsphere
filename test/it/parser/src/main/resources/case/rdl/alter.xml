@@ -61,10 +61,7 @@
     
     <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
-            <data-node>ms_group_0.t_order_0</data-node>
-            <data-node>ms_group_0.t_order_1</data-node>
-            <data-node>ms_group_1.t_order_0</data-node>
-            <data-node>ms_group_1.t_order_1</data-node>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy algorithm-name="hash_mod">
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />

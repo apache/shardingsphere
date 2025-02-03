@@ -86,7 +86,7 @@ class ShardingStandardRouteEngineTest {
     }
     
     // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
-//    @Disabled("FIXME")
+    // @Disabled("FIXME")
     @Test
     void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order", ShardingRouteEngineFixtureBuilder.createErrorShardingConditions("t_order"),
