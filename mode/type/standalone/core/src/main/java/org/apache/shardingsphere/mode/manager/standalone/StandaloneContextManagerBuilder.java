@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockCont
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new StandaloneLockContext());
-        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistService(repository), computeNodeInstanceContext).create(param);
+        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
     }
     

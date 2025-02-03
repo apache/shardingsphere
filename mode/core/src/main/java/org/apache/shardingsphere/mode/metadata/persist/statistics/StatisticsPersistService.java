@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableRowDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 

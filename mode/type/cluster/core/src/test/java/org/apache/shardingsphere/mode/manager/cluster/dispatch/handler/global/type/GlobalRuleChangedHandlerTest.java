@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,13 +55,13 @@ class GlobalRuleChangedHandlerTest {
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
     void assertHandleWithEmptyRuleName() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager, times(0)).getPersistServiceFacade();
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
@@ -68,7 +69,7 @@ class GlobalRuleChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version"))
                 .thenReturn("rule_value");
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
     }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.proce
 
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -45,7 +44,7 @@ class ClusterProcessPersistCoordinatorTest {
     @Mock
     private PersistRepository repository;
     
-    private ProcessPersistCoordinator processPersistCoordinator;
+    private ClusterProcessPersistCoordinator processPersistCoordinator;
     
     @BeforeEach
     void setUp() {

@@ -119,7 +119,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     
     private void persistGlobalRuleConfigurations(final ContextManager contextManager) {
         Collection<RuleConfiguration> globalRuleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getGlobalRuleService().persist(globalRuleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().persist(globalRuleConfigs);
     }
     
     @Override

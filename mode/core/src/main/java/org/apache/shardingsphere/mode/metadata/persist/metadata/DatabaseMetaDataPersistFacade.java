@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.database.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.schema.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.TableMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.table.ViewMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 

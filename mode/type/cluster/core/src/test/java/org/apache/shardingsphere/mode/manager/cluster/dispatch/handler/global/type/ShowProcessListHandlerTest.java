@@ -74,7 +74,7 @@ class ShowProcessListHandlerTest {
     void assertHandleReportLocalProcesses() {
         when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.ADDED));
-        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).reportLocalProcesses("foo_instance_id", "foo_task_id");
+        verify(contextManager.getPersistServiceFacade().getRepository()).delete(any());
     }
     
     @Test

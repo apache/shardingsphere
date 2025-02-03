@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.state.ProcessNodePath;
-import org.apache.shardingsphere.mode.persist.coordinator.ProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -33,13 +32,18 @@ import java.util.Collection;
  * Cluster process persist coordinator.
  */
 @RequiredArgsConstructor
-public final class ClusterProcessPersistCoordinator implements ProcessPersistCoordinator {
+public final class ClusterProcessPersistCoordinator {
     
     private final PersistRepository repository;
     
     private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
-    @Override
+    /**
+     * Report local processes.
+     *
+     * @param instanceId instance ID
+     * @param taskId task ID
+     */
     public void reportLocalProcesses(final String instanceId, final String taskId) {
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
@@ -48,7 +52,12 @@ public final class ClusterProcessPersistCoordinator implements ProcessPersistCoo
         repository.delete(ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId));
     }
     
-    @Override
+    /**
+     * Clean process.
+     *
+     * @param instanceId instance ID
+     * @param processId process ID
+     */
     public void cleanProcess(final String instanceId, final String processId) {
         repository.delete(ComputeNodePath.getKillProcessTriggerPath(instanceId, processId));
     }

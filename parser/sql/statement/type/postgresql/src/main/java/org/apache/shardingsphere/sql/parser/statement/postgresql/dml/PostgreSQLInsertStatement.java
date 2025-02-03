@@ -34,7 +34,7 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     
     private WithSegment withSegment;
     
-    private OnConflictKeyColumnsSegment onConflictKeyColumns;
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
     private ReturningSegment returningSegment;
     

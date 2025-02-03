@@ -80,7 +80,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     <dependency>
         <groupId>io.github.linghengqian</groupId>
         <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.0</version>
         <exclusions>
             <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>

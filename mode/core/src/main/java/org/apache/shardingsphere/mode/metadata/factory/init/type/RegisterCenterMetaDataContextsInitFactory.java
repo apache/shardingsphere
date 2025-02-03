@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -46,25 +46,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataContextsInitFactory {
     
-    private final MetaDataPersistService persistService;
+    private final MetaDataPersistFacade persistFacade;
     
     private final ComputeNodeInstanceContext instanceContext;
     
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(getDatabaseNames(param.getDatabaseConfigs()), param.getDatabaseConfigs());
-        Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
+        Collection<RuleConfiguration> globalRuleConfigs = persistFacade.getGlobalRuleService().load();
         // TODO load global data sources from persist service
         Map<String, DataSource> globalDataSources = param.getGlobalDataSources();
-        ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
+        ConfigurationProperties props = new ConfigurationProperties(persistFacade.getPropsService().load());
         Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, loadSchemas(effectiveDatabaseConfigs.keySet()), props, instanceContext);
-        return create(globalRuleConfigs, globalDataSources, databases, props, persistService);
+        return create(globalRuleConfigs, globalDataSources, databases, props, persistFacade);
     }
     
     private Collection<String> getDatabaseNames(final Map<String, DatabaseConfiguration> databaseConfigs) {
         return instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
                 ? databaseConfigs.keySet()
-                : persistService.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
+                : persistFacade.getDatabaseMetaDataFacade().getDatabase().loadAllDatabaseNames();
     }
     
     private Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames, final Map<String, DatabaseConfiguration> databaseConfigs) {
@@ -73,8 +73,8 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     
     private DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName, final Map<String, DatabaseConfiguration> databaseConfigs) {
         closeGeneratedDataSources(databaseName, databaseConfigs);
-        Map<String, DataSourceConfiguration> dataSources = persistService.loadDataSourceConfigurations(databaseName);
-        Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
+        Map<String, DataSourceConfiguration> dataSources = persistFacade.loadDataSourceConfigurations(databaseName);
+        Collection<RuleConfiguration> databaseRuleConfigs = persistFacade.getDatabaseRuleService().load(databaseName);
         return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
@@ -85,6 +85,6 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     }
     
     private Map<String, Collection<ShardingSphereSchema>> loadSchemas(final Collection<String> databaseNames) {
-        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistService.getDatabaseMetaDataFacade().getSchema().load(each)));
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> persistFacade.getDatabaseMetaDataFacade().getSchema().load(each)));
     }
 }

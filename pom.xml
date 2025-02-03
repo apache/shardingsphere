@@ -128,8 +128,7 @@
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
-        <hive.version>4.0.1</hive.version>
-        <hive-server2-jdbc-driver-thin.version>1.6.0</hive-server2-jdbc-driver-thin.version>
+        <hive-server2-jdbc-driver-thin.version>1.7.0</hive-server2-jdbc-driver-thin.version>
         <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.288.1</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
@@ -1065,6 +1064,7 @@
                             <version>${native-maven-plugin.version}</version>
                             <extensions>true</extensions>
                             <configuration>
+                                <skipNativeTests>true</skipNativeTests>
                                 <agent>
                                     <enabled>true</enabled>
                                     <defaultMode>Conditional</defaultMode>

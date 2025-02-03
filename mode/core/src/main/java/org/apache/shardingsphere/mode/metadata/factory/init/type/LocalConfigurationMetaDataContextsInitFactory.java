@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDataContextsInitFactory {
     
-    private final MetaDataPersistService persistService;
+    private final MetaDataPersistFacade persistFacade;
     
     private final ComputeNodeInstanceContext instanceContext;
     
@@ -53,7 +53,7 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(param.getProps());
         Collection<ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(param.getDatabaseConfigs(), props, instanceContext);
-        MetaDataContexts result = create(param.getGlobalRuleConfigs(), param.getGlobalDataSources(), databases, props, persistService);
+        MetaDataContexts result = create(param.getGlobalRuleConfigs(), param.getGlobalDataSources(), databases, props, persistFacade);
         persistDatabaseConfigurations(result, param);
         persistMetaData(result);
         return result;
@@ -61,25 +61,25 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
     
     private void persistDatabaseConfigurations(final MetaDataContexts metadataContexts, final ContextManagerBuilderParameter param) {
         Collection<RuleConfiguration> globalRuleConfigs = metadataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
-        persistService.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
+        persistFacade.persistGlobalRuleConfiguration(globalRuleConfigs, param.getProps());
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             ShardingSphereDatabase database = metadataContexts.getMetaData().getDatabase(entry.getKey());
             Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                     .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-            persistService.persistConfigurations(entry.getKey(), entry.getValue(), dataSources, database.getRuleMetaData().getRules());
+            persistFacade.persistConfigurations(entry.getKey(), entry.getValue(), dataSources, database.getRuleMetaData().getRules());
         }
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getAllDatabases().forEach(each -> each.getAllSchemas().forEach(schema -> {
             if (schema.isEmpty()) {
-                persistService.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
+                persistFacade.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
-            persistService.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            persistFacade.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
         }));
         for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
             for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {
-                persistService.getStatisticsPersistService().persist(
+                persistFacade.getStatisticsService().persist(
                         metaDataContexts.getMetaData().getDatabase(databaseStatisticsEntry.getKey()), schemaStatisticsEntry.getKey(), schemaStatisticsEntry.getValue());
             }
         }

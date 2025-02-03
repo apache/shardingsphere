@@ -48,6 +48,6 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistService().getPropsService().load());
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load());
     }
 }

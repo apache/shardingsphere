@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatistic
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.manager.StatisticsManager;
+import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +48,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getDatabaseManager();
+        StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getStatisticsManager();
         Optional<String> databaseName = ShardingSphereStatisticsNodePath.findDatabaseName(event.getKey(), false);
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());

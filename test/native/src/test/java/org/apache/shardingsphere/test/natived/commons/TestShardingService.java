@@ -24,23 +24,22 @@ import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
-import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 
 @Getter
 public final class TestShardingService {
@@ -73,7 +72,7 @@ public final class TestShardingService {
     }
     
     /**
-     * Process success in ClickHouse.
+     * Process success in ClickHouse. ClickHouse JDBC Driver does not support the use of transactions.
      *
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
@@ -84,28 +83,30 @@ public final class TestShardingService {
         assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
         assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
-        orderItemRepository.assertRollbackWithTransactions();
     }
     
     private void extracted() throws SQLException {
         Collection<Order> orders = orderRepository.selectAll();
+        assertThat(orders.stream().map(Order::getOrderId).collect(Collectors.toList()), not(empty()));
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
-                equalTo(Stream.of(0, 0, 0, 0, 0, 1, 1, 1, 1, 1).collect(Collectors.toList())));
-        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toSet()),
-                equalTo(Stream.of(2, 4, 6, 8, 10, 1, 3, 5, 7, 9).collect(Collectors.toSet())));
-        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toSet()),
-                equalTo(Stream.of(2L, 4L, 6L, 8L, 10L, 1L, 3L, 5L, 7L, 9L).collect(Collectors.toSet())));
+                containsInAnyOrder(0, 1, 0, 1, 0, 1, 0, 1, 0, 1));
+        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
+                containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
+                containsInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         Collection<OrderItem> orderItems = orderItemRepository.selectAll();
-        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toSet()),
-                equalTo(Stream.of(2, 4, 6, 8, 10, 1, 3, 5, 7, 9).collect(Collectors.toSet())));
+        assertThat(orderItems.stream().map(OrderItem::getOrderItemId).collect(Collectors.toList()), not(empty()));
+        assertThat(orderItems.stream().map(OrderItem::getOrderId).collect(Collectors.toList()), not(empty()));
+        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
+                containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        assertThat(new HashSet<>(addressRepository.selectAll()),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toSet())));
+        assertThat(addressRepository.selectAll(),
+                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
     }
     
     /**
@@ -174,14 +175,11 @@ public final class TestShardingService {
     
     /**
      * Delete data in ClickHouse.
-     * TODO It is necessary to avoid the use of {@code Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(()->true)}.
-     *  After ClickHouse enables experimental transactions, performance drops significantly.
      *
      * @param orderIds orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void deleteDataInClickHouse(final Collection<Long> orderIds) throws SQLException {
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
         long count = 1L;
         for (Long each : orderIds) {
             orderRepository.deleteInClickHouse(each);

@@ -34,7 +34,7 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     
     private WithSegment withSegment;
     
-    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment;
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
     private ReturningSegment returningSegment;
     
@@ -45,7 +45,7 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     
     @Override
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
-        return Optional.ofNullable(onDuplicateKeyColumnsSegment);
+        return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     @Override
