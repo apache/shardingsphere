@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -35,10 +31,18 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ShardingStandardRouteEngineTest {
     
@@ -84,9 +88,7 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
-    
-    // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
-    // @Disabled("FIXME")
+
     @Test
     void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order", ShardingRouteEngineFixtureBuilder.createErrorShardingConditions("t_order"),

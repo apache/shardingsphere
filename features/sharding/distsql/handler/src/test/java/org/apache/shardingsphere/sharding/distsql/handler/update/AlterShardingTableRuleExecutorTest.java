@@ -190,7 +190,7 @@ class AlterShardingTableRuleExecutorTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
         result.getAutoTables().add(createAutoTableRuleConfiguration());
-        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", null));
+        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", new Properties()));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         return result;
     }

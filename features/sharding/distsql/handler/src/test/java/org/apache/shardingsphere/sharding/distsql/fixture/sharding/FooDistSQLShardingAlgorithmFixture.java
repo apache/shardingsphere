@@ -40,8 +40,4 @@ public final class FooDistSQLShardingAlgorithmFixture implements StandardShardin
     public String getType() {
         return "FOO.DISTSQL.FIXTURE";
     }
-    
-    public int getAutoTablesAmount() {
-        return 2;
-    }
 }

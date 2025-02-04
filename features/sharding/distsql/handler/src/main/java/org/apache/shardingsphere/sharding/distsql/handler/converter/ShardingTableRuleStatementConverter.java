@@ -40,7 +40,12 @@ import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRul
 import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**

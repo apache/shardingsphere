@@ -36,7 +36,7 @@ rules:
   - !SHARDING
     autoTables:
       t_order:
-        actualDataNodes: ds_${0..1}.t_order_0
+        actualDataNodes: ds_${0..1}.t_order
         shardingStrategy:
           standard:
             shardingColumn: order_id

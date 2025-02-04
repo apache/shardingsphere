@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
@@ -34,6 +31,10 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Standard sharding strategy.
@@ -76,7 +77,6 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             } else if (null != target && !availableTargetNames.contains(target)) {
                 throw new ShardingRouteAlgorithmException(target, availableTargetNames);
             }
-            // TODO add ShardingRouteAlgorithmException check when autoTables support config actualDataNodes in #33364
         }
         return result;
     }

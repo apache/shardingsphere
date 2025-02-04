@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import java.util.*;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -26,18 +25,27 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingTableTest {
     
     @Test
     void assertCreateMinShardingTable() {
-        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.logic_table");
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.LOGIC_TABLE");
         ShardingTable actual = new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(2));
@@ -67,8 +75,7 @@ class ShardingTableTest {
     
     @Test
     void assertCreateAutoTableRuleWithModAlgorithm() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig =
-                new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0.logic_table_0,ds1.logic_table_0,ds0.logic_table_1,ds1.logic_table_1");
+        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.logic_table_${0..1}");
         shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ShardingTable actual = new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
@@ -78,20 +85,12 @@ class ShardingTableTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
     }
-    
-    // TODO will update these when maintainer response for future of Mod Algorithms
-    @Disabled("Will depend on the future behaviour Mod Algorithms")
+
     @Test
-    void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
+    void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataNodes() {
         ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ShardingTable actual = new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
-        assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
-        assertThat(actual.getActualDataNodes().size(), is(4));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", "logic_table_2")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_3")));
+        assertThrows( MissingRequiredDataNodesException.class, () -> new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null));
     }
     
     @Test

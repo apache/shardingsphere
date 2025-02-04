@@ -40,8 +40,5 @@ public final class BarDistSQLShardingAlgorithmFixture implements StandardShardin
     public String getType() {
         return "BAR.DISTSQL.FIXTURE";
     }
-    
-    public int getAutoTablesAmount() {
-        return 4;
-    }
+
 }

@@ -197,7 +197,7 @@ class ProxyBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceWithUnsupportedNonQueryDistSQLInTransaction() {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING TABLE RULE t_order (DATANODES('ms_group_${0..1}.t_order_{0..1}'), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod'));";
+        String sql = "CREATE SHARDING TABLE RULE t_order (DATANODES('ms_group_${0..1}.t_order_${0..1}'), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod'));";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext()));
     }

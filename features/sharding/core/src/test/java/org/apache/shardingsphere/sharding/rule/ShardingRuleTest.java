@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -119,39 +120,39 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertNewShardingRuleWithWrongShardingAlgorithmInDefaultDatabaseShardingStrategy() {
+    void assertNewShardingRuleWithModShardingAlgorithmInDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
-        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", null));
-        // assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", new Properties()));
+        assertDoesNotThrow( () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
-    
+
     @Test
-    void assertNewShardingRuleWithWrongShardingAlgorithmInDefaultTableShardingStrategy() {
+    void assertNewShardingRuleWithModShardingAlgorithmInDefaultTableShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
-        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
-        // assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", new Properties()));
+        assertDoesNotThrow( () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
     
     @Test
-    void assertNewShardingRuleWithWrongShardingAlgorithmInDatabaseShardingStrategy() {
+    void assertNewShardingRuleWithModShardingAlgorithmInDatabaseShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "");
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getTables().add(tableRuleConfig);
-        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", null));
-        // assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", new Properties()));
+        assertThrows( MissingRequiredDataNodesException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
     
     @Test
-    void assertNewShardingRuleWithWrongShardingAlgorithmInTableShardingStrategy() {
+    void assertNewShardingRuleWithModShardingAlgorithmInTableShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "");
         tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getTables().add(tableRuleConfig);
-        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", null));
-        // assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        ruleConfig.getShardingAlgorithms().put("MOD", new AlgorithmConfiguration("MOD", new Properties()));
+        assertThrows( MissingRequiredDataNodesException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
     
     @Test
@@ -161,7 +162,7 @@ class ShardingRuleTest {
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "INLINE"));
         ruleConfig.getAutoTables().add(autoTableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("INLINE", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_%{order_id % 2}"))));
-        // assertThrows(AlgorithmInitializationException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+        assertDoesNotThrow( () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
     
     @Test
@@ -509,7 +510,7 @@ class ShardingRuleTest {
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("auto_table", "resource${0..1}.auto_table_${0..1}");
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
         shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
-        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("hash_mod", null));
+        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("hash_mod", new Properties()));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1", "resource0", "resource1"))));
     }
@@ -529,7 +530,7 @@ class ShardingRuleTest {
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("auto_table", "resource${0..1}.auto_table_${0..1}");
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
         shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
-        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("hash_mod", null));
+        shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new AlgorithmConfiguration("hash_mod", new Properties()));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("resource0", "resource1"))));
     }

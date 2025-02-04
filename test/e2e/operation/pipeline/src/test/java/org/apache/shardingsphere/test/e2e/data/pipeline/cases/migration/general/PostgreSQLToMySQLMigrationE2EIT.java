@@ -71,7 +71,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             initSourceTable(jdbcUrl);
             registerMigrationSourceStorageUnit(containerComposer);
             containerComposer.registerStorageUnit(PipelineContainerComposer.DS_0);
-            containerComposer.proxyExecuteWithLog("CREATE SHARDING TABLE RULE t_order(DATANODES(pipeline_it_0.t_order${0..1}),SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES(),"
+            containerComposer.proxyExecuteWithLog("CREATE SHARDING TABLE RULE t_order(DATANODES('pipeline_it_0.t_order${0..1}'),SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES(),"
                     + "KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')))", 2);
             initTargetTable(containerComposer);
             containerComposer.proxyExecuteWithLog("MIGRATE TABLE source_ds.t_order INTO t_order", 2);

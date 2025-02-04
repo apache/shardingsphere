@@ -88,6 +88,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         shardingCount = availableTargetNames.size();
+        ShardingSpherePreconditions.checkState(shardingCount > 0, () -> new AlgorithmInitializationException(this, "Available target count must be a positive integer."));
         maxPaddingSize = calculateMaxPaddingSize();
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
@@ -96,6 +97,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         shardingCount = availableTargetNames.size();
+        ShardingSpherePreconditions.checkState(shardingCount > 0, () -> new AlgorithmInitializationException(this, "Available target count must be a positive integer."));
         maxPaddingSize = calculateMaxPaddingSize();
         return containsAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
@@ -132,10 +134,6 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private BigInteger getBigInteger(final Comparable<?> value) {
         return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
-    }
-    
-    public int getAutoTablesAmount() {
-        return shardingCount;
     }
     
     @Override

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import java.util.*;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -46,6 +45,14 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Sharding standard route engine.
@@ -246,7 +253,6 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         for (String each : routedDataSources) {
             result.addAll(routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues));
         }
-        
         return result;
     }
     
@@ -262,7 +268,6 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         } else {
             result = databaseShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), databaseShardingValues, shardingTable.getDataSourceDataNode(), props);
         }
-        
         ShardingSpherePreconditions.checkNotEmpty(result, NoShardingDatabaseRouteInfoException::new);
         ShardingSpherePreconditions.checkState(shardingTable.getActualDataSourceNames().containsAll(result),
                 () -> new MismatchedShardingDataSourceRouteInfoException(result, shardingTable.getActualDataSourceNames()));
@@ -279,17 +284,6 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));
         }
-        
-        boolean isAllDataNodesWithoutTables = true;
-        for (DataNode each : result) {
-            if (!each.getTableName().isEmpty()) {
-                isAllDataNodesWithoutTables = false;
-                
-            }
-        }
-        
-        // TODO Verify if this only works for SQL that contains table names....
-        // ShardingSpherePreconditions.checkState( isAllDataNodesWithoutTables , NoShardingDatabaseRouteInfoException::new );
         return result;
     }
     

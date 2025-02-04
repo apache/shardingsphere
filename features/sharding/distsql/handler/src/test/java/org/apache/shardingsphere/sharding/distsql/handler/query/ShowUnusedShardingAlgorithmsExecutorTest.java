@@ -39,7 +39,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
-
+import java.util.Properties;
 import static org.mockito.Mockito.mock;
 
 class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryExecutorTest {
@@ -66,7 +66,7 @@ class ShowUnusedShardingAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryE
         private ShardingRuleConfiguration createRuleConfiguration() {
             ShardingRuleConfiguration result = new ShardingRuleConfiguration();
             result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-            result.getShardingAlgorithms().put("t_order_hash_mod", new AlgorithmConfiguration("hash_mod", null));
+            result.getShardingAlgorithms().put("t_order_hash_mod", new AlgorithmConfiguration("hash_mod", new Properties()));
             result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
             return result;
         }

@@ -77,13 +77,13 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest extends DistSQLDatabaseRul
             result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
             result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
             result.getShardingAlgorithms().put("t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
-            result.getShardingAlgorithms().put("auto_mod", new AlgorithmConfiguration("MOD", null));
+            result.getShardingAlgorithms().put("auto_mod", new AlgorithmConfiguration("MOD", new Properties()));
             result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
             return result;
         }
         
         private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
+            ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_${0..1}.t_order_auto_${0..1}");
             result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
             result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
             return result;

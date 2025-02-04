@@ -129,7 +129,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-DATANODES(ds_${[2,3,4]}.t_order_${0..1}),
+DATANODES(ds_${2..4}.t_order_${0..1}),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -349,7 +349,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-DATANODES(ds_${[2,3,4]}.t_order_${0..1}),
+DATANODES(ds_${2..4}.t_order_${0..1}),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -586,7 +586,7 @@ REGISTER STORAGE UNIT ds_2 (
 
 ```sql
 CREATE SHARDING TABLE RULE t_order(
-DATANODES(ds_${[2,3,4]}.t_order_${0..1}),
+DATANODES(ds_${2..4}.t_order_${0..1}),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod"),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))

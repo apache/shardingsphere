@@ -52,7 +52,7 @@ PROPERTIES('maxPoolSize'='10')
 );
 
 CREATE SHARDING TABLE RULE t_order (
-DATANODES(ds_0.t_order_0,ds_1.t_order_0,ds_0.t_order_1,ds_1.t_order_1),
+DATANODES(ds_${0..1}.t_order_${0..1}),
 SHARDING_COLUMN=order_id,
 TYPE(NAME='mod'),
 KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))

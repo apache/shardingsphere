@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Properties;
+import java.util.ArrayList;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -31,6 +29,10 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,13 +97,14 @@ class ModShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
-    // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
-    // @Disabled("FIXME")
-    // @Test
-    // void assertRangeDoShardingWithWrongArgumentForShardingCount() {
-    // assertThrows(AlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "0"))));
-    // }
-    //
+
+
+     @Test
+     void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", createZeroPaddingProperties());
+        assertThrows(AlgorithmInitializationException.class, () -> algorithm.doSharding(new ArrayList<>(), new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L))));
+     }
+
     @Test
     void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties props = createZeroPaddingProperties();

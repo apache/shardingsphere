@@ -95,7 +95,7 @@ class ShardingRouteCacheableCheckerTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
-        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", null));
+        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", new Properties()));
         ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
         ruleConfig.getShardingAlgorithms().put("table-inline",
                 new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_non_cacheable_table_sharding_${id % 2}"))));

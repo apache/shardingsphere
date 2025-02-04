@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
@@ -29,9 +25,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Properties;
+
 public final class CoreAutoShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>> {
-    
-    private static final String ACTUAL_DATA_NODES = "actualDataNodes";
     
     private static final String START_OFFSET_INDEX_KEY = "start-offset";
     
@@ -85,6 +84,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         shardingCount = availableTargetNames.size();
+        ShardingSpherePreconditions.checkState(shardingCount > 0, () -> new AlgorithmInitializationException(this, "Available target count must be a positive integer."));
         maxPaddingSize = calculateMaxPaddingSize();
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
@@ -93,6 +93,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         shardingCount = availableTargetNames.size();
+        ShardingSpherePreconditions.checkState(shardingCount > 0, () -> new AlgorithmInitializationException(this, "Available target count must be a positive integer."));
         maxPaddingSize = calculateMaxPaddingSize();
         return containsAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
