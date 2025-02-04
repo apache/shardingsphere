@@ -60,8 +60,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData);
         if (Type.ADDED == event.getType()) {
-            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()
-                    .add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
+            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
         } else if (Type.DELETED == event.getType()) {
             contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().delete(new ComputeNodeInstance(instanceMetaData));
         }
