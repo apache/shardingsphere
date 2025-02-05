@@ -53,7 +53,7 @@ public final class TableMetaDataPersistService {
      * @return loaded tables
      */
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
-        return repository.getChildrenKeys(TableMetaDataNodePath.getMetaDataTablesPath(databaseName, schemaName)).stream()
+        return repository.getChildrenKeys(TableMetaDataNodePath.getTableRootPath(databaseName, schemaName)).stream()
                 .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     

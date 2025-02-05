@@ -32,8 +32,6 @@ public final class TableMetaDataNodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String TABLES_NODE = "tables";
     
     private static final String VERSIONS_NODE = "versions";
@@ -47,14 +45,26 @@ public final class TableMetaDataNodePath {
     private static final String TABLE_SUFFIX = "/([\\w\\-]+)$";
     
     /**
-     * Get meta data tables path.
+     * Get table root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return tables path
+     * @return table root path
      */
-    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE);
+    public static String getTableRootPath(final String databaseName, final String schemaName) {
+        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), TABLES_NODE);
+    }
+    
+    /**
+     * Get table path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table path
+     */
+    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
     }
     
     /**
@@ -66,7 +76,7 @@ public final class TableMetaDataNodePath {
      * @return tables active version path
      */
     public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, ACTIVE_VERSION_NODE);
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), ACTIVE_VERSION_NODE);
     }
     
     /**
@@ -78,7 +88,7 @@ public final class TableMetaDataNodePath {
      * @return tables versions path
      */
     public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, VERSIONS_NODE);
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), VERSIONS_NODE);
     }
     
     /**
@@ -92,18 +102,6 @@ public final class TableMetaDataNodePath {
      */
     public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final String version) {
         return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), version);
-    }
-    
-    /**
-     * Get table path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return table path
-     */
-    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
     }
     
     /**
