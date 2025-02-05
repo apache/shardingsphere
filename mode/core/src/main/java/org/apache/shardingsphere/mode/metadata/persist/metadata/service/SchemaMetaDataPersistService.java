@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -51,7 +52,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(DatabaseMetaDataNodePath.getTableRootPath(databaseName, schemaName), "");
+        repository.persist(TableMetaDataNodePath.getMetaDataTablesPath(databaseName, schemaName), "");
     }
     
     /**

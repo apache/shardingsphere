@@ -51,11 +51,6 @@ class DatabaseMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetTableRootPath() {
-        assertThat(DatabaseMetaDataNodePath.getTableRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
-    }
-    
-    @Test
     void assertGetVersionPath() {
         assertThat(DatabaseMetaDataNodePath.getVersionPath("foo_rule", "1"), is("foo_rule/1"));
     }

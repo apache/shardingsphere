@@ -34,8 +34,6 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String SCHEMAS_NODE = "schemas";
     
-    private static final String TABLES_NODE = "tables";
-    
     private static final String VERSIONS_NODE = "versions";
     
     private static final String ACTIVE_VERSION_NODE = "active_version";
@@ -80,17 +78,6 @@ public final class DatabaseMetaDataNodePath {
      */
     public static String getSchemaPath(final String databaseName, final String schemaName) {
         return String.join("/", getSchemaRootPath(databaseName), schemaName);
-    }
-    
-    /**
-     * Get table root path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return table root path
-     */
-    public static String getTableRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
     /**
