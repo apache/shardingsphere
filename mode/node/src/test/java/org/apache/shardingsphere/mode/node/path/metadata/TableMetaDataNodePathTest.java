@@ -34,6 +34,11 @@ class TableMetaDataNodePathTest {
     }
     
     @Test
+    void assertGetTablePath() {
+        assertThat(TableMetaDataNodePath.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    }
+    
+    @Test
     void assertGetTableActiveVersionPath() {
         assertThat(TableMetaDataNodePath.getTableActiveVersionPath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
@@ -49,8 +54,20 @@ class TableMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetTablePath() {
-        assertThat(TableMetaDataNodePath.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    void assertFindTableName() {
+        Optional<String> actual = TableMetaDataNodePath.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertFindTableNameIfNotFound() {
+        assertFalse(TableMetaDataNodePath.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
+    }
+    
+    @Test
+    void assertIsTablePath() {
+        assertTrue(TableMetaDataNodePath.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
@@ -66,24 +83,7 @@ class TableMetaDataNodePathTest {
     }
     
     @Test
-    void assertFindTableName() {
-        Optional<String> actual = TableMetaDataNodePath.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_tbl"));
-    }
-    
-    @Test
-    void assertFindTableNameIfNotFound() {
-        assertFalse(TableMetaDataNodePath.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
-    }
-    
-    @Test
     void assertIsTableActiveVersionPath() {
         assertTrue(TableMetaDataNodePath.isTableActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-    }
-    
-    @Test
-    void assertIsTablePath() {
-        assertTrue(TableMetaDataNodePath.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
 }

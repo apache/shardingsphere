@@ -94,7 +94,7 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return TableMetaDataNodePath.isTableActiveVersionPath(key) || TableMetaDataNodePath.isTablePath(key);
+        return TableMetaDataNodePath.isTablePath(key) || TableMetaDataNodePath.isTableActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {

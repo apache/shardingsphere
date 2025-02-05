@@ -99,18 +99,6 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Get table name by active version path.
-     *
-     * @param path path
-     * @return table name
-     */
-    public static Optional<String> findTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getTableActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
      * Find table name.
      *
      * @param path path
@@ -123,22 +111,34 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Is table active version path.
-     *
-     * @param path path
-     * @return is table active version path or not
-     */
-    public static boolean isTableActiveVersionPath(final String path) {
-        return Pattern.compile(getTableActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE).matcher(path).find();
-    }
-    
-    /**
      * Is table path.
      *
      * @param path path
      * @return true or false
      */
     public static boolean isTablePath(final String path) {
-        return Pattern.compile(getTablePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return findTableName(path).isPresent();
+    }
+    
+    /**
+     * Get table name by active version path.
+     *
+     * @param path path
+     * @return table name
+     */
+    public static Optional<String> findTableNameByActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(getTableActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Is table active version path.
+     *
+     * @param path path
+     * @return is table active version path or not
+     */
+    public static boolean isTableActiveVersionPath(final String path) {
+        return findTableNameByActiveVersionPath(path).isPresent();
     }
 }
