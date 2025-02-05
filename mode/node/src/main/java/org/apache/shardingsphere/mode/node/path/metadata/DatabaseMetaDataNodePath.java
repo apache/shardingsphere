@@ -83,17 +83,6 @@ public final class DatabaseMetaDataNodePath {
     }
     
     /**
-     * Get table root path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return table root path
-     */
-    public static String getTableRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", getSchemaPath(databaseName, schemaName), TABLES_NODE);
-    }
-    
-    /**
      * Get version path.
      *
      * @param rulePath rule path

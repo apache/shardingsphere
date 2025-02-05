@@ -32,7 +32,7 @@ public final class TableMetaDataNodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
-    private static final String SCHEMAS_NODE = "schemas";
+    private static final String SCHEMAS_NODE = "schemas";e
     
     private static final String TABLES_NODE = "tables";
     
