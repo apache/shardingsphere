@@ -30,19 +30,13 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ViewMetaDataNodePath {
     
-    private static final String ROOT_NODE = "/metadata";
-    
     private static final String VIEWS_NODE = "views";
     
     private static final String VERSIONS_NODE = "versions";
     
     private static final String ACTIVE_VERSION_NODE = "active_version";
     
-    private static final String VIEWS_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/views";
-    
-    private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
-    
-    private static final String VIEW_SUFFIX = "/([\\w\\-]+)$";
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
     /**
      * Get view root path.
@@ -105,25 +99,35 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Get view name by active version path.
-     *
-     * @param path path
-     * @return view name
-     */
-    public static Optional<String> getViewNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
      * Get view name.
      *
      * @param path path
      * @return view name
      */
     public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getViewPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Is view path.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isViewPath(final String path) {
+        return findViewName(path).isPresent();
+    }
+    
+    /**
+     * Find view name by active version path.
+     *
+     * @param path path
+     * @return view name
+     */
+    public static Optional<String> findViewNameByActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(getViewActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -135,16 +139,6 @@ public final class ViewMetaDataNodePath {
      * @return true or false
      */
     public static boolean isViewActiveVersionPath(final String path) {
-        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
-    }
-    
-    /**
-     * Is view path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewPath(final String path) {
-        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + VIEW_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return findViewNameByActiveVersionPath(path).isPresent();
     }
 }
