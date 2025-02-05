@@ -48,7 +48,7 @@ public final class NamedRuleItemChangedHandler {
     public void handle(final RuleNodePath ruleNodePath, final String databaseName, final String itemName, final String path, final DataChangedEvent event) throws SQLException {
         String type = ruleNodePath.getRoot().getRuleType() + "." + path;
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(new AlterNamedRuleItem(databaseName, itemName, event.getKey(), event.getValue(), type));
+            contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(new AlterNamedRuleItem(databaseName, itemName, event.getKey(), Integer.parseInt(event.getValue()), type));
         } else if (Type.DELETED == event.getType()) {
             contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(new DropNamedRuleItem(databaseName, itemName, type));
         }

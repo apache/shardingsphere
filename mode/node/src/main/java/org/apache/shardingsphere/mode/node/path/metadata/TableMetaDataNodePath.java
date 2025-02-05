@@ -100,8 +100,8 @@ public final class TableMetaDataNodePath {
      * @param version version
      * @return table version path
      */
-    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final String version) {
-        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), version);
+    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final int version) {
+        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), String.valueOf(version));
     }
     
     /**

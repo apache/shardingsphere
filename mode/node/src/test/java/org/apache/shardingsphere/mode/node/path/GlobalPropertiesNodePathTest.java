@@ -37,7 +37,7 @@ class GlobalPropertiesNodePathTest {
     
     @Test
     void assertGetVersionPath() {
-        assertThat(GlobalPropertiesNodePath.getVersionPath("0"), is("/props/versions/0"));
+        assertThat(GlobalPropertiesNodePath.getVersionPath(0), is("/props/versions/0"));
     }
     
     @Test

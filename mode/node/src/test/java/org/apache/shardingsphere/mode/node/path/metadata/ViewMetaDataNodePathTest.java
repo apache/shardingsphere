@@ -45,7 +45,7 @@ class ViewMetaDataNodePathTest {
     
     @Test
     void assertGetViewVersionPath() {
-        assertThat(ViewMetaDataNodePath.getViewVersionPath("foo_db", "foo_schema", "foo_view", "0"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+        assertThat(ViewMetaDataNodePath.getViewVersionPath("foo_db", "foo_schema", "foo_view", 0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
     
     @Test

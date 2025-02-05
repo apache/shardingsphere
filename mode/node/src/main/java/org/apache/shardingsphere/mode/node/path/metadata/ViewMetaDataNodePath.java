@@ -100,8 +100,8 @@ public final class ViewMetaDataNodePath {
      * @param version version
      * @return view version path
      */
-    public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final String version) {
-        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), version);
+    public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final int version) {
+        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), String.valueOf(version));
     }
     
     /**

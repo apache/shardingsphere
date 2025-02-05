@@ -88,8 +88,8 @@ public final class DatabaseRuleMetaDataNodePath {
      * @param version version
      * @return database rule next version
      */
-    public static String getVersionPath(final String databaseName, final String ruleTypeName, final String key, final String version) {
-        return String.join("/", getVersionsPath(databaseName, ruleTypeName, key), version);
+    public static String getVersionPath(final String databaseName, final String ruleTypeName, final String key, final int version) {
+        return String.join("/", getVersionsPath(databaseName, ruleTypeName, key), String.valueOf(version));
     }
     
     /**

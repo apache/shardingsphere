@@ -46,7 +46,7 @@ class DatabaseRuleMetaDataNodePathTest {
     
     @Test
     void assertGetVersionPath() {
-        assertThat(DatabaseRuleMetaDataNodePath.getVersionPath("foo_db", "foo_rule", "foo_tbl", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tbl/versions/1"));
+        assertThat(DatabaseRuleMetaDataNodePath.getVersionPath("foo_db", "foo_rule", "foo_tbl", 1), is("/metadata/foo_db/rules/foo_rule/foo_tbl/versions/1"));
     }
     
     @Test

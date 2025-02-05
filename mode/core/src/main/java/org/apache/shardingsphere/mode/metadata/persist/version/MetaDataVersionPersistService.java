@@ -47,10 +47,8 @@ public final class MetaDataVersionPersistService {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
             }
-            repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
-            getVersions(each.getVersionsPath()).stream()
-                    .filter(version -> version < Integer.parseInt(each.getNextActiveVersion()))
-                    .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
+            repository.persist(each.getActiveVersionNodePath(), String.valueOf(each.getNextActiveVersion()));
+            getVersions(each.getVersionsPath()).stream().filter(version -> version < each.getNextActiveVersion()).forEach(version -> repository.delete(each.getVersionsNodePath(version)));
         }
     }
     

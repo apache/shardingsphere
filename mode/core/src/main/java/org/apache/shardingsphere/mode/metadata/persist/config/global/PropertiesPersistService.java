@@ -45,7 +45,8 @@ public final class PropertiesPersistService {
      * @return properties
      */
     public Properties load() {
-        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionPath(getActiveVersion()));
+        Integer activeVersion = getActiveVersion();
+        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionPath(null == activeVersion ? 0: activeVersion));
         return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
@@ -56,15 +57,16 @@ public final class PropertiesPersistService {
      */
     public void persist(final Properties props) {
         List<Integer> versions = metaDataVersionPersistService.getVersions(GlobalPropertiesNodePath.getVersionRootPath());
-        String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(versions.get(0) + 1);
+        int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
         repository.persist(GlobalPropertiesNodePath.getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
-        if (Strings.isNullOrEmpty(getActiveVersion())) {
-            repository.persist(GlobalPropertiesNodePath.getActiveVersionPath(), MetaDataVersion.DEFAULT_VERSION);
+        if (null == getActiveVersion()) {
+            repository.persist(GlobalPropertiesNodePath.getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
         }
         metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(), nextActiveVersion)));
     }
     
-    private String getActiveVersion() {
-        return repository.query(GlobalPropertiesNodePath.getActiveVersionPath());
+    private Integer getActiveVersion() {
+        String value = repository.query(GlobalPropertiesNodePath.getActiveVersionPath());
+        return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
 }
