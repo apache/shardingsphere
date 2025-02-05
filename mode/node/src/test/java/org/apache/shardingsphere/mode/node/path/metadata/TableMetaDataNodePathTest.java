@@ -55,14 +55,14 @@ class TableMetaDataNodePathTest {
     
     @Test
     void assertFindTableNameByActiveVersionPath() {
-        Optional<String> actual = TableMetaDataNodePath.getTableNameByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version");
+        Optional<String> actual = TableMetaDataNodePath.findTableNameByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertFindTableNameByActiveVersionPathIfNotFound() {
-        assertFalse(TableMetaDataNodePath.getTableNameByActiveVersionPath("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl/active_version").isPresent());
+        assertFalse(TableMetaDataNodePath.findTableNameByActiveVersionPath("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl/active_version").isPresent());
     }
     
     @Test
