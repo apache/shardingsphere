@@ -46,7 +46,7 @@ public final class PropertiesPersistService {
      */
     public Properties load() {
         Integer activeVersion = getActiveVersion();
-        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionPath(null == activeVersion ? 0: activeVersion));
+        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionPath(null == activeVersion ? 0 : activeVersion));
         return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
