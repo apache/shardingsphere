@@ -90,8 +90,8 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = metaDataVersionPersistService.getVersions(DatabaseRuleMetaDataNodePath.getVersionsPath(databaseName, ruleName, each.getKey()));
-            String nextVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            List<Integer> versions = metaDataVersionPersistService.getVersions(DatabaseRuleMetaDataNodePath.getVersionsPath(databaseName, ruleName, each.getKey()));
+            String nextVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(versions.get(0) + 1);
             repository.persist(DatabaseRuleMetaDataNodePath.getVersionPath(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
                 repository.persist(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, each.getKey()), MetaDataVersion.DEFAULT_VERSION);

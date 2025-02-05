@@ -80,8 +80,8 @@ public final class ViewMetaDataPersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
-            List<String> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNodePath.getViewVersionsPath(databaseName, schemaName, viewName));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            List<Integer> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNodePath.getViewVersionsPath(databaseName, schemaName, viewName));
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(versions.get(0) + 1);
             repository.persist(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName, nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
                 repository.persist(ViewMetaDataNodePath.getViewActiveVersionPath(databaseName, schemaName, viewName), MetaDataVersion.DEFAULT_VERSION);

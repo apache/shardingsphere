@@ -31,7 +31,7 @@ public final class AlterUniqueRuleItem implements AlterRuleItem {
     
     private final String activeVersionKey;
     
-    private final String activeVersion;
+    private final int activeVersion;
     
     private final String type;
 }

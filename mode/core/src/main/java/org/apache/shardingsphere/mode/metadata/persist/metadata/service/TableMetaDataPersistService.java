@@ -81,8 +81,8 @@ public final class TableMetaDataPersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (ShardingSphereTable each : tables) {
             String tableName = each.getName().toLowerCase();
-            List<String> versions = metaDataVersionPersistService.getVersions(TableMetaDataNodePath.getTableVersionsPath(databaseName, schemaName, tableName));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            List<Integer> versions = metaDataVersionPersistService.getVersions(TableMetaDataNodePath.getTableVersionsPath(databaseName, schemaName, tableName));
+            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(versions.get(0) + 1);
             repository.persist(TableMetaDataNodePath.getTableVersionPath(databaseName, schemaName, tableName, nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
                 repository.persist(TableMetaDataNodePath.getTableActiveVersionPath(databaseName, schemaName, tableName), MetaDataVersion.DEFAULT_VERSION);

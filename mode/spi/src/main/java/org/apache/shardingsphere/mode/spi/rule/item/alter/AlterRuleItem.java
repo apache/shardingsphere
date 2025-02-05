@@ -43,5 +43,5 @@ public interface AlterRuleItem extends RuleChangedItem {
      *
      * @return active version
      */
-    String getActiveVersion();
+    int getActiveVersion();
 }

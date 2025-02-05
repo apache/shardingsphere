@@ -58,8 +58,8 @@ public final class MetaDataVersion {
      * @param version version
      * @return path of versions node
      */
-    public String getVersionsNodePath(final String version) {
-        return String.join("/", key, VERSIONS, version);
+    public String getVersionsNodePath(final int version) {
+        return String.join("/", key, VERSIONS, String.valueOf(version));
     }
     
     /**
