@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ViewMetaDataNodePathTest {
     
     @Test
-    void assertGetMetaDataViewsPath() {
-        assertThat(ViewMetaDataNodePath.getMetaDataViewsPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
+    void assertGetViewRootPath() {
+        assertThat(ViewMetaDataNodePath.getViewRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
     }
     
     @Test

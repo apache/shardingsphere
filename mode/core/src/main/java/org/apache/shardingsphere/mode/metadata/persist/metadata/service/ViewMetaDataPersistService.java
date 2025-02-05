@@ -53,7 +53,7 @@ public final class ViewMetaDataPersistService {
      * @return loaded views
      */
     public Collection<ShardingSphereView> load(final String databaseName, final String schemaName) {
-        return repository.getChildrenKeys(ViewMetaDataNodePath.getMetaDataViewsPath(databaseName, schemaName)).stream().map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
+        return repository.getChildrenKeys(ViewMetaDataNodePath.getViewRootPath(databaseName, schemaName)).stream().map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     
     /**

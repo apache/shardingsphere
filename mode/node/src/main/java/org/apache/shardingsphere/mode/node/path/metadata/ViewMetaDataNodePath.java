@@ -32,8 +32,6 @@ public final class ViewMetaDataNodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String VIEWS_NODE = "views";
     
     private static final String VERSIONS_NODE = "versions";
@@ -47,14 +45,26 @@ public final class ViewMetaDataNodePath {
     private static final String VIEW_SUFFIX = "/([\\w\\-]+)$";
     
     /**
-     * Get meta data views path.
+     * Get view root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return views path
+     * @return view root path
      */
-    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE);
+    public static String getViewRootPath(final String databaseName, final String schemaName) {
+        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
+    }
+    
+    /**
+     * Get view path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return view path
+     */
+    public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", getViewRootPath(databaseName, schemaName), viewName);
     }
     
     /**
@@ -66,7 +76,7 @@ public final class ViewMetaDataNodePath {
      * @return view active version path
      */
     public static String getViewActiveVersionPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, ACTIVE_VERSION_NODE);
+        return String.join("/", getViewPath(databaseName, schemaName, viewName), ACTIVE_VERSION_NODE);
     }
     
     /**
@@ -78,7 +88,7 @@ public final class ViewMetaDataNodePath {
      * @return view versions path
      */
     public static String getViewVersionsPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, VERSIONS_NODE);
+        return String.join("/", getViewPath(databaseName, schemaName, viewName), VERSIONS_NODE);
     }
     
     /**
@@ -92,18 +102,6 @@ public final class ViewMetaDataNodePath {
      */
     public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final String version) {
         return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), version);
-    }
-    
-    /**
-     * Get view path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return view path
-     */
-    public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName);
     }
     
     /**
