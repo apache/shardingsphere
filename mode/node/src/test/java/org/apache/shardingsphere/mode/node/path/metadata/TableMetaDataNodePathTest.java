@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TableMetaDataNodePathTest {
     
     @Test
-    void assertGetMetaDataTablesPath() {
-        assertThat(TableMetaDataNodePath.getMetaDataTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    void assertGetTableRootPath() {
+        assertThat(TableMetaDataNodePath.getTableRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test
