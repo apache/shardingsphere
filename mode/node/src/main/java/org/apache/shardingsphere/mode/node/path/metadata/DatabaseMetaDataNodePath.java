@@ -34,8 +34,6 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String SCHEMAS_NODE = "schemas";
     
-    private static final String TABLES_NODE = "tables";
-    
     private static final String VERSIONS_NODE = "versions";
     
     private static final String ACTIVE_VERSION_NODE = "active_version";
