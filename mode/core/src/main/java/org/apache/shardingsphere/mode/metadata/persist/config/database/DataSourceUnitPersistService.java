@@ -71,7 +71,9 @@ public final class DataSourceUnitPersistService {
      */
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
-        String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, dataSourceName, getDataSourceActiveVersion(databaseName, dataSourceName)));
+        Integer dataSourceActiveVersion = getDataSourceActiveVersion(databaseName, dataSourceName);
+        String dataSourceValue = repository.query(
+                DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, dataSourceName, null == dataSourceActiveVersion ? MetaDataVersion.DEFAULT_VERSION : dataSourceActiveVersion));
         return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
@@ -85,21 +87,22 @@ public final class DataSourceUnitPersistService {
     public Collection<MetaDataVersion> persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
-            String activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<String> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getStorageUnitVersionsPath(databaseName, entry.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            Integer activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
+            List<Integer> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getStorageUnitVersionsPath(databaseName, entry.getKey()));
+            int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
             repository.persist(DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, entry.getKey(), nextActiveVersion),
                     YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
-            if (Strings.isNullOrEmpty(activeVersion)) {
-                repository.persist(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath(databaseName, entry.getKey()), MetaDataVersion.DEFAULT_VERSION);
+            if (null == activeVersion) {
+                repository.persist(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath(databaseName, entry.getKey()), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
             result.add(new MetaDataVersion(DataSourceMetaDataNodePath.getStorageUnitPath(databaseName, entry.getKey()), activeVersion, nextActiveVersion));
         }
         return result;
     }
     
-    private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
-        return repository.query(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath(databaseName, dataSourceName));
+    private Integer getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {
+        String value = repository.query(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath(databaseName, dataSourceName));
+        return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
     
     /**

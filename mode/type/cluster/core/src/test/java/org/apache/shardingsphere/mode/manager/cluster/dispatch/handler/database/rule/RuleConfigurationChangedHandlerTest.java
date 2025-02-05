@@ -92,13 +92,13 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithNamedRuleItemAdded() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithNamedRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.UPDATED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
@@ -110,13 +110,13 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithUniqueRuleItemAdded() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterUniqueRuleItem.class));
     }
     
     @Test
     void assertHandleWithUniqueRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.UPDATED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterUniqueRuleItem.class));
     }
     

@@ -55,7 +55,7 @@ class DataSourceMetaDataNodePathTest {
     
     @Test
     void assertGetStorageUnitVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionPath("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionPath("foo_db", "foo_ds", 0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
@@ -71,11 +71,6 @@ class DataSourceMetaDataNodePathTest {
     @Test
     void assertGetStorageNodeVersionsPath() {
         assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
-    }
-    
-    @Test
-    void assertGetStorageNodeVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionPath("foo_db", "foo_ds", "1"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/1"));
     }
     
     @Test

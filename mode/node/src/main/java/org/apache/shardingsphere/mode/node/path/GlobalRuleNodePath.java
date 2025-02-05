@@ -76,8 +76,8 @@ public final class GlobalRuleNodePath {
      * @param version version
      * @return global rule version path
      */
-    public static String getVersionPath(final String ruleTypeName, final String version) {
-        return String.join("/", getVersionRootPath(ruleTypeName), version);
+    public static String getVersionPath(final String ruleTypeName, final int version) {
+        return String.join("/", getVersionRootPath(ruleTypeName), String.valueOf(version));
     }
     
     /**
@@ -110,7 +110,7 @@ public final class GlobalRuleNodePath {
      * @return found version
      */
     public static Optional<String> findVersion(final String ruleTypeName, final String path) {
-        Pattern pattern = Pattern.compile(getVersionPath(ruleTypeName, VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(String.join("/", getVersionRootPath(ruleTypeName), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

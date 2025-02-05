@@ -49,7 +49,7 @@ public final class DatabaseRuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
-        Preconditions.checkArgument(alterRuleItem.getActiveVersion().equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
+        Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());

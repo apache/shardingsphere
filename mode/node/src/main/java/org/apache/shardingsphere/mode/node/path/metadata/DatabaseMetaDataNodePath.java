@@ -87,7 +87,7 @@ public final class DatabaseMetaDataNodePath {
      * @param activeVersion active version
      * @return version path
      */
-    public static String getVersionPath(final String rulePath, final String activeVersion) {
+    public static String getVersionPath(final String rulePath, final int activeVersion) {
         return rulePath.replace(ACTIVE_VERSION_NODE, VERSIONS_NODE) + "/" + activeVersion;
     }
     

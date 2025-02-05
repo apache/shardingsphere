@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -92,15 +92,21 @@ public final class GlobalRulePersistService {
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = metaDataVersionPersistService.getVersions(GlobalRuleNodePath.getVersionRootPath(each.getKey()));
-            String nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            List<Integer> versions = metaDataVersionPersistService.getVersions(GlobalRuleNodePath.getVersionRootPath(each.getKey()));
+            int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
             repository.persist(GlobalRuleNodePath.getVersionPath(each.getKey(), nextActiveVersion), each.getValue());
             String ruleActiveVersionPath = GlobalRuleNodePath.getActiveVersionPath(each.getKey());
-            if (Strings.isNullOrEmpty(repository.query(ruleActiveVersionPath))) {
-                repository.persist(ruleActiveVersionPath, MetaDataVersion.DEFAULT_VERSION);
+            if (null == getRuleActiveVersion(ruleActiveVersionPath)) {
+                repository.persist(ruleActiveVersionPath, String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
-            result.add(new MetaDataVersion(GlobalRuleNodePath.getRulePath(each.getKey()), repository.query(ruleActiveVersionPath), nextActiveVersion));
+            Integer ruleActiveVersion = getRuleActiveVersion(ruleActiveVersionPath);
+            result.add(new MetaDataVersion(GlobalRuleNodePath.getRulePath(each.getKey()), null == ruleActiveVersion ? MetaDataVersion.DEFAULT_VERSION : ruleActiveVersion, nextActiveVersion));
         }
         return result;
+    }
+    
+    private Integer getRuleActiveVersion(final String ruleActiveVersionPath) {
+        String value = repository.query(ruleActiveVersionPath);
+        return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
 }

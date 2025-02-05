@@ -52,7 +52,7 @@ class DatabaseMetaDataNodePathTest {
     
     @Test
     void assertGetVersionPath() {
-        assertThat(DatabaseMetaDataNodePath.getVersionPath("foo_rule", "1"), is("foo_rule/1"));
+        assertThat(DatabaseMetaDataNodePath.getVersionPath("foo_rule", 1), is("foo_rule/1"));
     }
     
     @Test

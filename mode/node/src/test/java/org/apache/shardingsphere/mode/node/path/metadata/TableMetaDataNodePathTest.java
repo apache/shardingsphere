@@ -45,7 +45,7 @@ class TableMetaDataNodePathTest {
     
     @Test
     void assertGetTableVersionPath() {
-        assertThat(TableMetaDataNodePath.getTableVersionPath("foo_db", "foo_schema", "foo_tbl", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertThat(TableMetaDataNodePath.getTableVersionPath("foo_db", "foo_schema", "foo_tbl", 0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
     
     @Test

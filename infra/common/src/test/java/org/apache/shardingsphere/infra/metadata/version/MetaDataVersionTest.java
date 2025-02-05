@@ -26,16 +26,16 @@ class MetaDataVersionTest {
     
     @Test
     void assertGetActiveVersionNodePath() {
-        assertThat(new MetaDataVersion("foo", "0", "1").getActiveVersionNodePath(), is("foo/active_version"));
+        assertThat(new MetaDataVersion("foo", 0, 1).getActiveVersionNodePath(), is("foo/active_version"));
     }
     
     @Test
     void assertGetVersionsNodePath() {
-        assertThat(new MetaDataVersion("foo", "0", "1").getVersionsNodePath("0"), is("foo/versions/0"));
+        assertThat(new MetaDataVersion("foo", 0, 1).getVersionsNodePath(0), is("foo/versions/0"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new MetaDataVersion("foo", "0", "1").getVersionsPath(), is("foo/versions"));
+        assertThat(new MetaDataVersion("foo", 0, 1).getVersionsPath(), is("foo/versions"));
     }
 }

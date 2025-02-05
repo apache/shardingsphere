@@ -59,8 +59,8 @@ public final class GlobalPropertiesNodePath {
      * @param version version
      * @return properties version path
      */
-    public static String getVersionPath(final String version) {
-        return String.join("/", getVersionRootPath(), version);
+    public static String getVersionPath(final int version) {
+        return String.join("/", getVersionRootPath(), String.valueOf(version));
     }
     
     /**

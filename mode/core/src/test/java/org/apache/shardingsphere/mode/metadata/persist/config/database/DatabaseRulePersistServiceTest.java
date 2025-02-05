@@ -68,7 +68,7 @@ class DatabaseRulePersistServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
         assertNull(actual.iterator().next().getCurrentActiveVersion());
-        assertThat(actual.iterator().next().getNextActiveVersion(), is("0"));
+        assertThat(actual.iterator().next().getNextActiveVersion(), is(0));
     }
     
     @Test
@@ -78,8 +78,8 @@ class DatabaseRulePersistServiceTest {
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MetaDataRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
-        assertThat(actual.iterator().next().getCurrentActiveVersion(), is("10"));
-        assertThat(actual.iterator().next().getNextActiveVersion(), is("11"));
+        assertThat(actual.iterator().next().getCurrentActiveVersion(), is(10));
+        assertThat(actual.iterator().next().getNextActiveVersion(), is(11));
     }
     
     @Test
@@ -93,7 +93,7 @@ class DatabaseRulePersistServiceTest {
         Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
-        assertThat(actual.iterator().next().getCurrentActiveVersion(), is(""));
-        assertThat(actual.iterator().next().getNextActiveVersion(), is(""));
+        assertNull(actual.iterator().next().getCurrentActiveVersion());
+        assertNull(actual.iterator().next().getNextActiveVersion());
     }
 }

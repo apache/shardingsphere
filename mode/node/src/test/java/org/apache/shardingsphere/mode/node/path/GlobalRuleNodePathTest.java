@@ -44,7 +44,7 @@ class GlobalRuleNodePathTest {
     
     @Test
     void assertGetVersionPath() {
-        assertThat(GlobalRuleNodePath.getVersionPath("foo_rule", "0"), is("/rules/foo_rule/versions/0"));
+        assertThat(GlobalRuleNodePath.getVersionPath("foo_rule", 0), is("/rules/foo_rule/versions/0"));
     }
     
     @Test

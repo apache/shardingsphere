@@ -47,7 +47,7 @@ public final class UniqueRuleItemChangedHandler {
     public void handle(final RuleNodePath ruleNodePath, final String databaseName, final String path, final DataChangedEvent event) throws SQLException {
         String type = ruleNodePath.getRoot().getRuleType() + "." + path;
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(new AlterUniqueRuleItem(databaseName, event.getKey(), event.getValue(), type));
+            contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(new AlterUniqueRuleItem(databaseName, event.getKey(), Integer.parseInt(event.getValue()), type));
         } else if (Type.DELETED == event.getType()) {
             contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(new DropUniqueRuleItem(databaseName, type));
         }
