@@ -161,7 +161,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterNullRuleConfiguration() throws SQLException {
-        metaDataManagerPersistService.alterRuleConfiguration("foo_db", null);
+        metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
         verify(metaDataPersistFacade, times(0)).getMetaDataVersionService();
     }
     
@@ -178,7 +178,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleItemChangedBuilder ruleItemChangedBuilder = mock(RuleItemChangedBuilder.class);
         when(ruleItemChangedBuilder.build(eq("foo_db"), any(), anyInt(), any())).thenReturn(Optional.of(alterRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
-        metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
+        metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(metaDataVersion);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(any(AlterRuleItem.class));
     }

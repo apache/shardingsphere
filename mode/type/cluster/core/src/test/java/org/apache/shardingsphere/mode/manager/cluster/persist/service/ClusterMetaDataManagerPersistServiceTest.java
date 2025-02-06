@@ -139,14 +139,14 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterNullRuleConfiguration() {
-        metaDataManagerPersistService.alterRuleConfiguration("foo_db", null);
+        metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
         verify(metaDataPersistFacade.getDatabaseRuleService(), times(0)).persist(eq("foo_db"), any());
     }
     
     @Test
     void assertAlterRuleConfiguration() {
         RuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
+        metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(ruleConfig));
     }
     
