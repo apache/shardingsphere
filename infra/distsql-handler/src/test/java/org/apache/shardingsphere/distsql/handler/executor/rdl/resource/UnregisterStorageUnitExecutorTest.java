@@ -96,7 +96,7 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap()).thenReturn(Collections.emptyMap());
         UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
         executor.executeUpdate(sqlStatement, contextManager);
-        verify(metaDataManagerPersistService).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
+        verify(metaDataManagerPersistService).unregisterStorageUnits(database, sqlStatement.getStorageUnitNames());
     }
     
     @Test
@@ -127,14 +127,14 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new DistSQLHandlerFixtureRule())));
         UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
         executor.executeUpdate(sqlStatement, contextManager);
-        verify(metaDataManagerPersistService).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
+        verify(metaDataManagerPersistService).unregisterStorageUnits(database, sqlStatement.getStorageUnitNames());
     }
     
     @Test
     void assertExecuteUpdateWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.executeUpdate(sqlStatement, contextManager);
-        verify(metaDataManagerPersistService).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
+        verify(metaDataManagerPersistService).unregisterStorageUnits(database, sqlStatement.getStorageUnitNames());
     }
     
     @Test

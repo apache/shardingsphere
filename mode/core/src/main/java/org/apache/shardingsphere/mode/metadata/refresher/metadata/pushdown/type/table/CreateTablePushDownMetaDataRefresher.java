@@ -52,9 +52,9 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         ShardingSphereTable loadedTable = loadTable(database, schemaName, tableName, ruleMetaData, props);
-        metaDataManagerPersistService.createTable(database.getName(), schemaName, loadedTable);
+        metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
         if (isSingleTable && TableRefreshUtils.isNeedRefresh(ruleMetaData, schemaName, tableName)) {
-            metaDataManagerPersistService.alterSingleRuleConfiguration(database.getName(), ruleMetaData);
+            metaDataManagerPersistService.alterSingleRuleConfiguration(database, ruleMetaData);
         }
     }
     
