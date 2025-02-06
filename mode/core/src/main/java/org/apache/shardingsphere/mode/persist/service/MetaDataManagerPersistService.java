@@ -44,9 +44,9 @@ public interface MetaDataManagerPersistService {
     /**
      * Drop database.
      *
-     * @param databaseName database name
+     * @param database database
      */
-    void dropDatabase(String databaseName);
+    void dropDatabase(ShardingSphereDatabase database);
     
     /**
      * Create schema.

@@ -76,9 +76,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void dropDatabase(final String databaseName) {
-        clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.DROP);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(databaseName);
+    public void dropDatabase(final ShardingSphereDatabase database) {
+        clusterDatabaseListenerPersistCoordinator.persist(database.getName(), ClusterDatabaseListenerCoordinatorType.DROP);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(database.getName());
     }
     
     @Override
