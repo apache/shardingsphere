@@ -132,8 +132,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
-        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseRuleService()
-                .persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
