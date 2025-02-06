@@ -34,7 +34,7 @@ public final class DropViewFederationMetaDataRefresher implements FederationMeta
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String schemaName, final DropViewStatement sqlStatement) {
         Collection<String> droppedViews = sqlStatement.getViews().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), droppedViews);
+        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), droppedViews);
     }
     
     @Override

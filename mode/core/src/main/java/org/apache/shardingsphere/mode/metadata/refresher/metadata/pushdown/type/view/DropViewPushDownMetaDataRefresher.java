@@ -44,7 +44,7 @@ public final class DropViewPushDownMetaDataRefresher implements PushDownMetaData
             droppedTables.add(viewName);
             droppedViews.add(viewName);
         }
-        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, Collections.emptyList(), Collections.emptyList(), droppedTables, droppedViews);
+        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), Collections.emptyList(), droppedTables, droppedViews);
     }
     
     @Override
