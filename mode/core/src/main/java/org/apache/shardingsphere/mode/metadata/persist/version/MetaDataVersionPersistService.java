@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.version.MetaDataVersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -48,8 +48,8 @@ public final class MetaDataVersionPersistService {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
             }
-            repository.persist(new MetaDataVersionNodePath(each.getPath()).getActiveVersionPath(), String.valueOf(each.getNextActiveVersion()));
-            MetaDataVersionNodePath versionNodePath = new MetaDataVersionNodePath(each.getPath());
+            repository.persist(new VersionNodePath(each.getPath()).getActiveVersionPath(), String.valueOf(each.getNextActiveVersion()));
+            VersionNodePath versionNodePath = new VersionNodePath(each.getPath());
             getVersions(versionNodePath.getVersionsPath()).stream()
                     .filter(version -> version < each.getNextActiveVersion()).forEach(version -> repository.delete(versionNodePath.getVersionPath(version)));
         }

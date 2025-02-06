@@ -22,20 +22,20 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MetaDataVersionNodePathTest {
+class VersionNodePathTest {
     
     @Test
     void assertGetActiveVersionPath() {
-        assertThat(new MetaDataVersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
+        assertThat(new VersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new MetaDataVersionNodePath("foo").getVersionsPath(), is("foo/versions"));
+        assertThat(new VersionNodePath("foo").getVersionsPath(), is("foo/versions"));
     }
     
     @Test
     void assertGetVersionPath() {
-        assertThat(new MetaDataVersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
+        assertThat(new VersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
     }
 }

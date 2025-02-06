@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Meta data version node path.
+ * Version node path.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataVersionNodePath {
+public final class VersionNodePath {
     
     private static final String ACTIVE_VERSION = "active_version";
     
@@ -36,7 +36,7 @@ public final class MetaDataVersionNodePath {
     /**
      * Get active version path.
      *
-     * @return path of active version node
+     * @return active version path
      */
     public String getActiveVersionPath() {
         return String.join("/", path, ACTIVE_VERSION);
@@ -45,7 +45,7 @@ public final class MetaDataVersionNodePath {
     /**
      * Get versions path.
      *
-     * @return path of versions
+     * @return versions path
      */
     public String getVersionsPath() {
         return String.join("/", path, VERSIONS);
