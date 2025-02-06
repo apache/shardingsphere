@@ -195,11 +195,11 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSingleRuleConfiguration(final String databaseName, final RuleMetaData ruleMetaData) throws SQLException {
+    public void alterSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleMetaData ruleMetaData) throws SQLException {
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(databaseName, Collections.singleton(singleRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(singleRuleConfig));
         metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
-        metaDataContextManager.getDatabaseRuleConfigurationManager().alter(databaseName, singleRuleConfig);
+        metaDataContextManager.getDatabaseRuleConfigurationManager().alter(database.getName(), singleRuleConfig);
         clearServiceCache();
     }
     
@@ -236,8 +236,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfiguration(final String databaseName, final String ruleName) {
-        metaDataPersistFacade.getDatabaseRuleService().delete(databaseName, ruleName);
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleName) {
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleName);
         clearServiceCache();
     }
     

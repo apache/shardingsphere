@@ -67,7 +67,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (null != toBeAlteredRuleConfig
                 && TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
-            metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
+            metaDataManagerPersistService.removeRuleConfiguration(database, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
         } else {
             metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
         }
