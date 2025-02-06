@@ -92,7 +92,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
         EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(encryptTable.isEncryptColumn("foo_col")).thenReturn(true);
         when(encryptTable.getEncryptColumn("foo_col").getAssistedQuery()).thenReturn(Optional.of(new AssistedQueryColumnItem("assisted_query_col", mock(EncryptAlgorithm.class))));
-        when(result.getEncryptTable("foo_tbl")).thenReturn(encryptTable);
+        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
         return result;
     }
     
