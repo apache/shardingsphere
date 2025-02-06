@@ -29,48 +29,48 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NamedRuleItemNodePathTest {
     
-    private final NamedRuleItemNodePath converter = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
+    private final NamedRuleItemNodePath nodePath = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
     
     @Test
     void assertGetPath() {
-        assertThat(converter.getPath("foo_tbl"), is("tables/foo_tbl"));
+        assertThat(nodePath.getPath("foo_tbl"), is("tables/foo_tbl"));
     }
     
     @Test
     void assertFindName() {
-        Optional<String> actual = converter.findName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
+        Optional<String> actual = nodePath.findName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertFindNameWithInvalidPath() {
-        assertFalse(converter.findName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
+        assertFalse(nodePath.findName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
     }
     
     @Test
     void assertFindNameByActiveVersion() {
-        Optional<String> actual = converter.findNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/active_version");
+        Optional<String> actual = nodePath.findNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertFindNameByActiveVersionWhenNotFound() {
-        Optional<String> actual = converter.findNameByActiveVersion("/invalid");
+        Optional<String> actual = nodePath.findNameByActiveVersion("/invalid");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertFindNameByItemPath() {
-        Optional<String> actual = converter.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
+        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertNotFindNameByItemPath() {
-        Optional<String> actual = converter.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl/xxx");
+        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl/xxx-xxx");
         assertFalse(actual.isPresent());
     }
 }
