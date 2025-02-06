@@ -37,16 +37,16 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<AlterRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByActiveVersion(metaDataVersion.getActiveVersionNodePath());
+            Optional<String> itemName = entry.getValue().getNameByActiveVersion(metaDataVersion.getActiveVersionPath());
             if (itemName.isPresent()) {
                 return Optional.of(new AlterNamedRuleItem(databaseName,
-                        itemName.get(), metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                        itemName.get(), metaDataVersion.getActiveVersionPath(), metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(metaDataVersion.getActiveVersionNodePath())) {
+            if (entry.getValue().isActiveVersionPath(metaDataVersion.getActiveVersionPath())) {
                 return Optional.of(new AlterUniqueRuleItem(databaseName,
-                        metaDataVersion.getActiveVersionNodePath(), metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                        metaDataVersion.getActiveVersionPath(), metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
