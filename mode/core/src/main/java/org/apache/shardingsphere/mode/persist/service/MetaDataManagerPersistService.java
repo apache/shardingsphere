@@ -142,11 +142,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Alter rule configuration.
      *
-     * @param databaseName database name
+     * @param database database
      * @param toBeAlteredRuleConfig to be altered rule config
      * @throws SQLException SQL exception
      */
-    void alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) throws SQLException;
+    void alterRuleConfiguration(ShardingSphereDatabase database, RuleConfiguration toBeAlteredRuleConfig) throws SQLException;
     
     /**
      * Remove rule configuration item.

@@ -204,15 +204,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
+    public void alterRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService()
-                .persist(metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singleton(toBeAlteredRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, each.getActiveVersionNodePath(), each.getNextActiveVersion(), new RuleItemAlteredBuildExecutor());
+            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getActiveVersionNodePath(), each.getNextActiveVersion(), new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get());
             }

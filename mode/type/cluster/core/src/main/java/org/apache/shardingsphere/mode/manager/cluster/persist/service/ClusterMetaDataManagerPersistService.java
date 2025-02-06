@@ -219,14 +219,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
+    public void alterRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null == toBeAlteredRuleConfig) {
             return;
         }
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(databaseName, Collections.singleton(toBeAlteredRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
         metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
-        afterRuleConfigurationAltered(databaseName, originalMetaDataContexts);
+        afterRuleConfigurationAltered(database.getName(), originalMetaDataContexts);
     }
     
     @SneakyThrows(InterruptedException.class)

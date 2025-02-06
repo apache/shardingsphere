@@ -69,7 +69,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
             metaDataManagerPersistService.removeRuleConfiguration(database, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
         } else {
-            metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+            metaDataManagerPersistService.alterRuleConfiguration(database, toBeAlteredRuleConfig);
         }
     }
 }

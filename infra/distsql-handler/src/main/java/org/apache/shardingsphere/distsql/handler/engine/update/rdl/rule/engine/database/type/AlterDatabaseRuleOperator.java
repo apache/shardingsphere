@@ -49,7 +49,7 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
     public void operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) throws SQLException {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        metaDataManagerPersistService.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
+        metaDataManagerPersistService.alterRuleConfiguration(database, decorateRuleConfiguration(database, toBeAlteredRuleConfig));
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
         metaDataManagerPersistService.removeRuleConfigurationItem(database, toBeDroppedRuleConfig);
     }
