@@ -62,7 +62,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         }
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+        metaDataManagerPersistService.removeRuleConfigurationItem(database, toBeDroppedRuleConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig
                 && TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {

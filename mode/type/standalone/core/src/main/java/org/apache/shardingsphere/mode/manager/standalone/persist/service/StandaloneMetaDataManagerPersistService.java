@@ -221,13 +221,13 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) throws SQLException {
+    public void removeRuleConfigurationItem(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig) throws SQLException {
         if (null == toBeRemovedRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, each.getActiveVersionNodePath(), each.getNextActiveVersion(), new RuleItemDroppedBuildExecutor());
+            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getActiveVersionNodePath(), each.getNextActiveVersion(), new RuleItemDroppedBuildExecutor());
             if (dropRuleItem.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().drop(dropRuleItem.get());
             }

@@ -151,11 +151,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Remove rule configuration item.
      *
-     * @param databaseName database name
+     * @param database database
      * @param toBeRemovedRuleConfig to be removed rule config
      * @throws SQLException SQL exception
      */
-    void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig) throws SQLException;
+    void removeRuleConfigurationItem(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleConfig) throws SQLException;
     
     /**
      * Remove rule configuration.
