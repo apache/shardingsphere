@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -28,9 +29,9 @@ import java.util.regex.Pattern;
  */
 public final class NamedRuleItemNodePath {
     
-    private static final String NAME = "/([\\w\\-]+)/versions/\\d+$";
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
-    private static final String ACTIVE_VERSION = "/([\\w\\-]+)/active_version$";
+    private static final String VERSION_PATTERN = "(\\d+)";
     
     private final String type;
     
@@ -42,9 +43,11 @@ public final class NamedRuleItemNodePath {
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        namePathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + NAME);
-        activeVersionPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
-        itemPathPattern = Pattern.compile(rootNodePath.getNodePrefix() + type + "/([\\w\\-]+)$");
+        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, IDENTIFIER_PATTERN);
+        VersionNodePath versionNodePath = new VersionNodePath(pattern);
+        namePathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
+        itemPathPattern = Pattern.compile(pattern + "$");
     }
     
     /**
@@ -58,34 +61,34 @@ public final class NamedRuleItemNodePath {
     }
     
     /**
-     * Get rule item name.
+     * Find rule item name.
      *
      * @param path path
-     * @return got item rule name
+     * @return found item rule name
      */
-    public Optional<String> getName(final String path) {
+    public Optional<String> findName(final String path) {
         Matcher matcher = namePathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
-     * Get rule item name by active version.
+     * Find rule item name by active version.
      *
      * @param path path
-     * @return got rule item name
+     * @return found rule item name
      */
-    public Optional<String> getNameByActiveVersion(final String path) {
+    public Optional<String> findNameByActiveVersion(final String path) {
         Matcher matcher = activeVersionPathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
-     * Get rule item name by item path.
+     * Find rule item name by item path.
      *
      * @param path path
-     * @return got rule item name
+     * @return found rule item name
      */
-    public Optional<String> getNameByItemPath(final String path) {
+    public Optional<String> findNameByItemPath(final String path) {
         Matcher matcher = itemPathPattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

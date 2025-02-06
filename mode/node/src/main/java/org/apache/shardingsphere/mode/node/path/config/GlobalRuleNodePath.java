@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -31,10 +32,6 @@ import java.util.regex.Pattern;
 public final class GlobalRuleNodePath {
     
     private static final String ROOT_NODE = "/rules";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "(\\w+)";
     
@@ -66,7 +63,7 @@ public final class GlobalRuleNodePath {
      * @return global rule version root path
      */
     public static String getVersionRootPath(final String ruleTypeName) {
-        return String.join("/", getRulePath(ruleTypeName), VERSIONS_NODE);
+        return new VersionNodePath(getRulePath(ruleTypeName)).getVersionsPath();
     }
     
     /**
@@ -77,7 +74,7 @@ public final class GlobalRuleNodePath {
      * @return global rule version path
      */
     public static String getVersionPath(final String ruleTypeName, final int version) {
-        return String.join("/", getVersionRootPath(ruleTypeName), String.valueOf(version));
+        return new VersionNodePath(getRulePath(ruleTypeName)).getVersionPath(version);
     }
     
     /**
@@ -87,7 +84,7 @@ public final class GlobalRuleNodePath {
      * @return global rule active version path
      */
     public static String getActiveVersionPath(final String ruleTypeName) {
-        return String.join("/", getRulePath(ruleTypeName), ACTIVE_VERSION_NODE);
+        return new VersionNodePath(getRulePath(ruleTypeName)).getActiveVersionPath();
     }
     
     /**

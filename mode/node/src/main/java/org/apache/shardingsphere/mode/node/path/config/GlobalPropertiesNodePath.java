@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,10 +31,6 @@ import java.util.regex.Pattern;
 public final class GlobalPropertiesNodePath {
     
     private static final String ROOT_NODE = "/props";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     /**
      * Get properties path.
@@ -50,7 +47,7 @@ public final class GlobalPropertiesNodePath {
      * @return properties version root path
      */
     public static String getVersionRootPath() {
-        return String.join("/", getRootPath(), VERSIONS_NODE);
+        return new VersionNodePath(getRootPath()).getVersionsPath();
     }
     
     /**
@@ -60,7 +57,7 @@ public final class GlobalPropertiesNodePath {
      * @return properties version path
      */
     public static String getVersionPath(final int version) {
-        return String.join("/", getVersionRootPath(), String.valueOf(version));
+        return new VersionNodePath(getRootPath()).getVersionPath(version);
     }
     
     /**
@@ -69,7 +66,7 @@ public final class GlobalPropertiesNodePath {
      * @return properties active version path
      */
     public static String getActiveVersionPath() {
-        return String.join("/", getRootPath(), ACTIVE_VERSION_NODE);
+        return new VersionNodePath(getRootPath()).getActiveVersionPath();
     }
     
     /**

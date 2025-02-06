@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
@@ -53,9 +54,28 @@ class GlobalRuleNodePathTest {
     }
     
     @Test
+    void assertFindRuleTypeNameFromActiveVersion() {
+        Optional<String> actual = GlobalRuleNodePath.findRuleTypeNameFromActiveVersion("/rules/foo_rule/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_rule"));
+    }
+    
+    @Test
+    void assertNotFindRuleTypeNameFromActiveVersion() {
+        Optional<String> actual = GlobalRuleNodePath.findRuleTypeNameFromActiveVersion("/rules/foo_rule/active_version/xxx");
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
     void assertFindVersion() {
         Optional<String> actual = GlobalRuleNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("0"));
+    }
+    
+    @Test
+    void assertNotFindVersion() {
+        Optional<String> actual = GlobalRuleNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0/xxx");
+        assertFalse(actual.isPresent());
     }
 }

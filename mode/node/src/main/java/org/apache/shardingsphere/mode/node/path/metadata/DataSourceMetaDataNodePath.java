@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -37,10 +38,6 @@ public final class DataSourceMetaDataNodePath {
     private static final String NODES_NODE = "nodes";
     
     private static final String UNITS_NODE = "units";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
@@ -105,7 +102,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage unit version path
      */
     public static String getStorageUnitVersionPath(final String databaseName, final String storageUnitName, final int version) {
-        return String.join("/", getStorageUnitVersionsPath(databaseName, storageUnitName), String.valueOf(version));
+        return new VersionNodePath(String.join("/", getStorageUnitsPath(databaseName), storageUnitName)).getVersionPath(version);
     }
     
     /**
@@ -116,7 +113,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage unit versions path
      */
     public static String getStorageUnitVersionsPath(final String databaseName, final String dataSourceName) {
-        return String.join("/", getStorageUnitsPath(databaseName), dataSourceName, VERSIONS_NODE);
+        return new VersionNodePath(String.join("/", getStorageUnitsPath(databaseName), dataSourceName)).getVersionsPath();
     }
     
     /**
@@ -127,7 +124,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage unit active version path
      */
     public static String getStorageUnitActiveVersionPath(final String databaseName, final String dataSourceName) {
-        return String.join("/", getStorageUnitsPath(databaseName), dataSourceName, ACTIVE_VERSION_NODE);
+        return new VersionNodePath(String.join("/", getStorageUnitsPath(databaseName), dataSourceName)).getActiveVersionPath();
     }
     
     /**
@@ -138,7 +135,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage node versions path
      */
     public static String getStorageNodeVersionsPath(final String databaseName, final String storageNodeName) {
-        return String.join("/", getStorageNodesPath(databaseName), storageNodeName, VERSIONS_NODE);
+        return new VersionNodePath(String.join("/", getStorageNodesPath(databaseName), storageNodeName)).getVersionsPath();
     }
     
     /**
@@ -149,7 +146,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage node active version path
      */
     public static String getStorageNodeActiveVersionPath(final String databaseName, final String storageNodeName) {
-        return String.join("/", getStorageNodesPath(databaseName), storageNodeName, ACTIVE_VERSION_NODE);
+        return new VersionNodePath(String.join("/", getStorageNodesPath(databaseName), storageNodeName)).getActiveVersionPath();
     }
     
     /**
