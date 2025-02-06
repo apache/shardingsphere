@@ -57,34 +57,13 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Get global rule version root path.
+     * Get global rule version node path.
      *
      * @param ruleTypeName rule type name
-     * @return global rule version root path
+     * @return global rule version node path
      */
-    public static String getVersionRootPath(final String ruleTypeName) {
-        return new VersionNodePath(getRulePath(ruleTypeName)).getVersionsPath();
-    }
-    
-    /**
-     * Get global rule version path.
-     *
-     * @param ruleTypeName rule type name
-     * @param version version
-     * @return global rule version path
-     */
-    public static String getVersionPath(final String ruleTypeName, final int version) {
-        return new VersionNodePath(getRulePath(ruleTypeName)).getVersionPath(version);
-    }
-    
-    /**
-     * Get global rule active version path.
-     *
-     * @param ruleTypeName rule type name
-     * @return global rule active version path
-     */
-    public static String getActiveVersionPath(final String ruleTypeName) {
-        return new VersionNodePath(getRulePath(ruleTypeName)).getActiveVersionPath();
+    public static VersionNodePath getVersionNodePath(final String ruleTypeName) {
+        return new VersionNodePath(getRulePath(ruleTypeName));
     }
     
     /**
@@ -94,7 +73,7 @@ public final class GlobalRuleNodePath {
      * @return found rule type name
      */
     public static Optional<String> findRuleTypeNameFromActiveVersion(final String path) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath(IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getVersionNodePath(IDENTIFIER_PATTERN).getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -107,7 +86,7 @@ public final class GlobalRuleNodePath {
      * @return found version
      */
     public static Optional<String> findVersion(final String ruleTypeName, final String path) {
-        Pattern pattern = Pattern.compile(String.join("/", getVersionRootPath(ruleTypeName), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(String.join("/", GlobalRuleNodePath.getVersionNodePath(ruleTypeName).getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

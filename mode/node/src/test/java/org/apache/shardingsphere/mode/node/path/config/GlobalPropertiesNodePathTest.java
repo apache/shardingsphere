@@ -31,18 +31,10 @@ class GlobalPropertiesNodePathTest {
     }
     
     @Test
-    void assertGetVersionRootPath() {
-        assertThat(GlobalPropertiesNodePath.getVersionRootPath(), is("/props/versions"));
-    }
-    
-    @Test
-    void assertGetVersionPath() {
-        assertThat(GlobalPropertiesNodePath.getVersionPath(0), is("/props/versions/0"));
-    }
-    
-    @Test
-    void assertGetActiveVersionPath() {
-        assertThat(GlobalPropertiesNodePath.getActiveVersionPath(), is("/props/active_version"));
+    void assertGetVersionNodePath() {
+        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getActiveVersionPath(), is("/props/active_version"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getVersionsPath(), is("/props/versions"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getVersionPath(0), is("/props/versions/0"));
     }
     
     @Test

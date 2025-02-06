@@ -39,18 +39,10 @@ class GlobalRuleNodePathTest {
     }
     
     @Test
-    void assertGetVersionRootPath() {
-        assertThat(GlobalRuleNodePath.getVersionRootPath("foo_rule"), is("/rules/foo_rule/versions"));
-    }
-    
-    @Test
-    void assertGetVersionPath() {
-        assertThat(GlobalRuleNodePath.getVersionPath("foo_rule", 0), is("/rules/foo_rule/versions/0"));
-    }
-    
-    @Test
-    void assertGetActiveVersionPath() {
-        assertThat(GlobalRuleNodePath.getActiveVersionPath("foo_rule"), is("/rules/foo_rule/active_version"));
+    void assertGetVersionNodePath() {
+        assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getActiveVersionPath(), is("/rules/foo_rule/active_version"));
+        assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getVersionsPath(), is("/rules/foo_rule/versions"));
+        assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getVersionPath(0), is("/rules/foo_rule/versions/0"));
     }
     
     @Test
