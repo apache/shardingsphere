@@ -124,11 +124,11 @@ public interface MetaDataManagerPersistService {
     
     /**
      * Unregister storage units.
-     * @param databaseName database name
+     * @param database database
      * @param toBeDroppedStorageUnitNames to be dropped storage unit names
      * @throws SQLException SQL exception
      */
-    void unregisterStorageUnits(String databaseName, Collection<String> toBeDroppedStorageUnitNames) throws SQLException;
+    void unregisterStorageUnits(ShardingSphereDatabase database, Collection<String> toBeDroppedStorageUnitNames) throws SQLException;
     
     /**
      * Alter single rule configuration.

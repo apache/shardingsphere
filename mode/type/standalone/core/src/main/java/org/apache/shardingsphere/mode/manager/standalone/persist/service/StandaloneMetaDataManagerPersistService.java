@@ -180,15 +180,15 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
+    public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
         SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByUnregisterStorageUnit(metaDataContextManager.getMetaDataContexts().getMetaData()
-                .getDatabase(databaseName).getResourceMetaData(), toBeDroppedStorageUnitNames);
+                .getDatabase(database.getName()).getResourceMetaData(), toBeDroppedStorageUnitNames);
         MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
-                databaseName, false, switchingResource, metaDataContextManager.getMetaDataContexts());
-        ShardingSphereDatabase reloadDatabase = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
-        ShardingSphereDatabase currentDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, reloadDatabase, currentDatabase);
-        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(databaseName, each));
+                database.getName(), false, switchingResource, metaDataContextManager.getMetaDataContexts());
+        ShardingSphereDatabase reloadDatabase = reloadMetaDataContexts.getMetaData().getDatabase(database.getName());
+        ShardingSphereDatabase currentDatabase = metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName());
+        metaDataPersistFacade.persistReloadDatabaseByDrop(database.getName(), reloadDatabase, currentDatabase);
+        GenericSchemaManager.getToBeDroppedSchemaNames(reloadDatabase, currentDatabase).forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().drop(database.getName(), each));
         metaDataContextManager.getMetaDataContexts().update(reloadMetaDataContexts);
         switchingResource.closeStaleDataSources();
         clearServiceCache();

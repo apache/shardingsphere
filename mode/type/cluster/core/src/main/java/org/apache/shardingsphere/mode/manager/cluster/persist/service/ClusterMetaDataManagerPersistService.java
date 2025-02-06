@@ -167,15 +167,15 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        for (String each : getToBeDroppedResourceNames(databaseName, toBeDroppedStorageUnitNames)) {
+    public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
+        for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
             MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
-                    .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), Collections.singletonList(each));
+                    .createByUnregisterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(database.getName()).getResourceMetaData(), Collections.singletonList(each));
             MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
-                    databaseName, false, switchingResource, originalMetaDataContexts);
-            metaDataPersistFacade.getDataSourceUnitService().delete(databaseName, each);
-            afterStorageUnitsDropped(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+                    database.getName(), false, switchingResource, originalMetaDataContexts);
+            metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
+            afterStorageUnitsDropped(database.getName(), originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();
         }
     }
