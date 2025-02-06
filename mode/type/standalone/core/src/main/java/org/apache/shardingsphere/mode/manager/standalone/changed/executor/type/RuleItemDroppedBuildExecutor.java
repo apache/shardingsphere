@@ -37,13 +37,13 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByItemPath(metaDataVersion.getActiveVersionNodePath());
+            Optional<String> itemName = entry.getValue().getNameByItemPath(metaDataVersion.getActiveVersionPath());
             if (itemName.isPresent()) {
                 return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(metaDataVersion.getActiveVersionNodePath())) {
+            if (entry.getValue().isActiveVersionPath(metaDataVersion.getActiveVersionPath())) {
                 return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }

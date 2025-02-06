@@ -71,10 +71,10 @@ class DataSourceUnitPersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units/foo_ds/versions")).thenReturn(Collections.singletonList("10"));
         List<MetaDataVersion> actual = new ArrayList<>(persistService.persist("foo_db", dataSourcePropsMap));
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getActiveVersionNodePath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+        assertThat(actual.get(0).getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
         assertThat(actual.get(0).getCurrentActiveVersion(), is(10));
         assertThat(actual.get(0).getNextActiveVersion(), is(11));
-        assertThat(actual.get(1).getActiveVersionNodePath(), is("/metadata/foo_db/data_sources/units/bar_ds/active_version"));
+        assertThat(actual.get(1).getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/bar_ds/active_version"));
         assertNull(actual.get(1).getCurrentActiveVersion());
         assertThat(actual.get(1).getNextActiveVersion(), is(0));
     }

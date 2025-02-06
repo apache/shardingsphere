@@ -41,7 +41,7 @@ public final class RuleItemChangedBuilder {
      */
     public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final MetaDataVersion metaDataVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            if (!each.getRuleNodePath().getRoot().isValidatedPath(metaDataVersion.getActiveVersionNodePath())) {
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(metaDataVersion.getActiveVersionPath())) {
                 continue;
             }
             Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, metaDataVersion);

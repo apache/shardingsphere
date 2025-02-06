@@ -66,7 +66,7 @@ class DatabaseRulePersistServiceTest {
     void assertPersistWithoutActiveVersion() {
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
+        assertThat(actual.iterator().next().getActiveVersionPath(), is("/metadata/foo_db/rules/fixture/fixture/active_version"));
         assertNull(actual.iterator().next().getCurrentActiveVersion());
         assertThat(actual.iterator().next().getNextActiveVersion(), is(0));
     }
@@ -77,7 +77,7 @@ class DatabaseRulePersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/fixture/versions")).thenReturn(Collections.singletonList("10"));
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MetaDataRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
+        assertThat(actual.iterator().next().getActiveVersionPath(), is("/metadata/foo_db/rules/fixture/fixture/active_version"));
         assertThat(actual.iterator().next().getCurrentActiveVersion(), is(10));
         assertThat(actual.iterator().next().getNextActiveVersion(), is(11));
     }
@@ -92,7 +92,7 @@ class DatabaseRulePersistServiceTest {
     void assertDeleteWithRuleConfigurations() {
         Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("/metadata/foo_db/rules/fixture/fixture"));
+        assertThat(actual.iterator().next().getActiveVersionPath(), is("/metadata/foo_db/rules/fixture/fixture/active_version"));
         assertNull(actual.iterator().next().getCurrentActiveVersion());
         assertNull(actual.iterator().next().getNextActiveVersion());
     }

@@ -25,17 +25,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class MetaDataVersionTest {
     
     @Test
-    void assertGetActiveVersionNodePath() {
-        assertThat(new MetaDataVersion("foo", 0, 1).getActiveVersionNodePath(), is("foo/active_version"));
-    }
-    
-    @Test
-    void assertGetVersionsNodePath() {
-        assertThat(new MetaDataVersion("foo", 0, 1).getVersionsNodePath(0), is("foo/versions/0"));
+    void assertGetActiveVersionPath() {
+        assertThat(new MetaDataVersion("foo", 0, 1).getActiveVersionPath(), is("foo/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
         assertThat(new MetaDataVersion("foo", 0, 1).getVersionsPath(), is("foo/versions"));
+    }
+    
+    @Test
+    void assertGetVersionPath() {
+        assertThat(new MetaDataVersion("foo", 0, 1).getVersionPath(0), is("foo/versions/0"));
     }
 }
