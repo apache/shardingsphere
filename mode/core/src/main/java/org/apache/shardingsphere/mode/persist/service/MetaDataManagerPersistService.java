@@ -72,11 +72,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Rename schema.
      *
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param renameSchemaName rename schema name
      */
-    void renameSchema(String databaseName, String schemaName, String renameSchemaName);
+    void renameSchema(ShardingSphereDatabase database, String schemaName, String renameSchemaName);
     
     /**
      * Drop schema.
