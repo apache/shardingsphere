@@ -31,7 +31,7 @@ public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
     
     /**
      * Build rule item.
-     * 
+     *
      * @param ruleNodePath rule node path
      * @param databaseName database name
      * @param activeVersionKey active version key
