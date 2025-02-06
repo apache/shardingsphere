@@ -53,28 +53,33 @@ public final class MetaDataVersionPersistService {
     }
     
     /**
-     * Get version path by active version.
+     * Get next version.
      *
      * @param path path
-     * @param activeVersion active version
-     * @return version path
+     * @return next version
      */
-    public String getVersionPathByActiveVersion(final String path, final int activeVersion) {
-        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
+    public int getNextVersion(final String path) {
+        List<Integer> versions = getVersions(path);
+        return versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
     }
     
-    /**
-     * Get versions.
-     *
-     * @param path path
-     * @return versions
-     */
-    public List<Integer> getVersions(final String path) {
+    private List<Integer> getVersions(final String path) {
         List<Integer> result = repository.getChildrenKeys(path).stream().map(Integer::parseInt).collect(Collectors.toList());
         if (result.size() > 2) {
             log.warn("There are multiple versions of: {}, please check the configuration.", path);
             result.sort(Collections.reverseOrder());
         }
         return result;
+    }
+    
+    /**
+     * Load content.
+     *
+     * @param path content path
+     * @param version content version
+     * @return loaded content
+     */
+    public String loadContent(final String path, final int version) {
+        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, version));
     }
 }

@@ -52,7 +52,7 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().getVersionPathByActiveVersion(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
+        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {

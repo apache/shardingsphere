@@ -24,13 +24,12 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
-import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.metadata.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -81,8 +80,7 @@ public final class ViewMetaDataPersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
-            List<Integer> versions = metaDataVersionPersistService.getVersions(ViewMetaDataNodePath.getViewVersionsPath(databaseName, schemaName, viewName));
-            int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(ViewMetaDataNodePath.getViewVersionsPath(databaseName, schemaName, viewName));
             repository.persist(ViewMetaDataNodePath.getViewVersionPath(databaseName, schemaName, viewName, nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (null == getActiveVersion(databaseName, schemaName, viewName)) {
                 repository.persist(ViewMetaDataNodePath.getViewActiveVersionPath(databaseName, schemaName, viewName), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
