@@ -185,7 +185,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveNullRuleConfigurationItem() throws SQLException {
-        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", null);
+        metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
         verify(metaDataPersistFacade, times(0)).getMetaDataVersionService();
     }
     
@@ -198,7 +198,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         when(ruleItemChangedBuilder.build(eq("foo_db"), any(), anyInt(), any())).thenReturn(Optional.of(dropRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
-        metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
+        metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(any(DropRuleItem.class));
     }
     
