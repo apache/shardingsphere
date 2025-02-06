@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.ShardingSphereStatisticsNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.StatisticsNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -38,7 +38,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return ShardingSphereStatisticsNodePath.getDatabasesRootPath();
+        return StatisticsNodePath.getDatabasesRootPath();
     }
     
     @Override
@@ -49,34 +49,34 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getStatisticsManager();
-        Optional<String> databaseName = ShardingSphereStatisticsNodePath.findDatabaseName(event.getKey(), false);
+        Optional<String> databaseName = StatisticsNodePath.findDatabaseName(event.getKey(), false);
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
             return;
         }
-        databaseName = ShardingSphereStatisticsNodePath.findDatabaseName(event.getKey(), true);
+        databaseName = StatisticsNodePath.findDatabaseName(event.getKey(), true);
         if (!databaseName.isPresent()) {
             return;
         }
-        Optional<String> schemaName = ShardingSphereStatisticsNodePath.findSchemaName(event.getKey(), false);
+        Optional<String> schemaName = StatisticsNodePath.findSchemaName(event.getKey(), false);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get());
             return;
         }
-        schemaName = ShardingSphereStatisticsNodePath.findSchemaName(event.getKey(), true);
+        schemaName = StatisticsNodePath.findSchemaName(event.getKey(), true);
         if (!schemaName.isPresent()) {
             return;
         }
-        Optional<String> tableName = ShardingSphereStatisticsNodePath.findTableName(event.getKey(), false);
+        Optional<String> tableName = StatisticsNodePath.findTableName(event.getKey(), false);
         if (tableName.isPresent()) {
             handleTableChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get(), tableName.get());
             return;
         }
-        tableName = ShardingSphereStatisticsNodePath.findTableName(event.getKey(), true);
+        tableName = StatisticsNodePath.findTableName(event.getKey(), true);
         if (!tableName.isPresent()) {
             return;
         }
-        Optional<String> uniqueKey = ShardingSphereStatisticsNodePath.findRowUniqueKey(event.getKey());
+        Optional<String> uniqueKey = StatisticsNodePath.findRowUniqueKey(event.getKey());
         if (uniqueKey.isPresent()) {
             handleRowDataChanged(databaseManager, event.getType(), event.getValue(), databaseName.get(), schemaName.get(), tableName.get(), uniqueKey.get());
         }

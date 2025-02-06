@@ -90,19 +90,20 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = metaDataVersionPersistService.getVersions(DatabaseRuleMetaDataNodePath.getVersionsPath(databaseName, ruleName, each.getKey()));
-            String nextVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
+            List<Integer> versions = metaDataVersionPersistService.getVersions(DatabaseRuleMetaDataNodePath.getVersionsPath(databaseName, ruleName, each.getKey()));
+            int nextVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
             repository.persist(DatabaseRuleMetaDataNodePath.getVersionPath(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
-            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
-                repository.persist(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, each.getKey()), MetaDataVersion.DEFAULT_VERSION);
+            if (null == getActiveVersion(databaseName, ruleName, each.getKey())) {
+                repository.persist(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, each.getKey()), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
             result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
         return result;
     }
     
-    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.query(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, key));
+    private Integer getActiveVersion(final String databaseName, final String ruleName, final String key) {
+        String value = repository.query(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, key));
+        return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
     
     /**

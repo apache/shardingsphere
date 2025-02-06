@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.changed;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public final class RuleItemChangedBuilder {
      * @param changedType data changed type
      * @return built rule item
      */
-    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final String activeVersion, final Type changedType) {
+    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
             Optional<RuleChangedItem> result = build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion, changedType);
             if (result.isPresent()) {
@@ -57,8 +56,8 @@ public final class RuleItemChangedBuilder {
         return Optional.empty();
     }
     
-    private Optional<RuleChangedItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final String activeVersion, final Type changedType) {
-        if (!ruleNodePath.getRoot().isValidatedPath(activeVersionKey) || Type.DELETED != changedType && Strings.isNullOrEmpty(activeVersion)) {
+    private Optional<RuleChangedItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
+        if (!ruleNodePath.getRoot().isValidatedPath(activeVersionKey) || Type.DELETED != changedType && null == activeVersion) {
             return Optional.empty();
         }
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
@@ -80,13 +79,13 @@ public final class RuleItemChangedBuilder {
         return Optional.empty();
     }
     
-    private RuleChangedItem create(final String databaseName, final String itemName, final String activeVersionKey, final String activeVersion, final Type changedType, final String type) {
+    private RuleChangedItem create(final String databaseName, final String itemName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
         return Type.ADDED == changedType || Type.UPDATED == changedType
                 ? new AlterNamedRuleItem(databaseName, itemName, activeVersionKey, activeVersion, type)
                 : new DropNamedRuleItem(databaseName, itemName, type);
     }
     
-    private RuleChangedItem create(final String databaseName, final String activeVersionKey, final String activeVersion, final Type changedType, final String type) {
+    private RuleChangedItem create(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
         return Type.ADDED == changedType || Type.UPDATED == changedType
                 ? new AlterUniqueRuleItem(databaseName, activeVersionKey, activeVersion, type)
                 : new DropUniqueRuleItem(databaseName, type);

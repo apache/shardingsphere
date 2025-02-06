@@ -30,68 +30,23 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataNodePath {
     
-    private static final String ROOT_NODE = "/metadata";
-    
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String TABLES_NODE = "tables";
     
     private static final String VERSIONS_NODE = "versions";
     
     private static final String ACTIVE_VERSION_NODE = "active_version";
     
-    private static final String TABLES_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables";
-    
-    private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
-    
-    private static final String TABLE_SUFFIX = "/([\\w\\-]+)$";
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
     /**
-     * Get meta data tables path.
+     * Get table root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return tables path
+     * @return table root path
      */
-    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE);
-    }
-    
-    /**
-     * Get table active version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return tables active version path
-     */
-    public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, ACTIVE_VERSION_NODE);
-    }
-    
-    /**
-     * Get table versions path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return tables versions path
-     */
-    public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, VERSIONS_NODE);
-    }
-    
-    /**
-     * Get table version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param version version
-     * @return table version path
-     */
-    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final String version) {
-        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), version);
+    public static String getTableRootPath(final String databaseName, final String schemaName) {
+        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
     /**
@@ -103,19 +58,44 @@ public final class TableMetaDataNodePath {
      * @return table path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
+        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
     }
     
     /**
-     * Get table name by active version path.
+     * Get table active version path.
      *
-     * @param path path
-     * @return table name
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return tables active version path
      */
-    public static Optional<String> getTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), ACTIVE_VERSION_NODE);
+    }
+    
+    /**
+     * Get table versions path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return tables versions path
+     */
+    public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTablePath(databaseName, schemaName, tableName), VERSIONS_NODE);
+    }
+    
+    /**
+     * Get table version path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param version version
+     * @return table version path
+     */
+    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final int version) {
+        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), String.valueOf(version));
     }
     
     /**
@@ -125,19 +105,9 @@ public final class TableMetaDataNodePath {
      * @return found table name
      */
     public static Optional<String> findTableName(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getTablePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is table active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isTableActiveVersionPath(final String path) {
-        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
@@ -147,6 +117,28 @@ public final class TableMetaDataNodePath {
      * @return true or false
      */
     public static boolean isTablePath(final String path) {
-        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + TABLE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return findTableName(path).isPresent();
+    }
+    
+    /**
+     * Get table name by active version path.
+     *
+     * @param path path
+     * @return table name
+     */
+    public static Optional<String> findTableNameByActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(getTableActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Is table active version path.
+     *
+     * @param path path
+     * @return is table active version path or not
+     */
+    public static boolean isTableActiveVersionPath(final String path) {
+        return findTableNameByActiveVersionPath(path).isPresent();
     }
 }

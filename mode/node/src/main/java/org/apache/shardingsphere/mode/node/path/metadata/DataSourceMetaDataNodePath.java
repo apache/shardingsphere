@@ -104,8 +104,8 @@ public final class DataSourceMetaDataNodePath {
      * @param version version
      * @return storage unit version path
      */
-    public static String getStorageUnitVersionPath(final String databaseName, final String storageUnitName, final String version) {
-        return String.join("/", getStorageUnitVersionsPath(databaseName, storageUnitName), version);
+    public static String getStorageUnitVersionPath(final String databaseName, final String storageUnitName, final int version) {
+        return String.join("/", getStorageUnitVersionsPath(databaseName, storageUnitName), String.valueOf(version));
     }
     
     /**
@@ -139,18 +139,6 @@ public final class DataSourceMetaDataNodePath {
      */
     public static String getStorageNodeVersionsPath(final String databaseName, final String storageNodeName) {
         return String.join("/", getStorageNodesPath(databaseName), storageNodeName, VERSIONS_NODE);
-    }
-    
-    /**
-     * Get storage node version path.
-     *
-     * @param databaseName database name
-     * @param storageNodeName storage node name
-     * @param version version
-     * @return storage node version path
-     */
-    public static String getStorageNodeVersionPath(final String databaseName, final String storageNodeName, final String version) {
-        return String.join("/", getStorageNodeVersionsPath(databaseName, storageNodeName), version);
     }
     
     /**

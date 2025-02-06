@@ -29,8 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TableMetaDataNodePathTest {
     
     @Test
-    void assertGetMetaDataTablesPath() {
-        assertThat(TableMetaDataNodePath.getMetaDataTablesPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    void assertGetTableRootPath() {
+        assertThat(TableMetaDataNodePath.getTableRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    }
+    
+    @Test
+    void assertGetTablePath() {
+        assertThat(TableMetaDataNodePath.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
@@ -45,24 +50,7 @@ class TableMetaDataNodePathTest {
     
     @Test
     void assertGetTableVersionPath() {
-        assertThat(TableMetaDataNodePath.getTableVersionPath("foo_db", "foo_schema", "foo_tbl", "0"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
-    }
-    
-    @Test
-    void assertGetTablePath() {
-        assertThat(TableMetaDataNodePath.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
-    }
-    
-    @Test
-    void assertFindTableNameByActiveVersionPath() {
-        Optional<String> actual = TableMetaDataNodePath.getTableNameByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_tbl"));
-    }
-    
-    @Test
-    void assertFindTableNameByActiveVersionPathIfNotFound() {
-        assertFalse(TableMetaDataNodePath.getTableNameByActiveVersionPath("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl/active_version").isPresent());
+        assertThat(TableMetaDataNodePath.getTableVersionPath("foo_db", "foo_schema", "foo_tbl", 0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
     
     @Test
@@ -78,12 +66,24 @@ class TableMetaDataNodePathTest {
     }
     
     @Test
-    void assertIsTableActiveVersionPath() {
-        assertTrue(TableMetaDataNodePath.isTableActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+    void assertIsTablePath() {
+        assertTrue(TableMetaDataNodePath.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
-    void assertIsTablePath() {
-        assertTrue(TableMetaDataNodePath.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    void assertFindTableNameByActiveVersionPath() {
+        Optional<String> actual = TableMetaDataNodePath.findTableNameByActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertFindTableNameByActiveVersionPathIfNotFound() {
+        assertFalse(TableMetaDataNodePath.findTableNameByActiveVersionPath("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl/active_version").isPresent());
+    }
+    
+    @Test
+    void assertIsTableActiveVersionPath() {
+        assertTrue(TableMetaDataNodePath.isTableActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
 }

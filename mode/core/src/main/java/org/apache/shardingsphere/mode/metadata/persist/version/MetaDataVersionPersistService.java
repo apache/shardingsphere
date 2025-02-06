@@ -24,7 +24,9 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePat
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Meta data version persist service.
@@ -45,10 +47,8 @@ public final class MetaDataVersionPersistService {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
             }
-            repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
-            getVersions(each.getVersionsPath()).stream()
-                    .filter(version -> Integer.parseInt(version) < Integer.parseInt(each.getNextActiveVersion()))
-                    .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
+            repository.persist(each.getActiveVersionNodePath(), String.valueOf(each.getNextActiveVersion()));
+            getVersions(each.getVersionsPath()).stream().filter(version -> version < each.getNextActiveVersion()).forEach(version -> repository.delete(each.getVersionsNodePath(version)));
         }
     }
     
@@ -59,7 +59,7 @@ public final class MetaDataVersionPersistService {
      * @param activeVersion active version
      * @return version path
      */
-    public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
+    public String getVersionPathByActiveVersion(final String path, final int activeVersion) {
         return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
     }
     
@@ -69,11 +69,11 @@ public final class MetaDataVersionPersistService {
      * @param path path
      * @return versions
      */
-    public List<String> getVersions(final String path) {
-        List<String> result = repository.getChildrenKeys(path);
+    public List<Integer> getVersions(final String path) {
+        List<Integer> result = repository.getChildrenKeys(path).stream().map(Integer::parseInt).collect(Collectors.toList());
         if (result.size() > 2) {
             log.warn("There are multiple versions of: {}, please check the configuration.", path);
-            result.sort((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)));
+            result.sort(Collections.reverseOrder());
         }
         return result;
     }
