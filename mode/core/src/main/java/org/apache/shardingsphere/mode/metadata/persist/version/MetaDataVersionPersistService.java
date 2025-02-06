@@ -53,17 +53,6 @@ public final class MetaDataVersionPersistService {
     }
     
     /**
-     * Get version path by active version.
-     *
-     * @param path path
-     * @param activeVersion active version
-     * @return version path
-     */
-    public String getVersionPathByActiveVersion(final String path, final int activeVersion) {
-        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
-    }
-    
-    /**
      * Get next version.
      *
      * @param path path
@@ -81,5 +70,16 @@ public final class MetaDataVersionPersistService {
             result.sort(Collections.reverseOrder());
         }
         return result;
+    }
+    
+    /**
+     * Load content.
+     *
+     * @param path content path
+     * @param version content version
+     * @return loaded content
+     */
+    public String loadContent(final String path, final int version) {
+        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, version));
     }
 }
