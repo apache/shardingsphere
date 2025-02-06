@@ -15,31 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.table;
+package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table statistics collector.
+ * Dialect database statistics collector.
  */
 @SingletonSPI
-public interface TableStatisticsCollector extends TypedSPI {
+public interface DialectDatabaseStatisticsCollector extends DatabaseTypedSPI {
     
     /**
-     * Collect table statistics.
+     * Get statistics schema tables.
+     *
+     * @return schema and tables
+     */
+    Map<String, Collection<String>> getStatisticsSchemaTables();
+    
+    /**
+     * Collect row column values.
      *
      * @param databaseName database name
-     * @param table table
-     * @param metaData meta data
-     * @return table statistics
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param metaData shardingsphere meta data
+     * @return row column datas
      * @throws SQLException SQL exception
      */
-    Optional<TableStatistics> collect(String databaseName, ShardingSphereTable table, ShardingSphereMetaData metaData) throws SQLException;
+    Optional<Collection<Map<String, Object>>> collectRowColumnValues(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData) throws SQLException;
 }

@@ -17,76 +17,52 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.statistics;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class StatisticsRefreshEngineTest {
+class StatisticsStorageEngineTest {
     
     @Test
     void assertRefresh() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereStatistics statistics = mockStatistics();
         when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
-        ShardingSphereMetaData metaData = mockMetaData();
-        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
-                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
-        when(contextManager.getComputeNodeInstanceContext().getLockContext().tryLock(any(), anyLong())).thenReturn(true);
-        new StatisticsRefreshEngine(contextManager).refresh();
+        ShardingSphereTable table = mockTable();
+        when(contextManager.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_table")).thenReturn(table);
+        new StatisticsStorageEngine(contextManager, "foo_db", "foo_schema", "foo_table", Collections.emptyList()).storage();
         verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService()).update(any());
     }
     
     private ShardingSphereStatistics mockStatistics() {
-        ShardingSphereStatistics result = new ShardingSphereStatistics();
-        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
+        TableStatistics tableStatistics = new TableStatistics("foo_table");
         SchemaStatistics schemaStatistics = new SchemaStatistics();
+        schemaStatistics.putTableStatistics("foo_table", tableStatistics);
+        DatabaseStatistics databaseStatistics = new DatabaseStatistics();
         databaseStatistics.putSchemaStatistics("foo_schema", schemaStatistics);
-        TableStatistics tableStatistics = new TableStatistics("test_table");
-        schemaStatistics.putTableStatistics("test_table", tableStatistics);
+        ShardingSphereStatistics result = new ShardingSphereStatistics();
         result.getDatabaseStatisticsMap().put("foo_db", databaseStatistics);
         return result;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(mockTable()), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.singleton(schema));
-        when(result.getAllDatabases()).thenReturn(Collections.singleton(database));
-        when(result.getDatabase("foo_db")).thenReturn(database);
-        when(result.containsDatabase("foo_db")).thenReturn(true);
-        return result;
-    }
-    
     private static ShardingSphereTable mockTable() {
-        ShardingSphereTable result = mock(ShardingSphereTable.class);
-        when(result.getName()).thenReturn("test_table");
+        ShardingSphereTable result = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_table");
         ShardingSphereColumn column1 = new ShardingSphereColumn("col_1", Types.INTEGER, false, false, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("col_2", Types.INTEGER, false, false, false, true, false, false);
         when(result.getAllColumns()).thenReturn(Arrays.asList(column1, column2));
