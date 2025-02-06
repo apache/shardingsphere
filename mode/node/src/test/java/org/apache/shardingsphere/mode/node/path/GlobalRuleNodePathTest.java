@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path;
 
+import org.apache.shardingsphere.mode.node.path.config.GlobalRuleNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

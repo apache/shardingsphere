@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path;
 
+import org.apache.shardingsphere.mode.node.path.config.GlobalPropertiesNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

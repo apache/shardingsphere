@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.manager.standalone.changed.executor.type;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;

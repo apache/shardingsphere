@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
 
