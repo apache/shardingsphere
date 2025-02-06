@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleIt
 import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.config.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.version.MetaDataVersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
@@ -37,7 +37,7 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
     
     @Override
     public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
-        String activeVersionPath = new MetaDataVersionNodePath(metaDataVersion.getPath()).getActiveVersionPath();
+        String activeVersionPath = new VersionNodePath(metaDataVersion.getPath()).getActiveVersionPath();
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getNameByItemPath(activeVersionPath);
             if (itemName.isPresent()) {
