@@ -86,7 +86,8 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
         }
     }
     
-    private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits, final DataNode dataNode, final Map<String, Object> rowColumnValues, final ShardingRule rule) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits, final DataNode dataNode, final Map<String, Object> rowColumnValues,
+                                           final ShardingRule rule) throws SQLException {
         DataSource dataSource;
         DatabaseType databaseType;
         StorageUnit storageUnit = storageUnits.get(dataNode.getDataSourceName());
@@ -103,7 +104,8 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
         }
     }
     
-    private void addTableRowsAndDataLength(final DatabaseType databaseType, final DataSource dataSource, final DataNode dataNode, final Map<String, Object> rowColumnValues) throws SQLException {
+    private void addTableRowsAndDataLength(final DatabaseType databaseType, final DataSource dataSource, final DataNode dataNode,
+                                           final Map<String, Object> rowColumnValues) throws SQLException {
         boolean isAppended = false;
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         if (dialectCollector.isPresent()) {
