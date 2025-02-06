@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import java.sql.SQLException;
+import java.util.Collection;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -28,9 +28,6 @@ import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRul
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-
-import java.sql.SQLException;
-import java.util.Collection;
 
 import static org.mockito.Mockito.mock;
 

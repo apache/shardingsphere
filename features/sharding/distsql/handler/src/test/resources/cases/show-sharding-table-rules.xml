@@ -20,7 +20,7 @@
     <test-case dist-sql="SHOW SHARDING TABLE RULES" current-rule-config-yaml-file="cases/show-sharding-table-rules-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                t_order|ds_${0..1}.t_order_${0..1}||STANDARD|user_id|INLINE|{"algorithm-expression":"ds_${user_id % 2}"}|STANDARD|order_id|INLINE|{"algorithm-expression":"t_order_${order_id % 2}"}|||||
+                t_order|ds_${0..1}.t_order_${0..1}|STANDARD|user_id|INLINE|{"algorithm-expression":"ds_${user_id % 2}"}|STANDARD|order_id|INLINE|{"algorithm-expression":"t_order_${order_id % 2}"}|||||
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
