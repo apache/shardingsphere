@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.node.path.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

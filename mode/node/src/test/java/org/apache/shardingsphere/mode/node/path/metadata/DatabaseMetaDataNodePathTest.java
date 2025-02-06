@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.node.path.metadata;
 
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 

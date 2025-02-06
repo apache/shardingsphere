@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.rule.item;
+package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
-import org.apache.shardingsphere.mode.node.path.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.NamedRuleItemChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.UniqueRuleItemChangedHandler;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 
 import java.sql.SQLException;

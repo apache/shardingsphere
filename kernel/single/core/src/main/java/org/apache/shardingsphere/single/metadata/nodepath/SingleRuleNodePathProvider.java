@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 

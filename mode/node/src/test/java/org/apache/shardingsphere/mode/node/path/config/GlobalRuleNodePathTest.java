@@ -15,31 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.rule.root;
+package org.apache.shardingsphere.mode.node.path.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleRootNodePathTest {
-    
-    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
+class GlobalRuleNodePathTest {
     
     @Test
-    void assertGetRuleNodePrefix() {
-        assertThat(nodePath.getNodePrefix(), is("/[\\w\\-]+/[\\w\\-]+/rules/foo/"));
+    void assertGetRootPath() {
+        assertThat(GlobalRuleNodePath.getRootPath(), is("/rules"));
     }
     
     @Test
-    void assertIsValidatedPath() {
-        assertTrue(nodePath.isValidatedPath("/metadata/foo_db/rules/foo/tables/foo_tbl"));
+    void assertGetRulePath() {
+        assertThat(GlobalRuleNodePath.getRulePath("foo_rule"), is("/rules/foo_rule"));
     }
     
     @Test
-    void assertIsNotValidatedPath() {
-        assertFalse(nodePath.isValidatedPath("/metadata/foo_db/rules/bar/tables/foo_tbl"));
+    void assertGetVersionRootPath() {
+        assertThat(GlobalRuleNodePath.getVersionRootPath("foo_rule"), is("/rules/foo_rule/versions"));
+    }
+    
+    @Test
+    void assertGetVersionPath() {
+        assertThat(GlobalRuleNodePath.getVersionPath("foo_rule", 0), is("/rules/foo_rule/versions/0"));
+    }
+    
+    @Test
+    void assertGetActiveVersionPath() {
+        assertThat(GlobalRuleNodePath.getActiveVersionPath("foo_rule"), is("/rules/foo_rule/active_version"));
+    }
+    
+    @Test
+    void assertFindVersion() {
+        Optional<String> actual = GlobalRuleNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("0"));
     }
 }
