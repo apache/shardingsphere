@@ -22,14 +22,13 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.mode.node.path.metadata.DataSourceMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.metadata.DataSourceMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -88,8 +87,7 @@ public final class DataSourceUnitPersistService {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
             Integer activeVersion = getDataSourceActiveVersion(databaseName, entry.getKey());
-            List<Integer> versions = metaDataVersionPersistService.getVersions(DataSourceMetaDataNodePath.getStorageUnitVersionsPath(databaseName, entry.getKey()));
-            int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(DataSourceMetaDataNodePath.getStorageUnitVersionsPath(databaseName, entry.getKey()));
             repository.persist(DataSourceMetaDataNodePath.getStorageUnitVersionPath(databaseName, entry.getKey(), nextActiveVersion),
                     YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
             if (null == activeVersion) {

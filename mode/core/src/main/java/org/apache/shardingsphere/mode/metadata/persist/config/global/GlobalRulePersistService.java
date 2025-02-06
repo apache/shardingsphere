@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -92,8 +91,7 @@ public final class GlobalRulePersistService {
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<Integer> versions = metaDataVersionPersistService.getVersions(GlobalRuleNodePath.getVersionRootPath(each.getKey()));
-            int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalRuleNodePath.getVersionRootPath(each.getKey()));
             repository.persist(GlobalRuleNodePath.getVersionPath(each.getKey(), nextActiveVersion), each.getValue());
             String ruleActiveVersionPath = GlobalRuleNodePath.getActiveVersionPath(each.getKey());
             if (null == getRuleActiveVersion(ruleActiveVersionPath)) {

@@ -21,12 +21,11 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -56,8 +55,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        List<Integer> versions = metaDataVersionPersistService.getVersions(GlobalPropertiesNodePath.getVersionRootPath());
-        int nextActiveVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+        int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalPropertiesNodePath.getVersionRootPath());
         repository.persist(GlobalPropertiesNodePath.getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
         if (null == getActiveVersion()) {
             repository.persist(GlobalPropertiesNodePath.getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));

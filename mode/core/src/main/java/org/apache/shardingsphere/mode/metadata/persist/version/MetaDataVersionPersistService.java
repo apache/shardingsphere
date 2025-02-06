@@ -64,12 +64,17 @@ public final class MetaDataVersionPersistService {
     }
     
     /**
-     * Get versions.
+     * Get next version.
      *
      * @param path path
-     * @return versions
+     * @return next version
      */
-    public List<Integer> getVersions(final String path) {
+    public int getNextVersion(final String path) {
+        List<Integer> versions = getVersions(path);
+        return versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+    }
+    
+    private List<Integer> getVersions(final String path) {
         List<Integer> result = repository.getChildrenKeys(path).stream().map(Integer::parseInt).collect(Collectors.toList());
         if (result.size() > 2) {
             log.warn("There are multiple versions of: {}, please check the configuration.", path);
