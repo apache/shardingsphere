@@ -94,7 +94,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertAlterSchema() {
-        metaDataManagerPersistService.alterSchema("foo_db", "foo_schema", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
+                "foo_schema", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.emptyList());
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getView()).persist("foo_db", "foo_schema", Collections.emptyList());
     }

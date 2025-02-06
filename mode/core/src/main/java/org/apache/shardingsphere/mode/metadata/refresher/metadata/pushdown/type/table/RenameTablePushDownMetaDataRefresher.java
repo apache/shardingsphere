@@ -48,7 +48,7 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
                     each.getRenameTable().getTableName().getIdentifier().getValue(), toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
             droppedTables.add(toBeRenamedTableName);
         }
-        metaDataManagerPersistService.alterSchema(database.getName(), schemaName, alteredTables, Collections.emptyList(), droppedTables, Collections.emptyList());
+        metaDataManagerPersistService.alterSchema(database, schemaName, alteredTables, Collections.emptyList(), droppedTables, Collections.emptyList());
     }
     
     @Override
