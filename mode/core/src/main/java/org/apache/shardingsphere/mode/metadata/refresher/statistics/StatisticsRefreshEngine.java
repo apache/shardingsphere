@@ -107,7 +107,6 @@ public final class StatisticsRefreshEngine {
                     ? Optional.of(new ShardingSphereStatisticsCollector())
                     : DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, metaData.getDatabase(databaseName).getProtocolType());
             if (dialectStatisticsCollector.isPresent()) {
-                log.info("dialectStatisticsCollector: {}", dialectStatisticsCollector.get().getClass().getSimpleName());
                 Optional<Collection<Map<String, Object>>> rowColumnValues = dialectStatisticsCollector.get().collectRowColumnValues(databaseName, schemaName, table.getName(), metaData);
                 rowColumnValues.ifPresent(optional -> new StatisticsStorageEngine(contextManager, databaseName, schemaName, table.getName(), optional).storage());
             }

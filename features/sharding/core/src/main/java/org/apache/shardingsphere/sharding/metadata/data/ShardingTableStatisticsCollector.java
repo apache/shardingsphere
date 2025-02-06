@@ -47,11 +47,14 @@ import java.util.Optional;
  */
 public final class ShardingTableStatisticsCollector implements ShardingSphereTableStatisticsCollector {
     
+    private long currentId = 1;
+    
     @Override
     public Collection<Map<String, Object>> collect(final String databaseName, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) throws SQLException {
         Collection<Map<String, Object>> result = new LinkedList<>();
         DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
+        currentId = 1;
         if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
             collectFromDatabase(metaData.getDatabase(databaseName), result);
         } else {
@@ -71,11 +74,10 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
     }
     
     private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule rule, final Collection<Map<String, Object>> rows) throws SQLException {
-        int count = 1;
         for (ShardingTable each : rule.getShardingTables().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
                 Map<String, Object> rowColumnValues = new CaseInsensitiveMap<>();
-                rowColumnValues.put("id", count++);
+                rowColumnValues.put("id", currentId++);
                 rowColumnValues.put("logic_database_name", database.getName());
                 rowColumnValues.put("logic_table_name", each.getLogicTable());
                 rowColumnValues.put("actual_database_name", dataNode.getDataSourceName());

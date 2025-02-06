@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsp
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLTableStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -54,7 +53,8 @@ public final class ShardingSphereStatisticsCollector implements DialectDatabaseS
     @Override
     public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
                                                                             final ShardingSphereMetaData metaData) throws SQLException {
-        Optional<PostgreSQLTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(PostgreSQLTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName));
+        Optional<ShardingSphereTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(ShardingSphereTableStatisticsCollector.class,
+                String.format("%s.%s", schemaName, tableName));
         return tableStatisticsCollector.isPresent() ? Optional.of(tableStatisticsCollector.get().collect(databaseName, schemaName, tableName, metaData)) : Optional.empty();
     }
     
