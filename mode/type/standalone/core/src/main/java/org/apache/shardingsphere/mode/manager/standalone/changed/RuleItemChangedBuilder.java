@@ -18,18 +18,10 @@
 package org.apache.shardingsphere.mode.manager.standalone.changed;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
 
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -43,57 +35,18 @@ public final class RuleItemChangedBuilder {
      * @param databaseName database name
      * @param activeVersionKey active version key
      * @param activeVersion active version
-     * @param changedType data changed type
+     * @param executor rule item changed build executor
+     * @param <T> type of rule changed item
      * @return built rule item
      */
-    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType) {
+    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String activeVersionKey, final int activeVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
             if (!each.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
                 continue;
             }
-            Optional<RuleChangedItem> result = build(databaseName, activeVersionKey, activeVersion, changedType, each);
+            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
             if (result.isPresent()) {
                 return result;
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType, final RuleNodePathProvider pathProvider) {
-        if (Type.UPDATED == changedType) {
-            return buildAlterItem(pathProvider.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
-        }
-        if (Type.DELETED == changedType) {
-            return buildDropItem(pathProvider.getRuleNodePath(), databaseName, activeVersionKey);
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<RuleChangedItem> buildAlterItem(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final int activeVersion) {
-        for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByActiveVersion(activeVersionKey);
-            if (itemName.isPresent()) {
-                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), activeVersionKey, activeVersion, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
-            }
-        }
-        for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
-                return Optional.of(new AlterUniqueRuleItem(databaseName, activeVersionKey, activeVersion, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<RuleChangedItem> buildDropItem(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey) {
-        for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByItemPath(activeVersionKey);
-            if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
-            }
-        }
-        for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
