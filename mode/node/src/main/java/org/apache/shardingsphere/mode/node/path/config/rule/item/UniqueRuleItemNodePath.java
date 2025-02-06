@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,9 +28,7 @@ import java.util.regex.Pattern;
  */
 public final class UniqueRuleItemNodePath {
     
-    private static final String VERSIONS = "/versions/\\d+$";
-    
-    private static final String ACTIVE_VERSION = "/active_version$";
+    private static final String VERSION_PATTERN = "(\\d+)";
     
     private final String parentNode;
     
@@ -42,15 +41,17 @@ public final class UniqueRuleItemNodePath {
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
         this.type = type;
-        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + type + VERSIONS);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + type + ACTIVE_VERSION);
+        VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + type);
+        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
     }
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        pathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type + VERSIONS);
-        activeVersionPathPattern = Pattern.compile(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type + ACTIVE_VERSION);
+        VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
+        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
     }
     
     /**
