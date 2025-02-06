@@ -121,8 +121,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void dropSchema(final String databaseName, final Collection<String> schemaNames) {
-        schemaNames.forEach(each -> dropSchema(databaseName, each));
+    public void dropSchema(final ShardingSphereDatabase database, final Collection<String> schemaNames) {
+        schemaNames.forEach(each -> dropSchema(database.getName(), each));
     }
     
     private void dropSchema(final String databaseName, final String schemaName) {

@@ -122,7 +122,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertDropSchema() {
-        metaDataManagerPersistService.dropSchema("foo_db", Collections.singleton("foo_schema"));
+        metaDataManagerPersistService.dropSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), Collections.singleton("foo_schema"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
     }
     
