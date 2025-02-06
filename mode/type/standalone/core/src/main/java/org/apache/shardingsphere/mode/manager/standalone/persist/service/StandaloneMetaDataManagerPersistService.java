@@ -131,9 +131,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void createTable(final String databaseName, final String schemaName, final ShardingSphereTable table) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(databaseName, schemaName, Collections.singleton(table));
-        metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
+    public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+        metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, table);
     }
     
     @Override

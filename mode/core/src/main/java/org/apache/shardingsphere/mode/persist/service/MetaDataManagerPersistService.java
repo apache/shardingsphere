@@ -89,11 +89,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Create table.
      *
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param table table
      */
-    void createTable(String databaseName, String schemaName, ShardingSphereTable table);
+    void createTable(ShardingSphereDatabase database, String schemaName, ShardingSphereTable table);
     
     /**
      * Drop tables.
