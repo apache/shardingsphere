@@ -192,7 +192,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertDropTable() {
-        metaDataManagerPersistService.dropTable("foo_db", "foo_schema", "foo_tbl");
+        metaDataManagerPersistService.dropTable(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", "foo_tbl");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
     }
 }

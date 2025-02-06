@@ -98,11 +98,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Drop tables.
      *
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      * @param tableName table name
      */
-    void dropTable(String databaseName, String schemaName, String tableName);
+    void dropTable(ShardingSphereDatabase database, String schemaName, String tableName);
     
     /**
      * Register storage units.

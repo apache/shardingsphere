@@ -40,7 +40,7 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
         boolean needRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
         boolean isRefreshed = false;
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            metaDataManagerPersistService.dropTable(database.getName(), schemaName, each.getTableName().getIdentifier().getValue());
+            metaDataManagerPersistService.dropTable(database, schemaName, each.getTableName().getIdentifier().getValue());
             if (!isRefreshed && needRefresh && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
                 metaDataManagerPersistService.alterSingleRuleConfiguration(database, database.getRuleMetaData());
                 isRefreshed = true;
