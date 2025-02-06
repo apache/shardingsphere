@@ -165,16 +165,16 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
+    public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
         SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager().switchByAlterStorageUnit(metaDataContextManager.getMetaDataContexts().getMetaData()
-                .getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
+                .getDatabase(database.getName()).getResourceMetaData(), toBeUpdatedProps);
         ShardingSphereDatabase changedDatabase = new MetaDataContextsFactory(metaDataPersistFacade, metaDataContextManager.getComputeNodeInstanceContext()).createChangedDatabase(
-                databaseName, true, switchingResource, null, metaDataContextManager.getMetaDataContexts());
+                database.getName(), true, switchingResource, null, metaDataContextManager.getMetaDataContexts());
         metaDataContextManager.getMetaDataContexts().getMetaData().putDatabase(changedDatabase);
         metaDataContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         DataSourceUnitPersistService dataSourceService = metaDataPersistFacade.getDataSourceUnitService();
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
+        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(dataSourceService.persist(database.getName(), toBeUpdatedProps));
         switchingResource.closeStaleDataSources();
         clearServiceCache();
     }

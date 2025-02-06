@@ -116,11 +116,11 @@ public interface MetaDataManagerPersistService {
     /**
      * Alter storage units.
      *
-     * @param databaseName database name
+     * @param database database
      * @param toBeUpdatedProps to be updated storage unit properties
      * @throws SQLException SQL exception
      */
-    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
+    void alterStorageUnits(ShardingSphereDatabase database, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
     
     /**
      * Unregister storage units.

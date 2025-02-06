@@ -147,19 +147,19 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
+    public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         Map<StorageNode, DataSource> newDataSources = new HashMap<>(toBeUpdatedProps.size());
         try {
             SwitchingResource switchingResource = metaDataContextManager.getResourceSwitchManager()
-                    .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
+                    .switchByAlterStorageUnit(originalMetaDataContexts.getMetaData().getDatabase(database.getName()).getResourceMetaData(), toBeUpdatedProps);
             newDataSources.putAll(switchingResource.getNewDataSources());
             MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, metaDataContextManager.getComputeNodeInstanceContext()).createBySwitchResource(
-                    databaseName, false, switchingResource, originalMetaDataContexts);
+                    database.getName(), false, switchingResource, originalMetaDataContexts);
             DataSourceUnitPersistService dataSourceService = metaDataPersistFacade.getDataSourceUnitService();
             metaDataPersistFacade.getMetaDataVersionService()
-                    .switchActiveVersion(dataSourceService.persist(databaseName, toBeUpdatedProps));
-            afterStorageUnitsAltered(databaseName, originalMetaDataContexts, reloadMetaDataContexts);
+                    .switchActiveVersion(dataSourceService.persist(database.getName(), toBeUpdatedProps));
+            afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, reloadMetaDataContexts);
             reloadMetaDataContexts.getMetaData().close();
         } finally {
             closeNewDataSources(newDataSources);
