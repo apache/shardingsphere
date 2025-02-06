@@ -52,6 +52,7 @@ import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -174,7 +175,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         AlterRuleItem alterRuleItem = mock(AlterRuleItem.class);
         RuleItemChangedBuilder ruleItemChangedBuilder = mock(RuleItemChangedBuilder.class);
-        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(alterRuleItem));
+        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), anyInt(), any())).thenReturn(Optional.of(alterRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.alterRuleConfiguration("foo_db", ruleConfig);
         verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(metaDataVersion);
@@ -194,7 +195,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         RuleItemChangedBuilder ruleItemChangedBuilder = mock(RuleItemChangedBuilder.class);
         DropRuleItem dropRuleItem = mock(DropRuleItem.class);
-        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(dropRuleItem));
+        when(ruleItemChangedBuilder.build(eq("foo_db"), any(), anyInt(), any())).thenReturn(Optional.of(dropRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem("foo_db", ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(any(DropRuleItem.class));
