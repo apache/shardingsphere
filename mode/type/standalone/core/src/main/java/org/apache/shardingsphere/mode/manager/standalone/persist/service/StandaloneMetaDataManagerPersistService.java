@@ -85,9 +85,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void createSchema(final String databaseName, final String schemaName) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
-        metaDataContextManager.getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
+    public void createSchema(final ShardingSphereDatabase database, final String schemaName) {
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(database.getName(), schemaName);
+        metaDataContextManager.getDatabaseMetaDataManager().addSchema(database.getName(), schemaName);
     }
     
     @Override

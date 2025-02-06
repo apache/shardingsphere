@@ -82,8 +82,8 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void createSchema(final String databaseName, final String schemaName) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(databaseName, schemaName);
+    public void createSchema(final ShardingSphereDatabase database, final String schemaName) {
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().add(database.getName(), schemaName);
     }
     
     @Override

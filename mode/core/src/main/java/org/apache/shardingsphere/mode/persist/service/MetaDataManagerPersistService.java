@@ -51,10 +51,10 @@ public interface MetaDataManagerPersistService {
     /**
      * Create schema.
      *
-     * @param databaseName database name
+     * @param database database
      * @param schemaName schema name
      */
-    void createSchema(String databaseName, String schemaName);
+    void createSchema(ShardingSphereDatabase database, String schemaName);
     
     /**
      * Alter schema.

@@ -88,7 +88,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertCreateSchema() {
-        metaDataManagerPersistService.createSchema("foo_db", "foo_schema");
+        metaDataManagerPersistService.createSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema()).add("foo_db", "foo_schema");
     }
     
