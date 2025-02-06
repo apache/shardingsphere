@@ -36,14 +36,15 @@ public final class RuleItemChangedBuilder {
      * @param activeVersionKey active version key
      * @param activeVersion active version
      * @param executor rule item changed build executor
+     * @param <T> type of rule changed item
      * @return built rule item
      */
-    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final RuleItemChangedBuildExecutor executor) {
+    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String activeVersionKey, final int activeVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
             if (!each.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
                 continue;
             }
-            Optional<RuleChangedItem> result = executor.build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
+            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
             if (result.isPresent()) {
                 return result;
             }

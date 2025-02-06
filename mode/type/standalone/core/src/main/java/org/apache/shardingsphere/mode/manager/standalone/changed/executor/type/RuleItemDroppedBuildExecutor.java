@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleIt
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
 
 import java.util.Map.Entry;
@@ -31,10 +31,10 @@ import java.util.Optional;
 /**
  * Rule item dropped build executor.
  */
-public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor {
+public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
     
     @Override
-    public Optional<RuleChangedItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final int activeVersion) {
+    public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final int activeVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getNameByItemPath(activeVersionKey);
             if (itemName.isPresent()) {

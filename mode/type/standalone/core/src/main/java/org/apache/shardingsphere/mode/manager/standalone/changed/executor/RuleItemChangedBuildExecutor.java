@@ -24,8 +24,10 @@ import java.util.Optional;
 
 /**
  * Rule item changed build executor.
+ * 
+ * @param <T> type of rule changed item
  */
-public interface RuleItemChangedBuildExecutor {
+public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
     
     /**
      * Build rule item.
@@ -36,5 +38,5 @@ public interface RuleItemChangedBuildExecutor {
      * @param activeVersion active version
      * @return built rule item
      */
-    Optional<RuleChangedItem> build(RuleNodePath ruleNodePath, String databaseName, String activeVersionKey, int activeVersion);
+    Optional<T> build(RuleNodePath ruleNodePath, String databaseName, String activeVersionKey, int activeVersion);
 }
