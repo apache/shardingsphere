@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -42,31 +41,12 @@ public final class GlobalPropertiesNodePath {
     }
     
     /**
-     * Get properties version root path.
+     * Get properties version node path.
      *
-     * @return properties version root path
+     * @return properties version node path
      */
-    public static String getVersionRootPath() {
-        return new VersionNodePath(getRootPath()).getVersionsPath();
-    }
-    
-    /**
-     * Get properties version path.
-     *
-     * @param version version
-     * @return properties version path
-     */
-    public static String getVersionPath(final int version) {
-        return new VersionNodePath(getRootPath()).getVersionPath(version);
-    }
-    
-    /**
-     * Get properties active version path.
-     *
-     * @return properties active version path
-     */
-    public static String getActiveVersionPath() {
-        return new VersionNodePath(getRootPath()).getActiveVersionPath();
+    public static VersionNodePath getVersionNodePath() {
+        return new VersionNodePath(getRootPath());
     }
     
     /**
@@ -76,8 +56,7 @@ public final class GlobalPropertiesNodePath {
      * @return true or false
      */
     public static boolean isActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find();
+        Pattern pattern = Pattern.compile(getVersionNodePath().getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path).find();
     }
 }
