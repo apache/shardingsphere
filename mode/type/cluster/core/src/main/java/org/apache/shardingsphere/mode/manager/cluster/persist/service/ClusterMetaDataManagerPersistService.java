@@ -87,14 +87,14 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSchema(final String databaseName, final String schemaName,
+    public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
                             final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
                             final Collection<String> droppedTables, final Collection<String> droppedViews) {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistFacade.getDatabaseMetaDataFacade();
-        databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
-        databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
-        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
-        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(databaseName, schemaName, each));
+        databaseMetaDataFacade.getTable().persist(database.getName(), schemaName, alteredTables);
+        databaseMetaDataFacade.getView().persist(database.getName(), schemaName, alteredViews);
+        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(database.getName(), schemaName, each));
+        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(database.getName(), schemaName, each));
     }
     
     @Override

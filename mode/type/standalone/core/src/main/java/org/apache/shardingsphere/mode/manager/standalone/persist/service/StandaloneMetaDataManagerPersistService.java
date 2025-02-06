@@ -91,18 +91,18 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterSchema(final String databaseName, final String schemaName,
+    public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
                             final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
                             final Collection<String> droppedTables, final Collection<String> droppedViews) {
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistFacade.getDatabaseMetaDataFacade();
-        databaseMetaDataFacade.getTable().persist(databaseName, schemaName, alteredTables);
-        databaseMetaDataFacade.getView().persist(databaseName, schemaName, alteredViews);
-        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, schemaName, each));
-        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(databaseName, schemaName, each));
-        alteredTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, schemaName, each));
-        alteredViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterView(databaseName, schemaName, each));
-        droppedTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropTable(databaseName, schemaName, each));
-        droppedViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropView(databaseName, schemaName, each));
+        databaseMetaDataFacade.getTable().persist(database.getName(), schemaName, alteredTables);
+        databaseMetaDataFacade.getView().persist(database.getName(), schemaName, alteredViews);
+        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(database.getName(), schemaName, each));
+        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(database.getName(), schemaName, each));
+        alteredTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, each));
+        alteredViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterView(database.getName(), schemaName, each));
+        droppedTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropTable(database.getName(), schemaName, each));
+        droppedViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropView(database.getName(), schemaName, each));
         ShardingSphereMetaData metaData = metaDataContextManager.getMetaDataContexts().getMetaData();
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
