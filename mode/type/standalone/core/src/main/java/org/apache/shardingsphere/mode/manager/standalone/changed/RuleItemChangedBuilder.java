@@ -48,6 +48,9 @@ public final class RuleItemChangedBuilder {
      */
     public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
+                continue;
+            }
             Optional<RuleChangedItem> result = build(databaseName, activeVersionKey, activeVersion, changedType, each);
             if (result.isPresent()) {
                 return result;
@@ -57,9 +60,6 @@ public final class RuleItemChangedBuilder {
     }
     
     private Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType, final RuleNodePathProvider pathProvider) {
-        if (!pathProvider.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
-            return Optional.empty();
-        }
         if (Type.UPDATED == changedType) {
             return buildAlterItem(pathProvider.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
         }
