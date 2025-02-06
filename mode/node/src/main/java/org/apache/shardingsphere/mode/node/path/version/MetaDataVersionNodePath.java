@@ -15,27 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.version;
+package org.apache.shardingsphere.mode.node.path.version;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Meta data version.
+ * Meta data version node path.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataVersion {
+public final class MetaDataVersionNodePath {
     
-    public static final int DEFAULT_VERSION = 0;
+    private static final String ACTIVE_VERSION = "active_version";
+    
+    private static final String VERSIONS = "versions";
     
     private final String path;
     
-    private final Integer currentActiveVersion;
+    /**
+     * Get active version path.
+     *
+     * @return path of active version node
+     */
+    public String getActiveVersionPath() {
+        return String.join("/", path, ACTIVE_VERSION);
+    }
     
-    private final Integer nextActiveVersion;
+    /**
+     * Get versions path.
+     *
+     * @return path of versions
+     */
+    public String getVersionsPath() {
+        return String.join("/", path, VERSIONS);
+    }
     
-    public MetaDataVersion(final String path) {
-        this(path, null, null);
+    /**
+     * Get version path.
+     *
+     * @param version version
+     * @return version path
+     */
+    public String getVersionPath(final int version) {
+        return String.join("/", getVersionsPath(), String.valueOf(version));
     }
 }

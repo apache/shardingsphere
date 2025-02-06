@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.version;
+package org.apache.shardingsphere.mode.node.path.version;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MetaDataVersionTest {
+class MetaDataVersionNodePathTest {
     
     @Test
     void assertGetActiveVersionPath() {
-        assertThat(new MetaDataVersion("foo", 0, 1).getActiveVersionPath(), is("foo/active_version"));
+        assertThat(new MetaDataVersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new MetaDataVersion("foo", 0, 1).getVersionsPath(), is("foo/versions"));
+        assertThat(new MetaDataVersionNodePath("foo").getVersionsPath(), is("foo/versions"));
     }
     
     @Test
     void assertGetVersionPath() {
-        assertThat(new MetaDataVersion("foo", 0, 1).getVersionPath(0), is("foo/versions/0"));
+        assertThat(new MetaDataVersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
     }
 }
