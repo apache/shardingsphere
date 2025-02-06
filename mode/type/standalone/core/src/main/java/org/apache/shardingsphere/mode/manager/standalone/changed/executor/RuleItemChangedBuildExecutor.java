@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.changed.executor;
 
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
@@ -34,9 +35,8 @@ public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
      *
      * @param ruleNodePath rule node path
      * @param databaseName database name
-     * @param activeVersionKey active version key
-     * @param activeVersion active version
+     * @param metaDataVersion meta data version
      * @return built rule item
      */
-    Optional<T> build(RuleNodePath ruleNodePath, String databaseName, String activeVersionKey, int activeVersion);
+    Optional<T> build(RuleNodePath ruleNodePath, String databaseName, MetaDataVersion metaDataVersion);
 }

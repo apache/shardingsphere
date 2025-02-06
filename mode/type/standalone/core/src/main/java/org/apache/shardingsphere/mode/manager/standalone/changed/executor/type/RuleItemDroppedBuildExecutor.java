@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.changed.executor.type;
 
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
@@ -34,15 +35,15 @@ import java.util.Optional;
 public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
     
     @Override
-    public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final int activeVersion) {
+    public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().getNameByItemPath(activeVersionKey);
+            Optional<String> itemName = entry.getValue().getNameByItemPath(metaDataVersion.getActiveVersionNodePath());
             if (itemName.isPresent()) {
                 return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
+            if (entry.getValue().isActiveVersionPath(metaDataVersion.getActiveVersionNodePath())) {
                 return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }

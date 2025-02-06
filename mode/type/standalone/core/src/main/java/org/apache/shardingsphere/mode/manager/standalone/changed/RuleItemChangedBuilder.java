@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.changed;
 
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
@@ -33,18 +34,17 @@ public final class RuleItemChangedBuilder {
      * Build rule item changed.
      *
      * @param databaseName database name
-     * @param activeVersionKey active version key
-     * @param activeVersion active version
+     * @param metaDataVersion meta data version
      * @param executor rule item changed build executor
      * @param <T> type of rule changed item
      * @return built rule item
      */
-    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String activeVersionKey, final int activeVersion, final RuleItemChangedBuildExecutor<T> executor) {
+    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final MetaDataVersion metaDataVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            if (!each.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(metaDataVersion.getActiveVersionNodePath())) {
                 continue;
             }
-            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
+            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, metaDataVersion);
             if (result.isPresent()) {
                 return result;
             }
