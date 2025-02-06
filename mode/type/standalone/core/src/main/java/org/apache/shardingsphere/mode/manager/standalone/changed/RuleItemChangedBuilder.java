@@ -46,9 +46,12 @@ public final class RuleItemChangedBuilder {
      * @param changedType data changed type
      * @return built rule item
      */
-    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
+    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            Optional<RuleChangedItem> result = build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion, changedType);
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(activeVersionKey)) {
+                continue;
+            }
+            Optional<RuleChangedItem> result = build(databaseName, activeVersionKey, activeVersion, changedType, each);
             if (result.isPresent()) {
                 return result;
             }
@@ -56,38 +59,43 @@ public final class RuleItemChangedBuilder {
         return Optional.empty();
     }
     
-    private Optional<RuleChangedItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
-        if (!ruleNodePath.getRoot().isValidatedPath(activeVersionKey) || Type.DELETED != changedType && null == activeVersion) {
-            return Optional.empty();
+    private Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final int activeVersion, final Type changedType, final RuleNodePathProvider pathProvider) {
+        if (Type.UPDATED == changedType) {
+            return buildAlterItem(pathProvider.getRuleNodePath(), databaseName, activeVersionKey, activeVersion);
         }
+        if (Type.DELETED == changedType) {
+            return buildDropItem(pathProvider.getRuleNodePath(), databaseName, activeVersionKey);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<RuleChangedItem> buildAlterItem(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final int activeVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName;
-            if (Type.ADDED == changedType || Type.UPDATED == changedType) {
-                itemName = entry.getValue().getNameByActiveVersion(activeVersionKey);
-            } else {
-                itemName = entry.getValue().getNameByItemPath(activeVersionKey);
-            }
+            Optional<String> itemName = entry.getValue().getNameByActiveVersion(activeVersionKey);
             if (itemName.isPresent()) {
-                return Optional.of(create(databaseName, itemName.get(), activeVersionKey, activeVersion, changedType, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), activeVersionKey, activeVersion, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
-                return Optional.of(create(databaseName, activeVersionKey, activeVersion, changedType, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterUniqueRuleItem(databaseName, activeVersionKey, activeVersion, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
     }
     
-    private RuleChangedItem create(final String databaseName, final String itemName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
-        return Type.ADDED == changedType || Type.UPDATED == changedType
-                ? new AlterNamedRuleItem(databaseName, itemName, activeVersionKey, activeVersion, type)
-                : new DropNamedRuleItem(databaseName, itemName, type);
-    }
-    
-    private RuleChangedItem create(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
-        return Type.ADDED == changedType || Type.UPDATED == changedType
-                ? new AlterUniqueRuleItem(databaseName, activeVersionKey, activeVersion, type)
-                : new DropUniqueRuleItem(databaseName, type);
+    private Optional<RuleChangedItem> buildDropItem(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey) {
+        for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
+            Optional<String> itemName = entry.getValue().getNameByItemPath(activeVersionKey);
+            if (itemName.isPresent()) {
+                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+            }
+        }
+        for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
+            if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
+                return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+            }
+        }
+        return Optional.empty();
     }
 }
