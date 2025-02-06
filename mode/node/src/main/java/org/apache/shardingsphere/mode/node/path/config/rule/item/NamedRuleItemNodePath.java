@@ -29,10 +29,6 @@ import java.util.regex.Pattern;
  */
 public final class NamedRuleItemNodePath {
     
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
-    
-    private static final String VERSION_PATTERN = "(\\d+)";
-    
     private final String type;
     
     private final Pattern namePathPattern;
@@ -40,6 +36,10 @@ public final class NamedRuleItemNodePath {
     private final Pattern activeVersionPathPattern;
     
     private final Pattern itemPathPattern;
+    
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
+    
+    private static final String VERSION_PATTERN = "(\\d+)";
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
