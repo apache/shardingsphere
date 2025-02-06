@@ -37,34 +37,40 @@ class NamedRuleItemNodePathTest {
     }
     
     @Test
-    void assertGetName() {
-        Optional<String> actual = converter.getName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
+    void assertFindName() {
+        Optional<String> actual = converter.findName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
-    void assertGetNameWithInvalidPath() {
-        assertFalse(converter.getName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
+    void assertFindNameWithInvalidPath() {
+        assertFalse(converter.findName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
     }
     
     @Test
-    void assertGetNameByActiveVersion() {
-        Optional<String> actual = converter.getNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/active_version");
+    void assertFindNameByActiveVersion() {
+        Optional<String> actual = converter.findNameByActiveVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
-    void assertGetNameByActiveVersionWhenNotFound() {
-        Optional<String> actual = converter.getNameByActiveVersion("/invalid");
+    void assertFindNameByActiveVersionWhenNotFound() {
+        Optional<String> actual = converter.findNameByActiveVersion("/invalid");
         assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertGetNameByItemPath() {
-        Optional<String> actual = converter.getNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
+    void assertFindNameByItemPath() {
+        Optional<String> actual = converter.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertNotFindNameByItemPath() {
+        Optional<String> actual = converter.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl/xxx");
+        assertFalse(actual.isPresent());
     }
 }

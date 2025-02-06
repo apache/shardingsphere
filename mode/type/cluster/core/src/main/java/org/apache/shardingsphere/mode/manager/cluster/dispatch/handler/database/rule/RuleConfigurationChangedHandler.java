@@ -92,10 +92,10 @@ public final class RuleConfigurationChangedHandler {
     
     private Optional<String> getItemName(final DataChangedEvent event, final NamedRuleItemNodePath ruleItemNodePath) {
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            return ruleItemNodePath.getNameByActiveVersion(event.getKey());
+            return ruleItemNodePath.findNameByActiveVersion(event.getKey());
         }
         if (Type.DELETED == event.getType()) {
-            return ruleItemNodePath.getNameByItemPath(event.getKey());
+            return ruleItemNodePath.findNameByItemPath(event.getKey());
         }
         return Optional.empty();
     }
