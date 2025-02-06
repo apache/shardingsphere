@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -31,10 +32,6 @@ import java.util.regex.Pattern;
 public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
@@ -70,7 +67,7 @@ public final class TableMetaDataNodePath {
      * @return tables active version path
      */
     public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getTablePath(databaseName, schemaName, tableName), ACTIVE_VERSION_NODE);
+        return new VersionNodePath(getTablePath(databaseName, schemaName, tableName)).getActiveVersionPath();
     }
     
     /**
@@ -82,7 +79,7 @@ public final class TableMetaDataNodePath {
      * @return tables versions path
      */
     public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getTablePath(databaseName, schemaName, tableName), VERSIONS_NODE);
+        return new VersionNodePath(getTablePath(databaseName, schemaName, tableName)).getVersionsPath();
     }
     
     /**

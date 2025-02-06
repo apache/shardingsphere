@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -31,10 +32,6 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
@@ -70,7 +67,7 @@ public final class ViewMetaDataNodePath {
      * @return view active version path
      */
     public static String getViewActiveVersionPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getViewPath(databaseName, schemaName, viewName), ACTIVE_VERSION_NODE);
+        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName)).getActiveVersionPath();
     }
     
     /**
@@ -82,7 +79,7 @@ public final class ViewMetaDataNodePath {
      * @return view versions path
      */
     public static String getViewVersionsPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getViewPath(databaseName, schemaName, viewName), VERSIONS_NODE);
+        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName)).getVersionsPath();
     }
     
     /**
@@ -95,7 +92,7 @@ public final class ViewMetaDataNodePath {
      * @return view version path
      */
     public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final int version) {
-        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), String.valueOf(version));
+        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName)).getVersionPath(version);
     }
     
     /**
