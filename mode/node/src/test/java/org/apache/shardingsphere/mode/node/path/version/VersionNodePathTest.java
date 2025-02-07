@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathTest {
     
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
+    private final VersionNodePath versionPatternNodePath = new VersionNodePath("/metadata/([\\w\\-]+)/schemas/([\\w\\-]+)/tables/([\\w\\-]+)");
     
     @Test
     void assertGetActiveVersionPath() {
@@ -47,24 +47,28 @@ class VersionNodePathTest {
     
     @Test
     void assertIsVersionPath() {
-        assertTrue(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions/0"));
-        assertFalse(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions"));
-        assertFalse(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions/0/xxx"));
+        assertTrue(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
+        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/xxx"));
+    }
+    
+    @Test
+    void assertIsActiveVersionPath() {
+        assertTrue(versionPatternNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
     }
     
     @Test
     void assertFindIdentifierByActiveVersionPath() {
         String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version";
-        VersionNodePath versionNodePath = new VersionNodePath("/metadata/([\\w\\-]+)/schemas/([\\w\\-]+)/tables/([\\w\\-]+)");
-        assertThat(versionNodePath.findIdentifierByActiveVersionPath(path, 1), is(Optional.of("foo_db")));
-        assertThat(versionNodePath.findIdentifierByActiveVersionPath(path, 2), is(Optional.of("foo_schema")));
-        assertThat(versionNodePath.findIdentifierByActiveVersionPath(path, 3), is(Optional.of("foo_tbl")));
+        assertThat(versionPatternNodePath.findIdentifierByActiveVersionPath(path, 1), is(Optional.of("foo_db")));
+        assertThat(versionPatternNodePath.findIdentifierByActiveVersionPath(path, 2), is(Optional.of("foo_schema")));
+        assertThat(versionPatternNodePath.findIdentifierByActiveVersionPath(path, 3), is(Optional.of("foo_tbl")));
     }
     
     @Test
     void assertNotFindIdentifierByActiveVersionPath() {
         String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions";
-        VersionNodePath versionNodePath = new VersionNodePath("/metadata/([\\w\\-]+)/schemas/([\\w\\-]+)/tables/([\\w\\-]+)");
-        assertFalse(versionNodePath.findIdentifierByActiveVersionPath(path, 1).isPresent());
+        assertFalse(versionPatternNodePath.findIdentifierByActiveVersionPath(path, 1).isPresent());
     }
 }

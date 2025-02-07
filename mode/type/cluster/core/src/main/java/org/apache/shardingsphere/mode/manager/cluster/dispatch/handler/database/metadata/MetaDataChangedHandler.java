@@ -106,11 +106,11 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return ViewMetaDataNodePath.isViewActiveVersionPath(key) || ViewMetaDataNodePath.isViewPath(key);
+        return ViewMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(key) || ViewMetaDataNodePath.isViewPath(key);
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePath.isViewActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && ViewMetaDataNodePath.isViewPath(event.getKey())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);

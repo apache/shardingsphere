@@ -79,6 +79,17 @@ public final class VersionNodePath {
     }
     
     /**
+     * Judge whether to active version path.
+     *
+     * @param path to be judged path
+     * @return is active version path or not
+     */
+    public boolean isActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path).find();
+    }
+    
+    /**
      * Find identifier name by active version path.
      *
      * @param activeVersionPath active version path

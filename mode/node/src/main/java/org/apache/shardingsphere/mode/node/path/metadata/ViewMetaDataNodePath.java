@@ -99,14 +99,4 @@ public final class ViewMetaDataNodePath {
     public static VersionNodePath getVersionPatternNodePath() {
         return new VersionNodePath(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     }
-    
-    /**
-     * Is view active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewActiveVersionPath(final String path) {
-        return ViewMetaDataNodePath.getVersionPatternNodePath().findIdentifierByActiveVersionPath(path, 3).isPresent();
-    }
 }

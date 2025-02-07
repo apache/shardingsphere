@@ -61,9 +61,4 @@ class ViewMetaDataNodePathTest {
     void assertIsViewPath() {
         assertTrue(ViewMetaDataNodePath.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
-    
-    @Test
-    void assertIsViewActiveVersionPath() {
-        assertTrue(ViewMetaDataNodePath.isViewActiveVersionPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
-    }
 }
