@@ -94,11 +94,11 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return TableMetaDataNodePath.isTablePath(key) || TableMetaDataNodePath.isTableActiveVersionPath(key);
+        return TableMetaDataNodePath.isTablePath(key) || TableMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePath.isTableActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && TableMetaDataNodePath.isTablePath(event.getKey())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
