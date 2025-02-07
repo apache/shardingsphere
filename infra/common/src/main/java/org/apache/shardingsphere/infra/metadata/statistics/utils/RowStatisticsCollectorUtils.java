@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.collector.row;
+package org.apache.shardingsphere.infra.metadata.statistics.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

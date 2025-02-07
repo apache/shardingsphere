@@ -15,34 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.metadata.data.dialect;
+package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 /**
- * Dialect sharding statistics table data collector.
+ * Table statistics collector.
  */
-@SingletonSPI
-public interface DialectShardingStatisticsTableCollector extends DatabaseTypedSPI {
-    
-    String TABLE_ROWS_COLUMN_NAME = "TABLE_ROWS";
-    
-    String DATA_LENGTH_COLUMN_NAME = "DATA_LENGTH";
+public interface DialectTableStatisticsCollector extends TypedSPI {
     
     /**
-     * Append dialect content into row.
+     * Get schema name.
      *
-     * @param connection connection
-     * @param dataNode data node
-     * @param rowColumnValues row column values
-     * @return is appended or not
+     * @return schema name
+     */
+    String getSchemaName();
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    String getTableName();
+    
+    /**
+     * Collect.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param metaData shardingsphere meta data
+     * @return row columns data
      * @throws SQLException SQL exception
      */
-    boolean appendRow(Connection connection, DataNode dataNode, Map<String, Object> rowColumnValues) throws SQLException;
+    Collection<Map<String, Object>> collect(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData) throws SQLException;
 }
