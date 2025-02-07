@@ -208,7 +208,7 @@ public final class YamlRepositoryTupleSwapperEngine {
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            ruleNodePath.getNamedItem(tupleName).getVersionNodePath().findIdentifierByActiveVersionPath(repositoryTuple.getKey(), 1)
+            ruleNodePath.getNamedItem(tupleName).getVersionNodePath().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
