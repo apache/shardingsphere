@@ -93,11 +93,11 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment,
-                                                                           final Collection<AndPredicate> andPredicates, final DatabaseType databaseType) {
+    private SQLToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment,
+                                                       final Collection<AndPredicate> andPredicates, final DatabaseType databaseType) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
-        if (includesLike(andPredicates, columnSegment)) {
+        if (isIncludeLike(andPredicates, columnSegment)) {
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
             return new SubstitutableColumnNameToken(startIndex, stopIndex,
@@ -109,7 +109,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
     }
     
-    private boolean includesLike(final Collection<AndPredicate> andPredicates, final ColumnSegment targetColumnSegment) {
+    private boolean isIncludeLike(final Collection<AndPredicate> andPredicates, final ColumnSegment targetColumnSegment) {
         for (AndPredicate each : andPredicates) {
             if (isLikeColumnSegment(each, targetColumnSegment)) {
                 return true;
