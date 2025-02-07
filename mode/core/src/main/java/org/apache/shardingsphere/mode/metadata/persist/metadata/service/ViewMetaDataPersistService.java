@@ -65,7 +65,8 @@ public final class ViewMetaDataPersistService {
      */
     public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
         Integer activeVersion = getActiveVersion(databaseName, schemaName, viewName);
-        String view = repository.query(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
+        String view =
+                repository.query(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
     }
     
@@ -81,7 +82,8 @@ public final class ViewMetaDataPersistService {
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
             int nextActiveVersion = metaDataVersionPersistService.getNextVersion(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionsPath());
-            repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionPath(nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+            repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionPath(nextActiveVersion),
+                    YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (null == getActiveVersion(databaseName, schemaName, viewName)) {
                 repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionsPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
