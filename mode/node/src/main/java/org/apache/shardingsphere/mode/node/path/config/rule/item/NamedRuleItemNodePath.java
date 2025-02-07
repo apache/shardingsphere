@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
@@ -29,10 +30,6 @@ import java.util.regex.Pattern;
  */
 public final class NamedRuleItemNodePath {
     
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
-    
-    private static final String VERSION_PATTERN = "(\\d+)";
-    
     private final String type;
     
     private final Pattern namePathPattern;
@@ -43,9 +40,9 @@ public final class NamedRuleItemNodePath {
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, IDENTIFIER_PATTERN);
+        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
         VersionNodePath versionNodePath = new VersionNodePath(pattern);
-        namePathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        namePathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
         activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
         itemPathPattern = Pattern.compile(pattern + "$");
     }

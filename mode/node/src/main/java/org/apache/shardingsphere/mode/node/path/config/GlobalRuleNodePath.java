@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
@@ -32,10 +33,6 @@ import java.util.regex.Pattern;
 public final class GlobalRuleNodePath {
     
     private static final String ROOT_NODE = "/rules";
-    
-    private static final String IDENTIFIER_PATTERN = "(\\w+)";
-    
-    private static final String VERSION_PATTERN = "(\\d+)";
     
     /**
      * Get global rule root path.
@@ -73,7 +70,7 @@ public final class GlobalRuleNodePath {
      * @return found rule type name
      */
     public static Optional<String> findRuleTypeNameFromActiveVersion(final String path) {
-        Pattern pattern = Pattern.compile(getVersionNodePath(IDENTIFIER_PATTERN).getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getVersionNodePath(NodePathPattern.IDENTIFIER).getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

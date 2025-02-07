@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.changed.executor;
+package org.apache.shardingsphere.mode.metadata.changed.executor;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;

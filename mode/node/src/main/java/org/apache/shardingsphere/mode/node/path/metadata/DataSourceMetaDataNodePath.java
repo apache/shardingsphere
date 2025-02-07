@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
@@ -38,8 +39,6 @@ public final class DataSourceMetaDataNodePath {
     private static final String NODES_NODE = "nodes";
     
     private static final String UNITS_NODE = "units";
-    
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
     /**
      * Get data source root path.
@@ -122,7 +121,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageUnitNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageUnitVersionNodePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageUnitVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -134,7 +133,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageUnitNameByStorageUnitPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageUnitPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -146,7 +145,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageNodeNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageNodeVersionNodePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodeVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -158,7 +157,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageNodeNameByStorageNodePath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageNodePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -170,6 +169,6 @@ public final class DataSourceMetaDataNodePath {
      * @return true or false
      */
     public static boolean isDataSourceRootPath(final String path) {
-        return Pattern.compile(getDataSourceRootPath(IDENTIFIER_PATTERN) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return Pattern.compile(getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
@@ -32,8 +33,6 @@ import java.util.regex.Pattern;
 public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
-    
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
     /**
      * Get table root path.
@@ -77,7 +76,7 @@ public final class TableMetaDataNodePath {
      * @return found table name
      */
     public static Optional<String> findTableName(final String path) {
-        Pattern pattern = Pattern.compile(getTablePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -99,7 +98,8 @@ public final class TableMetaDataNodePath {
      * @return table name
      */
     public static Optional<String> findTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getVersionNodePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(
+                getVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

@@ -57,11 +57,11 @@ public final class DatabaseRuleMetaDataNodePath {
      *
      * @param databaseName database name
      * @param ruleTypeName rule type name
-     * @param key key
+     * @param ruleItemName rule item name
      * @return database rule path without version
      */
-    public static String getRulePath(final String databaseName, final String ruleTypeName, final String key) {
-        return String.join("/", getRulePath(databaseName, ruleTypeName), key);
+    public static String getRulePath(final String databaseName, final String ruleTypeName, final String ruleItemName) {
+        return String.join("/", getRulePath(databaseName, ruleTypeName), ruleItemName);
     }
     
     /**
@@ -69,10 +69,10 @@ public final class DatabaseRuleMetaDataNodePath {
      *
      * @param databaseName database name
      * @param ruleTypeName rule type name
-     * @param key key
+     * @param ruleItemName rule item name
      * @return database rule version node path
      */
-    public static VersionNodePath getVersionNodePath(final String databaseName, final String ruleTypeName, final String key) {
-        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key));
+    public static VersionNodePath getVersionNodePath(final String databaseName, final String ruleTypeName, final String ruleItemName) {
+        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, ruleItemName));
     }
 }

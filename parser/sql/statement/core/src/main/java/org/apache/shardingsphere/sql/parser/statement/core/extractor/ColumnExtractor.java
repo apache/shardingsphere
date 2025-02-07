@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -80,6 +81,9 @@ public final class ColumnExtractor {
         if (expression instanceof AggregationProjectionSegment) {
             extractColumnsInAggregationProjectionSegment((AggregationProjectionSegment) expression, result);
         }
+        if (expression instanceof FunctionSegment) {
+            extractColumnsInFunctionSegment((FunctionSegment) expression, result);
+        }
         return result;
     }
     
@@ -124,6 +128,16 @@ public final class ColumnExtractor {
     }
     
     private static void extractColumnsInAggregationProjectionSegment(final AggregationProjectionSegment expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getParameters()) {
+            if (each instanceof ColumnSegment) {
+                result.add((ColumnSegment) each);
+            } else {
+                result.addAll(extract(each));
+            }
+        }
+    }
+    
+    private static void extractColumnsInFunctionSegment(final FunctionSegment expression, final Collection<ColumnSegment> result) {
         for (ExpressionSegment each : expression.getParameters()) {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);

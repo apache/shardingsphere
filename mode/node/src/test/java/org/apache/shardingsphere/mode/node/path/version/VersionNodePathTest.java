@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathTest {
     
+    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
+    
     @Test
     void assertGetActiveVersionPath() {
         assertThat(new VersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
@@ -43,8 +45,8 @@ class VersionNodePathTest {
     
     @Test
     void assertIsVersionPath() {
-        assertTrue(new VersionNodePath("foo").isVersionPath("foo/versions/0"));
-        assertFalse(new VersionNodePath("foo").isVersionPath("foo/versions"));
-        assertFalse(new VersionNodePath("foo").isVersionPath("foo/versions/0/xxx"));
+        assertTrue(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions/0"));
+        assertFalse(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions"));
+        assertFalse(new VersionNodePath(IDENTIFIER_PATTERN).isVersionPath("foo/versions/0/xxx"));
     }
 }

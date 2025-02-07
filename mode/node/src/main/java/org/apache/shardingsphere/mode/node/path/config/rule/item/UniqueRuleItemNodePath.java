@@ -28,8 +28,6 @@ import java.util.regex.Pattern;
  */
 public final class UniqueRuleItemNodePath {
     
-    private static final String VERSION_PATTERN = "(\\d+)";
-    
     private final String parentNode;
     
     private final String type;
@@ -42,7 +40,7 @@ public final class UniqueRuleItemNodePath {
         parentNode = null;
         this.type = type;
         VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + type);
-        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
         activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
     }
     
@@ -50,7 +48,7 @@ public final class UniqueRuleItemNodePath {
         this.parentNode = parentNode;
         this.type = type;
         VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
-        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN));
+        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
         activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
     }
     
