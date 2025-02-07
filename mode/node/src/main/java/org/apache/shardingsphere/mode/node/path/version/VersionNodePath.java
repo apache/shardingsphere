@@ -85,7 +85,7 @@ public final class VersionNodePath {
      * @return is active version path or not
      */
     public boolean isActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(path).find();
     }
     
@@ -97,7 +97,7 @@ public final class VersionNodePath {
      * @return found identifier
      */
     public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
