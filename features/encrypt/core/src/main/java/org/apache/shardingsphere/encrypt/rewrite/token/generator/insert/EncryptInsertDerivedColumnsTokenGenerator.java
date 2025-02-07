@@ -53,11 +53,11 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Collection<SQLToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse(""));
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
+        Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> derivedColumnNames = getDerivedColumnNames(encryptTable.get(), each);
             if (!derivedColumnNames.isEmpty()) {
