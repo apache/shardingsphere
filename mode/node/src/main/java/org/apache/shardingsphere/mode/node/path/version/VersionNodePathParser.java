@@ -17,18 +17,26 @@
 
 package org.apache.shardingsphere.mode.node.path.version;
 
+<<<<<<<< HEAD:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePathParser.java
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+========
+import lombok.RequiredArgsConstructor;
+>>>>>>>> master:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePath.java
 
 /**
  * Version node path parser.
  */
 public final class VersionNodePathParser {
     
+<<<<<<<< HEAD:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePathParser.java
     private static final String VERSION_PATTERN = "(\\d+)";
     
     private final Pattern activeVersionPattern;
+========
+    private static final String ACTIVE_VERSION = "active_version";
+>>>>>>>> master:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePath.java
     
     private final Pattern versionPattern;
     
@@ -40,6 +48,7 @@ public final class VersionNodePathParser {
         versionPattern = Pattern.compile(String.join("/", generator.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         versionWildcardPattern = Pattern.compile(generator.getVersionsPath(), Pattern.CASE_INSENSITIVE);
     }
+<<<<<<<< HEAD:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePathParser.java
     
     /**
      * Judge whether to active version path.
@@ -84,4 +93,6 @@ public final class VersionNodePathParser {
         Matcher matcher = versionWildcardPattern.matcher(versionsPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
+========
+>>>>>>>> master:mode/node/src/main/java/org/apache/shardingsphere/mode/node/path/version/VersionNodePath.java
 }
