@@ -153,7 +153,7 @@ public final class YamlRepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleEntity tupleEntity) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (GlobalRuleNodePath.getVersionNodePath(tupleEntity.value()).isVersionPath(each.getKey())) {
+                if (GlobalRuleNodePath.getVersionNodePathParser(tupleEntity.value()).isVersionPath(each.getKey())) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }
@@ -162,7 +162,7 @@ public final class YamlRepositoryTupleSwapperEngine {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (ruleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePath().isVersionPath(each.getKey())) {
+            if (ruleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
@@ -202,17 +202,17 @@ public final class YamlRepositoryTupleSwapperEngine {
         String tupleName = getTupleName(field);
         RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
-            ruleNodePath.getNamedItem(tupleName).getVersionNodePath()
+            ruleNodePath.getNamedItem(tupleName).getVersionNodePathParser()
                     .findIdentifierByVersionsPath(repositoryTuple.getKey(), 1).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            ruleNodePath.getNamedItem(tupleName).getVersionNodePath().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
+            ruleNodePath.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
-        if (!ruleNodePath.getUniqueItem(tupleName).getVersionNodePath().isVersionPath(repositoryTuple.getKey())) {
+        if (!ruleNodePath.getUniqueItem(tupleName).getVersionNodePathParser().isVersionPath(repositoryTuple.getKey())) {
             return;
         }
         if (fieldValue instanceof Collection) {

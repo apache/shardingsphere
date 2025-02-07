@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -33,6 +34,8 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
+    
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get view root path.
@@ -92,11 +95,11 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Get view version pattern node path.
+     * Get view version pattern node path parser.
      *
-     * @return view version node path
+     * @return view version node path parser
      */
-    public static VersionNodePath getVersionPatternNodePath() {
-        return new VersionNodePath(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -39,6 +40,10 @@ public final class DataSourceMetaDataNodePath {
     private static final String NODES_NODE = "nodes";
     
     private static final String UNITS_NODE = "units";
+    
+    private static final VersionNodePathParser STORAGE_UNITS_PARSER = new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    
+    private static final VersionNodePathParser STORAGE_NODES_PARSER = new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     /**
      * Get data source root path.
@@ -115,21 +120,21 @@ public final class DataSourceMetaDataNodePath {
     }
     
     /**
-     * Get storage unit version pattern unit path.
+     * Get storage unit version unit path parser.
      *
-     * @return storage unit version pattern node path
+     * @return storage unit version node path parser
      */
-    public static VersionNodePath getStorageUnitVersionPatternNodePath() {
-        return new VersionNodePath(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    public static VersionNodePathParser getStorageUnitVersionNodePathParser() {
+        return STORAGE_UNITS_PARSER;
     }
     
     /**
-     * Get storage node version pattern node path.
+     * Get storage node version node path parser.
      *
-     * @return storage node version pattern node path
+     * @return storage node version node path parser
      */
-    public static VersionNodePath getStorageNodeVersionPatternNodePath() {
-        return new VersionNodePath(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    public static VersionNodePathParser getStorageNodeVersionNodePathParser() {
+        return STORAGE_NODES_PARSER;
     }
     
     /**

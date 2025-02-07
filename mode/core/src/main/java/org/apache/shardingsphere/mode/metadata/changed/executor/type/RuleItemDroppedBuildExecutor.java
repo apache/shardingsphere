@@ -43,7 +43,7 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().getVersionNodePath().isActiveVersionPath(metaDataVersion.getPath())) {
+            if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(metaDataVersion.getPath())) {
                 return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }

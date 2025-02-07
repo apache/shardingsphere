@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.config.rule.item;
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -36,12 +36,12 @@ public final class NamedRuleItemNodePath {
     private final Pattern itemPathPattern;
     
     @Getter
-    private final VersionNodePath versionNodePath;
+    private final VersionNodePathParser versionNodePathParser;
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
         String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
-        versionNodePath = new VersionNodePath(pattern);
+        versionNodePathParser = new VersionNodePathParser(pattern);
         itemPathPattern = Pattern.compile(pattern + "$");
     }
     
