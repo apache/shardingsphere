@@ -29,11 +29,11 @@ import java.util.regex.Pattern;
 @Getter
 public final class VersionNodePath {
     
+    public static final String VERSION_PATTERN = "(\\d+)";
+    
     private static final String ACTIVE_VERSION = "active_version";
     
     private static final String VERSIONS = "versions";
-    
-    private static final String VERSION_PATTERN = "(\\d+)";
     
     private final String path;
     
