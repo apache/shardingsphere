@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -98,25 +98,25 @@ public final class DataSourceMetaDataNodePath {
     }
     
     /**
-     * Get storage unit version node path.
+     * Get storage unit version node path generator.
      *
      * @param databaseName database name
      * @param storageUnitName storage unit name
-     * @return storage unit version node path
+     * @return storage unit version node path generator
      */
-    public static VersionNodePath getStorageUnitVersionNodePath(final String databaseName, final String storageUnitName) {
-        return new VersionNodePath(String.join("/", getStorageUnitsPath(databaseName), storageUnitName));
+    public static VersionNodePathGenerator getStorageUnitVersionNodePathGenerator(final String databaseName, final String storageUnitName) {
+        return new VersionNodePathGenerator(String.join("/", getStorageUnitsPath(databaseName), storageUnitName));
     }
     
     /**
-     * Get storage node version node path.
+     * Get storage node version node path generator.
      *
      * @param databaseName database name
      * @param storageNodeName storage node name
-     * @return storage node version node path
+     * @return storage node version node path generator
      */
-    public static VersionNodePath getStorageNodeVersionNodePath(final String databaseName, final String storageNodeName) {
-        return new VersionNodePath(String.join("/", getStorageNodesPath(databaseName), storageNodeName));
+    public static VersionNodePathGenerator getStorageNodeVersionNodePathGenerator(final String databaseName, final String storageNodeName) {
+        return new VersionNodePathGenerator(String.join("/", getStorageNodesPath(databaseName), storageNodeName));
     }
     
     /**

@@ -91,9 +91,9 @@ public final class GlobalRulePersistService {
     private Collection<MetaDataVersion> persistTuples(final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalRuleNodePath.getVersionNodePath(each.getKey()).getVersionsPath());
-            repository.persist(GlobalRuleNodePath.getVersionNodePath(each.getKey()).getVersionPath(nextActiveVersion), each.getValue());
-            String ruleActiveVersionPath = GlobalRuleNodePath.getVersionNodePath(each.getKey()).getActiveVersionPath();
+            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey()).getVersionsPath());
+            repository.persist(GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey()).getVersionPath(nextActiveVersion), each.getValue());
+            String ruleActiveVersionPath = GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey()).getActiveVersionPath();
             if (null == getRuleActiveVersion(ruleActiveVersionPath)) {
                 repository.persist(ruleActiveVersionPath, String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
