@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -61,15 +61,15 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Get view version node path.
+     * Get view version node path generator.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view version node path
+     * @return view version node path generator
      */
-    public static VersionNodePath getVersionNodePath(final String databaseName, final String schemaName, final String viewName) {
-        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String viewName) {
+        return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
     }
     
     /**

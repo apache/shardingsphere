@@ -67,7 +67,7 @@ public final class TableMetaDataPersistService {
     public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
         Integer activeVersion = getActiveVersion(databaseName, schemaName, tableName);
         String tableContent = repository.query(
-                TableMetaDataNodePath.getVersionNodePath(databaseName, schemaName, tableName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
+                TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
     }
     
@@ -82,11 +82,12 @@ public final class TableMetaDataPersistService {
         Collection<MetaDataVersion> metaDataVersions = new LinkedList<>();
         for (ShardingSphereTable each : tables) {
             String tableName = each.getName().toLowerCase();
-            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(TableMetaDataNodePath.getVersionNodePath(databaseName, schemaName, tableName).getVersionsPath());
+            int nextActiveVersion = metaDataVersionPersistService.getNextVersion(TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionsPath());
             repository.persist(
-                    TableMetaDataNodePath.getVersionNodePath(databaseName, schemaName, tableName).getVersionPath(nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+                    TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionPath(nextActiveVersion),
+                    YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (null == getActiveVersion(databaseName, schemaName, tableName)) {
-                repository.persist(TableMetaDataNodePath.getVersionNodePath(databaseName, schemaName, tableName).getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+                repository.persist(TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
             metaDataVersions.add(
                     new MetaDataVersion(TableMetaDataNodePath.getTablePath(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
@@ -95,7 +96,7 @@ public final class TableMetaDataPersistService {
     }
     
     private Integer getActiveVersion(final String databaseName, final String schemaName, final String tableName) {
-        String value = repository.query(TableMetaDataNodePath.getVersionNodePath(databaseName, schemaName, tableName).getActiveVersionPath());
+        String value = repository.query(TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
     

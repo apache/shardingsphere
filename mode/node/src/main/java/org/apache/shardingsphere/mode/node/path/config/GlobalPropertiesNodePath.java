@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
@@ -42,12 +42,12 @@ public final class GlobalPropertiesNodePath {
     }
     
     /**
-     * Get properties version node path.
+     * Get properties version node path generator.
      *
-     * @return properties version node path
+     * @return properties version node path generator
      */
-    public static VersionNodePath getVersionNodePath() {
-        return new VersionNodePath(getRootPath());
+    public static VersionNodePathGenerator getVersionNodePathGenerator() {
+        return new VersionNodePathGenerator(getRootPath());
     }
     
     /**

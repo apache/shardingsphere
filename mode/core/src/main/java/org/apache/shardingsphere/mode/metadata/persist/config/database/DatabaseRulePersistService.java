@@ -90,10 +90,11 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            int nextVersion = metaDataVersionPersistService.getNextVersion(DatabaseRuleMetaDataNodePath.getVersionNodePath(databaseName, ruleName, each.getKey()).getVersionsPath());
-            repository.persist(DatabaseRuleMetaDataNodePath.getVersionNodePath(databaseName, ruleName, each.getKey()).getVersionPath(nextVersion), each.getValue());
+            int nextVersion = metaDataVersionPersistService.getNextVersion(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey()).getVersionsPath());
+            repository.persist(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey()).getVersionPath(nextVersion), each.getValue());
             if (null == getActiveVersion(databaseName, ruleName, each.getKey())) {
-                repository.persist(DatabaseRuleMetaDataNodePath.getVersionNodePath(databaseName, ruleName, each.getKey()).getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+                repository.persist(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey()).getActiveVersionPath(),
+                        String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
             result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
         }
@@ -101,7 +102,7 @@ public final class DatabaseRulePersistService {
     }
     
     private Integer getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        String value = repository.query(DatabaseRuleMetaDataNodePath.getVersionNodePath(databaseName, ruleName, key).getActiveVersionPath());
+        String value = repository.query(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, key).getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
     

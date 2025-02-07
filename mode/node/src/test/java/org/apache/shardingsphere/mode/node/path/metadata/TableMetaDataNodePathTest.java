@@ -39,10 +39,11 @@ class TableMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetVersionNodePath() {
-        assertThat(TableMetaDataNodePath.getVersionNodePath("foo_db", "foo_schema", "foo_tbl").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-        assertThat(TableMetaDataNodePath.getVersionNodePath("foo_db", "foo_schema", "foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
-        assertThat(TableMetaDataNodePath.getVersionNodePath("foo_db", "foo_schema", "foo_tbl").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+    void assertGetVersionNodePathGenerator() {
+        assertThat(TableMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_tbl").getActiveVersionPath(),
+                is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+        assertThat(TableMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
+        assertThat(TableMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_tbl").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
     
     @Test

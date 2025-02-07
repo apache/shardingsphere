@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.node.path.version;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Version node path.
+ * Version node path generator.
  */
 @RequiredArgsConstructor
-public final class VersionNodePath {
+public final class VersionNodePathGenerator {
     
     private static final String ACTIVE_VERSION = "active_version";
     
