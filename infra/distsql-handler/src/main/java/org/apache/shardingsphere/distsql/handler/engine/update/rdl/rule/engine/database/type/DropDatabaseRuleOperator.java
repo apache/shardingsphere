@@ -62,14 +62,14 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         }
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
-        metaDataManagerPersistService.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
+        metaDataManagerPersistService.removeRuleConfigurationItem(database, toBeDroppedRuleConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig
                 && TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
-            metaDataManagerPersistService.removeRuleConfiguration(database.getName(), Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
+            metaDataManagerPersistService.removeRuleConfiguration(database, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
         } else {
-            metaDataManagerPersistService.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+            metaDataManagerPersistService.alterRuleConfiguration(database, toBeAlteredRuleConfig);
         }
     }
 }

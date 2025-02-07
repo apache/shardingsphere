@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,14 +55,20 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertGetVersionPathByActiveVersion() {
+    void assertLoadContent() {
         when(repository.query("foo_db/versions/1")).thenReturn("foo_path");
-        assertThat(persistService.getVersionPathByActiveVersion("foo_db/active_version", 1), is("foo_path"));
+        assertThat(persistService.loadContent("foo_db/active_version", 1), is("foo_path"));
     }
     
     @Test
-    void assertGetVersions() {
+    void assertGetNextVersion() {
         when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0", "2", "10"));
-        assertThat(persistService.getVersions("foo_db/versions"), is(Arrays.asList(10, 2, 1, 0)));
+        assertThat(persistService.getNextVersion("foo_db/versions"), is(11));
+    }
+    
+    @Test
+    void assertGetNextVersionIfEmpty() {
+        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Collections.emptyList());
+        assertThat(persistService.getNextVersion("foo_db/versions"), is(0));
     }
 }

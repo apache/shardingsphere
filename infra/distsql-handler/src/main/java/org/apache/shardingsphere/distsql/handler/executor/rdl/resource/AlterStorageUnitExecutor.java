@@ -66,7 +66,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database.getName(), propsMap);
+            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database, propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 /**
  * Database rule meta data node path.
@@ -29,10 +30,6 @@ public final class DatabaseRuleMetaDataNodePath {
     private static final String ROOT_NODE = "/metadata";
     
     private static final String RULE_NODE = "rules";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     /**
      * Get database root path.
@@ -68,39 +65,14 @@ public final class DatabaseRuleMetaDataNodePath {
     }
     
     /**
-     * Get database rule versions path.
+     * Get database rule version node path.
      *
      * @param databaseName database name
      * @param ruleTypeName rule type name
      * @param key key
-     * @return database rule versions path
+     * @return database rule version node path
      */
-    public static String getVersionsPath(final String databaseName, final String ruleTypeName, final String key) {
-        return String.join("/", getRulePath(databaseName, ruleTypeName, key), VERSIONS_NODE);
-    }
-    
-    /**
-     * Get database rule version path.
-     *
-     * @param databaseName database name
-     * @param ruleTypeName rule type name
-     * @param key key
-     * @param version version
-     * @return database rule next version
-     */
-    public static String getVersionPath(final String databaseName, final String ruleTypeName, final String key, final int version) {
-        return String.join("/", getVersionsPath(databaseName, ruleTypeName, key), String.valueOf(version));
-    }
-    
-    /**
-     * Get database rule active version path.
-     *
-     * @param databaseName database name
-     * @param ruleTypeName rule type name
-     * @param key key
-     * @return database rule active version path
-     */
-    public static String getActiveVersionPath(final String databaseName, final String ruleTypeName, final String key) {
-        return String.join("/", getRulePath(databaseName, ruleTypeName, key), ACTIVE_VERSION_NODE);
+    public static VersionNodePath getVersionNodePath(final String databaseName, final String ruleTypeName, final String key) {
+        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key));
     }
 }

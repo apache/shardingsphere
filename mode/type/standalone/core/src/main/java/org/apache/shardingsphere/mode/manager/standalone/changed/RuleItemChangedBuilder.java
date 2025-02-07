@@ -17,19 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.changed;
 
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
 
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -41,53 +35,21 @@ public final class RuleItemChangedBuilder {
      * Build rule item changed.
      *
      * @param databaseName database name
-     * @param activeVersionKey active version key
-     * @param activeVersion active version
-     * @param changedType data changed type
+     * @param metaDataVersion meta data version
+     * @param executor rule item changed build executor
+     * @param <T> type of rule changed item
      * @return built rule item
      */
-    public Optional<RuleChangedItem> build(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
+    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final MetaDataVersion metaDataVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            Optional<RuleChangedItem> result = build(each.getRuleNodePath(), databaseName, activeVersionKey, activeVersion, changedType);
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(new VersionNodePath(metaDataVersion.getPath()).getActiveVersionPath())) {
+                continue;
+            }
+            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, metaDataVersion);
             if (result.isPresent()) {
                 return result;
             }
         }
         return Optional.empty();
-    }
-    
-    private Optional<RuleChangedItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType) {
-        if (!ruleNodePath.getRoot().isValidatedPath(activeVersionKey) || Type.DELETED != changedType && null == activeVersion) {
-            return Optional.empty();
-        }
-        for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName;
-            if (Type.ADDED == changedType || Type.UPDATED == changedType) {
-                itemName = entry.getValue().getNameByActiveVersion(activeVersionKey);
-            } else {
-                itemName = entry.getValue().getNameByItemPath(activeVersionKey);
-            }
-            if (itemName.isPresent()) {
-                return Optional.of(create(databaseName, itemName.get(), activeVersionKey, activeVersion, changedType, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
-            }
-        }
-        for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(activeVersionKey)) {
-                return Optional.of(create(databaseName, activeVersionKey, activeVersion, changedType, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private RuleChangedItem create(final String databaseName, final String itemName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
-        return Type.ADDED == changedType || Type.UPDATED == changedType
-                ? new AlterNamedRuleItem(databaseName, itemName, activeVersionKey, activeVersion, type)
-                : new DropNamedRuleItem(databaseName, itemName, type);
-    }
-    
-    private RuleChangedItem create(final String databaseName, final String activeVersionKey, final Integer activeVersion, final Type changedType, final String type) {
-        return Type.ADDED == changedType || Type.UPDATED == changedType
-                ? new AlterUniqueRuleItem(databaseName, activeVersionKey, activeVersion, type)
-                : new DropUniqueRuleItem(databaseName, type);
     }
 }

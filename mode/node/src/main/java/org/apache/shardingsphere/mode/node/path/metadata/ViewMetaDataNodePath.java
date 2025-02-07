@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -31,10 +32,6 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
-    
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
     
     private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
@@ -62,40 +59,15 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Get view active version path.
+     * Get view version node path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view active version path
+     * @return view version node path
      */
-    public static String getViewActiveVersionPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getViewPath(databaseName, schemaName, viewName), ACTIVE_VERSION_NODE);
-    }
-    
-    /**
-     * Get view versions path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return view versions path
-     */
-    public static String getViewVersionsPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getViewPath(databaseName, schemaName, viewName), VERSIONS_NODE);
-    }
-    
-    /**
-     * Get view version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @param version version
-     * @return view version path
-     */
-    public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final int version) {
-        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), String.valueOf(version));
+    public static VersionNodePath getVersionNodePath(final String databaseName, final String schemaName, final String viewName) {
+        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName));
     }
     
     /**
@@ -127,7 +99,7 @@ public final class ViewMetaDataNodePath {
      * @return view name
      */
     public static Optional<String> findViewNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getViewActiveVersionPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getVersionNodePath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN, IDENTIFIER_PATTERN).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

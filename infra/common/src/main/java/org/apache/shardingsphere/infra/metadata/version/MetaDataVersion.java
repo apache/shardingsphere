@@ -29,45 +29,13 @@ public final class MetaDataVersion {
     
     public static final int DEFAULT_VERSION = 0;
     
-    private static final String ACTIVE_VERSION = "active_version";
-    
-    private static final String VERSIONS = "versions";
-    
-    private final String key;
+    private final String path;
     
     private final Integer currentActiveVersion;
     
     private final Integer nextActiveVersion;
     
-    public MetaDataVersion(final String key) {
-        this(key, null, null);
-    }
-    
-    /**
-     * Get active version node path.
-     *
-     * @return path of active version node
-     */
-    public String getActiveVersionNodePath() {
-        return String.join("/", key, ACTIVE_VERSION);
-    }
-    
-    /**
-     * Get versions node path.
-     *
-     * @param version version
-     * @return path of versions node
-     */
-    public String getVersionsNodePath(final int version) {
-        return String.join("/", key, VERSIONS, String.valueOf(version));
-    }
-    
-    /**
-     * Get versions path.
-     *
-     * @return path of versions
-     */
-    public String getVersionsPath() {
-        return String.join("/", key, VERSIONS);
+    public MetaDataVersion(final String path) {
+        this(path, null, null);
     }
 }

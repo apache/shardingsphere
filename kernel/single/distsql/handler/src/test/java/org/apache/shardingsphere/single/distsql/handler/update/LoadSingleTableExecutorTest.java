@@ -146,7 +146,7 @@ class LoadSingleTableExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"), any());
+        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }
     
     @Test
@@ -165,6 +165,6 @@ class LoadSingleTableExecutorTest {
         ContextManager contextManager = mockContextManager(null);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).alterRuleConfiguration(eq("foo_db"), any());
+        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }
 }
