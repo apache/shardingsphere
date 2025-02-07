@@ -22,10 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Global props node path.
  */
@@ -64,14 +60,11 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Find rule type name from active version.
+     * Get global rule version pattern node path.
      *
-     * @param path path to be found
-     * @return found rule type name
+     * @return global rule version pattern node path
      */
-    public static Optional<String> findRuleTypeNameFromActiveVersion(final String path) {
-        Pattern pattern = Pattern.compile(getVersionNodePath(NodePathPattern.IDENTIFIER).getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    public static VersionNodePath getVersionPatternNodePath() {
+        return new VersionNodePath(NodePathPattern.IDENTIFIER);
     }
 }
