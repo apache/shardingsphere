@@ -25,11 +25,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuleNodePathTest {
     
@@ -46,18 +44,13 @@ class RuleNodePathTest {
     void assertFindNameByVersion() {
         NamedRuleItemNodePath namedRulePath = ruleNodePath.getNamedItem("tables");
         assertThat(namedRulePath.getPath("foo_tbl"), is("tables/foo_tbl"));
-        Optional<String> path = namedRulePath.findNameByVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
-        assertTrue(path.isPresent());
-        assertThat(path.get(), is("foo_tbl"));
     }
     
     @Test
     void assertGetUniqueItem() {
         UniqueRuleItemNodePath uniqueRulePath = ruleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
-        assertTrue(uniqueRulePath.isValidatedPath("/metadata/db/rules/foo/tables/versions/1234"));
         UniqueRuleItemNodePath uniqueRulePathWithType = ruleNodePath.getUniqueItem("type");
         assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
-        assertTrue(uniqueRulePathWithType.isActiveVersionPath("/metadata/db/rules/foo/tables/type/active_version"));
     }
 }

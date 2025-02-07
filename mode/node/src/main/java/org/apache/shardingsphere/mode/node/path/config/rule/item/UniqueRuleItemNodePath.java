@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Unique rule item node path.
@@ -32,24 +30,19 @@ public final class UniqueRuleItemNodePath {
     
     private final String type;
     
-    private final Pattern pathPattern;
-    
-    private final Pattern activeVersionPathPattern;
+    @Getter
+    private final VersionNodePath versionNodePath;
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
         this.type = type;
-        VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + type);
-        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
-        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
+        versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + type);
     }
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        VersionNodePath versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
-        pathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
-        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
+        versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
     }
     
     /**
@@ -59,26 +52,5 @@ public final class UniqueRuleItemNodePath {
      */
     public String getPath() {
         return null == parentNode ? String.join("/", type) : String.join("/", parentNode, type);
-    }
-    
-    /**
-     * Judge whether is validated rule item path.
-     *
-     * @param path path to be judged
-     * @return is validated rule item path or not
-     */
-    public boolean isValidatedPath(final String path) {
-        return pathPattern.matcher(path).find();
-    }
-    
-    /**
-     * Judge whether active version path.
-     *
-     * @param path path to be judged
-     * @return is active version path or not
-     */
-    public boolean isActiveVersionPath(final String path) {
-        Matcher matcher = activeVersionPathPattern.matcher(path);
-        return matcher.find();
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
@@ -34,6 +35,7 @@ public final class NamedRuleItemNodePath {
     
     private final Pattern itemPathPattern;
     
+    @Getter
     private final VersionNodePath versionNodePath;
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
@@ -51,26 +53,6 @@ public final class NamedRuleItemNodePath {
      */
     public String getPath(final String itemName) {
         return String.join("/", type, itemName);
-    }
-    
-    /**
-     * Find rule item name by version.
-     *
-     * @param versionPath version path
-     * @return found item rule name
-     */
-    public Optional<String> findNameByVersion(final String versionPath) {
-        return versionNodePath.findIdentifierByVersionsPath(versionPath, 1);
-    }
-    
-    /**
-     * Find rule item name by active version.
-     *
-     * @param activeVersionPath active version path
-     * @return found rule item name
-     */
-    public Optional<String> findNameByActiveVersion(final String activeVersionPath) {
-        return versionNodePath.findIdentifierByActiveVersionPath(activeVersionPath, 1);
     }
     
     /**
