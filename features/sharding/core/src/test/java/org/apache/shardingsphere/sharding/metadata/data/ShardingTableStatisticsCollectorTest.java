@@ -24,10 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.table.TableStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereTableStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectTableStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -36,13 +34,14 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,11 +56,11 @@ class ShardingTableStatisticsCollectorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private TableStatisticsCollector statisticsCollector;
+    private DialectTableStatisticsCollector statisticsCollector;
     
     @BeforeEach
     void setUp() {
-        statisticsCollector = TypedSPILoader.getService(TableStatisticsCollector.class, "sharding_table_statistics");
+        statisticsCollector = TypedSPILoader.getService(ShardingSphereTableStatisticsCollector.class, "shardingsphere.sharding_table_statistics");
     }
     
     @Test
@@ -71,8 +70,8 @@ class ShardingTableStatisticsCollectorTest {
         when(database.getProtocolType()).thenReturn(databaseType);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
-        Optional<TableStatistics> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
-        assertFalse(actual.isPresent());
+        Collection<Map<String, Object>> actualRows = statisticsCollector.collect("foo_db", "shardingsphere", "sharding_table_statistics", metaData);
+        assertTrue(actualRows.isEmpty());
     }
     
     @Test
@@ -85,12 +84,36 @@ class ShardingTableStatisticsCollectorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
-        Optional<TableStatistics> actual = statisticsCollector.collect("foo_db", mock(ShardingSphereTable.class), metaData);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getName(), is("sharding_table_statistics"));
-        List<RowStatistics> actualRows = new ArrayList<>(actual.get().getRows());
-        assertThat(actualRows.size(), is(2));
-        assertThat(actualRows.get(0).getRows(), is(Arrays.asList(1, "foo_db", "foo_tbl", "ds_0", "foo_tbl", new BigDecimal("0"), new BigDecimal("0"))));
-        assertThat(actualRows.get(1).getRows(), is(Arrays.asList(2, "foo_db", "foo_tbl", "ds_1", "foo_tbl", new BigDecimal("0"), new BigDecimal("0"))));
+        Collection<Map<String, Object>> actualRows = statisticsCollector.collect("foo_db", "shardingsphere", "sharding_table_statistics", metaData);
+        assertFalse(actualRows.isEmpty());
+        Collection<Map<String, Object>> expectedRows = new LinkedList<>();
+        expectedRows.add(createRowColumnValues(1L, "foo_db", "foo_tbl", "ds_0", "foo_tbl", new BigDecimal("0"), new BigDecimal("0")));
+        expectedRows.add(createRowColumnValues(2L, "foo_db", "foo_tbl", "ds_1", "foo_tbl", new BigDecimal("0"), new BigDecimal("0")));
+        assertRowsValue(expectedRows, actualRows);
+    }
+    
+    private Map<String, Object> createRowColumnValues(final long id, final String logicDatabaseName, final String logicTableName, final String actualDatabaseName,
+                                                      final String actualTableName, final BigDecimal rowCount, final BigDecimal size) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("logic_database_name", logicDatabaseName);
+        result.put("logic_table_name", logicTableName);
+        result.put("actual_database_name", actualDatabaseName);
+        result.put("actual_table_name", actualTableName);
+        result.put("row_count", rowCount);
+        result.put("size", size);
+        return result;
+    }
+    
+    private void assertRowsValue(final Collection<Map<String, Object>> expectedRows, final Collection<Map<String, Object>> actualRows) {
+        assertThat(actualRows.size(), is(expectedRows.size()));
+        Iterator<Map<String, Object>> actualRowsIterator = actualRows.iterator();
+        for (Map<String, Object> each : expectedRows) {
+            Map<String, Object> actualRow = actualRowsIterator.next();
+            for (Entry<String, Object> entry : each.entrySet()) {
+                assertTrue(actualRow.containsKey(entry.getKey()));
+                assertThat(actualRow.get(entry.getKey()), is(entry.getValue()));
+            }
+        }
     }
 }

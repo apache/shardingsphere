@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathTest {
     
@@ -37,5 +39,12 @@ class VersionNodePathTest {
     @Test
     void assertGetVersionPath() {
         assertThat(new VersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
+    }
+    
+    @Test
+    void assertIsVersionPath() {
+        assertTrue(new VersionNodePath("foo").isVersionPath("foo/versions/0"));
+        assertFalse(new VersionNodePath("foo").isVersionPath("foo/versions"));
+        assertFalse(new VersionNodePath("foo").isVersionPath("foo/versions/0/xxx"));
     }
 }

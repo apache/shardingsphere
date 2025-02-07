@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.refresher.statistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -27,26 +28,16 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.collector.table.TableStatisticsCollector;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.AlteredDatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Statistics refresh engine.
@@ -74,128 +65,55 @@ public final class StatisticsRefreshEngine {
     public void refresh() {
         try {
             if (contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)) {
-                collectAndRefresh();
+                LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
+                GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
+                if (lockContext.tryLock(lockDefinition, 5000L)) {
+                    try {
+                        refreshStatistics();
+                    } finally {
+                        lockContext.unlock(lockDefinition);
+                    }
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Collect statistics error.", ex);
+            log.error("Refresh statistics error.", ex);
         }
     }
     
-    private void collectAndRefresh() {
-        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
-        if (lockContext.tryLock(lockDefinition, 5000L)) {
-            try {
-                ShardingSphereStatistics currentStatistics = contextManager.getMetaDataContexts().getStatistics();
-                ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-                ShardingSphereStatistics changedStatistics = new ShardingSphereStatistics();
-                for (Entry<String, DatabaseStatistics> entry : currentStatistics.getDatabaseStatisticsMap().entrySet()) {
-                    if (metaData.containsDatabase(entry.getKey())) {
-                        collectForDatabase(entry.getKey(), entry.getValue(), metaData, changedStatistics);
-                    }
-                }
-                compareAndUpdate(currentStatistics, changedStatistics, metaData);
-            } finally {
-                lockContext.unlock(lockDefinition);
+    private void refreshStatistics() {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
+            refreshForDatabase(metaData, each);
+        }
+    }
+    
+    private void refreshForDatabase(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database) {
+        for (ShardingSphereSchema each : database.getAllSchemas()) {
+            refreshForSchema(metaData, database.getName(), each);
+        }
+    }
+    
+    private void refreshForSchema(final ShardingSphereMetaData metaData, final String databaseName, final ShardingSphereSchema schema) {
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            refreshForTable(metaData, databaseName, schema.getName(), each);
+        }
+    }
+    
+    private void refreshForTable(final ShardingSphereMetaData metaData, final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        try {
+            Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = "shardingsphere".equalsIgnoreCase(schemaName)
+                    ? Optional.of(new ShardingSphereStatisticsCollector())
+                    : DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, metaData.getDatabase(databaseName).getProtocolType());
+            if (dialectStatisticsCollector.isPresent()) {
+                Optional<Collection<Map<String, Object>>> rowColumnValues = dialectStatisticsCollector.get().collectRowColumnValues(databaseName, schemaName, table.getName(), metaData);
+                rowColumnValues.ifPresent(optional -> new StatisticsStorageEngine(contextManager, databaseName, schemaName, table.getName(), optional).storage());
             }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Refresh {}.{}.{} statistics failed.", databaseName, schemaName, table.getName(), ex);
         }
-    }
-    
-    private void collectForDatabase(final String databaseName, final DatabaseStatistics databaseStatistics, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        for (Entry<String, SchemaStatistics> entry : databaseStatistics.getSchemaStatisticsMap().entrySet()) {
-            if (metaData.getDatabase(databaseName).containsSchema(entry.getKey())) {
-                collectForSchema(databaseName, entry.getKey(), entry.getValue(), metaData, statistics);
-            }
-        }
-    }
-    
-    private void collectForSchema(final String databaseName, final String schemaName, final SchemaStatistics schemaStatistics,
-                                  final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        for (Entry<String, TableStatistics> entry : schemaStatistics.getTableStatisticsMap().entrySet()) {
-            if (metaData.getDatabase(databaseName).getSchema(schemaName).containsTable(entry.getKey())) {
-                collectForTable(databaseName, schemaName, metaData.getDatabase(databaseName).getSchema(schemaName).getTable(entry.getKey()), metaData, statistics);
-            }
-        }
-    }
-    
-    private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
-                                 final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {
-        Optional<TableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(TableStatisticsCollector.class, table.getName());
-        Optional<TableStatistics> tableStatistics;
-        if (tableStatisticsCollector.isPresent()) {
-            try {
-                tableStatistics = tableStatisticsCollector.get().collect(databaseName, table, metaData);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("Collect {}.{}.{} statistics failed.", databaseName, schemaName, table.getName(), ex);
-                tableStatistics = Optional.empty();
-            }
-        } else {
-            tableStatistics = Optional.empty();
-        }
-        DatabaseStatistics databaseStatistics = statistics.containsDatabaseStatistics(databaseName) ? statistics.getDatabaseStatistics(databaseName) : new DatabaseStatistics();
-        SchemaStatistics schemaStatistics = databaseStatistics.containsSchemaStatistics(schemaName) ? databaseStatistics.getSchemaStatistics(schemaName) : new SchemaStatistics();
-        tableStatistics.ifPresent(optional -> schemaStatistics.putTableStatistics(table.getName(), optional));
-        databaseStatistics.putSchemaStatistics(schemaName, schemaStatistics);
-        statistics.putDatabaseStatistics(databaseName, databaseStatistics);
-    }
-    
-    private void compareAndUpdate(final ShardingSphereStatistics currentStatistics, final ShardingSphereStatistics changedStatistics, final ShardingSphereMetaData metaData) {
-        for (Entry<String, DatabaseStatistics> entry : changedStatistics.getDatabaseStatisticsMap().entrySet()) {
-            compareAndUpdateForDatabase(metaData.getDatabase(entry.getKey()), currentStatistics, currentStatistics.getDatabaseStatistics(entry.getKey()), entry.getValue());
-        }
-        for (Entry<String, DatabaseStatistics> entry : currentStatistics.getDatabaseStatisticsMap().entrySet()) {
-            if (!changedStatistics.containsDatabaseStatistics(entry.getKey())) {
-                currentStatistics.dropDatabaseStatistics(entry.getKey());
-                contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
-            }
-        }
-    }
-    
-    private void compareAndUpdateForDatabase(final ShardingSphereDatabase database, final ShardingSphereStatistics currentStatistics,
-                                             final DatabaseStatistics currentDatabaseStatistics, final DatabaseStatistics changedDatabaseStatistics) {
-        for (Entry<String, SchemaStatistics> entry : changedDatabaseStatistics.getSchemaStatisticsMap().entrySet()) {
-            compareAndUpdateForSchema(database.getName(), database.getSchema(entry.getKey()), currentStatistics, currentDatabaseStatistics.getSchemaStatistics(entry.getKey()), entry.getValue());
-        }
-    }
-    
-    private void compareAndUpdateForSchema(final String databaseName, final ShardingSphereSchema schema, final ShardingSphereStatistics currentStatistics,
-                                           final SchemaStatistics currentSchemaStatistics, final SchemaStatistics changedSchemaStatistics) {
-        for (Entry<String, TableStatistics> entry : changedSchemaStatistics.getTableStatisticsMap().entrySet()) {
-            compareAndUpdateForTable(databaseName, schema.getName(), schema.getTable(entry.getKey()), currentStatistics, currentSchemaStatistics.getTableStatistics(entry.getKey()), entry.getValue());
-        }
-    }
-    
-    private void compareAndUpdateForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
-                                          final ShardingSphereStatistics currentStatistics, final TableStatistics currentTableStatistics, final TableStatistics changedTableStatistics) {
-        if (!currentTableStatistics.equals(changedTableStatistics)) {
-            currentStatistics.getDatabaseStatistics(databaseName).getSchemaStatistics(schemaName).putTableStatistics(changedTableStatistics.getName(), changedTableStatistics);
-            AlteredDatabaseStatistics alteredDatabaseStatistics = createAlteredDatabaseStatistics(databaseName, schemaName, table, currentTableStatistics, changedTableStatistics);
-            contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().update(alteredDatabaseStatistics);
-        }
-    }
-    
-    private AlteredDatabaseStatistics createAlteredDatabaseStatistics(final String databaseName, final String schemaName, final ShardingSphereTable table,
-                                                                      final TableStatistics currentTableStatistics, final TableStatistics changedTableStatistics) {
-        AlteredDatabaseStatistics result = new AlteredDatabaseStatistics(databaseName, schemaName, currentTableStatistics.getName());
-        Map<String, RowStatistics> tableStatisticsMap = currentTableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
-        Map<String, RowStatistics> changedTableStatisticsMap = changedTableStatistics.getRows().stream().collect(Collectors.toMap(RowStatistics::getUniqueKey, Function.identity()));
-        YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
-        for (Entry<String, RowStatistics> entry : changedTableStatisticsMap.entrySet()) {
-            if (!tableStatisticsMap.containsKey(entry.getKey())) {
-                result.getAddedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
-            } else if (!tableStatisticsMap.get(entry.getKey()).equals(entry.getValue())) {
-                result.getUpdatedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
-            }
-        }
-        for (Entry<String, RowStatistics> entry : tableStatisticsMap.entrySet()) {
-            if (!changedTableStatisticsMap.containsKey(entry.getKey())) {
-                result.getDeletedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
-            }
-        }
-        return result;
     }
 }
