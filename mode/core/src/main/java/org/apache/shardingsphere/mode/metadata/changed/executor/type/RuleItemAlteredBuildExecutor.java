@@ -37,11 +37,10 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<AlterRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().findNameByActiveVersion(metaDataVersion.getPath());
+            Optional<String> itemName = entry.getValue().getVersionNodePath().findIdentifierByActiveVersionPath(metaDataVersion.getPath(), 1);
             if (itemName.isPresent()) {
-                return Optional.of(
-                        new AlterNamedRuleItem(databaseName, itemName.get(), metaDataVersion.getPath(),
-                                metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), metaDataVersion.getPath(),
+                        metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
