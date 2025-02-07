@@ -65,39 +65,14 @@ public final class DatabaseRuleMetaDataNodePath {
     }
     
     /**
-     * Get database rule versions path.
+     * Get global rule version node path.
      *
      * @param databaseName database name
      * @param ruleTypeName rule type name
      * @param key key
-     * @return database rule versions path
+     * @return global rule version node path
      */
-    public static String getVersionsPath(final String databaseName, final String ruleTypeName, final String key) {
-        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key)).getVersionsPath();
-    }
-    
-    /**
-     * Get database rule version path.
-     *
-     * @param databaseName database name
-     * @param ruleTypeName rule type name
-     * @param key key
-     * @param version version
-     * @return database rule next version
-     */
-    public static String getVersionPath(final String databaseName, final String ruleTypeName, final String key, final int version) {
-        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key)).getVersionPath(version);
-    }
-    
-    /**
-     * Get database rule active version path.
-     *
-     * @param databaseName database name
-     * @param ruleTypeName rule type name
-     * @param key key
-     * @return database rule active version path
-     */
-    public static String getActiveVersionPath(final String databaseName, final String ruleTypeName, final String key) {
-        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key)).getActiveVersionPath();
+    public static VersionNodePath getVersionNodePath(final String databaseName, final String ruleTypeName, final String key) {
+        return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key));
     }
 }
