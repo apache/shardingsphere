@@ -118,7 +118,7 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath(event.getKey());
+        Optional<String> storageUnitName = DataSourceMetaDataNodePath.getStorageUnitVersionPatternNodePath().findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
             storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath(event.getKey());
@@ -128,7 +128,7 @@ public final class MetaDataChangedHandler {
             handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
             return;
         }
-        Optional<String> storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath(event.getKey());
+        Optional<String> storageNodeName = DataSourceMetaDataNodePath.getStorageNodeVersionPatternNodePath().findIdentifierByActiveVersionPath(event.getKey(), 2);
         isActiveVersion = true;
         if (!storageNodeName.isPresent()) {
             storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByStorageNodePath(event.getKey());
