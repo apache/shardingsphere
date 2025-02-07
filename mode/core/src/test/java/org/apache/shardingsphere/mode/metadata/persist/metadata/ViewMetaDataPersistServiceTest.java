@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMeta
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,7 +36,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Disabled("fix unit test by haorangdia")
 @ExtendWith(MockitoExtension.class)
 class ViewMetaDataPersistServiceTest {
     
