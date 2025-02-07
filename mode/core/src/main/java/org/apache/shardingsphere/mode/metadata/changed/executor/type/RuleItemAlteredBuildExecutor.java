@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.changed.executor.type;
+package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
+import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.path.config.rule.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.rule.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
@@ -37,17 +36,18 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     
     @Override
     public Optional<AlterRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final MetaDataVersion metaDataVersion) {
-        String activeVersionPath = new VersionNodePath(metaDataVersion.getPath()).getActiveVersionPath();
         for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
-            Optional<String> itemName = entry.getValue().findNameByActiveVersion(activeVersionPath);
+            Optional<String> itemName = entry.getValue().findNameByActiveVersion(metaDataVersion.getPath());
             if (itemName.isPresent()) {
                 return Optional.of(
-                        new AlterNamedRuleItem(databaseName, itemName.get(), activeVersionPath, metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                        new AlterNamedRuleItem(databaseName, itemName.get(), metaDataVersion.getPath(),
+                                metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(activeVersionPath)) {
-                return Optional.of(new AlterUniqueRuleItem(databaseName, activeVersionPath, metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+            if (entry.getValue().isActiveVersionPath(metaDataVersion.getPath())) {
+                return Optional.of(new AlterUniqueRuleItem(databaseName, metaDataVersion.getPath(),
+                        metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();

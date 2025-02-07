@@ -85,7 +85,7 @@ public final class ViewMetaDataPersistService {
             repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionPath(nextActiveVersion),
                     YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (null == getActiveVersion(databaseName, schemaName, viewName)) {
-                repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getVersionsPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+                repository.persist(ViewMetaDataNodePath.getVersionNodePath(databaseName, schemaName, viewName).getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }
             metaDataVersions.add(new MetaDataVersion(ViewMetaDataNodePath.getViewPath(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
         }

@@ -117,4 +117,13 @@ public final class DatabaseMetaDataNodePath {
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
+    
+    /**
+     *  Is active version path.
+     * @param path path
+     * @return is active version path or not
+     */
+    public static boolean isActiveVersionPath(final String path) {
+        return path.endsWith(ACTIVE_VERSION_NODE);
+    }
 }

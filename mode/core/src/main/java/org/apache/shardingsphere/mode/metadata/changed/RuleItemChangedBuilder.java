@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.changed;
+package org.apache.shardingsphere.mode.metadata.changed;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.manager.standalone.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
@@ -42,7 +41,7 @@ public final class RuleItemChangedBuilder {
      */
     public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final MetaDataVersion metaDataVersion, final RuleItemChangedBuildExecutor<T> executor) {
         for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            if (!each.getRuleNodePath().getRoot().isValidatedPath(new VersionNodePath(metaDataVersion.getPath()).getActiveVersionPath())) {
+            if (!each.getRuleNodePath().getRoot().isValidatedPath(metaDataVersion.getPath())) {
                 continue;
             }
             Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, metaDataVersion);
