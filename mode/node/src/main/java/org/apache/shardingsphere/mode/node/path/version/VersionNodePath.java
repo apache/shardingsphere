@@ -66,17 +66,6 @@ public final class VersionNodePath {
     }
     
     /**
-     * Judge whether to version path.
-     *
-     * @param path to be judged path
-     * @return is version path or not
-     */
-    public boolean isVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(String.join("/", getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(path).find();
-    }
-    
-    /**
      * Judge whether to active version path.
      *
      * @param path to be judged path
@@ -97,6 +86,30 @@ public final class VersionNodePath {
     public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
         Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
+    }
+    
+    /**
+     * Judge whether to version path.
+     *
+     * @param path to be judged path
+     * @return is version path or not
+     */
+    public boolean isVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(String.join("/", getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path).find();
+    }
+    
+    /**
+     * Find identifier name by versions' path.
+     *
+     * @param versionsPath versions path
+     * @param identifierGroupIndex identifier group index
+     * @return found identifier
+     */
+    public Optional<String> findIdentifierByVersionsPath(final String versionsPath, final int identifierGroupIndex) {
+        Pattern pattern = Pattern.compile(getVersionsPath(), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(versionsPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }

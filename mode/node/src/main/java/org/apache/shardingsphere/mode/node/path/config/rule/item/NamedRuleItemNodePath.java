@@ -32,18 +32,14 @@ public final class NamedRuleItemNodePath {
     
     private final String type;
     
-    private final Pattern namePathPattern;
-    
-    private final Pattern activeVersionPathPattern;
-    
     private final Pattern itemPathPattern;
+    
+    private final VersionNodePath versionNodePath;
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
         String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
-        VersionNodePath versionNodePath = new VersionNodePath(pattern);
-        namePathPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VersionNodePath.VERSION_PATTERN));
-        activeVersionPathPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$");
+        versionNodePath = new VersionNodePath(pattern);
         itemPathPattern = Pattern.compile(pattern + "$");
     }
     
@@ -58,35 +54,33 @@ public final class NamedRuleItemNodePath {
     }
     
     /**
-     * Find rule item name.
+     * Find rule item name by version.
      *
-     * @param path path
+     * @param versionPath version path
      * @return found item rule name
      */
-    public Optional<String> findName(final String path) {
-        Matcher matcher = namePathPattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    public Optional<String> findNameByVersion(final String versionPath) {
+        return versionNodePath.findIdentifierByVersionsPath(versionPath, 1);
     }
     
     /**
      * Find rule item name by active version.
      *
-     * @param path path
+     * @param activeVersionPath active version path
      * @return found rule item name
      */
-    public Optional<String> findNameByActiveVersion(final String path) {
-        Matcher matcher = activeVersionPathPattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    public Optional<String> findNameByActiveVersion(final String activeVersionPath) {
+        return versionNodePath.findIdentifierByActiveVersionPath(activeVersionPath, 1);
     }
     
     /**
      * Find rule item name by item path.
      *
-     * @param path path
+     * @param itemPath item path
      * @return found rule item name
      */
-    public Optional<String> findNameByItemPath(final String path) {
-        Matcher matcher = itemPathPattern.matcher(path);
+    public Optional<String> findNameByItemPath(final String itemPath) {
+        Matcher matcher = itemPathPattern.matcher(itemPath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }
