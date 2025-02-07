@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -37,8 +38,6 @@ public final class DatabaseMetaDataNodePath {
     private static final String VERSIONS_NODE = "versions";
     
     private static final String ACTIVE_VERSION_NODE = "active_version";
-    
-    private static final String IDENTIFIER_PATTERN = "([\\w\\-]+)";
     
     /**
      * Get meta data root path.
@@ -100,7 +99,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getDatabasePath(IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -114,7 +113,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getSchemaPath(IDENTIFIER_PATTERN, IDENTIFIER_PATTERN) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
