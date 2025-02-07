@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.config.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collections;
@@ -45,9 +44,8 @@ public final class PropertiesPersistService {
      * @return properties
      */
     public Properties load() {
-        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePath.getVersionNodePathGenerator();
-        Integer activeVersion = getActiveVersion(versionNodePathGenerator);
-        String yamlContent = repository.query(versionNodePathGenerator.getVersionPath(null == activeVersion ? 0 : activeVersion));
+        Integer activeVersion = getActiveVersion();
+        String yamlContent = repository.query(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(null == activeVersion ? 0 : activeVersion));
         return Strings.isNullOrEmpty(yamlContent) ? new Properties() : YamlEngine.unmarshal(yamlContent, Properties.class);
     }
     
@@ -57,18 +55,16 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePath.getVersionNodePathGenerator();
-        int nextActiveVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
-        repository.persist(versionNodePathGenerator.getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
-        if (null == getActiveVersion(versionNodePathGenerator)) {
-            repository.persist(versionNodePathGenerator.getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+        int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath());
+        repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
+        if (null == getActiveVersion()) {
+            repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
         }
-        metaDataVersionPersistService
-                .switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(versionNodePathGenerator), nextActiveVersion)));
+        metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(), nextActiveVersion)));
     }
     
-    private Integer getActiveVersion(final VersionNodePathGenerator versionNodePathGenerator) {
-        String value = repository.query(versionNodePathGenerator.getActiveVersionPath());
+    private Integer getActiveVersion() {
+        String value = repository.query(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? null : Integer.parseInt(value);
     }
 }
