@@ -35,6 +35,8 @@ public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
     
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+    
     /**
      * Get view root path.
      *
@@ -98,6 +100,6 @@ public final class ViewMetaDataNodePath {
      * @return view version node path parser
      */
     public static VersionNodePathParser getVersionNodePathParser() {
-        return new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+        return PARSER;
     }
 }

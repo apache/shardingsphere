@@ -30,6 +30,8 @@ public final class GlobalPropertiesNodePath {
     
     private static final String ROOT_NODE = "/props";
     
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getRootPath());
+    
     /**
      * Get properties path.
      *
@@ -54,6 +56,6 @@ public final class GlobalPropertiesNodePath {
      * @return properties version node path parser
      */
     public static VersionNodePathParser getVersionNodePathParser() {
-        return new VersionNodePathParser(getRootPath());
+        return PARSER;
     }
 }

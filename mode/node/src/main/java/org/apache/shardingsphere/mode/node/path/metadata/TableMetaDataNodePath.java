@@ -35,6 +35,8 @@ public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
     
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+    
     /**
      * Get table root path.
      *
@@ -98,6 +100,6 @@ public final class TableMetaDataNodePath {
      * @return table version node path parser
      */
     public static VersionNodePathParser getVersionNodePathParser() {
-        return new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+        return PARSER;
     }
 }

@@ -31,6 +31,8 @@ public final class GlobalRuleNodePath {
     
     private static final String ROOT_NODE = "/rules";
     
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(NodePathPattern.IDENTIFIER);
+    
     /**
      * Get global rule root path.
      *
@@ -66,7 +68,7 @@ public final class GlobalRuleNodePath {
      * @return view version node path parser
      */
     public static VersionNodePathParser getVersionNodePathParser() {
-        return new VersionNodePathParser(NodePathPattern.IDENTIFIER);
+        return PARSER;
     }
     
     /**

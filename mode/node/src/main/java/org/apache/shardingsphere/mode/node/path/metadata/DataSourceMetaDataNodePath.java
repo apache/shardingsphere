@@ -41,6 +41,10 @@ public final class DataSourceMetaDataNodePath {
     
     private static final String UNITS_NODE = "units";
     
+    private static final VersionNodePathParser STORAGE_UNITS_PARSER = new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    
+    private static final VersionNodePathParser STORAGE_NODES_PARSER = new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    
     /**
      * Get data source root path.
      *
@@ -121,7 +125,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage unit version node path parser
      */
     public static VersionNodePathParser getStorageUnitVersionNodePathParser() {
-        return new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+        return STORAGE_UNITS_PARSER;
     }
     
     /**
@@ -130,7 +134,7 @@ public final class DataSourceMetaDataNodePath {
      * @return storage node version node path parser
      */
     public static VersionNodePathParser getStorageNodeVersionNodePathParser() {
-        return new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+        return STORAGE_NODES_PARSER;
     }
     
     /**
