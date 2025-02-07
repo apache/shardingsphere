@@ -115,15 +115,21 @@ public final class DataSourceMetaDataNodePath {
     }
     
     /**
-     * Find storage unit name by active version path.
+     * Get storage unit version pattern unit path.
      *
-     * @param path path
-     * @return found storage unit name
+     * @return storage unit version pattern node path
      */
-    public static Optional<String> findStorageUnitNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageUnitVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    public static VersionNodePath getStorageUnitVersionPatternNodePath() {
+        return new VersionNodePath(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    }
+    
+    /**
+     * Get storage node version pattern node path.
+     *
+     * @return storage node version pattern node path
+     */
+    public static VersionNodePath getStorageNodeVersionPatternNodePath() {
+        return new VersionNodePath(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     }
     
     /**
@@ -134,18 +140,6 @@ public final class DataSourceMetaDataNodePath {
      */
     public static Optional<String> findStorageUnitNameByStorageUnitPath(final String path) {
         Pattern pattern = Pattern.compile(getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Find storage node name by active version path.
-     *
-     * @param path path
-     * @return found storage unit name
-     */
-    public static Optional<String> findStorageNodeNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageNodeVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -166,7 +160,7 @@ public final class DataSourceMetaDataNodePath {
      * Is data source root path.
      *
      * @param path path
-     * @return true or false
+     * @return is data source root path or not
      */
     public static boolean isDataSourceRootPath(final String path) {
         return Pattern.compile(getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();

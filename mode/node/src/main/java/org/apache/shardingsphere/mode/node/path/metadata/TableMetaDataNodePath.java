@@ -92,25 +92,11 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Get table name by active version path.
+     * Get table version pattern node path.
      *
-     * @param path path
-     * @return table name
+     * @return table version node path
      */
-    public static Optional<String> findTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(
-                getVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is table active version path.
-     *
-     * @param path path
-     * @return is table active version path or not
-     */
-    public static boolean isTableActiveVersionPath(final String path) {
-        return findTableNameByActiveVersionPath(path).isPresent();
+    public static VersionNodePath getVersionPatternNodePath() {
+        return new VersionNodePath(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     }
 }

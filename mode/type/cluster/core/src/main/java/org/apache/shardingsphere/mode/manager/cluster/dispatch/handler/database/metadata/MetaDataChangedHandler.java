@@ -94,11 +94,11 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return TableMetaDataNodePath.isTablePath(key) || TableMetaDataNodePath.isTableActiveVersionPath(key);
+        return TableMetaDataNodePath.isTablePath(key) || TableMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePath.isTableActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && TableMetaDataNodePath.isTablePath(event.getKey())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
@@ -106,11 +106,11 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return ViewMetaDataNodePath.isViewActiveVersionPath(key) || ViewMetaDataNodePath.isViewPath(key);
+        return ViewMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(key) || ViewMetaDataNodePath.isViewPath(key);
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePath.isViewActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePath.getVersionPatternNodePath().isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && ViewMetaDataNodePath.isViewPath(event.getKey())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
@@ -118,7 +118,7 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath(event.getKey());
+        Optional<String> storageUnitName = DataSourceMetaDataNodePath.getStorageUnitVersionPatternNodePath().findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
             storageUnitName = DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath(event.getKey());
@@ -128,7 +128,7 @@ public final class MetaDataChangedHandler {
             handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
             return;
         }
-        Optional<String> storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath(event.getKey());
+        Optional<String> storageNodeName = DataSourceMetaDataNodePath.getStorageNodeVersionPatternNodePath().findIdentifierByActiveVersionPath(event.getKey(), 2);
         isActiveVersion = true;
         if (!storageNodeName.isPresent()) {
             storageNodeName = DataSourceMetaDataNodePath.findStorageNodeNameByStorageNodePath(event.getKey());

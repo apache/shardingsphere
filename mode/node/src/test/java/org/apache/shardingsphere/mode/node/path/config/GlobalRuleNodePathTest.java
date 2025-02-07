@@ -19,12 +19,8 @@ package org.apache.shardingsphere.mode.node.path.config;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
     
@@ -43,18 +39,5 @@ class GlobalRuleNodePathTest {
         assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getActiveVersionPath(), is("/rules/foo_rule/active_version"));
         assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getVersionsPath(), is("/rules/foo_rule/versions"));
         assertThat(GlobalRuleNodePath.getVersionNodePath("foo_rule").getVersionPath(0), is("/rules/foo_rule/versions/0"));
-    }
-    
-    @Test
-    void assertFindRuleTypeNameFromActiveVersion() {
-        Optional<String> actual = GlobalRuleNodePath.findRuleTypeNameFromActiveVersion("/rules/foo_rule/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_rule"));
-    }
-    
-    @Test
-    void assertNotFindRuleTypeNameFromActiveVersion() {
-        Optional<String> actual = GlobalRuleNodePath.findRuleTypeNameFromActiveVersion("/rules/foo_rule/active_version/xxx");
-        assertFalse(actual.isPresent());
     }
 }

@@ -92,25 +92,11 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Find view name by active version path.
+     * Get view version pattern node path.
      *
-     * @param path path
-     * @return view name
+     * @return view version node path
      */
-    public static Optional<String> findViewNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(
-                getVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is view active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewActiveVersionPath(final String path) {
-        return findViewNameByActiveVersionPath(path).isPresent();
+    public static VersionNodePath getVersionPatternNodePath() {
+        return new VersionNodePath(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     }
 }

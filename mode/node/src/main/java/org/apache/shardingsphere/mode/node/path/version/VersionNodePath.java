@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.node.path.version;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -74,5 +76,29 @@ public final class VersionNodePath {
     public boolean isVersionPath(final String path) {
         Pattern pattern = Pattern.compile(String.join("/", getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(path).find();
+    }
+    
+    /**
+     * Judge whether to active version path.
+     *
+     * @param path to be judged path
+     * @return is active version path or not
+     */
+    public boolean isActiveVersionPath(final String path) {
+        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path).find();
+    }
+    
+    /**
+     * Find identifier name by active version path.
+     *
+     * @param activeVersionPath active version path
+     * @param identifierGroupIndex identifier group index
+     * @return found identifier
+     */
+    public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
+        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(activeVersionPath);
+        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }
