@@ -153,7 +153,7 @@ public final class YamlRepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleEntity tupleEntity) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (GlobalRuleNodePath.findVersion(tupleEntity.value(), each.getKey()).isPresent()) {
+                if (GlobalRuleNodePath.getVersionNodePath(tupleEntity.value()).isVersionPath(each.getKey())) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }

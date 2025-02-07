@@ -57,17 +57,4 @@ class GlobalRuleNodePathTest {
         Optional<String> actual = GlobalRuleNodePath.findRuleTypeNameFromActiveVersion("/rules/foo_rule/active_version/xxx");
         assertFalse(actual.isPresent());
     }
-    
-    @Test
-    void assertFindVersion() {
-        Optional<String> actual = GlobalRuleNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("0"));
-    }
-    
-    @Test
-    void assertNotFindVersion() {
-        Optional<String> actual = GlobalRuleNodePath.findVersion("foo_rule", "/rules/foo_rule/versions/0/xxx");
-        assertFalse(actual.isPresent());
-    }
 }
