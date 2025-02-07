@@ -66,7 +66,8 @@ public final class ViewMetaDataPersistService {
     public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
         Integer activeVersion = getActiveVersion(databaseName, schemaName, viewName);
         String view =
-                repository.query(ViewMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, viewName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
+                repository.query(
+                        ViewMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, viewName).getVersionPath(null == activeVersion ? MetaDataVersion.DEFAULT_VERSION : activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
     }
     

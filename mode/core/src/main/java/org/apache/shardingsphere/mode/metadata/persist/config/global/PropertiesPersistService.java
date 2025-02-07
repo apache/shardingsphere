@@ -63,7 +63,8 @@ public final class PropertiesPersistService {
         if (null == getActiveVersion(versionNodePathGenerator)) {
             repository.persist(versionNodePathGenerator.getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
         }
-        metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(versionNodePathGenerator), nextActiveVersion)));
+        metaDataVersionPersistService
+                .switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(versionNodePathGenerator), nextActiveVersion)));
     }
     
     private Integer getActiveVersion(final VersionNodePathGenerator versionNodePathGenerator) {

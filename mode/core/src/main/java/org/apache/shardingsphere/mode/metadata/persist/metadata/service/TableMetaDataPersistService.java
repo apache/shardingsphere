@@ -84,7 +84,8 @@ public final class TableMetaDataPersistService {
             String tableName = each.getName().toLowerCase();
             int nextActiveVersion = metaDataVersionPersistService.getNextVersion(TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionsPath());
             repository.persist(
-                    TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionPath(nextActiveVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+                    TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getVersionPath(nextActiveVersion),
+                    YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
             if (null == getActiveVersion(databaseName, schemaName, tableName)) {
                 repository.persist(TableMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, tableName).getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
             }

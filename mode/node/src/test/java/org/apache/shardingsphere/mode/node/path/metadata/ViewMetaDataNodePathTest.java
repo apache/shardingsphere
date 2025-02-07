@@ -40,7 +40,8 @@ class ViewMetaDataNodePathTest {
     
     @Test
     void assertGetVersionNodePathGenerator() {
-        assertThat(ViewMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+        assertThat(ViewMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getActiveVersionPath(),
+                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(ViewMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
         assertThat(ViewMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
