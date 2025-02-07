@@ -65,12 +65,12 @@ public final class DatabaseRuleMetaDataNodePath {
     }
     
     /**
-     * Get global rule version node path.
+     * Get database rule version node path.
      *
      * @param databaseName database name
      * @param ruleTypeName rule type name
      * @param key key
-     * @return global rule version node path
+     * @return database rule version node path
      */
     public static VersionNodePath getVersionNodePath(final String databaseName, final String ruleTypeName, final String key) {
         return new VersionNodePath(getRulePath(databaseName, ruleTypeName, key));
