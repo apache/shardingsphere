@@ -37,15 +37,15 @@ class NamedRuleItemNodePathTest {
     }
     
     @Test
-    void assertFindName() {
-        Optional<String> actual = nodePath.findName("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
+    void assertFindNameByVersion() {
+        Optional<String> actual = nodePath.findNameByVersion("/metadata/foo_db/rules/foo/tables/foo_tbl/versions/0");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
-    void assertFindNameWithInvalidPath() {
-        assertFalse(nodePath.findName("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
+    void assertFindNameByVersionWithInvalidPath() {
+        assertFalse(nodePath.findNameByVersion("/metadata/foo_db/rules/bar/tables/foo_tbl/versions/0").isPresent());
     }
     
     @Test

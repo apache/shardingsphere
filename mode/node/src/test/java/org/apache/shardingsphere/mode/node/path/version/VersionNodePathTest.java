@@ -46,13 +46,6 @@ class VersionNodePathTest {
     }
     
     @Test
-    void assertIsVersionPath() {
-        assertTrue(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
-        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
-        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/xxx"));
-    }
-    
-    @Test
     void assertIsActiveVersionPath() {
         assertTrue(versionPatternNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
         assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
@@ -70,5 +63,26 @@ class VersionNodePathTest {
     void assertNotFindIdentifierByActiveVersionPath() {
         String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions";
         assertFalse(versionPatternNodePath.findIdentifierByActiveVersionPath(path, 1).isPresent());
+    }
+    
+    @Test
+    void assertIsVersionPath() {
+        assertTrue(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
+        assertFalse(versionPatternNodePath.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/xxx"));
+    }
+    
+    @Test
+    void assertFindIdentifierByVersionsPath() {
+        String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions";
+        assertThat(versionPatternNodePath.findIdentifierByVersionsPath(path, 1), is(Optional.of("foo_db")));
+        assertThat(versionPatternNodePath.findIdentifierByVersionsPath(path, 2), is(Optional.of("foo_schema")));
+        assertThat(versionPatternNodePath.findIdentifierByVersionsPath(path, 3), is(Optional.of("foo_tbl")));
+    }
+    
+    @Test
+    void assertNotFindIdentifierByVersionsPath() {
+        String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version";
+        assertFalse(versionPatternNodePath.findIdentifierByVersionsPath(path, 1).isPresent());
     }
 }
