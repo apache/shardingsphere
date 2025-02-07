@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.version;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
  * Version node path.
  */
 @RequiredArgsConstructor
-@Getter
 public final class VersionNodePath {
     
     public static final String VERSION_PATTERN = "(\\d+)";
