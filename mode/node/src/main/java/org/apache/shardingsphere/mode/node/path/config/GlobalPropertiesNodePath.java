@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
-import java.util.regex.Pattern;
-
 /**
  * Global properties node path.
  */
@@ -47,16 +45,5 @@ public final class GlobalPropertiesNodePath {
      */
     public static VersionNodePath getVersionNodePath() {
         return new VersionNodePath(getRootPath());
-    }
-    
-    /**
-     * Is properties active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getVersionNodePath().getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(path).find();
     }
 }
