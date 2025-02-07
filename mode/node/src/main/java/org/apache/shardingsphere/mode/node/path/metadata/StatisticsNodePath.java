@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.DataNodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -128,7 +128,7 @@ public final class StatisticsNodePath {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getDatabasePath(DataNodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -142,7 +142,7 @@ public final class StatisticsNodePath {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getSchemaPath(DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -156,7 +156,7 @@ public final class StatisticsNodePath {
      */
     public static Optional<String> findTableName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getTablePath(DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -169,7 +169,7 @@ public final class StatisticsNodePath {
      */
     public static Optional<String> findRowUniqueKey(final String path) {
         Pattern pattern = Pattern.compile(
-                getTableRowPath(DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER, UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+                getTableRowPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }

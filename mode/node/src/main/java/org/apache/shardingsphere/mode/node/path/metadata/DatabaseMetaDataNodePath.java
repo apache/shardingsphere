@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.DataNodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -99,7 +99,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getDatabasePath(DataNodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -113,7 +113,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getSchemaPath(DataNodePathPattern.IDENTIFIER, DataNodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

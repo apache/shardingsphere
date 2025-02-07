@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data node path pattern.
+ * Node path pattern.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataNodePathPattern {
+public final class NodePathPattern {
     
     /**
      * Identifier pattern.
