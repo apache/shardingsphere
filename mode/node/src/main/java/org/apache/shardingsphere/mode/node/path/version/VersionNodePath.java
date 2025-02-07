@@ -19,17 +19,11 @@ package org.apache.shardingsphere.mode.node.path.version;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Version node path.
  */
 @RequiredArgsConstructor
 public final class VersionNodePath {
-    
-    public static final String VERSION_PATTERN = "(\\d+)";
     
     private static final String ACTIVE_VERSION = "active_version";
     
@@ -63,53 +57,5 @@ public final class VersionNodePath {
      */
     public String getVersionPath(final int version) {
         return String.join("/", getVersionsPath(), String.valueOf(version));
-    }
-    
-    /**
-     * Judge whether to active version path.
-     *
-     * @param path to be judged path
-     * @return is active version path or not
-     */
-    public boolean isActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(path).find();
-    }
-    
-    /**
-     * Find identifier name by active version path.
-     *
-     * @param activeVersionPath active version path
-     * @param identifierGroupIndex identifier group index
-     * @return found identifier
-     */
-    public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
-        Pattern pattern = Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
-    }
-    
-    /**
-     * Judge whether to version path.
-     *
-     * @param path to be judged path
-     * @return is version path or not
-     */
-    public boolean isVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(String.join("/", getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(path).find();
-    }
-    
-    /**
-     * Find identifier name by versions' path.
-     *
-     * @param versionsPath versions path
-     * @param identifierGroupIndex identifier group index
-     * @return found identifier
-     */
-    public Optional<String> findIdentifierByVersionsPath(final String versionsPath, final int identifierGroupIndex) {
-        Pattern pattern = Pattern.compile(getVersionsPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(versionsPath);
-        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }
