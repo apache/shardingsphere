@@ -45,7 +45,7 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
             }
         }
         for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
-            if (entry.getValue().isActiveVersionPath(metaDataVersion.getPath())) {
+            if (entry.getValue().getVersionNodePath().isActiveVersionPath(metaDataVersion.getPath())) {
                 return Optional.of(new AlterUniqueRuleItem(databaseName, metaDataVersion.getPath(),
                         metaDataVersion.getNextActiveVersion(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }

@@ -162,7 +162,7 @@ public final class YamlRepositoryTupleSwapperEngine {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
         for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (ruleNodePath.getUniqueItem(tupleEntity.value()).isValidatedPath(each.getKey())) {
+            if (ruleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePath().isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
@@ -211,7 +211,7 @@ public final class YamlRepositoryTupleSwapperEngine {
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
-        if (!ruleNodePath.getUniqueItem(tupleName).isValidatedPath(repositoryTuple.getKey())) {
+        if (!ruleNodePath.getUniqueItem(tupleName).getVersionNodePath().isVersionPath(repositoryTuple.getKey())) {
             return;
         }
         if (fieldValue instanceof Collection) {

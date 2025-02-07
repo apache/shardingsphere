@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class UniqueRuleItemNodePathTest {
     
@@ -37,32 +35,5 @@ class UniqueRuleItemNodePathTest {
     void assertGetPathWithParentNode() {
         UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_parent", "test_path");
         assertThat(uniqueRuleItemNodePath.getPath(), is("test_parent/test_path"));
-    }
-    
-    @Test
-    void assertIsValidPathWithNullParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
-        assertTrue(uniqueRuleItemNodePath.isValidatedPath("/word1/word2-/rules/foo/test_path/versions/1234"));
-    }
-    
-    @Test
-    void assertIsNotValidPathWithNullParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
-        assertFalse(uniqueRuleItemNodePath.isValidatedPath("/word1/word2/rules/test_foo/test_path/versions/1234"));
-        assertFalse(uniqueRuleItemNodePath.isValidatedPath("/rules/test_foo/test/versions/1234"));
-        assertFalse(uniqueRuleItemNodePath.isValidatedPath("/word1/word2/rules/foo/test_path/versions/"));
-    }
-    
-    @Test
-    void assertIsActiveVersionPath() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
-        assertTrue(uniqueRuleItemNodePath.isActiveVersionPath("/word1-/word2/rules/foo/test_path/active_version"));
-    }
-    
-    @Test
-    void assertIsNotActiveVersionPath() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
-        assertFalse(uniqueRuleItemNodePath.isActiveVersionPath("/word1/word2/rules/foo/test_path/active_version1"));
-        assertFalse(uniqueRuleItemNodePath.isActiveVersionPath("/rules/foo/test_path/active_version"));
     }
 }

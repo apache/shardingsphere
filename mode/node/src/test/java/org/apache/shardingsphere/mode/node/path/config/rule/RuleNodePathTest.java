@@ -55,9 +55,7 @@ class RuleNodePathTest {
     void assertGetUniqueItem() {
         UniqueRuleItemNodePath uniqueRulePath = ruleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
-        assertTrue(uniqueRulePath.isValidatedPath("/metadata/db/rules/foo/tables/versions/1234"));
         UniqueRuleItemNodePath uniqueRulePathWithType = ruleNodePath.getUniqueItem("type");
         assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
-        assertTrue(uniqueRulePathWithType.isActiveVersionPath("/metadata/db/rules/foo/tables/type/active_version"));
     }
 }
