@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
  * Global props node path.
@@ -60,11 +61,21 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Get global rule version pattern node path.
+     * Get view version pattern node path parser.
      *
-     * @return global rule version pattern node path
+     * @return view version node path parser
      */
-    public static VersionNodePath getVersionPatternNodePath() {
-        return new VersionNodePath(NodePathPattern.IDENTIFIER);
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return new VersionNodePathParser(NodePathPattern.IDENTIFIER);
+    }
+    
+    /**
+     * Get view version pattern node path parser.
+     *
+     * @param ruleTypeName rule type name
+     * @return view version node path parser
+     */
+    public static VersionNodePathParser getVersionNodePathParser(final String ruleTypeName) {
+        return new VersionNodePathParser(ruleTypeName);
     }
 }

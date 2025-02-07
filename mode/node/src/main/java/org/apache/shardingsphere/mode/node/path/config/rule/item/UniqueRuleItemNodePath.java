@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config.rule.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
  * Unique rule item node path.
@@ -31,18 +31,18 @@ public final class UniqueRuleItemNodePath {
     private final String type;
     
     @Getter
-    private final VersionNodePath versionNodePath;
+    private final VersionNodePathParser versionNodePathParser;
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
         parentNode = null;
         this.type = type;
-        versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + type);
+        versionNodePathParser = new VersionNodePathParser(ruleRootNodePath.getNodePrefix() + type);
     }
     
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        versionNodePath = new VersionNodePath(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
+        versionNodePathParser = new VersionNodePathParser(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
     }
     
     /**

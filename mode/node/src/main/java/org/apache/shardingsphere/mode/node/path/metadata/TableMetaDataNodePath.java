@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -92,11 +93,11 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Get table version pattern node path.
+     * Get table version pattern node path parser.
      *
-     * @return table version node path
+     * @return table version node path parser
      */
-    public static VersionNodePath getVersionPatternNodePath() {
-        return new VersionNodePath(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     }
 }
