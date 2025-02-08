@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +54,12 @@ import java.util.Optional;
  * Database admin executor creator for PostgreSQL.
  */
 public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
+    
+    private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
+    
+    static {
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+    }
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
@@ -68,7 +75,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables((SelectStatement) sqlStatement);
-            if (isSelectedStatisticsSystemTable(selectedSchemaTables)) {
+            if (isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables)) {
                 return Optional.empty();
             }
             if (isSelectSystemTable(selectedSchemaTables)) {
@@ -124,6 +131,21 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
                 return false;
             }
             if (!statisticalSchemaTables.get(each.getKey()).containsAll(each.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSelectedShardingSphereSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!SCHEMA_TABLES.containsKey(each.getKey())) {
+                return false;
+            }
+            if (!SCHEMA_TABLES.get(each.getKey()).containsAll(each.getValue())) {
                 return false;
             }
         }

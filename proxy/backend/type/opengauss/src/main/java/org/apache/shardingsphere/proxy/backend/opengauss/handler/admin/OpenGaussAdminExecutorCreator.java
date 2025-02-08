@@ -68,6 +68,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_notifytime()");
         SCHEMA_TABLES.put("pg_catalog", new CaseInsensitiveSet<>(Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_tables", "pg_roles")));
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
     }
     
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
@@ -111,6 +112,9 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     private boolean isSQLFederationSystemCatalogQuery(final Map<String, Collection<String>> selectedSchemaTables) {
         if (isSelectedStatisticsSystemTable(selectedSchemaTables)) {
             return true;
+        }
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
         }
         for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
             if (!SCHEMA_TABLES.containsKey(each.getKey())) {
