@@ -58,7 +58,7 @@ public final class PropertiesPersistService {
         int nextActiveVersion = metaDataVersionPersistService.getNextVersion(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath());
         repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(nextActiveVersion), YamlEngine.marshal(props));
         if (null == getActiveVersion()) {
-            repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+            repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), String.valueOf(MetaDataVersion.INIT_VERSION));
         }
         metaDataVersionPersistService.switchActiveVersion(Collections.singleton(new MetaDataVersion(GlobalPropertiesNodePath.getRootPath(), getActiveVersion(), nextActiveVersion)));
     }
