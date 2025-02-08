@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -62,12 +61,12 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey(), version, version), new RuleItemAlteredBuildExecutor());
+            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, event.getKey(), version, new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(alterRuleItem.get());
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey()), new RuleItemDroppedBuildExecutor());
+            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, event.getKey(), null, new RuleItemDroppedBuildExecutor());
             if (dropRuleItem.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(dropRuleItem.get());
             }
