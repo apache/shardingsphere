@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePat
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,23 +48,6 @@ public final class MetaDataVersionPersistService {
         repository.persist(nodePathGenerator.getActiveVersionPath(), String.valueOf(currentVersion));
         if (MetaDataVersion.INIT_VERSION != currentVersion) {
             getVersions(nodePathGenerator.getVersionsPath()).stream().filter(version -> version < currentVersion).forEach(version -> repository.delete(nodePathGenerator.getVersionPath(version)));
-        }
-    }
-    
-    /**
-     * Switch active version.
-     *
-     * @param metaDataVersions meta data versions
-     */
-    public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
-        for (MetaDataVersion each : metaDataVersions) {
-            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
-                continue;
-            }
-            VersionNodePathGenerator nodePathGenerator = new VersionNodePathGenerator(each.getPath());
-            repository.persist(nodePathGenerator.getActiveVersionPath(), String.valueOf(each.getNextActiveVersion()));
-            getVersions(nodePathGenerator.getVersionsPath()).stream()
-                    .filter(version -> version < each.getNextActiveVersion()).forEach(version -> repository.delete(nodePathGenerator.getVersionPath(version)));
         }
     }
     
