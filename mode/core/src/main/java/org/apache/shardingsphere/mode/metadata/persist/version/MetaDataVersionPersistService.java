@@ -63,7 +63,7 @@ public final class MetaDataVersionPersistService {
      */
     public int getNextVersion(final String path) {
         List<Integer> versions = getVersions(path);
-        return versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+        return versions.isEmpty() ? MetaDataVersion.INIT_VERSION : versions.get(0) + 1;
     }
     
     private List<Integer> getVersions(final String path) {

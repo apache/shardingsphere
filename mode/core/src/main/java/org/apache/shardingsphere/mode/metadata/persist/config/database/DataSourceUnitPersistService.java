@@ -72,7 +72,7 @@ public final class DataSourceUnitPersistService {
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
         Integer dataSourceActiveVersion = getDataSourceActiveVersion(databaseName, dataSourceName);
         String dataSourceValue = repository.query(DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator(databaseName, dataSourceName)
-                .getVersionPath(null == dataSourceActiveVersion ? MetaDataVersion.DEFAULT_VERSION : dataSourceActiveVersion));
+                .getVersionPath(null == dataSourceActiveVersion ? MetaDataVersion.INIT_VERSION : dataSourceActiveVersion));
         return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class));
     }
     
@@ -92,7 +92,7 @@ public final class DataSourceUnitPersistService {
                     YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
             if (null == activeVersion) {
                 repository.persist(DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator(databaseName, entry.getKey()).getActiveVersionPath(),
-                        String.valueOf(MetaDataVersion.DEFAULT_VERSION));
+                        String.valueOf(MetaDataVersion.INIT_VERSION));
             }
             result.add(new MetaDataVersion(DataSourceMetaDataNodePath.getStorageUnitPath(databaseName, entry.getKey()), activeVersion, nextActiveVersion));
         }
