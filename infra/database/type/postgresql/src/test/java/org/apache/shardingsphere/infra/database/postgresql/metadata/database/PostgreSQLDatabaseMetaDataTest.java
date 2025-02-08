@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLDatabaseMetaDataTest {
@@ -51,7 +50,7 @@ class PostgreSQLDatabaseMetaDataTest {
     }
     
     @Test
-    void testFormatTableNamePattern() {
-        assertEquals("t_order", dialectDatabaseMetaData.formatTableNamePattern("T_ORDER"));
+    void assertFormatTableNamePattern() {
+        assertThat(dialectDatabaseMetaData.formatTableNamePattern("T_ORDER"), is("t_order"));
     }
 }
