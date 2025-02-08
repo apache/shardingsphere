@@ -42,7 +42,7 @@ public final class UniqueRuleItemNodePath {
     public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        versionNodePathParser = new VersionNodePathParser(ruleRootNodePath.getNodePrefix() + parentNode + "/" + type);
+        versionNodePathParser = new VersionNodePathParser(String.join("/", ruleRootNodePath.getNodePrefix() + parentNode, type));
     }
     
     /**
