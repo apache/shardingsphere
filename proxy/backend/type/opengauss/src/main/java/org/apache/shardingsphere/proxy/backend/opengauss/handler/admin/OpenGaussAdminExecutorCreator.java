@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,8 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>();
     
+    private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
+    
     static {
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("opengauss_version()");
@@ -64,6 +67,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_notifytime()");
+        SCHEMA_TABLES.put("pg_catalog", new CaseInsensitiveSet<>(Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_tables", "pg_roles")));
     }
     
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
@@ -105,6 +109,21 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isSQLFederationSystemCatalogQuery(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (isSelectedStatisticsSystemTable(selectedSchemaTables)) {
+            return true;
+        }
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!SCHEMA_TABLES.containsKey(each.getKey())) {
+                return false;
+            }
+            if (!SCHEMA_TABLES.get(each.getKey()).containsAll(each.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
         if (selectedSchemaTables.isEmpty()) {
             return false;
         }
