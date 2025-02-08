@@ -155,7 +155,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(singleRule.getConfiguration()).thenReturn(singleRuleConfig);
         metaDataManagerPersistService.alterSingleRuleConfiguration(
                 new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), new RuleMetaData(Collections.singleton(singleRule)));
-        verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(any());
+        verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(anyCollection());
         verify(metaDataContextManager.getDatabaseRuleConfigurationManager()).alter("foo_db", singleRuleConfig);
     }
     

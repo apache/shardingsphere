@@ -48,7 +48,6 @@ class PropertiesPersistServiceTest {
     void setUp() {
         MetaDataVersionPersistService metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         persistService = new PropertiesPersistService(repository, metaDataVersionPersistService);
-        when(repository.query("/props/active_version")).thenReturn("0");
     }
     
     @Test
@@ -58,6 +57,7 @@ class PropertiesPersistServiceTest {
     
     @Test
     void assertLoad() {
+        when(repository.query("/props/active_version")).thenReturn("0");
         when(repository.query("/props/versions/0")).thenReturn("{\"k\":\"v\"}");
         Properties props = persistService.load();
         assertThat(props.size(), is(1));
@@ -66,7 +66,6 @@ class PropertiesPersistServiceTest {
     
     @Test
     void assertPersistWithEmptyActiveVersion() {
-        when(repository.query("/props/active_version")).thenReturn("", "0");
         persistService.persist(PropertiesBuilder.build(new Property("k", "v")));
         verify(repository).persist("/props/versions/0", "k: v" + System.lineSeparator());
         verify(repository).persist("/props/active_version", "0");

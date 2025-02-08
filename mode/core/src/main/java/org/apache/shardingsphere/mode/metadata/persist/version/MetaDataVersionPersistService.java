@@ -41,6 +41,20 @@ public final class MetaDataVersionPersistService {
     /**
      * Switch active version.
      *
+     * @param path path
+     * @param currentVersion current version
+     */
+    public void switchActiveVersion(final String path, final int currentVersion) {
+        VersionNodePathGenerator nodePathGenerator = new VersionNodePathGenerator(path);
+        repository.persist(nodePathGenerator.getActiveVersionPath(), String.valueOf(currentVersion));
+        if (MetaDataVersion.INIT_VERSION != currentVersion) {
+            getVersions(nodePathGenerator.getVersionsPath()).stream().filter(version -> version < currentVersion).forEach(version -> repository.delete(nodePathGenerator.getVersionPath(version)));
+        }
+    }
+    
+    /**
+     * Switch active version.
+     *
      * @param metaDataVersions meta data versions
      */
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
