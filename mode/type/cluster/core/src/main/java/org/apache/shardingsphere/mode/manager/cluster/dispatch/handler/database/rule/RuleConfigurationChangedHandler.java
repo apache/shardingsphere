@@ -62,14 +62,12 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey(), version, version),
-                    new RuleItemAlteredBuildExecutor());
+            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey(), version, version), new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(alterRuleItem.get());
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey()),
-                    new RuleItemDroppedBuildExecutor());
+            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, new MetaDataVersion(event.getKey()), new RuleItemDroppedBuildExecutor());
             if (dropRuleItem.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(dropRuleItem.get());
             }
