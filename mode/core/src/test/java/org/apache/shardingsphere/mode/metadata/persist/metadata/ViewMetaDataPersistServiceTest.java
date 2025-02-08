@@ -62,7 +62,6 @@ class ViewMetaDataPersistServiceTest {
     
     @Test
     void assertPersistWithoutVersion() {
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("", "0");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
@@ -73,7 +72,6 @@ class ViewMetaDataPersistServiceTest {
     @Test
     void assertPersistWithVersion() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions")).thenReturn(Collections.singletonList("10"));
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("10");
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(view));
