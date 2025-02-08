@@ -84,12 +84,10 @@ class GlobalRulePersistServiceTest {
         when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
         YamlRuleConfiguration yamlRuleConfig = new MetaDataYamlRuleConfigurationFixture();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
-        when(repository.query("/rules/fixture/active_version")).thenReturn("10");
         when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.singletonList("10"));
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
         verify(repository).persist("/rules/fixture/versions/11", "{}" + System.lineSeparator());
         verify(repository, times(0)).persist("/rules/fixture/active_version", "0");
-        verify(repository, times(2)).query("/rules/fixture/active_version");
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -101,10 +99,8 @@ class GlobalRulePersistServiceTest {
         YamlRuleConfiguration yamlRuleConfig = new MetaDataYamlRuleConfigurationFixture();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.emptyList());
-        when(repository.query("/rules/fixture/active_version")).thenReturn("", "0");
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
         verify(repository).persist("/rules/fixture/versions/0", "{}" + System.lineSeparator());
         verify(repository).persist("/rules/fixture/active_version", "0");
-        verify(repository, times(2)).query("/rules/fixture/active_version");
     }
 }
