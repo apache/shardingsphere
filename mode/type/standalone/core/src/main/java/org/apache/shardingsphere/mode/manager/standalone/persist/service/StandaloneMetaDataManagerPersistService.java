@@ -194,8 +194,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void alterSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleMetaData ruleMetaData) throws SQLException {
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(singleRuleConfig));
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
+        metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(singleRuleConfig));
         metaDataContextManager.getDatabaseRuleConfigurationManager().alter(database.getName(), singleRuleConfig);
         clearServiceCache();
     }
@@ -205,9 +204,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(metaDataVersions);
-        for (MetaDataVersion each : metaDataVersions) {
+        for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
             Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), each.getCurrentActiveVersion(), new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get());

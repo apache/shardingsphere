@@ -66,13 +66,12 @@ class DatabaseRulePersistServiceTest {
     void assertPersistWithoutActiveVersion() {
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertNull(actual.iterator().next().getCurrentActiveVersion());
+        assertThat(actual.iterator().next().getCurrentActiveVersion(), is(0));
         assertThat(actual.iterator().next().getNextActiveVersion(), is(0));
     }
     
     @Test
     void assertPersistWithActiveVersion() {
-        when(repository.query("/metadata/foo_db/rules/fixture/fixture/active_version")).thenReturn("10");
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/fixture/versions")).thenReturn(Collections.singletonList("10"));
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MetaDataRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));

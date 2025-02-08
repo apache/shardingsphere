@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,8 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,9 +48,16 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertSwitchActiveVersion() {
+    void assertSwitchActiveVersionWithCreate() {
+        persistService.switchActiveVersion("foo_db", 0);
+        verify(repository).persist("foo_db/active_version", "0");
+        verify(repository, times(0)).delete(any());
+    }
+    
+    @Test
+    void assertSwitchActiveVersionWithAlter() {
         when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0"));
-        persistService.switchActiveVersion(Arrays.asList(new MetaDataVersion("foo_db", 0, 1), new MetaDataVersion("bar_db", 2, 2)));
+        persistService.switchActiveVersion("foo_db", 1);
         verify(repository).persist("foo_db/active_version", "1");
         verify(repository).delete("foo_db/versions/0");
     }

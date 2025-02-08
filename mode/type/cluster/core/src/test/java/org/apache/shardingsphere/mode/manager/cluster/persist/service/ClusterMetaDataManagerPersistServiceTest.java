@@ -135,7 +135,7 @@ class ClusterMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(singleRuleConfig))).thenReturn(Collections.emptyList());
         metaDataManagerPersistService.alterSingleRuleConfiguration(
                 new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), new RuleMetaData(Collections.singleton(singleRule)));
-        verify(metaDataPersistFacade.getMetaDataVersionService()).switchActiveVersion(Collections.emptyList());
+        verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(singleRuleConfig));
     }
     
     @Test
