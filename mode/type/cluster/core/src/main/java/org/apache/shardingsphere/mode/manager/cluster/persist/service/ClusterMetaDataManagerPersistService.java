@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -131,8 +130,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
-        DataSourceUnitPersistService dataSourceService = metaDataPersistFacade.getDataSourceUnitService();
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(dataSourceService.persist(database.getName(), toBeUpdatedProps));
+        metaDataPersistFacade.getDataSourceUnitService().persist(database.getName(), toBeUpdatedProps);
         afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
     }
     

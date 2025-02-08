@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,15 +25,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,14 +63,9 @@ class DataSourceUnitPersistServiceTest {
         Map<String, DataSourcePoolProperties> dataSourcePropsMap = new LinkedHashMap<>(1, 1F);
         dataSourcePropsMap.put("foo_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
         dataSourcePropsMap.put("bar_ds", new DataSourcePoolProperties("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource", Collections.emptyMap()));
-        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units/foo_ds/versions")).thenReturn(Collections.singletonList("10"));
-        List<MetaDataVersion> actual = new ArrayList<>(persistService.persist("foo_db", dataSourcePropsMap));
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getCurrentActiveVersion(), is(10));
-        assertThat(actual.get(0).getNextActiveVersion(), is(11));
-        assertNull(actual.get(1).getCurrentActiveVersion());
-        assertThat(actual.get(1).getNextActiveVersion(), is(0));
+        persistService.persist("foo_db", dataSourcePropsMap);
+        verify(repository).persist("/metadata/foo_db/data_sources/units/foo_ds/active_version", "11");
     }
     
     @Test

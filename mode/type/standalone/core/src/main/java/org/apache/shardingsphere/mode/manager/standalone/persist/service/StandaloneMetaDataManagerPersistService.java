@@ -30,15 +30,14 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
@@ -159,8 +158,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(databaseName, each.getName(), each.getAllTables());
                     }
                 });
-        DataSourceUnitPersistService dataSourceService = metaDataPersistFacade.getDataSourceUnitService();
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(dataSourceService.persist(databaseName, toBeRegisteredProps));
+        metaDataPersistFacade.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
         clearServiceCache();
     }
     
@@ -173,8 +171,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         metaDataContextManager.getMetaDataContexts().getMetaData().putDatabase(changedDatabase);
         metaDataContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()
                 .forEach(each -> ((GlobalRule) each).refresh(metaDataContextManager.getMetaDataContexts().getMetaData().getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
-        DataSourceUnitPersistService dataSourceService = metaDataPersistFacade.getDataSourceUnitService();
-        metaDataPersistFacade.getMetaDataVersionService().switchActiveVersion(dataSourceService.persist(database.getName(), toBeUpdatedProps));
+        metaDataPersistFacade.getDataSourceUnitService().persist(database.getName(), toBeUpdatedProps);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
     }
