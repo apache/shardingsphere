@@ -78,9 +78,7 @@ public final class ViewMetaDataPersistService {
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
             VersionNodePathGenerator versionNodePathGenerator = ViewMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, viewName);
-            int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
-            repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
-            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
+            metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
     

@@ -36,8 +36,6 @@ import java.util.Optional;
  */
 public final class GlobalRulePersistService {
     
-    private final PersistRepository repository;
-    
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     private final RepositoryTuplePersistService repositoryTuplePersistService;
@@ -47,7 +45,6 @@ public final class GlobalRulePersistService {
     private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
     
     public GlobalRulePersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
-        this.repository = repository;
         this.metaDataVersionPersistService = metaDataVersionPersistService;
         repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
         yamlRepositoryTupleSwapperEngine = new YamlRepositoryTupleSwapperEngine();
@@ -87,9 +84,7 @@ public final class GlobalRulePersistService {
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
             VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey());
-            int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
-            repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), each.getValue());
-            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
+            metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
         }
     }
 }
