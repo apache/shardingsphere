@@ -84,7 +84,7 @@ public final class DataSourceUnitPersistService {
             VersionNodePathGenerator versionNodePathGenerator = DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator(databaseName, entry.getKey());
             int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
             repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
-            metaDataVersionPersistService.switchActiveVersion(DataSourceMetaDataNodePath.getStorageUnitPath(databaseName, entry.getKey()), nextVersion);
+            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
         }
     }
     

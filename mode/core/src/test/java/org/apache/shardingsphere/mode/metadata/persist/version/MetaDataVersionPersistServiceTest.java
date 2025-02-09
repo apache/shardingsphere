@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ class MetaDataVersionPersistServiceTest {
     
     @Test
     void assertSwitchActiveVersionWithCreate() {
-        persistService.switchActiveVersion("foo_db", 0);
+        persistService.switchActiveVersion(new VersionNodePathGenerator("foo_db"), 0);
         verify(repository).persist("foo_db/active_version", "0");
         verify(repository, times(0)).delete(any());
     }
@@ -57,7 +58,7 @@ class MetaDataVersionPersistServiceTest {
     @Test
     void assertSwitchActiveVersionWithAlter() {
         when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0"));
-        persistService.switchActiveVersion("foo_db", 1);
+        persistService.switchActiveVersion(new VersionNodePathGenerator("foo_db"), 1);
         verify(repository).persist("foo_db/active_version", "1");
         verify(repository).delete("foo_db/versions/0");
     }

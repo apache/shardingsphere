@@ -80,7 +80,7 @@ public final class ViewMetaDataPersistService {
             VersionNodePathGenerator versionNodePathGenerator = ViewMetaDataNodePath.getVersionNodePathGenerator(databaseName, schemaName, viewName);
             int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
             repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
-            metaDataVersionPersistService.switchActiveVersion(ViewMetaDataNodePath.getViewPath(databaseName, schemaName, viewName), nextVersion);
+            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
         }
     }
     

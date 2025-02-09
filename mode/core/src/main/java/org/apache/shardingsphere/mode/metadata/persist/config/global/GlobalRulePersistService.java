@@ -89,7 +89,7 @@ public final class GlobalRulePersistService {
             VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey());
             int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
             repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), each.getValue());
-            metaDataVersionPersistService.switchActiveVersion(GlobalRuleNodePath.getRulePath(each.getKey()), nextVersion);
+            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
         }
     }
 }
