@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.config.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Optional;
@@ -58,8 +59,9 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        int nextVersion = metaDataVersionPersistService.getNextVersion(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath());
-        repository.persist(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(nextVersion), YamlEngine.marshal(props));
-        metaDataVersionPersistService.switchActiveVersion(GlobalPropertiesNodePath.getRootPath(), nextVersion);
+        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePath.getVersionNodePathGenerator();
+        int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
+        repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), YamlEngine.marshal(props));
+        metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
     }
 }

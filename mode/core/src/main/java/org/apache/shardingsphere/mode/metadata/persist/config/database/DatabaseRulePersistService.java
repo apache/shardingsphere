@@ -93,7 +93,7 @@ public final class DatabaseRulePersistService {
             VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey());
             int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
             repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), each.getValue());
-            metaDataVersionPersistService.switchActiveVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), nextVersion);
+            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
             result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1), nextVersion));
         }
         return result;
