@@ -39,7 +39,7 @@ public final class MetaDataVersionPersistService {
     
     /**
      * Persist meta data.
-     * 
+     *
      * @param versionNodePathGenerator version node path generator
      * @param content to be persisted content
      * @return persisted meta data version
