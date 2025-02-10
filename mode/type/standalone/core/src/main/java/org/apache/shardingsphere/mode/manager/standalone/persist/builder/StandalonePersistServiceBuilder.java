@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.manager.standalone.persist.builder;
 
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneProcessPersistService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.divided.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.divided.ProcessPersistService;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
@@ -32,7 +32,7 @@ public final class StandalonePersistServiceBuilder implements PersistServiceBuil
     
     @Override
     public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return new StandaloneMetaDataManagerPersistService(repository, metaDataContextManager);
+        return new StandaloneMetaDataManagerPersistService(metaDataContextManager);
     }
     
     @Override

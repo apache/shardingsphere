@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-database-type</artifactId>
-        <version>5.5.2-SNAPSHOT</version>
+        <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-database-hive</artifactId>
     <name>${project.artifactId}</name>
@@ -33,13 +33,6 @@
             <version>${project.version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-jdbc</artifactId>
-            <version>${hive.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>io.github.linghengqian</groupId>
             <artifactId>hive-server2-jdbc-driver-thin</artifactId>

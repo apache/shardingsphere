@@ -70,14 +70,16 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         if (null != insertStatementContext.getInsertSelectContext()) {
             checkInsertSelectEncryptor(insertStatementContext.getInsertSelectContext().getSelectStatementContext(), insertColumns);
         }
-        EncryptTable encryptTable = rule.getEncryptTable(insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse(""));
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse(""));
+        if (!encryptTable.isPresent()) {
+            return Collections.emptyList();
+        }
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertColumns) {
             String columnName = each.getIdentifier().getValue();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                Collection<Projection> projections =
-                        Collections.singleton(new ColumnProjection(null, new IdentifierValue(encryptTable.getEncryptColumn(columnName).getCipher().getName(), each.getIdentifier().getQuoteCharacter()),
-                                null, insertStatementContext.getDatabaseType()));
+            if (encryptTable.get().isEncryptColumn(columnName)) {
+                IdentifierValue name = new IdentifierValue(encryptTable.get().getEncryptColumn(columnName).getCipher().getName(), each.getIdentifier().getQuoteCharacter());
+                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, name, null, insertStatementContext.getDatabaseType()));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections, insertStatementContext.getDatabaseType()));
             }
         }

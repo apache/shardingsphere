@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Dialect sharding statistics table data collector.
@@ -40,9 +40,9 @@ public interface DialectShardingStatisticsTableCollector extends DatabaseTypedSP
      *
      * @param connection connection
      * @param dataNode data node
-     * @param row row to be appended
+     * @param rowColumnValues row column values
      * @return is appended or not
      * @throws SQLException SQL exception
      */
-    boolean appendRow(Connection connection, DataNode dataNode, List<Object> row) throws SQLException;
+    boolean appendRow(Connection connection, DataNode dataNode, Map<String, Object> rowColumnValues) throws SQLException;
 }

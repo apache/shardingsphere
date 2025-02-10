@@ -22,11 +22,16 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +39,7 @@ import java.util.List;
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class CreateViewStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -52,5 +57,20 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     @Override
     public CreateViewStatement getSqlStatement() {
         return (CreateViewStatement) super.getSqlStatement();
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return selectStatementContext.getWhereSegments();
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return selectStatementContext.getColumnSegments();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return selectStatementContext.getJoinConditions();
     }
 }

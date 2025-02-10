@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
@@ -65,64 +65,64 @@ class RuleConfigurationChangedHandlerTest {
     @Test
     void assertHandleWithInvalidPath() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/invalid/rules/fixture", "foo", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).alterRuleItem(any());
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).dropRuleItem(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithEmptyValue() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/versions/0", "", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).alterRuleItem(any());
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).dropRuleItem(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithPathNotFound() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/versions/0", "foo", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).alterRuleItem(any());
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).dropRuleItem(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithIgnoreType() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.IGNORED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).alterRuleItem(any());
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager(), times(0)).dropRuleItem(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithNamedRuleItemAdded() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(any(AlterNamedRuleItem.class));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "0", Type.ADDED));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithNamedRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "foo", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(any(AlterNamedRuleItem.class));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx/active_version", "0", Type.UPDATED));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithNamedRuleItemDropped() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/named/xxx", "foo", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).dropRuleItem(any(DropNamedRuleItem.class));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(any(DropNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithUniqueRuleItemAdded() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(any(AlterUniqueRuleItem.class));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "0", Type.ADDED));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterUniqueRuleItem.class));
     }
     
     @Test
     void assertHandleWithUniqueRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).alterRuleItem(any(AlterUniqueRuleItem.class));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "0", Type.UPDATED));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterUniqueRuleItem.class));
     }
     
     @Test
     void assertHandleWithUniqueRuleItemDropped() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getRuleItemManager()).dropRuleItem(any(DropUniqueRuleItem.class));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(any(DropUniqueRuleItem.class));
     }
 }

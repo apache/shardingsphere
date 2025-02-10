@@ -75,9 +75,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
      * Import proxy database from yaml configuration.
      *
      * @param yamlConfig yaml proxy database configuration
-     * @throws SQLException SQL exception
      */
-    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) throws SQLException {
+    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName);
         checkDataSources(databaseName, yamlConfig.getDataSources());
@@ -86,7 +85,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             importDataSources(databaseName, yamlConfig.getDataSources());
             importRules(databaseName, yamlConfig.getRules());
         } catch (final ShardingSphereSQLException ex) {
-            dropDatabase(databaseName);
+            dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
             throw ex;
         }
     }
@@ -100,7 +99,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         ShardingSpherePreconditions.checkState(!contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), () -> new DatabaseCreateExistsException(databaseName));
     }
     
-    private void addDatabase(final String databaseName) throws SQLException {
+    private void addDatabase(final String databaseName) {
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
@@ -133,8 +132,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
-                .persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
@@ -161,7 +159,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void dropDatabase(final String databaseName) throws SQLException {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
+    private void dropDatabase(final ShardingSphereDatabase database) {
+        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(database);
     }
 }

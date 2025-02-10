@@ -48,7 +48,6 @@ public final class ComputeNodeInstanceContext {
     @Getter(AccessLevel.NONE)
     private final AtomicReference<WorkerIdGenerator> workerIdGenerator;
     
-    @Getter(AccessLevel.NONE)
     private final AtomicReference<LockContext> lockContext;
     
     private final ClusterInstanceRegistry clusterInstanceRegistry;

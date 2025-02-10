@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -26,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -35,11 +42,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -47,11 +55,11 @@ import java.util.Optional;
  */
 public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
-    private static final String PG_CLASS = "pg_class";
+    private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
-    private static final String PG_NAMESPACE = "pg_namespace";
-    
-    private static final Collection<String> KERNEL_SUPPORTED_TABLES = Arrays.asList(PG_NAMESPACE, PG_CLASS);
+    static {
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+    }
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
@@ -66,12 +74,11 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
-            Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
-            if (!selectedTableNames.isEmpty() && KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
+            Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables((SelectStatement) sqlStatement);
+            if (isSelectedStatisticsSystemTable(selectedSchemaTables) || isSelectedShardingSphereSystemTable(selectedSchemaTables)) {
                 return Optional.empty();
             }
-            if (!selectedTableNames.isEmpty() && (SystemSchemaManager.isSystemTable("postgresql", "information_schema", selectedTableNames)
-                    || SystemSchemaManager.isSystemTable("postgresql", "pg_catalog", selectedTableNames))) {
+            if (isSelectSystemTable(selectedSchemaTables)) {
                 return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
             }
         }
@@ -84,7 +91,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         return Optional.empty();
     }
     
-    private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
+    private Map<String, Collection<String>> getSelectedSchemaTables(final SelectStatement sqlStatement) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(sqlStatement);
         List<TableSegment> extracted = new LinkedList<>(extractor.getTableContext());
@@ -95,13 +102,66 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
                 extracted.addAll(subExtractor.getTableContext());
             }
         }
-        List<String> result = new ArrayList<>(extracted.size());
+        Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
         for (TableSegment each : extracted) {
             if (each instanceof SimpleTableSegment) {
-                result.add(((SimpleTableSegment) each).getTableName().getIdentifier().getValue());
+                Optional<OwnerSegment> ownerSegment = ((SimpleTableSegment) each).getOwner();
+                if (ownerSegment.isPresent()) {
+                    Collection<String> tables = result.getOrDefault(ownerSegment.get().getIdentifier().getValue(), new CaseInsensitiveSet<>());
+                    tables.add(((SimpleTableSegment) each).getTableName().getIdentifier().getValue());
+                    result.put(ownerSegment.get().getIdentifier().getValue(), tables);
+                }
             }
         }
         return result;
+    }
+    
+    private boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
+        }
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, databaseType);
+        if (!dialectStatisticsCollector.isPresent()) {
+            return false;
+        }
+        Map<String, Collection<String>> statisticalSchemaTables = dialectStatisticsCollector.get().getStatisticsSchemaTables();
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!statisticalSchemaTables.containsKey(each.getKey())) {
+                return false;
+            }
+            if (!statisticalSchemaTables.get(each.getKey()).containsAll(each.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSelectedShardingSphereSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!SCHEMA_TABLES.containsKey(each.getKey())) {
+                return false;
+            }
+            if (!SCHEMA_TABLES.get(each.getKey()).containsAll(each.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
+        if (selectedSchemaTables.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
+            if (!SystemSchemaManager.isSystemTable("postgresql", each.getKey(), each.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override

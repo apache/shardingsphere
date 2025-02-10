@@ -19,6 +19,9 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -30,68 +33,19 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ViewMetaDataNodePath {
     
-    private static final String ROOT_NODE = "/metadata";
-    
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String VIEWS_NODE = "views";
     
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
-    
-    private static final String VIEWS_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/views";
-    
-    private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
-    
-    private static final String VIEW_SUFFIX = "/([\\w\\-]+)$";
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
-     * Get meta data views path.
+     * Get view root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return views path
+     * @return view root path
      */
-    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE);
-    }
-    
-    /**
-     * Get view active version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return view active version path
-     */
-    public static String getViewActiveVersionPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, ACTIVE_VERSION_NODE);
-    }
-    
-    /**
-     * Get view versions path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @return view versions path
-     */
-    public static String getViewVersionsPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName, VERSIONS_NODE);
-    }
-    
-    /**
-     * Get view version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param viewName view name
-     * @param version version
-     * @return view version path
-     */
-    public static String getViewVersionPath(final String databaseName, final String schemaName, final String viewName, final String version) {
-        return String.join("/", getViewVersionsPath(databaseName, schemaName, viewName), version);
+    public static String getViewRootPath(final String databaseName, final String schemaName) {
+        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
     /**
@@ -103,19 +57,19 @@ public final class ViewMetaDataNodePath {
      * @return view path
      */
     public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName);
+        return String.join("/", getViewRootPath(databaseName, schemaName), viewName);
     }
     
     /**
-     * Get view name by active version path.
+     * Get view version node path generator.
      *
-     * @param path path
-     * @return view name
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return view version node path generator
      */
-    public static Optional<String> getViewNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String viewName) {
+        return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
     }
     
     /**
@@ -125,19 +79,9 @@ public final class ViewMetaDataNodePath {
      * @return view name
      */
     public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + VIEWS_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is view active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewActiveVersionPath(final String path) {
-        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
@@ -147,6 +91,15 @@ public final class ViewMetaDataNodePath {
      * @return true or false
      */
     public static boolean isViewPath(final String path) {
-        return Pattern.compile(ROOT_NODE + VIEWS_PATTERN + VIEW_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return findViewName(path).isPresent();
+    }
+    
+    /**
+     * Get view version pattern node path parser.
+     *
+     * @return view version node path parser
+     */
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -28,44 +29,44 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereStatistics {
     
-    private final Map<String, ShardingSphereDatabaseData> databaseData = new CaseInsensitiveMap<>();
+    private final Map<String, DatabaseStatistics> databaseStatisticsMap = Collections.synchronizedMap(new CaseInsensitiveMap<>());
     
     /**
-     * Get ShardingSphere database.
+     * Get database statistics.
      *
      * @param databaseName database name
-     * @return ShardingSphere database data
+     * @return database statistics
      */
-    public ShardingSphereDatabaseData getDatabase(final String databaseName) {
-        return databaseData.get(databaseName);
+    public DatabaseStatistics getDatabaseStatistics(final String databaseName) {
+        return databaseStatisticsMap.get(databaseName);
     }
     
     /**
-     * Put ShardingSphere database.
+     * Put database statistics.
      *
      * @param databaseName database name
-     * @param database ShardingSphere database
+     * @param databaseStatistics database statistics
      */
-    public void putDatabase(final String databaseName, final ShardingSphereDatabaseData database) {
-        databaseData.put(databaseName, database);
+    public void putDatabaseStatistics(final String databaseName, final DatabaseStatistics databaseStatistics) {
+        databaseStatisticsMap.put(databaseName, databaseStatistics);
     }
     
     /**
-     * Drop ShardingSphere database.
+     * Drop database statistics.
      *
      * @param databaseName database name
      */
-    public void dropDatabase(final String databaseName) {
-        databaseData.remove(databaseName);
+    public void dropDatabaseStatistics(final String databaseName) {
+        databaseStatisticsMap.remove(databaseName);
     }
     
     /**
-     * Judge contains ShardingSphere database from meta data or not.
+     * Judge whether contains database statistics.
      *
      * @param databaseName database name
-     * @return contains ShardingSphere database from meta data or not
+     * @return contains database statistics or not
      */
-    public boolean containsDatabase(final String databaseName) {
-        return databaseData.containsKey(databaseName);
+    public boolean containsDatabaseStatistics(final String databaseName) {
+        return databaseStatisticsMap.containsKey(databaseName);
     }
 }

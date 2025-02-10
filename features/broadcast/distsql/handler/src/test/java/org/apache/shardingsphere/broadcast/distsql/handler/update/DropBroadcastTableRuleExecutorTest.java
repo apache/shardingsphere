@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.divided.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -52,12 +52,13 @@ class DropBroadcastTableRuleExecutorTest {
     void assertExecuteUpdate() throws SQLException {
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(true, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
         BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
         when(rule.getConfiguration().getTables()).thenReturn(Collections.singleton("foo_tbl"));
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
-        verify(metaDataManagerPersistService).removeRuleConfiguration("foo_db", "broadcast");
+        verify(metaDataManagerPersistService).removeRuleConfiguration(database, "broadcast");
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database, final BroadcastRule rule) {

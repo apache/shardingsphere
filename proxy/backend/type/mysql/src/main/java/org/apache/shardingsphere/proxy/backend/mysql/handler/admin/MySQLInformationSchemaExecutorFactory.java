@@ -26,7 +26,11 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.info
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -50,12 +54,22 @@ public final class MySQLInformationSchemaExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
+        Map<String, Collection<String>> selectedSchemaTables = Collections.singletonMap("information_schema", Collections.singletonList(tableName));
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
         }
-        if (SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName)) {
+        if (isSelectSystemTable(selectedSchemaTables)) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();
+    }
+    
+    private static boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTableNames) {
+        for (Entry<String, Collection<String>> each : selectedSchemaTableNames.entrySet()) {
+            if (!SystemSchemaManager.isSystemTable("mysql", each.getKey(), each.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
