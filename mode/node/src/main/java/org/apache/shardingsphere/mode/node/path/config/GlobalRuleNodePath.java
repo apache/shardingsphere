@@ -20,11 +20,8 @@ package org.apache.shardingsphere.mode.node.path.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
  * Global props node path.
@@ -33,6 +30,8 @@ import java.util.regex.Pattern;
 public final class GlobalRuleNodePath {
     
     private static final String ROOT_NODE = "/rules";
+    
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(NodePathPattern.IDENTIFIER);
     
     /**
      * Get global rule root path.
@@ -54,24 +53,31 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Get global rule version node path.
+     * Get global rule version node path generator.
      *
      * @param ruleTypeName rule type name
-     * @return global rule version node path
+     * @return global rule version node path generator
      */
-    public static VersionNodePath getVersionNodePath(final String ruleTypeName) {
-        return new VersionNodePath(getRulePath(ruleTypeName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleTypeName) {
+        return new VersionNodePathGenerator(getRulePath(ruleTypeName));
     }
     
     /**
-     * Find rule type name from active version.
+     * Get view version pattern node path parser.
      *
-     * @param path path to be found
-     * @return found rule type name
+     * @return view version node path parser
      */
-    public static Optional<String> findRuleTypeNameFromActiveVersion(final String path) {
-        Pattern pattern = Pattern.compile(getVersionNodePath(NodePathPattern.IDENTIFIER).getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
+    }
+    
+    /**
+     * Get view version pattern node path parser.
+     *
+     * @param ruleTypeName rule type name
+     * @return view version node path parser
+     */
+    public static VersionNodePathParser getVersionNodePathParser(final String ruleTypeName) {
+        return new VersionNodePathParser(ruleTypeName);
     }
 }

@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -33,6 +34,8 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
+    
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get view root path.
@@ -58,15 +61,15 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Get view version node path.
+     * Get view version node path generator.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param viewName view name
-     * @return view version node path
+     * @return view version node path generator
      */
-    public static VersionNodePath getVersionNodePath(final String databaseName, final String schemaName, final String viewName) {
-        return new VersionNodePath(getViewPath(databaseName, schemaName, viewName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String viewName) {
+        return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
     }
     
     /**
@@ -92,25 +95,11 @@ public final class ViewMetaDataNodePath {
     }
     
     /**
-     * Find view name by active version path.
+     * Get view version pattern node path parser.
      *
-     * @param path path
-     * @return view name
+     * @return view version node path parser
      */
-    public static Optional<String> findViewNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(
-                getVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is view active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewActiveVersionPath(final String path) {
-        return findViewNameByActiveVersionPath(path).isPresent();
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }

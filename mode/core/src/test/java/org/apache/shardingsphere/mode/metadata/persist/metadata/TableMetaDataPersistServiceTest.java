@@ -62,7 +62,6 @@ class TableMetaDataPersistServiceTest {
     
     @Test
     void assertPersistWithoutVersion() {
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("", "0");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(table));
@@ -73,7 +72,6 @@ class TableMetaDataPersistServiceTest {
     @Test
     void assertPersistWithVersion() {
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions")).thenReturn(Collections.singletonList("10"));
-        when(repository.query("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version")).thenReturn("10");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         persistService.persist("foo_db", "foo_schema", Collections.singleton(table));

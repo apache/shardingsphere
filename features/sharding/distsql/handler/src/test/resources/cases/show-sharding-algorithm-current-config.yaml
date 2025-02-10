@@ -15,6 +15,19 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector
-org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLStatisticsCollector
-org.apache.shardingsphere.infra.metadata.statistics.collector.opengauss.OpenGaussStatisticsCollector
+rules:
+  - !SHARDING
+    defaultDatabaseStrategy:
+      none:
+    tables:
+      t_order:
+        actualDataNodes: ds_${0..1}.t_order_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: database_inline
+    shardingAlgorithms:
+      database_inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${user_id % 2}

@@ -21,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,19 +38,30 @@ public final class MetaDataVersionPersistService {
     private final PersistRepository repository;
     
     /**
+     * Persist meta data.
+     *
+     * @param versionNodePathGenerator version node path generator
+     * @param content to be persisted content
+     * @return persisted meta data version
+     */
+    public int persist(final VersionNodePathGenerator versionNodePathGenerator, final String content) {
+        int nextVersion = getNextVersion(versionNodePathGenerator.getVersionsPath());
+        repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), content);
+        switchActiveVersion(versionNodePathGenerator, nextVersion);
+        return nextVersion;
+    }
+    
+    /**
      * Switch active version.
      *
-     * @param metaDataVersions meta data versions
+     * @param versionNodePathGenerator version node path generator
+     * @param currentVersion current version
      */
-    public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
-        for (MetaDataVersion each : metaDataVersions) {
-            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
-                continue;
-            }
-            repository.persist(new VersionNodePath(each.getPath()).getActiveVersionPath(), String.valueOf(each.getNextActiveVersion()));
-            VersionNodePath versionNodePath = new VersionNodePath(each.getPath());
-            getVersions(versionNodePath.getVersionsPath()).stream()
-                    .filter(version -> version < each.getNextActiveVersion()).forEach(version -> repository.delete(versionNodePath.getVersionPath(version)));
+    public void switchActiveVersion(final VersionNodePathGenerator versionNodePathGenerator, final int currentVersion) {
+        repository.persist(versionNodePathGenerator.getActiveVersionPath(), String.valueOf(currentVersion));
+        if (MetaDataVersion.INIT_VERSION != currentVersion) {
+            getVersions(versionNodePathGenerator.getVersionsPath()).stream().filter(version -> version < currentVersion)
+                    .forEach(version -> repository.delete(versionNodePathGenerator.getVersionPath(version)));
         }
     }
     
@@ -63,7 +73,7 @@ public final class MetaDataVersionPersistService {
      */
     public int getNextVersion(final String path) {
         List<Integer> versions = getVersions(path);
-        return versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : versions.get(0) + 1;
+        return versions.isEmpty() ? MetaDataVersion.INIT_VERSION : versions.get(0) + 1;
     }
     
     private List<Integer> getVersions(final String path) {

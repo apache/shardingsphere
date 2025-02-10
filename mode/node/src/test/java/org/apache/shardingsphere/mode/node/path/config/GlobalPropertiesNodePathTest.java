@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalPropertiesNodePathTest {
     
@@ -31,14 +30,9 @@ class GlobalPropertiesNodePathTest {
     }
     
     @Test
-    void assertGetVersionNodePath() {
-        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getActiveVersionPath(), is("/props/active_version"));
-        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getVersionsPath(), is("/props/versions"));
-        assertThat(GlobalPropertiesNodePath.getVersionNodePath().getVersionPath(0), is("/props/versions/0"));
-    }
-    
-    @Test
-    void assertIsActiveVersionPath() {
-        assertTrue(GlobalPropertiesNodePath.isActiveVersionPath("/props/active_version"));
+    void assertGetVersionNodePathGenerator() {
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), is("/props/active_version"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath(), is("/props/versions"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(0), is("/props/versions/0"));
     }
 }

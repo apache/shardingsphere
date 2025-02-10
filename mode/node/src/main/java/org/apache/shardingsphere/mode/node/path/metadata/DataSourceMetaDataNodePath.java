@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -39,6 +40,10 @@ public final class DataSourceMetaDataNodePath {
     private static final String NODES_NODE = "nodes";
     
     private static final String UNITS_NODE = "units";
+    
+    private static final VersionNodePathParser STORAGE_UNITS_PARSER = new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    
+    private static final VersionNodePathParser STORAGE_NODES_PARSER = new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     /**
      * Get data source root path.
@@ -93,37 +98,43 @@ public final class DataSourceMetaDataNodePath {
     }
     
     /**
-     * Get storage unit version node path.
+     * Get storage unit version node path generator.
      *
      * @param databaseName database name
      * @param storageUnitName storage unit name
-     * @return storage unit version node path
+     * @return storage unit version node path generator
      */
-    public static VersionNodePath getStorageUnitVersionNodePath(final String databaseName, final String storageUnitName) {
-        return new VersionNodePath(String.join("/", getStorageUnitsPath(databaseName), storageUnitName));
+    public static VersionNodePathGenerator getStorageUnitVersionNodePathGenerator(final String databaseName, final String storageUnitName) {
+        return new VersionNodePathGenerator(String.join("/", getStorageUnitsPath(databaseName), storageUnitName));
     }
     
     /**
-     * Get storage node version node path.
+     * Get storage node version node path generator.
      *
      * @param databaseName database name
      * @param storageNodeName storage node name
-     * @return storage node version node path
+     * @return storage node version node path generator
      */
-    public static VersionNodePath getStorageNodeVersionNodePath(final String databaseName, final String storageNodeName) {
-        return new VersionNodePath(String.join("/", getStorageNodesPath(databaseName), storageNodeName));
+    public static VersionNodePathGenerator getStorageNodeVersionNodePathGenerator(final String databaseName, final String storageNodeName) {
+        return new VersionNodePathGenerator(String.join("/", getStorageNodesPath(databaseName), storageNodeName));
     }
     
     /**
-     * Find storage unit name by active version path.
+     * Get storage unit version unit path parser.
      *
-     * @param path path
-     * @return found storage unit name
+     * @return storage unit version node path parser
      */
-    public static Optional<String> findStorageUnitNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageUnitVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    public static VersionNodePathParser getStorageUnitVersionNodePathParser() {
+        return STORAGE_UNITS_PARSER;
+    }
+    
+    /**
+     * Get storage node version node path parser.
+     *
+     * @return storage node version node path parser
+     */
+    public static VersionNodePathParser getStorageNodeVersionNodePathParser() {
+        return STORAGE_NODES_PARSER;
     }
     
     /**
@@ -134,18 +145,6 @@ public final class DataSourceMetaDataNodePath {
      */
     public static Optional<String> findStorageUnitNameByStorageUnitPath(final String path) {
         Pattern pattern = Pattern.compile(getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Find storage node name by active version path.
-     *
-     * @param path path
-     * @return found storage unit name
-     */
-    public static Optional<String> findStorageNodeNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageNodeVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -166,7 +165,7 @@ public final class DataSourceMetaDataNodePath {
      * Is data source root path.
      *
      * @param path path
-     * @return true or false
+     * @return is data source root path or not
      */
     public static boolean isDataSourceRootPath(final String path) {
         return Pattern.compile(getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();

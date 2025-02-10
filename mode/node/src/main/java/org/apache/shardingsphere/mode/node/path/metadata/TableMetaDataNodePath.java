@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -33,6 +34,8 @@ import java.util.regex.Pattern;
 public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
+    
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get table root path.
@@ -58,15 +61,15 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Get table version node path.
+     * Get table version node path generator.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @return table version node path
+     * @return table version node path generator
      */
-    public static VersionNodePath getVersionNodePath(final String databaseName, final String schemaName, final String tableName) {
-        return new VersionNodePath(getTablePath(databaseName, schemaName, tableName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String tableName) {
+        return new VersionNodePathGenerator(getTablePath(databaseName, schemaName, tableName));
     }
     
     /**
@@ -92,25 +95,11 @@ public final class TableMetaDataNodePath {
     }
     
     /**
-     * Get table name by active version path.
+     * Get table version pattern node path parser.
      *
-     * @param path path
-     * @return table name
+     * @return table version node path parser
      */
-    public static Optional<String> findTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(
-                getVersionNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getActiveVersionPath(), Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is table active version path.
-     *
-     * @param path path
-     * @return is table active version path or not
-     */
-    public static boolean isTableActiveVersionPath(final String path) {
-        return findTableNameByActiveVersionPath(path).isPresent();
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }

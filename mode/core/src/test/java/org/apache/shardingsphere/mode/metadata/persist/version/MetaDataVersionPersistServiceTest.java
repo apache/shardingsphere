@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +26,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,28 +48,27 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertSwitchActiveVersion() {
-        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0"));
-        persistService.switchActiveVersion(Arrays.asList(new MetaDataVersion("foo_db", 0, 1), new MetaDataVersion("bar_db", 2, 2)));
-        verify(repository).persist("foo_db/active_version", "1");
+    void assertPersistWithNewMetaData() {
+        assertThat(persistService.persist(new VersionNodePathGenerator("foo_db"), "foo_metadata"), is(0));
+        verify(repository).persist("foo_db/versions/0", "foo_metadata");
+        verify(repository).persist("foo_db/active_version", "0");
+        verify(repository, times(0)).delete(any());
+    }
+    
+    @Test
+    void assertPersistWithExistedMetaData() {
+        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("2", "1", "0"));
+        assertThat(persistService.persist(new VersionNodePathGenerator("foo_db"), "foo_metadata"), is(3));
+        verify(repository).persist("foo_db/versions/3", "foo_metadata");
+        verify(repository).persist("foo_db/active_version", "3");
         verify(repository).delete("foo_db/versions/0");
+        verify(repository).delete("foo_db/versions/1");
+        verify(repository).delete("foo_db/versions/2");
     }
     
     @Test
     void assertLoadContent() {
         when(repository.query("foo_db/versions/1")).thenReturn("foo_path");
         assertThat(persistService.loadContent("foo_db/active_version", 1), is("foo_path"));
-    }
-    
-    @Test
-    void assertGetNextVersion() {
-        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("1", "0", "2", "10"));
-        assertThat(persistService.getNextVersion("foo_db/versions"), is(11));
-    }
-    
-    @Test
-    void assertGetNextVersionIfEmpty() {
-        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Collections.emptyList());
-        assertThat(persistService.getNextVersion("foo_db/versions"), is(0));
     }
 }
