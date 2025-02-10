@@ -22,4 +22,5 @@
     <sql-case id="select_escape_with_double_quota" value="SELECT * FROM t_order where status=&quot;\&quot;&quot;" db-types="MySQL" />
     <sql-case id="select_alias_as_single_quote_string" value="SELECT status as 'status' FROM t_order" db-types="MySQL" />
     <sql-case id="select_alias_as_string_double_quote" value="SELECT status as &quot;status&quot; FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_multi_quoted_string" value="SELECT * FROM t_order WHERE name like &quot;%&quot;''&quot;%&quot;" db-types="MySQL" />
 </sql-cases>

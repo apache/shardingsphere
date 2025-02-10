@@ -129,10 +129,10 @@
                         <right>
                             <list-expression start-index="40" stop-index="62">
                                 <items>
-                                    <literal-expression start-index="41" stop-index="50" value="latin1'a" />
+                                    <literal-expression start-index="41" stop-index="50" value="a" />
                                 </items>
                                 <items>
-                                    <literal-expression start-index="52" stop-index="61" value="latin1'b" />
+                                    <literal-expression start-index="52" stop-index="61" value="b" />
                                 </items>
                             </list-expression>
                         </right>
@@ -3466,6 +3466,32 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_multi_quoted_string">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="45">
+                    <left>
+                        <column name="name" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="38" stop-index="45">
+                            <items>
+                                <literal-expression value="%%" start-index="38" stop-index="45" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_special_function_nested" parameters="12, 1000">
         <from>
             <simple-table name="t_order" start-index="48" stop-index="54" />
@@ -5380,7 +5406,7 @@
     <select sql-case-id="select_with_character_charset">
         <projections start-index="7" stop-index="24">
             <!--    TODO StringLiteralValue should consider about _binary/_utf8mb4-->
-            <expression-projection text="binary'abc" alias="a" start-index="7" stop-index="24" />
+            <expression-projection text="abc" alias="a" start-index="7" stop-index="24" />
         </projections>
     </select>
 
