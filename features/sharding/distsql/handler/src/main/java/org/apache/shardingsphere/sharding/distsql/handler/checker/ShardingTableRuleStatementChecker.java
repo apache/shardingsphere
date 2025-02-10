@@ -219,8 +219,8 @@ public final class ShardingTableRuleStatementChecker {
                 .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    public static ShardingTable createShardingTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingTableRuleConfiguration shardingTableRuleConfiguration,
-                                                    final Collection<String> dataSourceNames) {
+    private static ShardingTable createShardingTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingTableRuleConfiguration shardingTableRuleConfiguration,
+                                                     final Collection<String> dataSourceNames) {
         return new ShardingTable(shardingTableRuleConfiguration, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     

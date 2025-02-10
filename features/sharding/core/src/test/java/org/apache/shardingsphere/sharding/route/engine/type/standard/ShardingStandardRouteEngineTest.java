@@ -88,7 +88,7 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
-
+    
     @Test
     void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order", ShardingRouteEngineFixtureBuilder.createErrorShardingConditions("t_order"),

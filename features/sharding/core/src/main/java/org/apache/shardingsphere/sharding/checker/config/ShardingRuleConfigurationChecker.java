@@ -49,6 +49,7 @@ import javax.sql.DataSource;
 /**
  * Sharding rule configuration checker.
  */
+
 public final class ShardingRuleConfigurationChecker implements RuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override

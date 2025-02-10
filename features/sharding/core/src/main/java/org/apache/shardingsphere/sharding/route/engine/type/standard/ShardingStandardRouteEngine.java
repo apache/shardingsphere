@@ -257,12 +257,12 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
     }
     
     private Collection<String> routeDataSources(final ShardingTable shardingTable, final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy,
-                                                final List<ShardingConditionValue> databaseShardingValues, List<ShardingConditionValue> tableShardingValues) {
+                                                final List<ShardingConditionValue> databaseShardingValues, final List<ShardingConditionValue> tableShardingValues) {
         Collection<String> result;
         if (databaseShardingValues.isEmpty()) {
-            if (shardingTable.isAutoTable() && !tableShardingValues.isEmpty())
+            if (shardingTable.isAutoTable() && !tableShardingValues.isEmpty()) {
                 result = tableShardingStrategy.doSharding(shardingTable.getActualDataSourceNames(), tableShardingValues, shardingTable.getDataSourceDataNode(), props);
-            else {
+            } else {
                 return shardingTable.getActualDataSourceNames();
             }
         } else {

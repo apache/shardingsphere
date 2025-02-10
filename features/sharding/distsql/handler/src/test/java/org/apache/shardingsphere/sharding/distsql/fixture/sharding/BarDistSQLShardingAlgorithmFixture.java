@@ -40,5 +40,5 @@ public final class BarDistSQLShardingAlgorithmFixture implements StandardShardin
     public String getType() {
         return "BAR.DISTSQL.FIXTURE";
     }
-
+    
 }

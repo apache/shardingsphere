@@ -96,7 +96,7 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Collections.singletonList("ds_${0..1}.t_order"));
         autoTableRuleSegment.setShardingColumn("order_id");
-        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", null));
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", new Properties()));
         rules.add(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
@@ -204,9 +204,9 @@ class ShardingTableRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
-
+    
     @Test
-    void assertCheckTableWithUnmatchedShardingStrategyType3() {
+    void assertCheckTableWithShardingStrategy() {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("CORE.AUTO.FIXTURE", new Properties());
         KeyGenerateStrategySegment keyGenerateStrategy = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);

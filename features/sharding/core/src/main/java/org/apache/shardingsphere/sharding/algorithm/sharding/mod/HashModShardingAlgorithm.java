@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import java.util.Collection;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.sharding.exception.data.NullShardingValueExcept
  * Hash sharding algorithm.
  */
 public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);

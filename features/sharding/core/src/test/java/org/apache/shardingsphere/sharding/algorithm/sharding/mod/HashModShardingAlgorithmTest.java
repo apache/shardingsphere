@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -30,6 +26,11 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,8 +60,8 @@ class HashModShardingAlgorithmTest {
         assertThat(actual.size(), is(4));
     }
     
-     @Test
-     void assertRangeDoShardingWithWrongArgumentForShardingCount() {
-     assertThrows(AlgorithmInitializationException.class, () -> shardingAlgorithm.doSharding( new ArrayList<>(), new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")));
-     }
+    @Test
+    void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+        assertThrows(AlgorithmInitializationException.class, () -> shardingAlgorithm.doSharding(new ArrayList<>(), new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")));
+    }
 }
