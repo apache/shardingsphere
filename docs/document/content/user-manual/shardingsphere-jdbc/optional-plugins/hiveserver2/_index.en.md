@@ -82,7 +82,7 @@ The following is an example of a possible configuration,
     <dependency>
         <groupId>io.github.linghengqian</groupId>
         <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.0</version>
         <exclusions>
             <exclusion>
                 <groupId>com.fasterxml.woodstox</groupId>

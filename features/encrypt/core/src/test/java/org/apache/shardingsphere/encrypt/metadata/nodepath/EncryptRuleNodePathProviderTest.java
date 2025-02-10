@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 

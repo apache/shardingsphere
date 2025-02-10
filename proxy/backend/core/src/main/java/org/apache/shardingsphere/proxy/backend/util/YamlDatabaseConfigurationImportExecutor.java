@@ -85,7 +85,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             importDataSources(databaseName, yamlConfig.getDataSources());
             importRules(databaseName, yamlConfig.getRules());
         } catch (final ShardingSphereSQLException ex) {
-            dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
+            dropDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
             throw ex;
         }
     }
@@ -132,8 +132,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
-        contextManager.getPersistServiceFacade().getMetaDataPersistService().getDatabaseRulePersistService()
-                .persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
@@ -160,7 +159,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void dropDatabase(final String databaseName) {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(databaseName);
+    private void dropDatabase(final ShardingSphereDatabase database) {
+        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(database);
     }
 }

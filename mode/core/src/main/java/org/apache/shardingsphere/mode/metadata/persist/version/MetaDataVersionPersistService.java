@@ -21,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Meta data version persist service.
@@ -36,45 +38,61 @@ public final class MetaDataVersionPersistService {
     private final PersistRepository repository;
     
     /**
+     * Persist meta data.
+     *
+     * @param versionNodePathGenerator version node path generator
+     * @param content to be persisted content
+     * @return persisted meta data version
+     */
+    public int persist(final VersionNodePathGenerator versionNodePathGenerator, final String content) {
+        int nextVersion = getNextVersion(versionNodePathGenerator.getVersionsPath());
+        repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), content);
+        switchActiveVersion(versionNodePathGenerator, nextVersion);
+        return nextVersion;
+    }
+    
+    /**
      * Switch active version.
      *
-     * @param metaDataVersions meta data versions
+     * @param versionNodePathGenerator version node path generator
+     * @param currentVersion current version
      */
-    public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
-        for (MetaDataVersion each : metaDataVersions) {
-            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
-                continue;
-            }
-            repository.persist(each.getActiveVersionNodePath(), each.getNextActiveVersion());
-            getVersions(each.getVersionsPath()).stream()
-                    .filter(version -> Integer.parseInt(version) < Integer.parseInt(each.getNextActiveVersion()))
-                    .forEach(version -> repository.delete(each.getVersionsNodePath(version)));
+    public void switchActiveVersion(final VersionNodePathGenerator versionNodePathGenerator, final int currentVersion) {
+        repository.persist(versionNodePathGenerator.getActiveVersionPath(), String.valueOf(currentVersion));
+        if (MetaDataVersion.INIT_VERSION != currentVersion) {
+            getVersions(versionNodePathGenerator.getVersionsPath()).stream().filter(version -> version < currentVersion)
+                    .forEach(version -> repository.delete(versionNodePathGenerator.getVersionPath(version)));
         }
     }
     
     /**
-     * Get version path by active version.
+     * Get next version.
      *
      * @param path path
-     * @param activeVersion active version
-     * @return version path
+     * @return next version
      */
-    public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
-        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, activeVersion));
+    public int getNextVersion(final String path) {
+        List<Integer> versions = getVersions(path);
+        return versions.isEmpty() ? MetaDataVersion.INIT_VERSION : versions.get(0) + 1;
     }
     
-    /**
-     * Get versions.
-     *
-     * @param path path
-     * @return versions
-     */
-    public List<String> getVersions(final String path) {
-        List<String> result = repository.getChildrenKeys(path);
+    private List<Integer> getVersions(final String path) {
+        List<Integer> result = repository.getChildrenKeys(path).stream().map(Integer::parseInt).collect(Collectors.toList());
         if (result.size() > 2) {
-            log.warn("There are multiple versions of ：{}, please check the configuration.", path);
-            result.sort((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)));
+            log.warn("There are multiple versions of: {}, please check the configuration.", path);
+            result.sort(Collections.reverseOrder());
         }
         return result;
+    }
+    
+    /**
+     * Load content.
+     *
+     * @param path content path
+     * @param version content version
+     * @return loaded content
+     */
+    public String loadContent(final String path, final int version) {
+        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, version));
     }
 }

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseRuleMetaDataNodePath;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseRuleMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -90,19 +90,11 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            List<String> versions = metaDataVersionPersistService.getVersions(DatabaseRuleMetaDataNodePath.getVersionsPath(databaseName, ruleName, each.getKey()));
-            String nextVersion = versions.isEmpty() ? MetaDataVersion.DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
-            repository.persist(DatabaseRuleMetaDataNodePath.getVersionPath(databaseName, ruleName, each.getKey(), nextVersion), each.getValue());
-            if (Strings.isNullOrEmpty(getActiveVersion(databaseName, ruleName, each.getKey()))) {
-                repository.persist(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, each.getKey()), MetaDataVersion.DEFAULT_VERSION);
-            }
-            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), getActiveVersion(databaseName, ruleName, each.getKey()), nextVersion));
+            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey());
+            int nextVersion = metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
+            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1), nextVersion));
         }
         return result;
-    }
-    
-    private String getActiveVersion(final String databaseName, final String ruleName, final String key) {
-        return repository.query(DatabaseRuleMetaDataNodePath.getActiveVersionPath(databaseName, ruleName, key));
     }
     
     /**

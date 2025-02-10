@@ -10,12 +10,14 @@
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
+1. SQL Binder: Support case when then else segment bind - [#34600](https://github.com/apache/shardingsphere/pull/34600)
 
 ### Bug Fixes
 
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
-2. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
-3. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
+1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
+1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
+1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on PostgreSQLInsertStatement - [#34425](https://github.com/apache/shardingsphere/pull/34425)
 
 ### Change Logs
 

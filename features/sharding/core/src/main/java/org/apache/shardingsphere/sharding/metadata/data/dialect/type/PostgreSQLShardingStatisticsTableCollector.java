@@ -25,7 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -38,9 +38,9 @@ public final class PostgreSQLShardingStatisticsTableCollector implements Dialect
     private static final String FETCH_TABLE_DATA_LENGTH_SQL = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME= ? AND RELNAME = ?";
     
     @Override
-    public boolean appendRow(final Connection connection, final DataNode dataNode, final List<Object> row) throws SQLException {
-        row.add(getRowValue(connection, dataNode, FETCH_TABLE_ROWS_LENGTH_SQL, TABLE_ROWS_COLUMN_NAME).orElse(BigDecimal.ZERO));
-        row.add(getRowValue(connection, dataNode, FETCH_TABLE_DATA_LENGTH_SQL, DATA_LENGTH_COLUMN_NAME).orElse(BigDecimal.ZERO));
+    public boolean appendRow(final Connection connection, final DataNode dataNode, final Map<String, Object> rowColumnValues) throws SQLException {
+        rowColumnValues.put("row_count", getRowValue(connection, dataNode, FETCH_TABLE_ROWS_LENGTH_SQL, TABLE_ROWS_COLUMN_NAME).orElse(BigDecimal.ZERO));
+        rowColumnValues.put("size", getRowValue(connection, dataNode, FETCH_TABLE_DATA_LENGTH_SQL, DATA_LENGTH_COLUMN_NAME).orElse(BigDecimal.ZERO));
         return true;
     }
     

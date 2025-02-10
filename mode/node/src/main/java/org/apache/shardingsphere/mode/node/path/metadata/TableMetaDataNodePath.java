@@ -19,6 +19,9 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -30,68 +33,19 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataNodePath {
     
-    private static final String ROOT_NODE = "/metadata";
-    
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String TABLES_NODE = "tables";
     
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
-    
-    private static final String TABLES_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables";
-    
-    private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
-    
-    private static final String TABLE_SUFFIX = "/([\\w\\-]+)$";
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
-     * Get meta data tables path.
+     * Get table root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return tables path
+     * @return table root path
      */
-    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE);
-    }
-    
-    /**
-     * Get table active version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return tables active version path
-     */
-    public static String getTableActiveVersionPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, ACTIVE_VERSION_NODE);
-    }
-    
-    /**
-     * Get table versions path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return tables versions path
-     */
-    public static String getTableVersionsPath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName, VERSIONS_NODE);
-    }
-    
-    /**
-     * Get table version path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param version version
-     * @return table version path
-     */
-    public static String getTableVersionPath(final String databaseName, final String schemaName, final String tableName, final String version) {
-        return String.join("/", getTableVersionsPath(databaseName, schemaName, tableName), version);
+    public static String getTableRootPath(final String databaseName, final String schemaName) {
+        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
     /**
@@ -103,19 +57,19 @@ public final class TableMetaDataNodePath {
      * @return table path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", ROOT_NODE, databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
+        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
     }
     
     /**
-     * Get table name by active version path.
+     * Get table version node path generator.
      *
-     * @param path path
-     * @return table name
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table version node path generator
      */
-    public static Optional<String> getTableNameByActiveVersionPath(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String tableName) {
+        return new VersionNodePathGenerator(getTablePath(databaseName, schemaName, tableName));
     }
     
     /**
@@ -125,19 +79,9 @@ public final class TableMetaDataNodePath {
      * @return found table name
      */
     public static Optional<String> findTableName(final String path) {
-        Pattern pattern = Pattern.compile(ROOT_NODE + TABLES_PATTERN + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is table active version path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isTableActiveVersionPath(final String path) {
-        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
@@ -147,6 +91,15 @@ public final class TableMetaDataNodePath {
      * @return true or false
      */
     public static boolean isTablePath(final String path) {
-        return Pattern.compile(ROOT_NODE + TABLES_PATTERN + TABLE_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return findTableName(path).isPresent();
+    }
+    
+    /**
+     * Get table version pattern node path parser.
+     *
+     * @return table version node path parser
+     */
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }

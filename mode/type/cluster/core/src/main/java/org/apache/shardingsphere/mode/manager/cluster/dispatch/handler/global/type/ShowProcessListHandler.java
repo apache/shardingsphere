@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -57,7 +58,7 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
         String taskId = matcher.group(2);
         if (Type.ADDED == event.getType()) {
             if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator().reportLocalProcesses(instanceId, taskId);
+                new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, taskId);
             }
         } else if (Type.DELETED == event.getType()) {
             ProcessOperationLockRegistry.getInstance().notify(taskId);

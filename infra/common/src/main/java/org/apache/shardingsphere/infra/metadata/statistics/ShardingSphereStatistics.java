@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereStatistics {
     
-    private final Map<String, DatabaseStatistics> databaseStatisticsMap = new CaseInsensitiveMap<>();
+    private final Map<String, DatabaseStatistics> databaseStatisticsMap = Collections.synchronizedMap(new CaseInsensitiveMap<>());
     
     /**
      * Get database statistics.

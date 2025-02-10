@@ -64,13 +64,13 @@ class KillProcessHandlerTest {
     @Test
     void assertHandleKillLocalProcessWithCurrentInstance() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.ADDED));
-        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator()).cleanProcess("foo_instance_id", "foo_pid");
+        verify(contextManager.getPersistServiceFacade().getRepository()).delete(any());
     }
     
     @Test
     void assertHandleKillLocalProcessWithNotCurrentInstance() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/bar_instance_id:foo_pid", "", Type.ADDED));
-        verify(contextManager.getPersistCoordinatorFacade().getProcessPersistCoordinator(), times(0)).cleanProcess("bar_instance_id", "foo_pid");
+        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
     }
     
     @Test

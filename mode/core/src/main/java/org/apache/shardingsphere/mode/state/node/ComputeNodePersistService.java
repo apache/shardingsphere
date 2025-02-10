@@ -91,7 +91,8 @@ public final class ComputeNodePersistService {
             String value = repository.query(ComputeNodePath.getOnlinePath(each, instanceType));
             if (!Strings.isNullOrEmpty(value)) {
                 ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class));
-                result.add(loadInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData)));
+                ComputeNodeInstance instance = loadInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData));
+                result.add(instance);
             }
         }
         return result;

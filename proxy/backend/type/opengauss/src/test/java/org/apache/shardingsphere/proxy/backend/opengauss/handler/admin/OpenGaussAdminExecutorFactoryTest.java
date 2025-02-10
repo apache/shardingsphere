@@ -19,16 +19,22 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -41,7 +47,8 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class OpenGaussAdminExecutorFactoryTest {
     
     @Mock
@@ -64,18 +71,6 @@ class OpenGaussAdminExecutorFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithSelectDatabase() {
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement statement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
-        String sql = "select datcompatibility from pg_database where datname = 'sharding_db'";
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, sql, "", Collections.emptyList());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
-    }
-    
-    @Test
     void assertNewInstanceWithOtherSQL() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
@@ -84,5 +79,29 @@ class OpenGaussAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
+    }
+    
+    @Test
+    void assertNewInstanceWithSelectDatabase() {
+        DialectDatabaseStatisticsCollector statisticsCollector = mock(DialectDatabaseStatisticsCollector.class);
+        when(statisticsCollector.getStatisticsSchemaTables()).thenReturn(Collections.singletonMap("pg_catalog", Collections.singletonList("pg_database")));
+        when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"))).thenReturn(Optional.of(statisticsCollector));
+        SelectStatementContext sqlStatementContext = mockSelectStatementContext();
+        String sql = "select datcompatibility from pg_database where datname = 'sharding_db'";
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, sql, "", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
+    }
+    
+    private SelectStatementContext mockSelectStatementContext() {
+        SimpleTableSegment simpleTableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
+        when(simpleTableSegment.getTableName().getIdentifier().getValue()).thenReturn("pg_database");
+        TableSegmentBoundInfo tableSegmentBoundInfo = mock(TableSegmentBoundInfo.class, RETURNS_DEEP_STUBS);
+        when(tableSegmentBoundInfo.getOriginalSchema().getValue()).thenReturn("pg_catalog");
+        when(simpleTableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.of(tableSegmentBoundInfo));
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singletonList(simpleTableSegment));
+        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
+        return result;
     }
 }

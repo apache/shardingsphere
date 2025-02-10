@@ -86,6 +86,11 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
+    public String formatTableNamePattern(final String tableNamePattern) {
+        return tableNamePattern.toLowerCase();
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

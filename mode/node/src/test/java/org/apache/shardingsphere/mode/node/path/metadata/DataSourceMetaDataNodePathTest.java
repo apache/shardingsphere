@@ -54,45 +54,17 @@ class DataSourceMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetStorageUnitVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionPath("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+    void assertGetStorageUnitVersionNodePathGenerator() {
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
-    void assertGetStorageUnitVersionsPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageUnitVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-    }
-    
-    @Test
-    void assertGetStorageUnitActiveVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageUnitActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-    }
-    
-    @Test
-    void assertGetStorageNodeVersionsPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionsPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
-    }
-    
-    @Test
-    void assertGetStorageNodeVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionPath("foo_db", "foo_ds", "1"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/1"));
-    }
-    
-    @Test
-    void assertGetStorageNodeActiveVersionPath() {
-        assertThat(DataSourceMetaDataNodePath.getStorageNodeActiveVersionPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));
-    }
-    
-    @Test
-    void assertFindStorageUnitNameByActiveVersionPath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath("/metadata/foo_db/data_sources/units/foo_ds/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_ds"));
-    }
-    
-    @Test
-    void assertFindStorageUnitNameByActiveVersionPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findStorageUnitNameByActiveVersionPath("/xxx/foo_db/data_sources/units/foo_ds/active_version").isPresent());
+    void assertGetStorageNodeVersionNodePathGenerator() {
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getActiveVersionPath(), is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
+        assertThat(DataSourceMetaDataNodePath.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/0"));
     }
     
     @Test
@@ -105,18 +77,6 @@ class DataSourceMetaDataNodePathTest {
     @Test
     void assertFindStorageUnitNameByStorageUnitPathIfNotFound() {
         assertFalse(DataSourceMetaDataNodePath.findStorageUnitNameByStorageUnitPath("/xxx/foo_db/data_sources/units/foo_ds").isPresent());
-    }
-    
-    @Test
-    void assertFindStorageNodeNameByActiveVersionPath() {
-        Optional<String> actual = DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath("/metadata/foo_db/data_sources/nodes/foo_ds/active_version");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_ds"));
-    }
-    
-    @Test
-    void assertFindStorageNodeNameByActiveVersionPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePath.findStorageNodeNameByActiveVersionPath("/xxx/foo_db/data_sources/nodes/foo_ds/active_version").isPresent());
     }
     
     @Test
