@@ -117,24 +117,9 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     }
     
     private boolean isSelectedStatisticsSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
-        if (selectedSchemaTables.isEmpty()) {
-            return false;
-        }
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         Optional<DialectDatabaseStatisticsCollector> dialectStatisticsCollector = DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, databaseType);
-        if (!dialectStatisticsCollector.isPresent()) {
-            return false;
-        }
-        Map<String, Collection<String>> statisticalSchemaTables = dialectStatisticsCollector.get().getStatisticsSchemaTables();
-        for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
-            if (!statisticalSchemaTables.containsKey(each.getKey())) {
-                return false;
-            }
-            if (!statisticalSchemaTables.get(each.getKey()).containsAll(each.getValue())) {
-                return false;
-            }
-        }
-        return true;
+        return dialectStatisticsCollector.map(dialectDatabaseStatisticsCollector -> dialectDatabaseStatisticsCollector.isStatisticsTables(selectedSchemaTables)).orElse(false);
     }
     
     private boolean isSelectedShardingSphereSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {

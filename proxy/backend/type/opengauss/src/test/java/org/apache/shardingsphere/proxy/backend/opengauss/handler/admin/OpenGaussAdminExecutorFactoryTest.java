@@ -43,6 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,6 +73,9 @@ class OpenGaussAdminExecutorFactoryTest {
     
     @Test
     void assertNewInstanceWithOtherSQL() {
+        DialectDatabaseStatisticsCollector statisticsCollector = mock(DialectDatabaseStatisticsCollector.class);
+        when(statisticsCollector.isStatisticsTables(anyMap())).thenReturn(false);
+        when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"))).thenReturn(Optional.of(statisticsCollector));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
@@ -84,7 +88,7 @@ class OpenGaussAdminExecutorFactoryTest {
     @Test
     void assertNewInstanceWithSelectDatabase() {
         DialectDatabaseStatisticsCollector statisticsCollector = mock(DialectDatabaseStatisticsCollector.class);
-        when(statisticsCollector.getStatisticsSchemaTables()).thenReturn(Collections.singletonMap("pg_catalog", Collections.singletonList("pg_database")));
+        when(statisticsCollector.isStatisticsTables(anyMap())).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"))).thenReturn(Optional.of(statisticsCollector));
         SelectStatementContext sqlStatementContext = mockSelectStatementContext();
         String sql = "select datcompatibility from pg_database where datname = 'sharding_db'";
