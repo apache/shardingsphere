@@ -157,7 +157,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException {
+    public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(database.getName(), toBeUpdatedProps);
         afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, toBeUpdatedProps);
@@ -165,7 +165,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts,
-                                             final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+                                          final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         metaDataContextManager.getStorageUnitManager().alter(databaseName, toBeRegisteredProps);
         metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
@@ -174,7 +174,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
+    public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) {
         for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
             MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
