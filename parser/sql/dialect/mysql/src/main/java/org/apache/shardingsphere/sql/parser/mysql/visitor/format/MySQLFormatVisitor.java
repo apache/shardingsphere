@@ -739,7 +739,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
             if (null != ctx.UNDERSCORE_CHARSET()) {
                 formatPrint(ctx.UNDERSCORE_CHARSET().getText());
             }
-            visit(ctx.string_());
+            ctx.string_().forEach(this::visit);
         }
         return formattedSQL.toString();
     }
