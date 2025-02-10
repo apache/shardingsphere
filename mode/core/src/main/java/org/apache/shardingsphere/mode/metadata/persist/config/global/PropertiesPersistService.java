@@ -60,8 +60,6 @@ public final class PropertiesPersistService {
      */
     public void persist(final Properties props) {
         VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePath.getVersionNodePathGenerator();
-        int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
-        repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), YamlEngine.marshal(props));
-        metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
+        metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(props));
     }
 }

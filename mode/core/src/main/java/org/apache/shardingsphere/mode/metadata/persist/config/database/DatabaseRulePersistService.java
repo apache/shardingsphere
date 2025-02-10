@@ -91,9 +91,7 @@ public final class DatabaseRulePersistService {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey());
-            int nextVersion = metaDataVersionPersistService.getNextVersion(versionNodePathGenerator.getVersionsPath());
-            repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), each.getValue());
-            metaDataVersionPersistService.switchActiveVersion(versionNodePathGenerator, nextVersion);
+            int nextVersion = metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
             result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1), nextVersion));
         }
         return result;

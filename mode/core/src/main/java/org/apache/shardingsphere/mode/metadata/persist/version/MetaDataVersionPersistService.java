@@ -38,6 +38,20 @@ public final class MetaDataVersionPersistService {
     private final PersistRepository repository;
     
     /**
+     * Persist meta data.
+     *
+     * @param versionNodePathGenerator version node path generator
+     * @param content to be persisted content
+     * @return persisted meta data version
+     */
+    public int persist(final VersionNodePathGenerator versionNodePathGenerator, final String content) {
+        int nextVersion = getNextVersion(versionNodePathGenerator.getVersionsPath());
+        repository.persist(versionNodePathGenerator.getVersionPath(nextVersion), content);
+        switchActiveVersion(versionNodePathGenerator, nextVersion);
+        return nextVersion;
+    }
+    
+    /**
      * Switch active version.
      *
      * @param versionNodePathGenerator version node path generator
