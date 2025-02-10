@@ -85,7 +85,7 @@ string_
     ;
 
 stringLiterals
-    : (UNDERSCORE_CHARSET | UL_BINARY )? string_ | NCHAR_TEXT
+    : (UNDERSCORE_CHARSET | UL_BINARY )? string_+ | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -723,7 +723,7 @@ newColumn
 
 delimiterName
     : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
-    ; 
+    ;
 
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
@@ -739,7 +739,7 @@ eventName
 
 serverName
     : textOrIdentifier
-    ; 
+    ;
 
 wrapperName
     : textOrIdentifier
@@ -1209,7 +1209,7 @@ regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
-    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
+    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP
     | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
     ;
 

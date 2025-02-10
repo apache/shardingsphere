@@ -749,7 +749,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
         MySQLShowRelayLogEventsStatement result = new MySQLShowRelayLogEventsStatement();
         if (null != ctx.logName()) {
-            result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue());
+            result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals())).getValue());
         }
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
