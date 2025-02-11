@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
     
@@ -39,5 +41,12 @@ class GlobalRuleNodePathTest {
         assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getActiveVersionPath(), is("/rules/foo_rule/active_version"));
         assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionsPath(), is("/rules/foo_rule/versions"));
         assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionPath(0), is("/rules/foo_rule/versions/0"));
+    }
+    
+    @Test
+    void assertFindIdentifierByActiveVersionPath() {
+        assertTrue(GlobalRuleNodePath.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).isPresent());
+        assertThat(GlobalRuleNodePath.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).get(), is("foo_rule"));
+        assertFalse(GlobalRuleNodePath.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/versions", 1).isPresent());
     }
 }
