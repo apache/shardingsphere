@@ -42,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,7 +66,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database, propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
+        } catch (final ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }
     }
