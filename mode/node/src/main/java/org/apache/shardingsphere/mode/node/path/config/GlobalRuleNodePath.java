@@ -72,12 +72,12 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Get view version pattern node path parser.
+     * Get rule version node path parser.
      *
      * @param ruleTypeName rule type name
-     * @return view version node path parser
+     * @return rule version node path parser
      */
-    public static VersionNodePathParser getVersionNodePathParser(final String ruleTypeName) {
+    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleTypeName) {
         return new VersionNodePathParser(ruleTypeName);
     }
 }
