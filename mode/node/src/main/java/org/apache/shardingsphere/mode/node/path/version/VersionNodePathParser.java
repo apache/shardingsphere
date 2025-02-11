@@ -32,13 +32,10 @@ public final class VersionNodePathParser {
     
     private final Pattern versionPattern;
     
-    private final Pattern versionWildcardPattern;
-    
     public VersionNodePathParser(final String regex) {
         VersionNodePathGenerator generator = new VersionNodePathGenerator(regex);
         activeVersionPattern = Pattern.compile(generator.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         versionPattern = Pattern.compile(String.join("/", generator.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
-        versionWildcardPattern = Pattern.compile(generator.getVersionsPath(), Pattern.CASE_INSENSITIVE);
     }
     
     /**
@@ -81,7 +78,7 @@ public final class VersionNodePathParser {
      * @return found identifier
      */
     public Optional<String> findIdentifierByVersionsPath(final String versionsPath, final int identifierGroupIndex) {
-        Matcher matcher = versionWildcardPattern.matcher(versionsPath);
+        Matcher matcher = versionPattern.matcher(versionsPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }
