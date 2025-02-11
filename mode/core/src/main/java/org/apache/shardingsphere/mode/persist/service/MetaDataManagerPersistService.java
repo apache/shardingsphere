@@ -109,26 +109,23 @@ public interface MetaDataManagerPersistService {
      *
      * @param databaseName database name
      * @param toBeRegisteredProps to be registered storage unit properties
-     * @throws SQLException SQL exception
      */
-    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException;
+    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisteredProps);
     
     /**
      * Alter storage units.
      *
      * @param database database
      * @param toBeUpdatedProps to be updated storage unit properties
-     * @throws SQLException SQL exception
      */
-    void alterStorageUnits(ShardingSphereDatabase database, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
+    void alterStorageUnits(ShardingSphereDatabase database, Map<String, DataSourcePoolProperties> toBeUpdatedProps);
     
     /**
      * Unregister storage units.
      * @param database database
      * @param toBeDroppedStorageUnitNames to be dropped storage unit names
-     * @throws SQLException SQL exception
      */
-    void unregisterStorageUnits(ShardingSphereDatabase database, Collection<String> toBeDroppedStorageUnitNames) throws SQLException;
+    void unregisterStorageUnits(ShardingSphereDatabase database, Collection<String> toBeDroppedStorageUnitNames);
     
     /**
      * Alter single rule configuration.
@@ -162,9 +159,8 @@ public interface MetaDataManagerPersistService {
      *
      * @param database database
      * @param ruleName rule name
-     * @throws SQLException SQL exception
      */
-    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleName) throws SQLException;
+    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleName);
     
     /**
      * Alter global rule configuration.
@@ -177,7 +173,6 @@ public interface MetaDataManagerPersistService {
      * Alter properties.
      *
      * @param props pros
-     * @throws SQLException SQL exception
      */
-    void alterProperties(Properties props) throws SQLException;
+    void alterProperties(Properties props);
 }
