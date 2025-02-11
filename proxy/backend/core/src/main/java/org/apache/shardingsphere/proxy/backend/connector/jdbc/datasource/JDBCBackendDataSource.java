@@ -41,6 +41,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     @Override
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        System.out.println("databaseName: " + databaseName);
         return getConnections(databaseName, dataSourceName, connectionSize, connectionMode,
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType());
     }
