@@ -140,7 +140,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException {
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
         afterStorageUnitsRegistered(databaseName, originalMetaDataContexts, toBeRegisteredProps);
@@ -164,8 +164,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         clearServiceCache();
     }
     
-    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts,
-                                          final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         metaDataContextManager.getStorageUnitManager().alter(databaseName, toBeRegisteredProps);
         metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
