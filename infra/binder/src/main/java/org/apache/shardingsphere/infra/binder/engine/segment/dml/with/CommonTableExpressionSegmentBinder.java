@@ -21,11 +21,6 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedHashMultimap;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -43,11 +38,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Common table expression segment binder.
@@ -98,11 +98,7 @@ public final class CommonTableExpressionSegmentBinder {
         } else {
             Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
             bindWithColumns(commonTableExpressionSegment.getColumns(), commonTableExpressionSegment);
-            commonTableExpressionSegment.getColumns().forEach(each -> {
-                ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(each);
-                columnProjectionSegment.getColumn().setOwner(new OwnerSegment(0, 0, commonTableExpressionSegment.getAliasSegment().getIdentifier()));
-                projectionSegments.add(columnProjectionSegment);
-            });
+            commonTableExpressionSegment.getColumns().forEach(each -> projectionSegments.add(new ColumnProjectionSegment(each)));
             return new SimpleTableSegmentBinderContext(projectionSegments);
         }
     }
