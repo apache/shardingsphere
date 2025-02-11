@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -235,6 +236,6 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             }
             Thread.sleep(1000L);
         }
-        throw new RuntimeException("Failed to detect metadata update within 30 seconds");
+        throw new ReloadMetaDataContextFailedException();
     }
 }

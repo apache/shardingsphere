@@ -116,6 +116,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
+| 17011       | HY000     | Failed to reload meta data context.                           |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
