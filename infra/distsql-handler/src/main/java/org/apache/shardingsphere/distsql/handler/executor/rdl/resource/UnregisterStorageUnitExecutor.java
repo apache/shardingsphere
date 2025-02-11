@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,7 +57,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         checkInUsed(sqlStatement);
         try {
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().unregisterStorageUnits(database, sqlStatement.getStorageUnitNames());
-        } catch (final SQLException | ShardingSphereServerException ex) {
+        } catch (final ShardingSphereServerException ex) {
             throw new StorageUnitsOperateException("unregister", sqlStatement.getStorageUnitNames(), ex);
         }
     }
