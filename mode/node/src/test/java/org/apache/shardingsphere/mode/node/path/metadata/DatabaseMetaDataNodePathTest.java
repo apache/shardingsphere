@@ -50,11 +50,6 @@ class DatabaseMetaDataNodePathTest {
     }
     
     @Test
-    void assertGetVersionPath() {
-        assertThat(DatabaseMetaDataNodePath.getVersionPath("foo_rule", 1), is("foo_rule/1"));
-    }
-    
-    @Test
     void assertFindDatabaseNameWithNotContainsChildPath() {
         Optional<String> actual = DatabaseMetaDataNodePath.findDatabaseName("/metadata/foo_db", false);
         assertTrue(actual.isPresent());

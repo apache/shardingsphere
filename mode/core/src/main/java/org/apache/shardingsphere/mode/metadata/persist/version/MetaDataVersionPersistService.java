@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.persist.version;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -82,11 +81,11 @@ public final class MetaDataVersionPersistService {
     /**
      * Load content.
      *
-     * @param path content path
-     * @param version content version
+     * @param activeVersionPath active version path
+     * @param activeVersion active version
      * @return loaded content
      */
-    public String loadContent(final String path, final int version) {
-        return repository.query(DatabaseMetaDataNodePath.getVersionPath(path, version));
+    public String loadContent(final String activeVersionPath, final int activeVersion) {
+        return repository.query(VersionNodePathGenerator.getVersionPath(activeVersionPath, activeVersion));
     }
 }

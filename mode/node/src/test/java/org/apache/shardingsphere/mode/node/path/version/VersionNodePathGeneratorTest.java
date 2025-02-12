@@ -38,4 +38,9 @@ class VersionNodePathGeneratorTest {
     void assertGetVersionPath() {
         assertThat(new VersionNodePathGenerator("foo").getVersionPath(0), is("foo/versions/0"));
     }
+    
+    @Test
+    void assertGetVersionPathFromActiveVersion() {
+        assertThat(VersionNodePathGenerator.getVersionPath("foo_rule/active_version", 1), is("foo_rule/versions/1"));
+    }
 }
