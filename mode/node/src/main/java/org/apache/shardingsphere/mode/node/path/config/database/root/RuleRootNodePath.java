@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.config.database.root;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.regex.Pattern;
 
@@ -40,7 +41,7 @@ public final class RuleRootNodePath {
     
     public RuleRootNodePath(final String ruleType) {
         this.ruleType = ruleType;
-        nodePrefix = String.join("/", ROOT_NODE, "[\\w\\-]+", RULE_NODE, ruleType, "");
+        nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.IDENTIFIER, RULE_NODE, ruleType, "");
         pathPattern = Pattern.compile(nodePrefix + ".*");
     }
     
