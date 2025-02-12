@@ -65,6 +65,24 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_cast_as_year">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="CAST(-1.1 AS YEAR)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="24" text="CAST(-1.1 AS YEAR)">
+                        <parameter>
+                            <literal-expression value="-1.1" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="YEAR" start-index="20" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_cast">
         <projections start-index="7" stop-index="44">
             <expression-projection text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)" start-index="7" stop-index="44">
