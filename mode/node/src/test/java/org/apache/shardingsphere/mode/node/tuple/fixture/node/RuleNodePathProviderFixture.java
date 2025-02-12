@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.tuple.fixture.node;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.rule.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
 
 import java.util.Arrays;

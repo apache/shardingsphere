@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule.item;
+package org.apache.shardingsphere.mode.node.path.config.database.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.RuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
