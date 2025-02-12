@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
  */
 public final class OracleJdbcUrlParser implements DialectJdbcUrlParser {
     
-    private static final Pattern JDBC_URL_PATTERN = Pattern.compile("jdbc:oracle:thin:@(?<hostDelimiter>//)?(?<host>[\\w\\-\\.]+):(?<port>\\d+)(?<databaseDelimiter>[:/]{1}){1}(?<database>.*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern JDBC_URL_PATTERN = Pattern.compile("jdbc:oracle:thin:@(?<hostDelimiter>//)?(?<host>[\\w\\-\\.]+):(?<port>\\d+)(?<databaseDelimiter>[:/]{1}){1}(?<database>.*)",
+            Pattern.CASE_INSENSITIVE);
     
     @Override
     public boolean accept(final String jdbcUrl) {
