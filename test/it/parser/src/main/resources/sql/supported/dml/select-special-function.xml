@@ -239,6 +239,7 @@
     <sql-case id="select_json_storage_free" value="SELECT JSON_STORAGE_FREE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
+    <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />

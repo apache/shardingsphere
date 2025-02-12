@@ -10010,4 +10010,12 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_multi_literals">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="xxx" start-index="7" stop-index="17">
+                <literal-expression start-index="7" stop-index="17" value="xxx" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

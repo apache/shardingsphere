@@ -312,4 +312,5 @@
     <sql-case id="select_with_not_operator_boolean" value="SELECT NOT TRUE, NOT FALSE" db-types="MySQL" />
     <sql-case id="select_with_zone_keyword" value="SELECT order_id, zone FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_reserved_word_range_and_table_owner" value="SELECT * FROM t_order o WHERE o.range = 1" db-types="MySQL"/>
+    <sql-case id="select_with_multi_literals" value="SELECT 'x' 'x' 'x'" db-types="MySQL"/>
 </sql-cases>

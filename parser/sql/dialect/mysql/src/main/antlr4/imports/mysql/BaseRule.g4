@@ -995,7 +995,7 @@ aggregationExpression
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    : aggregationFunctionName LP_ (distinct | all)? aggregationExpression? collateClause? separatorName? RP_ overClause?
     ;
 
 jsonFunction
@@ -1041,6 +1041,10 @@ aggregationFunctionName
 
 distinct
     : DISTINCT
+    ;
+
+all
+    : ALL
     ;
 
 overClause

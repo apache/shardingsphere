@@ -4049,6 +4049,28 @@
         </from>
     </select>
 
+    <select sql-case-id="select_json_table_with_path">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="71">
+            <function-table start-index="14" stop-index="71" table-alias="t">
+                <table-function function-name="JSON_TABLE" text="JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a'))">
+                    <parameter>
+                        <literal-expression value="[]" start-index="25" stop-index="28" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="$[*]" start-index="31" stop-index="35" />
+                    </parameter>
+                    <parameter>
+                        <!-- TODO parse json table columns to new segment -->
+                        <literal-expression value="COLUMNS (p NCHAR PATH '$.a')" start-index="38" stop-index="65" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_json_type">
         <projections start-index="7" stop-index="26">
             <expression-projection start-index="7" stop-index="26" text="JSON_TYPE('[1,2,3]')">
