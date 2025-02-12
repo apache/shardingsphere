@@ -58,7 +58,7 @@ class RuleConfigurationChangedHandlerTest {
     void setUp() {
         handler = new RuleConfigurationChangedHandler(contextManager);
         RuleNodePathProvider ruleNodePathProvider = mock(RuleNodePathProvider.class, RETURNS_DEEP_STUBS);
-        when(ruleNodePathProvider.getRuleNodePath()).thenReturn(new RuleNodePath("fixture", Collections.singleton("named"), Collections.singleton("unique")));
+        when(ruleNodePathProvider.getRuleNodePath()).thenReturn(new RuleNodePath("foo_rule", Collections.singleton("named"), Collections.singleton("unique")));
         when(ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)).thenReturn(Collections.singleton(ruleNodePathProvider));
     }
     
@@ -85,26 +85,26 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithIgnoreType() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/xxx/active_version", "foo", Type.IGNORED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/foo_rule_item/active_version", "foo", Type.IGNORED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithNamedRuleItemAdded() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/xxx/active_version", "0", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/foo_rule_item/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithNamedRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/xxx/active_version", "0", Type.UPDATED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/foo_rule_item/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterNamedRuleItem.class));
     }
     
     @Test
     void assertHandleWithNamedRuleItemDropped() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/xxx", "foo", Type.DELETED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/named/foo_rule_item", "foo", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(any(DropNamedRuleItem.class));
     }
     
@@ -116,13 +116,13 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithUniqueRuleItemAltered() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "0", Type.UPDATED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/unique/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(any(AlterUniqueRuleItem.class));
     }
     
     @Test
     void assertHandleWithUniqueRuleItemDropped() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/fixture/rules/fixture/unique/active_version", "foo", Type.DELETED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule/unique/active_version", "foo", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(any(DropUniqueRuleItem.class));
     }
 }
