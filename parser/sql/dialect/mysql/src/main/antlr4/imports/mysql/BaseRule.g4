@@ -1152,6 +1152,7 @@ castType
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
     | castTypeName = FLOAT precision?
+    | castTypeName = YEAR
     ;
 
 positionFunction
