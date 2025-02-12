@@ -35,7 +35,8 @@ public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
     
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser PARSER =
+            new VersionNodePathParser(getViewPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
     
     /**
      * Get view root path.

@@ -35,7 +35,8 @@ public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
     
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getTablePath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser PARSER =
+            new VersionNodePathParser(getTablePath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
     
     /**
      * Get table root path.

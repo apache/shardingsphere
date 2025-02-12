@@ -41,9 +41,11 @@ public final class DataSourceMetaDataNodePath {
     
     private static final String UNITS_NODE = "units";
     
-    private static final VersionNodePathParser STORAGE_UNITS_PARSER = new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser STORAGE_UNITS_PARSER =
+            new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
     
-    private static final VersionNodePathParser STORAGE_NODES_PARSER = new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser STORAGE_NODES_PARSER =
+            new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
     
     /**
      * Get data source root path.
