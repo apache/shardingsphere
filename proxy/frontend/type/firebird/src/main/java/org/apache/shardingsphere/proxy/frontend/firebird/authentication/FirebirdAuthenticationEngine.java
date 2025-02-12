@@ -114,11 +114,11 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new org.apache.shardingsphere.infra.exception.postgresql.exception.authority.UnknownUsernameException(username));
         plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user.get()));
         FirebirdAuthenticationMethod userPlugin = connectPacket.getPlugin();
-        if (plugin == userPlugin) {
+        if (plugin != userPlugin) {
+            acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
+        } else if (plugin != FirebirdAuthenticationMethod.LEGACY_AUTH) {
             authData = new FirebirdSRPAuthenticationData(plugin.getHashAlgorithm(), username, user.get().getPassword(), connectPacket.getAuthData());
             acceptPacket.setAcceptDataPacket(authData.getSalt(), authData.getPublicKeyHex(), plugin, 0, "");
-        } else {
-            acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
         }
         context.writeAndFlush(acceptPacket);
         currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase());

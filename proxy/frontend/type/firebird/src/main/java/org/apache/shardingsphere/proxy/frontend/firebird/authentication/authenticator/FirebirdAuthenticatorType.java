@@ -41,7 +41,7 @@ public enum FirebirdAuthenticatorType implements AuthenticatorType {
 
     SRP512(FirebirdSRPAuthenticator.class),
 
-    LEGACY(FirebirdLegacyAuthenticator.class);
+    LEGACY_AUTH(FirebirdLegacyAuthenticator.class);
 
     private final Class<? extends FirebirdAuthenticator> authenticatorClass;
     
