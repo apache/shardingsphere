@@ -23,6 +23,7 @@
     <sql-case id="select_count_with_sub" value="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1-1" />
     <sql-case id="select_count_with_sub_with_whitespace" value="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1 - 1" />
     <sql-case id="select_max" value="SELECT MAX(user_id) AS max_user_id FROM t_order" />
+    <sql-case id="select_max_with_all" value="SELECT MAX(ALL user_id) AS max_user_id FROM t_order" db-types="MySQL" />
     <sql-case id="select_min" value="SELECT MIN(user_id) AS min_user_id FROM t_order" />
     <sql-case id="select_avg" value="SELECT AVG(user_id) AS user_id_avg FROM t_order" />
     <sql-case id="select_count_with_binding_tables_without_join" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" />
@@ -35,9 +36,7 @@
     <sql-case id="select_bit_and" value="SELECT BIT_AND(1)" db-types="MySQL" />
     <sql-case id="select_bit_or" value="SELECT BIT_OR(1)" db-types="MySQL" />
     <sql-case id="select_bit_xor" value="SELECT BIT_XOR(user_id) FROM t_order" db-types="MySQL" />
-    <sql-case id="select_approx_count"
-              value="select owner, approx_count(*) , approx_rank(partition by owner order by approx_count(*) desc) from t group by owner having approx_rank(partition by owner order by approx_count(*) desc) &lt;= 1 order by 1"
-              db-types="Oracle"/>
+    <sql-case id="select_approx_count" value="select owner, approx_count(*) , approx_rank(partition by owner order by approx_count(*) desc) from t group by owner having approx_rank(partition by owner order by approx_count(*) desc) &lt;= 1 order by 1" db-types="Oracle"/>
     <sql-case id="select_group_concat" value="SELECT GROUP_CONCAT(user_id) AS user_id_group_concat FROM t_order" db-types="MySQL,Doris,openGauss"/>
     <sql-case id="select_group_concat_with_distinct_with_separator" value="SELECT GROUP_CONCAT(distinct user_id SEPARATOR ' ') AS user_id_group_concat FROM t_order" db-types="MySQL,Doris,openGauss"/>
 </sql-cases>
