@@ -72,7 +72,7 @@ public final class VersionNodePathGenerator {
     
     /**
      *  Is active version path.
-     *  
+     *
      * @param path path
      * @return is active version path or not
      */
