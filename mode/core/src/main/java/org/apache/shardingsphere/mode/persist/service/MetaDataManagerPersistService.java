@@ -158,9 +158,9 @@ public interface MetaDataManagerPersistService {
      * Remove rule configuration.
      *
      * @param database database
-     * @param ruleName rule name
+     * @param ruleTypeName rule type name
      */
-    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleName);
+    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleTypeName);
     
     /**
      * Alter global rule configuration.
