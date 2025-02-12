@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
  * Database rule meta data node path.
@@ -30,6 +32,8 @@ public final class DatabaseRuleMetaDataNodePath {
     private static final String ROOT_NODE = "/metadata";
     
     private static final String RULE_NODE = "rules";
+    
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getRulePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get database root path.
@@ -74,5 +78,14 @@ public final class DatabaseRuleMetaDataNodePath {
      */
     public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleTypeName, final String ruleItemName) {
         return new VersionNodePathGenerator(getRulePath(databaseName, ruleTypeName, ruleItemName));
+    }
+    
+    /**
+     * Get database rule version pattern node path parser.
+     *
+     * @return database rule version node path parser
+     */
+    public static VersionNodePathParser getVersionNodePathParser() {
+        return PARSER;
     }
 }
