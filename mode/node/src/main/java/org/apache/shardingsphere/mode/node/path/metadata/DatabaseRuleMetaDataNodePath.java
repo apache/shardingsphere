@@ -58,7 +58,7 @@ public final class DatabaseRuleMetaDataNodePath {
      * @param databaseName database name
      * @param ruleTypeName rule type name
      * @param ruleItemName rule item name
-     * @return database rule path without version
+     * @return database rule path
      */
     public static String getRulePath(final String databaseName, final String ruleTypeName, final String ruleItemName) {
         return String.join("/", getRulePath(databaseName, ruleTypeName), ruleItemName);

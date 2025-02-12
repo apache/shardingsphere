@@ -117,13 +117,12 @@ public final class DatabaseRulePersistService {
     public Collection<MetaDataVersion> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(configs)) {
-            Collection<RepositoryTuple> repositoryTuples = yamlRepositoryTupleSwapperEngine.swapToRepositoryTuples(each);
+            List<RepositoryTuple> repositoryTuples = new LinkedList<>(yamlRepositoryTupleSwapperEngine.swapToRepositoryTuples(each));
             if (repositoryTuples.isEmpty()) {
                 continue;
             }
-            List<RepositoryTuple> newRepositoryTuples = new LinkedList<>(repositoryTuples);
-            Collections.reverse(newRepositoryTuples);
-            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), newRepositoryTuples));
+            Collections.reverse(repositoryTuples);
+            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
         }
         return result;
     }
