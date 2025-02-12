@@ -87,12 +87,12 @@ public final class DatabaseRulePersistService {
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleTypeName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleName, each.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleTypeName, each.getKey());
             int nextVersion = metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
-            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
+            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleTypeName, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
         }
         return result;
     }
@@ -128,10 +128,10 @@ public final class DatabaseRulePersistService {
         return result;
     }
     
-    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleName, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleTypeName, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            String toBeDeletedKey = DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleName, each.getKey());
+            String toBeDeletedKey = DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleTypeName, each.getKey());
             repository.delete(toBeDeletedKey);
             result.add(new MetaDataVersion(toBeDeletedKey));
         }
