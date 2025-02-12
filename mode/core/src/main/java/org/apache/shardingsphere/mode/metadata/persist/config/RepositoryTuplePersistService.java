@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +32,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class RepositoryTuplePersistService {
-    
-    private static final String ACTIVE_VERSION_PATTERN = "/active_version$";
     
     private final PersistRepository repository;
     
@@ -45,8 +42,7 @@ public final class RepositoryTuplePersistService {
      * @return loaded repository tuples
      */
     public Collection<RepositoryTuple> load(final String rootNode) {
-        Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-        return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::createRepositoryTuple).collect(Collectors.toList());
+        return loadNodes(rootNode).stream().filter(VersionNodePathGenerator::isActiveVersionPath).map(this::createRepositoryTuple).collect(Collectors.toList());
     }
     
     private Collection<String> loadNodes(final String rootNode) {

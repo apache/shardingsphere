@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
@@ -57,7 +57,7 @@ public final class RuleConfigurationChangedHandler {
             return;
         }
         if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            if (!DatabaseMetaDataNodePath.isActiveVersionPath(event.getKey())) {
+            if (!VersionNodePathGenerator.isActiveVersionPath(event.getKey())) {
                 return;
             }
             int version = Integer.parseInt(event.getValue());

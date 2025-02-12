@@ -35,8 +35,6 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String SCHEMAS_NODE = "schemas";
     
-    private static final String ACTIVE_VERSION_NODE = "active_version";
-    
     /**
      * Get meta data root path.
      *
@@ -103,14 +101,5 @@ public final class DatabaseMetaDataNodePath {
         Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     *  Is active version path.
-     * @param path path
-     * @return is active version path or not
-     */
-    public static boolean isActiveVersionPath(final String path) {
-        return path.endsWith(ACTIVE_VERSION_NODE);
     }
 }

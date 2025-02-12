@@ -69,4 +69,14 @@ public final class VersionNodePathGenerator {
     public static String getVersionPath(final String activeVersionPath, final int activeVersion) {
         return String.join("/", activeVersionPath.replace(ACTIVE_VERSION, VERSIONS), String.valueOf(activeVersion));
     }
+    
+    /**
+     *  Is active version path.
+     *
+     * @param path path
+     * @return is active version path or not
+     */
+    public static boolean isActiveVersionPath(final String path) {
+        return path.endsWith(ACTIVE_VERSION);
+    }
 }
