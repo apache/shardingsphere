@@ -40,7 +40,7 @@ public final class NamedRuleItemNodePath {
     
     public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
+        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
         versionNodePathParser = new VersionNodePathParser(pattern);
         itemPathPattern = Pattern.compile(pattern + "$");
     }
