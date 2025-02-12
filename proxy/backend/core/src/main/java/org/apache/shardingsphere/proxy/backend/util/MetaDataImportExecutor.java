@@ -75,7 +75,7 @@ public final class MetaDataImportExecutor {
         }
     }
     
-    private void importProps(final YamlProxyServerConfiguration yamlServerConfig) throws SQLException {
+    private void importProps(final YamlProxyServerConfiguration yamlServerConfig) {
         contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
     }
     
