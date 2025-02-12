@@ -54,10 +54,10 @@ public final class MySQLInformationSchemaExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom().get()).getTableName().getIdentifier().getValue();
-        Map<String, Collection<String>> selectedSchemaTables = Collections.singletonMap("information_schema", Collections.singletonList(tableName));
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
         }
+        Map<String, Collection<String>> selectedSchemaTables = Collections.singletonMap("information_schema", Collections.singletonList(tableName));
         if (isSelectSystemTable(selectedSchemaTables)) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
