@@ -19,33 +19,14 @@ package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Standard JDBC URL parser.
  */
 public final class StandardJdbcUrlParser {
-    
-    private static final String SCHEMA_PATTERN = "(?<schema>[\\w-.+:%]+)\\s*";
-    
-    private static final String AUTHORITY_PATTERN = "(?://(?<authority>[^/?#]*))?\\s*";
-    
-    private static final String PATH_PATTERN = "(?:/(?!\\s*/)(?<path>[^?#]*))?";
-    
-    private static final String QUERY_PATTERN = "(?:\\?(?!\\s*\\?)(?<query>[^#]*))?";
-    
-    private static final Pattern CONNECTION_URL_PATTERN = Pattern.compile(SCHEMA_PATTERN + AUTHORITY_PATTERN + PATH_PATTERN + QUERY_PATTERN, Pattern.CASE_INSENSITIVE);
-    
-    private static final String AUTHORITY_GROUP_KEY = "authority";
-    
-    private static final String PATH_GROUP_KEY = "path";
-    
-    private static final String QUERY_GROUP_KEY = "query";
     
     /**
      * Parse JDBC URL.
@@ -54,26 +35,12 @@ public final class StandardJdbcUrlParser {
      * @return parsed JDBC URL
      */
     public JdbcUrl parse(final String jdbcUrl) {
-        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
-        ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        String authority = matcher.group(AUTHORITY_GROUP_KEY);
-        ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
-    }
-    
-    private String parseHostname(final String authority) {
-        return authority.contains(":") ? authority.split(":")[0] : authority;
-    }
-    
-    private int parsePort(final String authority) {
-        if (!authority.contains(":")) {
-            return -1;
+        for (DialectJdbcUrlParser each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlParser.class)) {
+            if (each.accept(jdbcUrl)) {
+                return each.parse(jdbcUrl);
+            }
         }
-        String port = authority.split(":")[1];
-        if (port.contains(",")) {
-            port = port.split(",")[0];
-        }
-        return Integer.parseInt(port);
+        return new DefaultJdbcUrlParser().parse(jdbcUrl);
     }
     
     /**
