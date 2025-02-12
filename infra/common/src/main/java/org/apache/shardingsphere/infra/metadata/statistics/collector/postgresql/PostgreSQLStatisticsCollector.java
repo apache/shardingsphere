@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -24,30 +26,24 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Statistics collector for PostgreSQL.
  */
 public final class PostgreSQLStatisticsCollector implements DialectDatabaseStatisticsCollector {
     
-    private static final Map<String, Collection<String>> STATISTICS_SCHEMA_TABLES = new ConcurrentHashMap<>();
+    private static final Map<String, Collection<String>> STATISTICS_SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
     static {
         for (PostgreSQLTableStatisticsCollector each : ShardingSphereServiceLoader.getServiceInstances(PostgreSQLTableStatisticsCollector.class)) {
             if (!STATISTICS_SCHEMA_TABLES.containsKey(each.getSchemaName())) {
-                STATISTICS_SCHEMA_TABLES.put(each.getSchemaName(), new LinkedList<>());
+                STATISTICS_SCHEMA_TABLES.put(each.getSchemaName(), new CaseInsensitiveSet<>());
             }
             STATISTICS_SCHEMA_TABLES.get(each.getSchemaName()).add(each.getTableName());
         }
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getStatisticsSchemaTables() {
-        return STATISTICS_SCHEMA_TABLES;
     }
     
     @Override
@@ -55,6 +51,22 @@ public final class PostgreSQLStatisticsCollector implements DialectDatabaseStati
                                                                             final ShardingSphereMetaData metaData) throws SQLException {
         Optional<PostgreSQLTableStatisticsCollector> tableStatisticsCollector = TypedSPILoader.findService(PostgreSQLTableStatisticsCollector.class, String.format("%s.%s", schemaName, tableName));
         return tableStatisticsCollector.isPresent() ? Optional.of(tableStatisticsCollector.get().collect(databaseName, schemaName, tableName, metaData)) : Optional.empty();
+    }
+    
+    @Override
+    public boolean isStatisticsTables(final Map<String, Collection<String>> schemaTables) {
+        if (schemaTables.isEmpty()) {
+            return false;
+        }
+        for (Entry<String, Collection<String>> entry : schemaTables.entrySet()) {
+            if (!STATISTICS_SCHEMA_TABLES.containsKey(entry.getKey())) {
+                return false;
+            }
+            if (!STATISTICS_SCHEMA_TABLES.get(entry.getKey()).containsAll(entry.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override

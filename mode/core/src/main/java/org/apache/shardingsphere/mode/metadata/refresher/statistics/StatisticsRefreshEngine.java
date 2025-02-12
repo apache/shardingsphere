@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,10 +78,11 @@ public final class StatisticsRefreshEngine {
                     }
                 }
             }
+            cleanStatisticsData();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Refresh statistics error.", ex);
+            log.warn("Refresh statistics error.", ex);
         }
     }
     
@@ -113,7 +117,23 @@ public final class StatisticsRefreshEngine {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Refresh {}.{}.{} statistics failed.", databaseName, schemaName, table.getName(), ex);
+            log.warn("Refresh {}.{}.{} statistics failed.", databaseName, schemaName, table.getName(), ex);
+        }
+    }
+    
+    private void cleanStatisticsData() {
+        try {
+            ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+            ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
+            for (Entry<String, DatabaseStatistics> entry : statistics.getDatabaseStatisticsMap().entrySet()) {
+                if (!metaData.containsDatabase(entry.getKey())) {
+                    contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
+                }
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Clean up useless statistics data failed.", ex);
         }
     }
 }

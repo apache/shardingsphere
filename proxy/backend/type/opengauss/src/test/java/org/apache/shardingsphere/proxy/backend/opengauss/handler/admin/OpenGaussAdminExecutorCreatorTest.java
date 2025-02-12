@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectDatabase() {
-        setUp("pg_database");
+        initDialectDatabaseStatisticsCollector(true);
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_database");
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
                 .create(selectStatementContext, "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "postgres", Collections.emptyList());
@@ -61,7 +62,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectTables() {
-        setUp("pg_tables");
+        initDialectDatabaseStatisticsCollector(true);
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_tables");
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
                 .create(selectStatementContext, "select schemaname, tablename from pg_tables where schemaname = 'sharding_db'", "postgres", Collections.emptyList());
@@ -71,7 +72,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectRoles() {
-        setUp("pg_roles");
+        initDialectDatabaseStatisticsCollector(true);
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_roles");
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
                 .create(selectStatementContext, "select rolname from pg_roles", "postgres", Collections.emptyList());
@@ -81,6 +82,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateExecutorForSelectVersion() {
+        initDialectDatabaseStatisticsCollector(false);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, "VERSION()")));
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, "select VERSION()", "postgres", Collections.emptyList());
@@ -90,6 +92,7 @@ class OpenGaussAdminExecutorCreatorTest {
     
     @Test
     void assertCreateOtherExecutor() {
+        initDialectDatabaseStatisticsCollector(false);
         OpenGaussAdminExecutorCreator creator = new OpenGaussAdminExecutorCreator();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
         when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
@@ -97,9 +100,9 @@ class OpenGaussAdminExecutorCreatorTest {
         assertThat(creator.create(sqlStatementContext, "", "", Collections.emptyList()), is(Optional.empty()));
     }
     
-    private void setUp(final String tableName) {
+    private void initDialectDatabaseStatisticsCollector(final boolean isStatisticsTables) {
         DialectDatabaseStatisticsCollector statisticsCollector = mock(DialectDatabaseStatisticsCollector.class);
-        when(statisticsCollector.getStatisticsSchemaTables()).thenReturn(Collections.singletonMap("pg_catalog", Collections.singletonList(tableName)));
+        when(statisticsCollector.isStatisticsTables(anyMap())).thenReturn(isStatisticsTables);
         when(DatabaseTypedSPILoader.findService(DialectDatabaseStatisticsCollector.class, TypedSPILoader.getService(DatabaseType.class, "openGauss"))).thenReturn(Optional.of(statisticsCollector));
     }
     
