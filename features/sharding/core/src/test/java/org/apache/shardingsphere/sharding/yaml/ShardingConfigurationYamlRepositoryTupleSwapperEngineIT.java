@@ -51,13 +51,13 @@ class ShardingConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlReposi
         assertRepositoryTuple(actualRepositoryTuples.get(6),
                 "auditors/sharding_key_required_auditor", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getAuditors().get("sharding_key_required_auditor"));
         assertRepositoryTuple(actualRepositoryTuples.get(7),
-                "default_strategies/default_database_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultDatabaseStrategy());
+                "default_database_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultDatabaseStrategy());
         assertRepositoryTuple(actualRepositoryTuples.get(8),
-                "default_strategies/default_table_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultTableStrategy());
+                "default_table_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultTableStrategy());
         assertRepositoryTuple(actualRepositoryTuples.get(9),
-                "default_strategies/default_key_generate_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultKeyGenerateStrategy());
+                "default_key_generate_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultKeyGenerateStrategy());
         assertRepositoryTuple(actualRepositoryTuples.get(10),
-                "default_strategies/default_audit_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultAuditStrategy());
+                "default_audit_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultAuditStrategy());
         assertRepositoryTuple(actualRepositoryTuples.get(11),
                 "tables/t_user", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
         assertRepositoryTuple(actualRepositoryTuples.get(12),
@@ -71,7 +71,7 @@ class ShardingConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlReposi
                 new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(0));
         assertRepositoryTuple(actualRepositoryTuples.get(16), "binding_tables/foo", new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(1));
         assertRepositoryTuple(actualRepositoryTuples.get(17),
-                "default_strategies/default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());
+                "default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());
         assertRepositoryTuple(actualRepositoryTuples.get(18),
                 "sharding_cache", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingCache());
     }

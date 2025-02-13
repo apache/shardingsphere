@@ -43,15 +43,15 @@ public final class ShardingRuleNodePathProvider implements DatabaseRuleNodePathP
     
     public static final String AUDITORS = "auditors";
     
-    public static final String DEFAULT_DATABASE_STRATEGY = "default_strategies/default_database_strategy";
+    public static final String DEFAULT_DATABASE_STRATEGY = "default_database_strategy";
     
-    public static final String DEFAULT_TABLE_STRATEGY = "default_strategies/default_table_strategy";
+    public static final String DEFAULT_TABLE_STRATEGY = "default_table_strategy";
     
-    public static final String DEFAULT_KEY_GENERATE_STRATEGY = "default_strategies/default_key_generate_strategy";
+    public static final String DEFAULT_KEY_GENERATE_STRATEGY = "default_key_generate_strategy";
     
-    public static final String DEFAULT_AUDIT_STRATEGY = "default_strategies/default_audit_strategy";
+    public static final String DEFAULT_AUDIT_STRATEGY = "default_audit_strategy";
     
-    public static final String DEFAULT_SHARDING_COLUMN = "default_strategies/default_sharding_column";
+    public static final String DEFAULT_SHARDING_COLUMN = "default_sharding_column";
     
     public static final String SHARDING_CACHE = "sharding_cache";
     
