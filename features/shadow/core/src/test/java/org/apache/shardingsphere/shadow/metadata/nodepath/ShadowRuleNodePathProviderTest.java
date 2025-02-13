@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -29,11 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowRuleNodePathProviderTest {
     
-    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, ShadowRuleConfiguration.class);
+    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, ShadowRuleConfiguration.class);
     
     @Test
-    void assertGetRuleNodePath() {
-        RuleNodePath actual = pathProvider.getRuleNodePath();
+    void assertGetDatabaseRuleNodePath() {
+        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(3));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.SHADOW_ALGORITHMS));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));

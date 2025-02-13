@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.mode.node.tuple.fixture.node;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
 import java.util.Arrays;
 
-public final class RuleNodePathProviderFixture implements RuleNodePathProvider {
+public final class RuleNodePathProviderFixture implements DatabaseRuleNodePathProvider {
     
     @Override
-    public RuleNodePath getRuleNodePath() {
-        return new RuleNodePath("node", Arrays.asList("map_value", "gens"),
+    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
+        return new DatabaseRuleNodePath("node", Arrays.asList("map_value", "gens"),
                 Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
     }
     

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Single rule node path provider.
  */
-public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
+public final class SingleRuleNodePathProvider implements DatabaseRuleNodePathProvider {
     
     public static final String RULE_TYPE = "single";
     
@@ -36,10 +36,10 @@ public final class SingleRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String DEFAULT_DATA_SOURCE = "default_data_source";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
+    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
     
     @Override
-    public RuleNodePath getRuleNodePath() {
+    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

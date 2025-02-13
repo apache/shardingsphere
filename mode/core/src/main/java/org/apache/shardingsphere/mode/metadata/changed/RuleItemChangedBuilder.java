@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.changed;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 import java.util.Optional;
@@ -40,11 +40,11 @@ public final class RuleItemChangedBuilder {
      * @return built rule item
      */
     public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String path, final Integer currentActiveVersion, final RuleItemChangedBuildExecutor<T> executor) {
-        for (RuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(RuleNodePathProvider.class)) {
-            if (!each.getRuleNodePath().getRoot().isValidatedPath(path)) {
+        for (DatabaseRuleNodePathProvider each : ShardingSphereServiceLoader.getServiceInstances(DatabaseRuleNodePathProvider.class)) {
+            if (!each.getDatabaseRuleNodePath().getRoot().isValidatedPath(path)) {
                 continue;
             }
-            Optional<T> result = executor.build(each.getRuleNodePath(), databaseName, path, currentActiveVersion);
+            Optional<T> result = executor.build(each.getDatabaseRuleNodePath(), databaseName, path, currentActiveVersion);
             if (result.isPresent()) {
                 return result;
             }

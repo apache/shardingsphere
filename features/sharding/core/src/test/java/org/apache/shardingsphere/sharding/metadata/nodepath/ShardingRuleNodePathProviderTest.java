@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.jupiter.api.Test;
@@ -32,11 +32,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class ShardingRuleNodePathProviderTest {
     
-    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, ShardingRuleConfiguration.class);
+    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, ShardingRuleConfiguration.class);
     
     @Test
-    void assertGetRuleNodePath() {
-        RuleNodePath actual = pathProvider.getRuleNodePath();
+    void assertGetDatabaseRuleNodePath() {
+        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodePathProvider.TABLES, ShardingRuleNodePathProvider.AUTO_TABLES, ShardingRuleNodePathProvider.BINDING_TABLES,
                 ShardingRuleNodePathProvider.SHARDING_ALGORITHMS, ShardingRuleNodePathProvider.KEY_GENERATORS, ShardingRuleNodePathProvider.AUDITORS);

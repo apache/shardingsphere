@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Rule node path.
+ * Database rule node path.
  */
 @Getter
-public final class RuleNodePath {
+public final class DatabaseRuleNodePath {
     
     private final RuleRootNodePath root;
     
@@ -38,7 +38,7 @@ public final class RuleNodePath {
     
     private final Map<String, UniqueRuleItemNodePath> uniqueItems;
     
-    public RuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
+    public DatabaseRuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
         root = new RuleRootNodePath(ruleType);
         namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
         uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
