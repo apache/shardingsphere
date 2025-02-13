@@ -231,8 +231,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleTypeName) {
-        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleTypeName);
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleType) {
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
         clearServiceCache();
     }
     

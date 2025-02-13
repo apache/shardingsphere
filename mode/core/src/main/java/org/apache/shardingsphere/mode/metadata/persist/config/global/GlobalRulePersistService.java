@@ -63,11 +63,11 @@ public final class GlobalRulePersistService {
     /**
      * Load global rule configuration.
      *
-     * @param ruleTypeName rule type name to be loaded
+     * @param ruleType rule type to be loaded
      * @return global rule configuration
      */
-    public Optional<RuleConfiguration> load(final String ruleTypeName) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleTypeName, repositoryTuplePersistService.load(GlobalRuleNodePath.getRulePath(ruleTypeName)));
+    public Optional<RuleConfiguration> load(final String ruleType) {
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(GlobalRuleNodePath.getRulePath(ruleType)));
     }
     
     /**

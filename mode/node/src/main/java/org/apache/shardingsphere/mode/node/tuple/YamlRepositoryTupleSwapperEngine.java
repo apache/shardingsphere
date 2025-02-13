@@ -256,19 +256,19 @@ public final class YamlRepositoryTupleSwapperEngine {
     /**
      * Swap to rule configuration.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @param repositoryTuples repository tuples
      * @return global rule configuration
      */
     @SuppressWarnings("rawtypes")
-    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleTypeName, final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         if (repositoryTuples.isEmpty()) {
             return Optional.empty();
         }
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            if (ruleTypeName.equals(Objects.requireNonNull(yamlRuleConfigClass.getAnnotation(RepositoryTupleEntity.class)).value())) {
+            if (ruleType.equals(Objects.requireNonNull(yamlRuleConfigClass.getAnnotation(RepositoryTupleEntity.class)).value())) {
                 Optional<YamlRuleConfiguration> yamlRuleConfig = swapToYamlRuleConfiguration(repositoryTuples, yamlRuleConfigClass);
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }
