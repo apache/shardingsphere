@@ -34,14 +34,14 @@ public final class OpenGaussStatisticsCollector implements DialectDatabaseStatis
     private final PostgreSQLStatisticsCollector delegated = new PostgreSQLStatisticsCollector();
     
     @Override
-    public Map<String, Collection<String>> getStatisticsSchemaTables() {
-        return delegated.getStatisticsSchemaTables();
-    }
-    
-    @Override
     public Optional<Collection<Map<String, Object>>> collectRowColumnValues(final String databaseName, final String schemaName, final String tableName,
                                                                             final ShardingSphereMetaData metaData) throws SQLException {
         return delegated.collectRowColumnValues(databaseName, schemaName, tableName, metaData);
+    }
+    
+    @Override
+    public boolean isStatisticsTables(final Map<String, Collection<String>> schemaTables) {
+        return delegated.isStatisticsTables(schemaTables);
     }
     
     @Override

@@ -94,9 +94,9 @@ public abstract class YamlRepositoryTupleSwapperEngineIT {
     
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        String ruleTypeName = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value();
+        String ruleType = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value();
         Collection<RepositoryTuple> repositoryTuples = engine.swapToRepositoryTuples(yamlRuleConfig).stream()
-                .map(each -> new RepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleTypeName, each), each.getValue())).collect(Collectors.toList());
+                .map(each -> new RepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
         Optional<YamlRuleConfiguration> actualYamlRuleConfig = engine.swapToYamlRuleConfiguration(repositoryTuples, yamlRuleConfig.getClass());
         assertTrue(actualYamlRuleConfig.isPresent());
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
@@ -104,10 +104,8 @@ public abstract class YamlRepositoryTupleSwapperEngineIT {
         return YamlEngine.marshal(yamlRootConfig);
     }
     
-    private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleTypeName, final RepositoryTuple tuple) {
-        return isGlobalRule
-                ? String.format("/metadata/rules/%s/versions/0", ruleTypeName)
-                : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleTypeName, tuple.getKey());
+    private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleType, final RepositoryTuple tuple) {
+        return isGlobalRule ? String.format("/metadata/rules/%s/versions/0", ruleType) : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleType, tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {

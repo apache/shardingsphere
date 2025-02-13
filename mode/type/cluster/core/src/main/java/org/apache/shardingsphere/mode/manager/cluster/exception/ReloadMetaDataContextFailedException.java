@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.manager.cluster.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
- * Node path pattern.
+ * Reload meta data context failed exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NodePathPattern {
+public final class ReloadMetaDataContextFailedException extends ClusterSQLException {
     
-    /**
-     * Identifier pattern.
-     */
-    public static final String IDENTIFIER = "[\\w\\-]+";
-    
-    /**
-     * Grouped identifier pattern.
-     */
-    public static final String GROUPED_IDENTIFIER = "([\\w\\-]+)";
+    public ReloadMetaDataContextFailedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 11, "Failed to reload meta data context.");
+    }
 }

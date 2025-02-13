@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config;
+package org.apache.shardingsphere.mode.node.spi;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class GlobalPropertiesNodePathTest {
+/**
+ * Database rule node path provider.
+ */
+@SingletonSPI
+public interface DatabaseRuleNodePathProvider extends TypedSPI {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(GlobalPropertiesNodePath.getRootPath(), is("/props"));
-    }
+    /**
+     * Get database rule node path.
+     *
+     * @return got database rule node path
+     */
+    DatabaseRuleNodePath getDatabaseRuleNodePath();
     
-    @Test
-    void assertGetVersionNodePathGenerator() {
-        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), is("/props/active_version"));
-        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath(), is("/props/versions"));
-        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(0), is("/props/versions/0"));
-    }
+    @Override
+    Class<? extends RuleConfiguration> getType();
 }

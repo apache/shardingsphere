@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule.item;
+package org.apache.shardingsphere.mode.node.path.config.database.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
- * Unique rule item node path.
+ * Unique database rule item node path.
  */
-public final class UniqueRuleItemNodePath {
+public final class UniqueDatabaseRuleItemNodePath {
     
     private final String parentNode;
     
@@ -33,16 +33,16 @@ public final class UniqueRuleItemNodePath {
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String type) {
+    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String type) {
         parentNode = null;
         this.type = type;
-        versionNodePathParser = new VersionNodePathParser(ruleRootNodePath.getNodePrefix() + type);
+        versionNodePathParser = new VersionNodePathParser(databaseRuleRootNodePath.getNodePrefix() + type);
     }
     
-    public UniqueRuleItemNodePath(final RuleRootNodePath ruleRootNodePath, final String parentNode, final String type) {
+    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String parentNode, final String type) {
         this.parentNode = parentNode;
         this.type = type;
-        versionNodePathParser = new VersionNodePathParser(String.join("/", ruleRootNodePath.getNodePrefix() + parentNode, type));
+        versionNodePathParser = new VersionNodePathParser(String.join("/", databaseRuleRootNodePath.getNodePrefix() + parentNode, type));
     }
     
     /**

@@ -20,6 +20,7 @@
     <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris,openGauss" />
     <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
     <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
+    <sql-case id="select_cast_as_year" value="SELECT CAST(-1.1 AS YEAR)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
@@ -238,6 +239,7 @@
     <sql-case id="select_json_storage_free" value="SELECT JSON_STORAGE_FREE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
+    <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />

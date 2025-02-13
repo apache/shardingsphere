@@ -33,13 +33,6 @@ import java.util.Optional;
 public interface DialectDatabaseStatisticsCollector extends DatabaseTypedSPI {
     
     /**
-     * Get statistics schema tables.
-     *
-     * @return schema and tables
-     */
-    Map<String, Collection<String>> getStatisticsSchemaTables();
-    
-    /**
      * Collect row column values.
      *
      * @param databaseName database name
@@ -50,4 +43,12 @@ public interface DialectDatabaseStatisticsCollector extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     Optional<Collection<Map<String, Object>>> collectRowColumnValues(String databaseName, String schemaName, String tableName, ShardingSphereMetaData metaData) throws SQLException;
+    
+    /**
+     * Is statistics tables.
+     *
+     * @param schemaTables schema tables
+     * @return returns true if all are statistics tables
+     */
+    boolean isStatisticsTables(Map<String, Collection<String>> schemaTables);
 }

@@ -65,7 +65,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         }
     }
     
-    private void handleConfigurationProperty(final ContextManager contextManager, final TypedPropertyKey propertyKey, final String value) throws SQLException {
+    private void handleConfigurationProperty(final ContextManager contextManager, final TypedPropertyKey propertyKey, final String value) {
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());

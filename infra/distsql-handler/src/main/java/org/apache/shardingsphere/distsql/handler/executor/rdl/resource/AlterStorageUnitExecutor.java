@@ -29,8 +29,9 @@ import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsCon
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
@@ -42,7 +43,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,7 +67,7 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
         validateHandler.validate(propsMap, getExpectedPrivileges(sqlStatement));
         try {
             contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterStorageUnits(database, propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
+        } catch (final ShardingSphereExternalException ex) {
             throw new StorageUnitsOperateException("alter", propsMap.keySet(), ex);
         }
     }
@@ -104,10 +104,11 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
             port = ((HostnameAndPortBasedDataSourceSegment) segment).getPort();
             database = ((HostnameAndPortBasedDataSourceSegment) segment).getDatabase();
         } else if (segment instanceof URLBasedDataSourceSegment) {
-            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(((URLBasedDataSourceSegment) segment).getUrl());
-            hostName = segmentJdbcUrl.getHostname();
-            port = String.valueOf(segmentJdbcUrl.getPort());
-            database = segmentJdbcUrl.getDatabase();
+            String url = ((URLBasedDataSourceSegment) segment).getUrl();
+            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, segment.getUser(), null);
+            hostName = connectionProps.getHostname();
+            port = String.valueOf(connectionProps.getPort());
+            database = connectionProps.getCatalog();
         }
         ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
         return Objects.equals(hostName, connectionProps.getHostname()) && Objects.equals(port, String.valueOf(connectionProps.getPort())) && Objects.equals(database, connectionProps.getCatalog());

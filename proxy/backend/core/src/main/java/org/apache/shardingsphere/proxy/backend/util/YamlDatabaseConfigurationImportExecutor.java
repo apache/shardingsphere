@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSpher
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsOperateException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -49,7 +48,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -112,11 +110,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             propsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
         }
         validateHandler.validate(propsMap);
-        try {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
-        } catch (final SQLException ex) {
-            throw new StorageUnitsOperateException("import", propsMap.keySet(), ex);
-        }
+        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {

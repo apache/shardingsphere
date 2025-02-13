@@ -66,8 +66,7 @@ class DatabaseRulePersistServiceTest {
     void assertPersistWithoutActiveVersion() {
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getCurrentActiveVersion(), is(0));
-        assertThat(actual.iterator().next().getNextActiveVersion(), is(0));
+        assertThat(actual.iterator().next().getActiveVersion(), is(0));
     }
     
     @Test
@@ -75,21 +74,19 @@ class DatabaseRulePersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/fixture/versions")).thenReturn(Collections.singletonList("10"));
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MetaDataRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getCurrentActiveVersion(), is(10));
-        assertThat(actual.iterator().next().getNextActiveVersion(), is(11));
+        assertThat(actual.iterator().next().getActiveVersion(), is(10));
     }
     
     @Test
-    void assertDeleteWithRuleTypeName() {
-        persistService.delete("foo_db", "fixture_rule");
-        verify(repository).delete("/metadata/foo_db/rules/fixture_rule");
+    void assertDeleteWithRuleType() {
+        persistService.delete("foo_db", "foo_rule");
+        verify(repository).delete("/metadata/foo_db/rules/foo_rule");
     }
     
     @Test
     void assertDeleteWithRuleConfigurations() {
         Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
-        assertNull(actual.iterator().next().getCurrentActiveVersion());
-        assertNull(actual.iterator().next().getNextActiveVersion());
+        assertNull(actual.iterator().next().getActiveVersion());
     }
 }

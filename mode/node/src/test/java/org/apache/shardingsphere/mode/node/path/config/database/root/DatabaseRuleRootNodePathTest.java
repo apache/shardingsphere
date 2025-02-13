@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule.root;
+package org.apache.shardingsphere.mode.node.path.config.database.root;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,13 +24,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleRootNodePathTest {
+class DatabaseRuleRootNodePathTest {
     
-    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
+    private final DatabaseRuleRootNodePath nodePath = new DatabaseRuleRootNodePath("foo");
     
     @Test
     void assertGetRuleNodePrefix() {
-        assertThat(nodePath.getNodePrefix(), is("/[\\w\\-]+/[\\w\\-]+/rules/foo/"));
+        assertThat(nodePath.getNodePrefix(), is("/metadata/[\\w\\-]+/rules/foo/"));
     }
     
     @Test

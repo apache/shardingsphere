@@ -35,10 +35,6 @@ public final class DatabaseMetaDataNodePath {
     
     private static final String SCHEMAS_NODE = "schemas";
     
-    private static final String VERSIONS_NODE = "versions";
-    
-    private static final String ACTIVE_VERSION_NODE = "active_version";
-    
     /**
      * Get meta data root path.
      *
@@ -80,17 +76,6 @@ public final class DatabaseMetaDataNodePath {
     }
     
     /**
-     * Get version path.
-     *
-     * @param rulePath rule path
-     * @param activeVersion active version
-     * @return version path
-     */
-    public static String getVersionPath(final String rulePath, final int activeVersion) {
-        return rulePath.replace(ACTIVE_VERSION_NODE, VERSIONS_NODE) + "/" + activeVersion;
-    }
-    
-    /**
      * Find database name.
      *
      * @param path path
@@ -99,7 +84,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.GROUPED_IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -113,17 +98,8 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     *  Is active version path.
-     * @param path path
-     * @return is active version path or not
-     */
-    public static boolean isActiveVersionPath(final String path) {
-        return path.endsWith(ACTIVE_VERSION_NODE);
     }
 }

@@ -154,5 +154,5 @@
     <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
-
+    <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
 </sql-cases>

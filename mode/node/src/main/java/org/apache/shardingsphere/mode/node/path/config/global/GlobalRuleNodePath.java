@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config;
+package org.apache.shardingsphere.mode.node.path.config.global;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,7 +31,7 @@ public final class GlobalRuleNodePath {
     
     private static final String ROOT_NODE = "/rules";
     
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(NodePathPattern.IDENTIFIER);
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getRootPath() + "/" + NodePathPattern.GROUPED_IDENTIFIER);
     
     /**
      * Get global rule root path.
@@ -45,21 +45,21 @@ public final class GlobalRuleNodePath {
     /**
      * Get global rule path.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return global rule path
      */
-    public static String getRulePath(final String ruleTypeName) {
-        return String.join("/", getRootPath(), ruleTypeName);
+    public static String getRulePath(final String ruleType) {
+        return String.join("/", getRootPath(), ruleType);
     }
     
     /**
      * Get global rule version node path generator.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return global rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleTypeName) {
-        return new VersionNodePathGenerator(getRulePath(ruleTypeName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleType) {
+        return new VersionNodePathGenerator(getRulePath(ruleType));
     }
     
     /**
@@ -72,12 +72,12 @@ public final class GlobalRuleNodePath {
     }
     
     /**
-     * Get view version pattern node path parser.
+     * Get rule version node path parser.
      *
-     * @param ruleTypeName rule type name
-     * @return view version node path parser
+     * @param ruleType rule type
+     * @return rule version node path parser
      */
-    public static VersionNodePathParser getVersionNodePathParser(final String ruleTypeName) {
-        return new VersionNodePathParser(ruleTypeName);
+    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleType) {
+        return new VersionNodePathParser(ruleType);
     }
 }

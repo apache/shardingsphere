@@ -41,9 +41,9 @@ class DatabaseRuleMetaDataNodePathTest {
     
     @Test
     void assertGetVersionNodePathGenerator() {
-        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "sharding", "foo_rule_item").getActiveVersionPath(),
-                is("/metadata/foo_db/rules/sharding/foo_rule_item/active_version"));
-        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "sharding", "foo_rule_item").getVersionsPath(), is("/metadata/foo_db/rules/sharding/foo_rule_item/versions"));
-        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "sharding", "foo_rule_item").getVersionPath(0), is("/metadata/foo_db/rules/sharding/foo_rule_item/versions/0"));
+        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_rule", "foo_rule_item").getActiveVersionPath(),
+                is("/metadata/foo_db/rules/foo_rule/foo_rule_item/active_version"));
+        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_rule", "foo_rule_item").getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions"));
+        assertThat(DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator("foo_db", "foo_rule", "foo_rule_item").getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions/0"));
     }
 }

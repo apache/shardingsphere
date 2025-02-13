@@ -85,7 +85,7 @@ string_
     ;
 
 stringLiterals
-    : (UNDERSCORE_CHARSET | UL_BINARY )? string_ | NCHAR_TEXT
+    : (UNDERSCORE_CHARSET | UL_BINARY )? string_+ | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -723,7 +723,7 @@ newColumn
 
 delimiterName
     : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
-    ; 
+    ;
 
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
@@ -739,7 +739,7 @@ eventName
 
 serverName
     : textOrIdentifier
-    ; 
+    ;
 
 wrapperName
     : textOrIdentifier
@@ -956,6 +956,7 @@ simpleExpr
     | matchExpression
     | caseExpression
     | intervalExpression
+    | implicitConcat
     ;
 
 path
@@ -979,7 +980,7 @@ columnRefList
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction
+    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction | specialAnalysisFunction
     ;
 
 udfFunction
@@ -995,7 +996,7 @@ aggregationExpression
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    : aggregationFunctionName LP_ (distinct | all)? aggregationExpression? collateClause? separatorName? RP_ overClause?
     ;
 
 jsonFunction
@@ -1041,6 +1042,10 @@ aggregationFunctionName
 
 distinct
     : DISTINCT
+    ;
+
+all
+    : ALL
     ;
 
 overClause
@@ -1152,6 +1157,7 @@ castType
     | castTypeName = REAL
     | castTypeName = DOUBLE PRECISION
     | castTypeName = FLOAT precision?
+    | castTypeName = YEAR
     ;
 
 positionFunction
@@ -1209,8 +1215,16 @@ regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
-    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
+    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP
     | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
+    ;
+
+specialAnalysisFunction
+    : geomCollectionFunction
+    ;
+
+geomCollectionFunction
+    : GEOMCOLLECTION LP_ expr (COMMA_ expr)* RP_
     ;
 
 matchExpression
@@ -1243,6 +1257,10 @@ caseElse
 
 intervalExpression
     : INTERVAL intervalValue
+    ;
+
+implicitConcat
+    : string_ (string_)*
     ;
 
 intervalValue

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule;
+package org.apache.shardingsphere.mode.node.path.config.database;
 
-import org.apache.shardingsphere.mode.node.path.config.rule.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.config.rule.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.item.NamedDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,26 +31,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class RuleNodePathTest {
     
-    private RuleNodePath ruleNodePath;
+    private DatabaseRuleNodePath databaseRuleNodePath;
     
     @BeforeEach
     void setup() {
         List<String> namedRuleItemNodePathTypes = Collections.singletonList("tables");
         List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables.type");
-        ruleNodePath = new RuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
+        databaseRuleNodePath = new DatabaseRuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
     }
     
     @Test
     void assertFindNameByVersion() {
-        NamedRuleItemNodePath namedRulePath = ruleNodePath.getNamedItem("tables");
+        NamedDatabaseRuleItemNodePath namedRulePath = databaseRuleNodePath.getNamedItem("tables");
         assertThat(namedRulePath.getPath("foo_tbl"), is("tables/foo_tbl"));
     }
     
     @Test
     void assertGetUniqueItem() {
-        UniqueRuleItemNodePath uniqueRulePath = ruleNodePath.getUniqueItem("tables");
+        UniqueDatabaseRuleItemNodePath uniqueRulePath = databaseRuleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
-        UniqueRuleItemNodePath uniqueRulePathWithType = ruleNodePath.getUniqueItem("type");
+        UniqueDatabaseRuleItemNodePath uniqueRulePathWithType = databaseRuleNodePath.getUniqueItem("type");
         assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
     }
 }

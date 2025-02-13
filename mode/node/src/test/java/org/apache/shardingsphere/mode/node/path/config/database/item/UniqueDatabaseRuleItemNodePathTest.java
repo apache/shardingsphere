@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config;
+package org.apache.shardingsphere.mode.node.path.config.database.item;
 
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class GlobalRuleNodePathTest {
+class UniqueDatabaseRuleItemNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(GlobalRuleNodePath.getRootPath(), is("/rules"));
+    void assertPathWithNullParentNode() {
+        UniqueDatabaseRuleItemNodePath uniqueDatabaseRuleItemNodePath = new UniqueDatabaseRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_path");
+        assertThat(uniqueDatabaseRuleItemNodePath.getPath(), is("test_path"));
     }
     
     @Test
-    void assertGetRulePath() {
-        assertThat(GlobalRuleNodePath.getRulePath("foo_rule"), is("/rules/foo_rule"));
-    }
-    
-    @Test
-    void assertGetVersionNodePathGenerator() {
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getActiveVersionPath(), is("/rules/foo_rule/active_version"));
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionsPath(), is("/rules/foo_rule/versions"));
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionPath(0), is("/rules/foo_rule/versions/0"));
+    void assertGetPathWithParentNode() {
+        UniqueDatabaseRuleItemNodePath uniqueDatabaseRuleItemNodePath = new UniqueDatabaseRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_parent", "test_path");
+        assertThat(uniqueDatabaseRuleItemNodePath.getPath(), is("test_parent/test_path"));
     }
 }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -32,12 +32,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class RepositoryTuplePersistService {
-    
-    private static final String ACTIVE_VERSION_PATTERN = "/active_version$";
-    
-    private static final String ACTIVE_VERSION_PATH = "active_version";
-    
-    private static final String VERSIONS_PATH = "versions";
     
     private final PersistRepository repository;
     
@@ -48,17 +42,13 @@ public final class RepositoryTuplePersistService {
      * @return loaded repository tuples
      */
     public Collection<RepositoryTuple> load(final String rootNode) {
-        Pattern pattern = Pattern.compile(ACTIVE_VERSION_PATTERN, Pattern.CASE_INSENSITIVE);
-        return loadNodes(rootNode).stream().filter(each -> pattern.matcher(each).find()).map(this::getRepositoryTuple).collect(Collectors.toList());
+        return loadNodes(rootNode).stream().filter(VersionNodePathGenerator::isActiveVersionPath).map(this::createRepositoryTuple).collect(Collectors.toList());
     }
     
     private Collection<String> loadNodes(final String rootNode) {
         Collection<String> result = new LinkedHashSet<>();
         loadNodes(rootNode, result);
-        if (1 == result.size()) {
-            return Collections.emptyList();
-        }
-        return result;
+        return 1 == result.size() ? Collections.emptyList() : result;
     }
     
     private void loadNodes(final String toBeLoadedNode, final Collection<String> loadedNodes) {
@@ -68,8 +58,8 @@ public final class RepositoryTuplePersistService {
         }
     }
     
-    private RepositoryTuple getRepositoryTuple(final String node) {
-        String activeRuleKey = node.replace(ACTIVE_VERSION_PATH, VERSIONS_PATH) + "/" + repository.query(node);
-        return new RepositoryTuple(activeRuleKey, repository.query(activeRuleKey));
+    private RepositoryTuple createRepositoryTuple(final String activeVersionPath) {
+        String activeVersionKey = VersionNodePathGenerator.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
+        return new RepositoryTuple(activeVersionKey, repository.query(activeVersionKey));
     }
 }

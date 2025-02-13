@@ -58,19 +58,20 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Syntax
 
-| Vendor Code | SQL State | Reason                                   |
-|-------------|-----------|------------------------------------------|
-| 12000       | 42000     | SQL String can not be NULL or empty.     |
-| 12010       | 44000     | Can not support variable '%s'.           |
-| 12011       | HY004     | Invalid variable value '%s'.             |
-| 12020       | HV008     | Column index '%d' is out of range.       |
-| 12021       | 42S02     | Can not find column label '%s'.          |
-| 12022       | HY000     | Column '%s' in %s is ambiguous.          |
-| 12100       | 42000     | You have an error in your SQL syntax: %s |
-| 12101       | 42000     | Can not accept SQL type '%s'.            |
-| 12200       | 42000     | Hint data source '%s' does not exist.    |
-| 12300       | 0A000     | DROP TABLE ... CASCADE is not supported. |
-| 12500       | 42000     | Not unique table/alias: '%s'             |
+| Vendor Code | SQL State | Reason                                                                                                                           |
+|-------------|-----------|----------------------------------------------------------------------------------------------------------------------------------|
+| 12000       | 42000     | SQL String can not be NULL or empty.                                                                                             |
+| 12010       | 44000     | Can not support variable '%s'.                                                                                                   |
+| 12011       | HY004     | Invalid variable value '%s'.                                                                                                     |
+| 12020       | HV008     | Column index '%d' is out of range.                                                                                               |
+| 12021       | 42S02     | Can not find column label '%s'.                                                                                                  |
+| 12022       | HY000     | Column '%s' in %s is ambiguous.                                                                                                  |
+| 12100       | 42000     | You have an error in your SQL syntax: %s                                                                                         |
+| 12101       | 42000     | Can not accept SQL type '%s'.                                                                                                    |
+| 12200       | 42000     | Hint data source '%s' does not exist.                                                                                            |
+| 12300       | 0A000     | DROP TABLE ... CASCADE is not supported.                                                                                         |
+| 12500       | 42000     | Not unique table/alias: '%s'.                                                                                                    |
+| 12600       | HY000     | In definition of view, derived table or common table expression, SELECT list and column names list have different column counts. |
 
 ### Connection
 
@@ -115,6 +116,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
+| 17011       | HY000     | Failed to reload meta data context.                           |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 

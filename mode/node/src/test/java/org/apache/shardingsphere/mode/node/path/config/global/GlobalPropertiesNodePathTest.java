@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule.item;
+package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class UniqueRuleItemNodePathTest {
+class GlobalPropertiesNodePathTest {
     
     @Test
-    void assertPathWithNullParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
-        assertThat(uniqueRuleItemNodePath.getPath(), is("test_path"));
+    void assertGetRootPath() {
+        assertThat(GlobalPropertiesNodePath.getRootPath(), is("/props"));
     }
     
     @Test
-    void assertGetPathWithParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_parent", "test_path");
-        assertThat(uniqueRuleItemNodePath.getPath(), is("test_parent/test_path"));
+    void assertGetVersionNodePathGenerator() {
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath(), is("/props/active_version"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionsPath(), is("/props/versions"));
+        assertThat(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(0), is("/props/versions/0"));
     }
 }

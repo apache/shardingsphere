@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.rule.item;
+package org.apache.shardingsphere.mode.node.path.config.database.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.config.rule.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -27,9 +27,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Named rule item node path.
+ * Named database rule item node path.
  */
-public final class NamedRuleItemNodePath {
+public final class NamedDatabaseRuleItemNodePath {
     
     private final String type;
     
@@ -38,9 +38,9 @@ public final class NamedRuleItemNodePath {
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
+    public NamedDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
+        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
         versionNodePathParser = new VersionNodePathParser(pattern);
         itemPathPattern = Pattern.compile(pattern + "$");
     }
