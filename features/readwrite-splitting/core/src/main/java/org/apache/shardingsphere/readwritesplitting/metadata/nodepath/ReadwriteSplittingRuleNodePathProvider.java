@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Readwrite-splitting rule node path provider.
  */
-public final class ReadwriteSplittingRuleNodePathProvider implements RuleNodePathProvider {
+public final class ReadwriteSplittingRuleNodePathProvider implements DatabaseRuleNodePathProvider {
     
     public static final String RULE_TYPE = "readwrite_splitting";
     
@@ -36,10 +36,10 @@ public final class ReadwriteSplittingRuleNodePathProvider implements RuleNodePat
     
     public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
+    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
     
     @Override
-    public RuleNodePath getRuleNodePath() {
+    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

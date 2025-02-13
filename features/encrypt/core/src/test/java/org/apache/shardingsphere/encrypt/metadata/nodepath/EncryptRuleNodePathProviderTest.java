@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,11 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleNodePathProviderTest {
     
-    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, EncryptRuleConfiguration.class);
+    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, EncryptRuleConfiguration.class);
     
     @Test
-    void assertGetRuleNodePath() {
-        RuleNodePath actual = pathProvider.getRuleNodePath();
+    void assertGetDatabaseRuleNodePath() {
+        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(2));
         assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
         assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));

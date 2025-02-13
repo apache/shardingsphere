@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Shadow rule node path provider.
  */
-public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
+public final class ShadowRuleNodePathProvider implements DatabaseRuleNodePathProvider {
     
     public static final String RULE_TYPE = "shadow";
     
@@ -40,10 +40,11 @@ public final class ShadowRuleNodePathProvider implements RuleNodePathProvider {
     
     public static final String DEFAULT_SHADOW_ALGORITHM_NAME = "default_shadow_algorithm_name";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
+    private static final DatabaseRuleNodePath INSTANCE =
+            new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
     
     @Override
-    public RuleNodePath getRuleNodePath() {
+    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

@@ -31,26 +31,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class RuleNodePathTest {
     
-    private RuleNodePath ruleNodePath;
+    private DatabaseRuleNodePath databaseRuleNodePath;
     
     @BeforeEach
     void setup() {
         List<String> namedRuleItemNodePathTypes = Collections.singletonList("tables");
         List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables.type");
-        ruleNodePath = new RuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
+        databaseRuleNodePath = new DatabaseRuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
     }
     
     @Test
     void assertFindNameByVersion() {
-        NamedRuleItemNodePath namedRulePath = ruleNodePath.getNamedItem("tables");
+        NamedRuleItemNodePath namedRulePath = databaseRuleNodePath.getNamedItem("tables");
         assertThat(namedRulePath.getPath("foo_tbl"), is("tables/foo_tbl"));
     }
     
     @Test
     void assertGetUniqueItem() {
-        UniqueRuleItemNodePath uniqueRulePath = ruleNodePath.getUniqueItem("tables");
+        UniqueRuleItemNodePath uniqueRulePath = databaseRuleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
-        UniqueRuleItemNodePath uniqueRulePathWithType = ruleNodePath.getUniqueItem("type");
+        UniqueRuleItemNodePath uniqueRulePathWithType = databaseRuleNodePath.getUniqueItem("type");
         assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
     }
 }

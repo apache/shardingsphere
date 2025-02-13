@@ -19,24 +19,24 @@ package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
 import java.util.Collections;
 
 /**
  * Broadcast rule node path provider.
  */
-public final class BroadcastRuleNodePathProvider implements RuleNodePathProvider {
+public final class BroadcastRuleNodePathProvider implements DatabaseRuleNodePathProvider {
     
     public static final String RULE_TYPE = "broadcast";
     
     public static final String TABLES = "tables";
     
-    private static final RuleNodePath INSTANCE = new RuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
+    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
     
     @Override
-    public RuleNodePath getRuleNodePath() {
+    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

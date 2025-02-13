@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleKeyListNameGenerator;
@@ -70,11 +70,11 @@ public final class YamlRepositoryTupleSwapperEngine {
             return Collections.singleton(new RepositoryTuple(tupleEntity.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
-        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
+        DatabaseRuleNodePath databaseRuleNodePath = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            result.addAll(swapToRepositoryTuples(yamlRuleConfig, ruleNodePath, each));
+            result.addAll(swapToRepositoryTuples(yamlRuleConfig, databaseRuleNodePath, each));
             each.setAccessible(isAccessible);
         }
         return result;
@@ -82,7 +82,7 @@ public final class YamlRepositoryTupleSwapperEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
-    private Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig, final RuleNodePath ruleNodePath, final Field field) {
+    private Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig, final DatabaseRuleNodePath databaseRuleNodePath, final Field field) {
         Object fieldValue = field.get(yamlRuleConfig);
         if (null == fieldValue) {
             return Collections.emptyList();
@@ -93,32 +93,34 @@ public final class YamlRepositoryTupleSwapperEngine {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object value : (Collection) fieldValue) {
                 String tupleKeyName = tupleKeyListNameGenerator.value().getConstructor().newInstance().generate(value);
-                result.add(new RepositoryTuple(ruleNodePath.getNamedItem(tupleName).getPath(tupleKeyName), value.toString()));
+                result.add(new RepositoryTuple(databaseRuleNodePath.getNamedItem(tupleName).getPath(tupleKeyName), value.toString()));
             }
             return result;
         }
         if (fieldValue instanceof Map) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object entry : ((Map) fieldValue).entrySet()) {
-                result.add(new RepositoryTuple(ruleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()), YamlEngine.marshal(((Entry) entry).getValue())));
+                result.add(new RepositoryTuple(databaseRuleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()), YamlEngine.marshal(((Entry) entry).getValue())));
             }
             return result;
         }
         if (fieldValue instanceof Collection) {
             return ((Collection) fieldValue).isEmpty()
                     ? Collections.emptyList()
-                    : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
+                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
-            return ((String) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+            return ((String) fieldValue).isEmpty()
+                    ? Collections.emptyList()
+                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
-            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
         }
         if (fieldValue instanceof Enum) {
-            return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), ((Enum) fieldValue).name()));
+            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), ((Enum) fieldValue).name()));
         }
-        return Collections.singleton(new RepositoryTuple(ruleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
+        return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
     }
     
     private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
@@ -160,9 +162,9 @@ public final class YamlRepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
-        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
-            if (ruleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
+        DatabaseRuleNodePath databaseRuleNodePath = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
+        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> databaseRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
+            if (databaseRuleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
@@ -173,46 +175,47 @@ public final class YamlRepositoryTupleSwapperEngine {
     private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples,
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        RuleNodePath ruleNodePath = TypedSPILoader.getService(RuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getRuleNodePath();
-        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> ruleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        DatabaseRuleNodePath databaseRuleNodePath = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
+        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> databaseRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }
         for (RepositoryTuple each : validTuples) {
             if (!Strings.isNullOrEmpty(each.getValue())) {
-                setFieldValue(yamlRuleConfig, fields, ruleNodePath, each);
+                setFieldValue(yamlRuleConfig, fields, databaseRuleNodePath, each);
             }
         }
         return Optional.of(yamlRuleConfig);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) {
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final DatabaseRuleNodePath databaseRuleNodePath, final RepositoryTuple repositoryTuple) {
         for (Field each : fields) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            setFieldValue(yamlRuleConfig, each, ruleNodePath, repositoryTuple);
+            setFieldValue(yamlRuleConfig, each, databaseRuleNodePath, repositoryTuple);
             each.setAccessible(isAccessible);
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final RuleNodePath ruleNodePath, final RepositoryTuple repositoryTuple) throws IllegalAccessException {
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final DatabaseRuleNodePath databaseRuleNodePath,
+                               final RepositoryTuple repositoryTuple) throws IllegalAccessException {
         Object fieldValue = field.get(yamlRuleConfig);
         String tupleName = getTupleName(field);
         RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
-            ruleNodePath.getNamedItem(tupleName).getVersionNodePathParser()
+            databaseRuleNodePath.getNamedItem(tupleName).getVersionNodePathParser()
                     .findIdentifierByVersionsPath(repositoryTuple.getKey(), 1).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            ruleNodePath.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
+            databaseRuleNodePath.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
-        if (!ruleNodePath.getUniqueItem(tupleName).getVersionNodePathParser().isVersionPath(repositoryTuple.getKey())) {
+        if (!databaseRuleNodePath.getUniqueItem(tupleName).getVersionNodePathParser().isVersionPath(repositoryTuple.getKey())) {
             return;
         }
         if (fieldValue instanceof Collection) {

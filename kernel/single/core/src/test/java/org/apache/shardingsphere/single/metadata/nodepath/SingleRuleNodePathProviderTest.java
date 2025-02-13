@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.RuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -29,11 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleRuleNodePathProviderTest {
     
-    private final RuleNodePathProvider pathProvider = TypedSPILoader.getService(RuleNodePathProvider.class, SingleRuleConfiguration.class);
+    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, SingleRuleConfiguration.class);
     
     @Test
-    void assertGetRuleNodePath() {
-        RuleNodePath actual = pathProvider.getRuleNodePath();
+    void assertGetDatabaseRuleNodePath() {
+        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(2));
         assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));

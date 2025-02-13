@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -34,16 +34,16 @@ import java.util.Optional;
 public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
     
     @Override
-    public Optional<DropRuleItem> build(final RuleNodePath ruleNodePath, final String databaseName, final String path, final Integer currentActiveVersion) {
-        for (Entry<String, NamedRuleItemNodePath> entry : ruleNodePath.getNamedItems().entrySet()) {
+    public Optional<DropRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer currentActiveVersion) {
+        for (Entry<String, NamedRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().findNameByItemPath(path);
             if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
-        for (Entry<String, UniqueRuleItemNodePath> entry : ruleNodePath.getUniqueItems().entrySet()) {
+        for (Entry<String, UniqueRuleItemNodePath> entry : databaseRuleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, ruleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();

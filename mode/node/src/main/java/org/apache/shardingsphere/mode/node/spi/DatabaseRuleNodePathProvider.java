@@ -20,20 +20,20 @@ package org.apache.shardingsphere.mode.node.spi;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.node.path.config.database.RuleNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 
 /**
- * Rule node path provider.
+ * Database rule node path provider.
  */
 @SingletonSPI
-public interface RuleNodePathProvider extends TypedSPI {
+public interface DatabaseRuleNodePathProvider extends TypedSPI {
     
     /**
-     * Get rule node path.
+     * Get database rule node path.
      *
-     * @return got rule node path
+     * @return got database rule node path
      */
-    RuleNodePath getRuleNodePath();
+    DatabaseRuleNodePath getDatabaseRuleNodePath();
     
     @Override
     Class<? extends RuleConfiguration> getType();
