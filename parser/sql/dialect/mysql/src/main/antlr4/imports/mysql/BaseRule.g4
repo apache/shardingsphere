@@ -956,6 +956,7 @@ simpleExpr
     | matchExpression
     | caseExpression
     | intervalExpression
+    | implicitConcat
     ;
 
 path
@@ -1256,6 +1257,10 @@ caseElse
 
 intervalExpression
     : INTERVAL intervalValue
+    ;
+
+implicitConcat
+    : string_ (string_)*
     ;
 
 intervalValue
