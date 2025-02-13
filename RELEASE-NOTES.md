@@ -1,5 +1,14 @@
 ## Release 5.5.3-SNAPSHOT
 
+### Metadata Storage Changes
+
+1. Remove `default_strategies` prefix on sharding rule metadata persist [#34664](https://github.com/apache/shardingsphere/pull/34664)
+   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_database_strategy` to `metadata/${databaseName}/rules/sharding/default_database_strategy`
+   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_table_strategy` to `metadata/${databaseName}/rules/sharding/default_table_strategy`
+   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_key_generate_strategy` to `metadata/${databaseName}/rules/sharding/default_key_generate_strategy`
+   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_audit_strategy` to `metadata/${databaseName}/rules/sharding/default_audit_strategy`
+   1. Change `metadata/${databaseName}/rules/sharding/default_strategies/default_sharding_column` to `metadata/${databaseName}/rules/sharding/default_sharding_column`
+
 ### API Changes
 
 ### New Features
