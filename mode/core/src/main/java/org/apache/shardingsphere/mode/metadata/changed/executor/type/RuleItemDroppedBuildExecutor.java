@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
     
     @Override
-    public Optional<DropRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer currentActiveVersion) {
+    public Optional<DropRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer activeVersion) {
         for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().findNameByItemPath(path);
             if (itemName.isPresent()) {

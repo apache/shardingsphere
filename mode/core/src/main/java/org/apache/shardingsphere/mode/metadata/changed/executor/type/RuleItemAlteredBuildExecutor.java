@@ -34,16 +34,16 @@ import java.util.Optional;
 public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildExecutor<AlterRuleItem> {
     
     @Override
-    public Optional<AlterRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer currentActiveVersion) {
+    public Optional<AlterRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer activeVersion) {
         for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getVersionNodePathParser().findIdentifierByActiveVersionPath(path, 1);
             if (itemName.isPresent()) {
-                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, currentActiveVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
-                return Optional.of(new AlterUniqueRuleItem(databaseName, path, currentActiveVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();

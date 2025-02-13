@@ -35,8 +35,8 @@ public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
      * @param databaseRuleNodePath rule node path
      * @param databaseName database name
      * @param path path
-     * @param currentActiveVersion current active version
+     * @param activeVersion active version
      * @return built rule item
      */
-    Optional<T> build(DatabaseRuleNodePath databaseRuleNodePath, String databaseName, String path, Integer currentActiveVersion);
+    Optional<T> build(DatabaseRuleNodePath databaseRuleNodePath, String databaseName, String path, Integer activeVersion);
 }
