@@ -45,21 +45,21 @@ public final class GlobalRuleNodePath {
     /**
      * Get global rule path.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return global rule path
      */
-    public static String getRulePath(final String ruleTypeName) {
-        return String.join("/", getRootPath(), ruleTypeName);
+    public static String getRulePath(final String ruleType) {
+        return String.join("/", getRootPath(), ruleType);
     }
     
     /**
      * Get global rule version node path generator.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return global rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleTypeName) {
-        return new VersionNodePathGenerator(getRulePath(ruleTypeName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleType) {
+        return new VersionNodePathGenerator(getRulePath(ruleType));
     }
     
     /**
@@ -74,10 +74,10 @@ public final class GlobalRuleNodePath {
     /**
      * Get rule version node path parser.
      *
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return rule version node path parser
      */
-    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleTypeName) {
-        return new VersionNodePathParser(ruleTypeName);
+    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleType) {
+        return new VersionNodePathParser(ruleType);
     }
 }

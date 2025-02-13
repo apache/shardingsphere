@@ -198,9 +198,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleTypeName) {
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleType) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
-        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleTypeName);
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
         afterRuleConfigurationDropped(database.getName(), originalMetaDataContexts);
     }
     

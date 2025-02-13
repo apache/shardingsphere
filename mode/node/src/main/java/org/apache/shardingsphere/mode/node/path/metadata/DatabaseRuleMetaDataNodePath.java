@@ -45,34 +45,34 @@ public final class DatabaseRuleMetaDataNodePath {
      * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @return database rule path
      */
-    public static String getRulePath(final String databaseName, final String ruleTypeName) {
-        return String.join("/", getRootPath(databaseName), ruleTypeName);
+    public static String getRulePath(final String databaseName, final String ruleType) {
+        return String.join("/", getRootPath(databaseName), ruleType);
     }
     
     /**
      * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @param ruleItemName rule item name
      * @return database rule path
      */
-    public static String getRulePath(final String databaseName, final String ruleTypeName, final String ruleItemName) {
-        return String.join("/", getRulePath(databaseName, ruleTypeName), ruleItemName);
+    public static String getRulePath(final String databaseName, final String ruleType, final String ruleItemName) {
+        return String.join("/", getRulePath(databaseName, ruleType), ruleItemName);
     }
     
     /**
      * Get database rule version node path generator.
      *
      * @param databaseName database name
-     * @param ruleTypeName rule type name
+     * @param ruleType rule type
      * @param ruleItemName rule item name
      * @return database rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleTypeName, final String ruleItemName) {
-        return new VersionNodePathGenerator(getRulePath(databaseName, ruleTypeName, ruleItemName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleType, final String ruleItemName) {
+        return new VersionNodePathGenerator(getRulePath(databaseName, ruleType, ruleItemName));
     }
 }
