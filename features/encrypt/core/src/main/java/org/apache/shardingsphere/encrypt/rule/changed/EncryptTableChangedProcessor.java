@@ -63,6 +63,6 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return EncryptRuleNodePathProvider.RULE_TYPE + "." + EncryptRuleNodePathProvider.TABLES;
+        return EncryptRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + EncryptRuleNodePathProvider.TABLES;
     }
 }

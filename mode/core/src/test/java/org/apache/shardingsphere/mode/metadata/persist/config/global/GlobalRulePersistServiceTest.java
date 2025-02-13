@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataYamlRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -72,7 +73,7 @@ class GlobalRulePersistServiceTest {
     
     @Test
     void assertLoadWithRuleTypeName() {
-        assertFalse(globalRulePersistService.load("foo_rule").isPresent());
+        assertFalse(globalRulePersistService.load(new RuleTypeNode("foo_rule")).isPresent());
         verify(repositoryTuplePersistService).load("/rules/foo_rule");
     }
     

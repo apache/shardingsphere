@@ -56,6 +56,6 @@ public final class DefaultShardingAuditorStrategyChangedProcessor implements Rul
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY;
     }
 }

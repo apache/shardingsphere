@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.database;
 
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.config.database.item.NamedDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class RuleNodePathTest {
     void setup() {
         List<String> namedRuleItemNodePathTypes = Collections.singletonList("tables");
         List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables.type");
-        databaseRuleNodePath = new DatabaseRuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
+        databaseRuleNodePath = new DatabaseRuleNodePath(new RuleTypeNode("foo"), namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
     }
     
     @Test

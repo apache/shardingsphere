@@ -56,6 +56,6 @@ public final class DefaultTableShardingStrategyChangedProcessor implements RuleI
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.DEFAULT_TABLE_STRATEGY;
     }
 }

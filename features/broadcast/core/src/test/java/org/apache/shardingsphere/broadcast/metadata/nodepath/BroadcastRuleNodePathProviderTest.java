@@ -37,6 +37,6 @@ class BroadcastRuleNodePathProviderTest {
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(1));
         assertTrue(actual.getUniqueItems().containsKey(BroadcastRuleNodePathProvider.TABLES));
-        assertThat(actual.getRoot().getRuleType(), is(BroadcastRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRoot().getRuleTypeNode().getPersistKey(), is("broadcast"));
     }
 }

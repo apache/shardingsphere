@@ -60,6 +60,6 @@ public final class ShadowDataSourceChangedProcessor implements RuleItemConfigura
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DATA_SOURCES;
+        return ShadowRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShadowRuleNodePathProvider.DATA_SOURCES;
     }
 }

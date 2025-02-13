@@ -46,6 +46,6 @@ public final class ShardingAuditorChangedProcessor extends AlgorithmChangedProce
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.AUDITORS;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.AUDITORS;
     }
 }

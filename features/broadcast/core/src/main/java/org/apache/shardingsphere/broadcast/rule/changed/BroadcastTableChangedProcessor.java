@@ -58,6 +58,6 @@ public final class BroadcastTableChangedProcessor implements RuleItemConfigurati
     
     @Override
     public String getType() {
-        return BroadcastRuleNodePathProvider.RULE_TYPE + "." + BroadcastRuleNodePathProvider.TABLES;
+        return BroadcastRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + BroadcastRuleNodePathProvider.TABLES;
     }
 }

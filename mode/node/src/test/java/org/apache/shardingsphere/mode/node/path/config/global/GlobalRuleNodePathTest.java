@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
     
+    private final RuleTypeNode ruleTypeNode = new RuleTypeNode("foo_rule");
+    
     @Test
     void assertGetRootPath() {
         assertThat(GlobalRuleNodePath.getRootPath(), is("/rules"));
@@ -33,14 +36,14 @@ class GlobalRuleNodePathTest {
     
     @Test
     void assertGetRulePath() {
-        assertThat(GlobalRuleNodePath.getRulePath("foo_rule"), is("/rules/foo_rule"));
+        assertThat(GlobalRuleNodePath.getRulePath(ruleTypeNode), is("/rules/foo_rule"));
     }
     
     @Test
     void assertGetVersionNodePathGenerator() {
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getActiveVersionPath(), is("/rules/foo_rule/active_version"));
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionsPath(), is("/rules/foo_rule/versions"));
-        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator("foo_rule").getVersionPath(0), is("/rules/foo_rule/versions/0"));
+        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator(ruleTypeNode).getActiveVersionPath(), is("/rules/foo_rule/active_version"));
+        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator(ruleTypeNode).getVersionsPath(), is("/rules/foo_rule/versions"));
+        assertThat(GlobalRuleNodePath.getVersionNodePathGenerator(ruleTypeNode).getVersionPath(0), is("/rules/foo_rule/versions/0"));
     }
     
     @Test
@@ -52,7 +55,7 @@ class GlobalRuleNodePathTest {
     
     @Test
     void assertGetRuleVersionNodePathParser() {
-        assertTrue(GlobalRuleNodePath.getRuleVersionNodePathParser("foo_rule").isVersionPath("/rules/foo_rule/versions/0"));
-        assertFalse(GlobalRuleNodePath.getRuleVersionNodePathParser("foo_rule").isVersionPath("/rules/foo_rule/active_version"));
+        assertTrue(GlobalRuleNodePath.getRuleVersionNodePathParser(ruleTypeNode).isVersionPath("/rules/foo_rule/versions/0"));
+        assertFalse(GlobalRuleNodePath.getRuleVersionNodePathParser(ruleTypeNode).isVersionPath("/rules/foo_rule/active_version"));
     }
 }

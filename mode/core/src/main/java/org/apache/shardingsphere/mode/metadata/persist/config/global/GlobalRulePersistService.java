@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
@@ -63,11 +64,11 @@ public final class GlobalRulePersistService {
     /**
      * Load global rule configuration.
      *
-     * @param ruleType rule type to be loaded
+     * @param ruleTypeNode rule type node to be loaded
      * @return global rule configuration
      */
-    public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(GlobalRuleNodePath.getRulePath(ruleType)));
+    public Optional<RuleConfiguration> load(final RuleTypeNode ruleTypeNode) {
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleTypeNode, repositoryTuplePersistService.load(GlobalRuleNodePath.getRulePath(ruleTypeNode)));
     }
     
     /**
@@ -83,7 +84,7 @@ public final class GlobalRulePersistService {
     
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
-            VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePath.getVersionNodePathGenerator(each.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePath.getVersionNodePathGenerator(new RuleTypeNode(each.getKey()));
             metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
         }
     }

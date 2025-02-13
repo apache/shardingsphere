@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.node.tuple;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.tuple.fixture.node.NodeYamlRuleConfiguration;
@@ -172,16 +173,18 @@ class YamlRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToEmptyRuleConfiguration() {
-        assertFalse(new YamlRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.emptyList()).isPresent());
+        assertFalse(new YamlRepositoryTupleSwapperEngine().swapToRuleConfiguration(new RuleTypeNode("leaf"), Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToNotFoundRuleConfiguration() {
-        assertFalse(new YamlRepositoryTupleSwapperEngine().swapToRuleConfiguration("invalid", Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
+        assertFalse(new YamlRepositoryTupleSwapperEngine()
+                .swapToRuleConfiguration(new RuleTypeNode("invalid"), Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
     }
     
     @Test
     void assertSwapToRuleConfiguration() {
-        assertFalse(new YamlRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
+        assertFalse(new YamlRepositoryTupleSwapperEngine()
+                .swapToRuleConfiguration(new RuleTypeNode("leaf"), Collections.singleton(new RepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
     }
 }

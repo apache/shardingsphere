@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
@@ -30,13 +31,13 @@ import java.util.Collections;
  */
 public final class MaskRuleNodePathProvider implements DatabaseRuleNodePathProvider {
     
-    public static final String RULE_TYPE = "mask";
+    public static final RuleTypeNode RULE_TYPE_NODE = new RuleTypeNode("mask");
     
     public static final String TABLES = "tables";
     
     public static final String MASK_ALGORITHMS = "mask_algorithms";
     
-    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(TABLES, MASK_ALGORITHMS), Collections.emptyList());
+    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE_NODE, Arrays.asList(TABLES, MASK_ALGORITHMS), Collections.emptyList());
     
     @Override
     public DatabaseRuleNodePath getDatabaseRuleNodePath() {

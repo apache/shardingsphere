@@ -57,6 +57,6 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.TABLES;
+        return SingleRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + SingleRuleNodePathProvider.TABLES;
     }
 }

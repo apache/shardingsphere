@@ -59,6 +59,6 @@ public final class ShardingAutoTableChangedProcessor implements RuleItemConfigur
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.AUTO_TABLES;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.AUTO_TABLES;
     }
 }

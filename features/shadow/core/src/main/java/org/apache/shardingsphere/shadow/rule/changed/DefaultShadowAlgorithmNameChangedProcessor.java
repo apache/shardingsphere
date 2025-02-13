@@ -52,6 +52,6 @@ public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleIte
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME;
+        return ShadowRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME;
     }
 }

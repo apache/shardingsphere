@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.database.root;
 
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseRuleRootNodePathTest {
     
-    private final DatabaseRuleRootNodePath nodePath = new DatabaseRuleRootNodePath("foo");
+    private final DatabaseRuleRootNodePath nodePath = new DatabaseRuleRootNodePath(new RuleTypeNode("foo"));
     
     @Test
     void assertGetRuleNodePrefix() {

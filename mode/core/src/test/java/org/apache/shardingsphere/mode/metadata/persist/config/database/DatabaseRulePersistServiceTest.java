@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,7 +80,7 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertDeleteWithRuleTypeName() {
-        persistService.delete("foo_db", "fixture_rule");
+        persistService.delete("foo_db", new RuleTypeNode("fixture_rule"));
         verify(repository).delete("/metadata/foo_db/rules/fixture_rule");
     }
     

@@ -46,6 +46,6 @@ public final class KeyGeneratorChangedProcessor extends AlgorithmChangedProcesso
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.KEY_GENERATORS;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.KEY_GENERATORS;
     }
 }

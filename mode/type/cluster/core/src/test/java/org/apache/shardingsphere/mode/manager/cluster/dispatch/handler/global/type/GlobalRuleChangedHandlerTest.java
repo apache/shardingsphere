@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,10 +68,9 @@ class GlobalRuleChangedHandlerTest {
     
     @Test
     void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version"))
-                .thenReturn("rule_value");
+        when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version")).thenReturn("rule_value");
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load("foo_rule")).thenReturn(Optional.of(ruleConfig));
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(refEq(new RuleTypeNode("foo_rule")))).thenReturn(Optional.of(ruleConfig));
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
     }

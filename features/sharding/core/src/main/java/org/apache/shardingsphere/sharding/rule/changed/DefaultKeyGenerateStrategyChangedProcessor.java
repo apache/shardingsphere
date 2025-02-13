@@ -56,6 +56,6 @@ public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleIte
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY;
     }
 }

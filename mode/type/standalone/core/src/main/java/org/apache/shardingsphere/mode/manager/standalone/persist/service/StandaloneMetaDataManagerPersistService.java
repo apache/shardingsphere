@@ -36,6 +36,7 @@ import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDro
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
@@ -231,8 +232,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleType) {
-        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleTypeNode ruleTypeNode) {
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleTypeNode);
         clearServiceCache();
     }
     

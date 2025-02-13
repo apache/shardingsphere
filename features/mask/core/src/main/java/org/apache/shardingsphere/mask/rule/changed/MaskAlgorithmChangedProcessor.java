@@ -48,6 +48,6 @@ public final class MaskAlgorithmChangedProcessor extends AlgorithmChangedProcess
     
     @Override
     public String getType() {
-        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.MASK_ALGORITHMS;
+        return MaskRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + MaskRuleNodePathProvider.MASK_ALGORITHMS;
     }
 }

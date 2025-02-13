@@ -56,6 +56,6 @@ public final class ShardingCacheChangedProcessor implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.SHARDING_CACHE;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.SHARDING_CACHE;
     }
 }

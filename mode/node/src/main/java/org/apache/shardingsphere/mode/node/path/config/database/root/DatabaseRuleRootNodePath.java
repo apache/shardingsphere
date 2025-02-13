@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config.database.root;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 
 import java.util.regex.Pattern;
 
@@ -32,16 +33,16 @@ public final class DatabaseRuleRootNodePath {
     private static final String RULE_NODE = "rules";
     
     @Getter
-    private final String ruleType;
+    private final RuleTypeNode ruleTypeNode;
     
     @Getter
     private final String nodePrefix;
     
     private final Pattern pathPattern;
     
-    public DatabaseRuleRootNodePath(final String ruleType) {
-        this.ruleType = ruleType;
-        nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.IDENTIFIER, RULE_NODE, ruleType, "");
+    public DatabaseRuleRootNodePath(final RuleTypeNode ruleTypeNode) {
+        this.ruleTypeNode = ruleTypeNode;
+        nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.IDENTIFIER, RULE_NODE, ruleTypeNode.getPersistKey(), "");
         pathPattern = Pattern.compile(nodePrefix + ".*");
     }
     

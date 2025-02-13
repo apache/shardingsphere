@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
@@ -155,7 +156,7 @@ public final class YamlRepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleEntity tupleEntity) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (GlobalRuleNodePath.getRuleVersionNodePathParser(tupleEntity.value()).isVersionPath(each.getKey())) {
+                if (GlobalRuleNodePath.getRuleVersionNodePathParser(new RuleTypeNode(tupleEntity.value())).isVersionPath(each.getKey())) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }
@@ -256,19 +257,19 @@ public final class YamlRepositoryTupleSwapperEngine {
     /**
      * Swap to rule configuration.
      *
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @param repositoryTuples repository tuples
      * @return global rule configuration
      */
     @SuppressWarnings("rawtypes")
-    public Optional<RuleConfiguration> swapToRuleConfiguration(final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
+    public Optional<RuleConfiguration> swapToRuleConfiguration(final RuleTypeNode ruleTypeNode, final Collection<RepositoryTuple> repositoryTuples) {
         if (repositoryTuples.isEmpty()) {
             return Optional.empty();
         }
         YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            if (ruleType.equals(Objects.requireNonNull(yamlRuleConfigClass.getAnnotation(RepositoryTupleEntity.class)).value())) {
+            if (ruleTypeNode.getPersistKey().equals(Objects.requireNonNull(yamlRuleConfigClass.getAnnotation(RepositoryTupleEntity.class)).value())) {
                 Optional<YamlRuleConfiguration> yamlRuleConfig = swapToYamlRuleConfiguration(repositoryTuples, yamlRuleConfigClass);
                 return yamlRuleConfig.map(yamlSwapperEngine::swapToRuleConfiguration);
             }

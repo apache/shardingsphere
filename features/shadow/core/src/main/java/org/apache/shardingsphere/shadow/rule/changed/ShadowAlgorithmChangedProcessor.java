@@ -46,6 +46,6 @@ public final class ShadowAlgorithmChangedProcessor extends AlgorithmChangedProce
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.SHADOW_ALGORITHMS;
+        return ShadowRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShadowRuleNodePathProvider.SHADOW_ALGORITHMS;
     }
 }

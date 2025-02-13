@@ -62,6 +62,6 @@ public final class MaskTableChangedProcessor implements RuleItemConfigurationCha
     
     @Override
     public String getType() {
-        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.TABLES;
+        return MaskRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + MaskRuleNodePathProvider.TABLES;
     }
 }

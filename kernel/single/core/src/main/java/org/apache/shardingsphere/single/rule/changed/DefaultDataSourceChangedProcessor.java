@@ -52,6 +52,6 @@ public final class DefaultDataSourceChangedProcessor implements RuleItemConfigur
     
     @Override
     public String getType() {
-        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE;
+        return SingleRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE;
     }
 }

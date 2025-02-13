@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -158,9 +159,9 @@ public interface MetaDataManagerPersistService {
      * Remove rule configuration.
      *
      * @param database database
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      */
-    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleType);
+    void removeRuleConfiguration(ShardingSphereDatabase database, RuleTypeNode ruleTypeNode);
     
     /**
      * Alter global rule configuration.

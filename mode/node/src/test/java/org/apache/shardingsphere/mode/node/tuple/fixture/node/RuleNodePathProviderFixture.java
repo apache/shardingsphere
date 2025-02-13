@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.node.tuple.fixture.node;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
@@ -27,7 +28,7 @@ public final class RuleNodePathProviderFixture implements DatabaseRuleNodePathPr
     
     @Override
     public DatabaseRuleNodePath getDatabaseRuleNodePath() {
-        return new DatabaseRuleNodePath("node", Arrays.asList("map_value", "gens"),
+        return new DatabaseRuleNodePath(new RuleTypeNode("node"), Arrays.asList("map_value", "gens"),
                 Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
     }
     

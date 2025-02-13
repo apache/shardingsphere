@@ -58,6 +58,6 @@ public final class ShadowTableChangedProcessor implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.TABLES;
+        return ShadowRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShadowRuleNodePathProvider.TABLES;
     }
 }

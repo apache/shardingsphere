@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
@@ -45,34 +46,34 @@ public final class DatabaseRuleMetaDataNodePath {
      * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @return database rule path
      */
-    public static String getRulePath(final String databaseName, final String ruleType) {
-        return String.join("/", getRootPath(databaseName), ruleType);
+    public static String getRulePath(final String databaseName, final RuleTypeNode ruleTypeNode) {
+        return String.join("/", getRootPath(databaseName), ruleTypeNode.getPersistKey());
     }
     
     /**
      * Get database rule path.
      *
      * @param databaseName database name
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @param ruleItemName rule item name
      * @return database rule path
      */
-    public static String getRulePath(final String databaseName, final String ruleType, final String ruleItemName) {
-        return String.join("/", getRulePath(databaseName, ruleType), ruleItemName);
+    public static String getRulePath(final String databaseName, final RuleTypeNode ruleTypeNode, final String ruleItemName) {
+        return String.join("/", getRulePath(databaseName, ruleTypeNode), ruleItemName);
     }
     
     /**
      * Get database rule version node path generator.
      *
      * @param databaseName database name
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @param ruleItemName rule item name
      * @return database rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleType, final String ruleItemName) {
-        return new VersionNodePathGenerator(getRulePath(databaseName, ruleType, ruleItemName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final RuleTypeNode ruleTypeNode, final String ruleItemName) {
+        return new VersionNodePathGenerator(getRulePath(databaseName, ruleTypeNode, ruleItemName));
     }
 }

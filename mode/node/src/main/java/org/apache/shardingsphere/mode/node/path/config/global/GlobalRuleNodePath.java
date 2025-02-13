@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.node.path.config.global;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.config.RuleTypeNode;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
@@ -45,21 +46,21 @@ public final class GlobalRuleNodePath {
     /**
      * Get global rule path.
      *
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @return global rule path
      */
-    public static String getRulePath(final String ruleType) {
-        return String.join("/", getRootPath(), ruleType);
+    public static String getRulePath(final RuleTypeNode ruleTypeNode) {
+        return String.join("/", getRootPath(), ruleTypeNode.getPersistKey());
     }
     
     /**
      * Get global rule version node path generator.
      *
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @return global rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleType) {
-        return new VersionNodePathGenerator(getRulePath(ruleType));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final RuleTypeNode ruleTypeNode) {
+        return new VersionNodePathGenerator(getRulePath(ruleTypeNode));
     }
     
     /**
@@ -74,10 +75,10 @@ public final class GlobalRuleNodePath {
     /**
      * Get rule version node path parser.
      *
-     * @param ruleType rule type
+     * @param ruleTypeNode rule type node
      * @return rule version node path parser
      */
-    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleType) {
-        return new VersionNodePathParser(ruleType);
+    public static VersionNodePathParser getRuleVersionNodePathParser(final RuleTypeNode ruleTypeNode) {
+        return new VersionNodePathParser(ruleTypeNode.getPersistKey());
     }
 }

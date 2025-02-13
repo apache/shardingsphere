@@ -48,6 +48,6 @@ public final class EncryptorChangedProcessor extends AlgorithmChangedProcessor<E
     
     @Override
     public String getType() {
-        return EncryptRuleNodePathProvider.RULE_TYPE + "." + EncryptRuleNodePathProvider.ENCRYPTORS;
+        return EncryptRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + EncryptRuleNodePathProvider.ENCRYPTORS;
     }
 }

@@ -48,6 +48,6 @@ public final class ReadwriteSplittingLoadBalancerChangedProcessor extends Algori
     
     @Override
     public String getType() {
-        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE + "." + ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS;
+        return ReadwriteSplittingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS;
     }
 }

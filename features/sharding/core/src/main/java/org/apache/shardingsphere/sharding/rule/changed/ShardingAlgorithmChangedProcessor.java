@@ -46,6 +46,6 @@ public final class ShardingAlgorithmChangedProcessor extends AlgorithmChangedPro
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.SHARDING_ALGORITHMS;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.SHARDING_ALGORITHMS;
     }
 }

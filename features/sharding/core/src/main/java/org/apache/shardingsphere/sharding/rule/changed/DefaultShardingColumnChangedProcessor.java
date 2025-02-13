@@ -52,6 +52,6 @@ public final class DefaultShardingColumnChangedProcessor implements RuleItemConf
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN;
+        return ShardingRuleNodePathProvider.RULE_TYPE_NODE.getPersistKey() + "." + ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN;
     }
 }
