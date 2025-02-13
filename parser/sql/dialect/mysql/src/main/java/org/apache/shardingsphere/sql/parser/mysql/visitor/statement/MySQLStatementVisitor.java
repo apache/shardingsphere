@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldsC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeomCollectionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HavingClauseContext;
@@ -120,6 +121,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShorthandRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialAnalysisFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
@@ -899,7 +901,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.udfFunction()) {
             return visit(ctx.udfFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction, jsonFunction or udfFunction.");
+        if (null != ctx.specialAnalysisFunction()) {
+            return visit(ctx.specialAnalysisFunction());
+        }
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction, jsonFunction, udfFunction or specialAnalysisFunction.");
     }
     
     @Override
@@ -909,6 +914,21 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             for (ExprContext each : ctx.expr()) {
                 result.getParameters().add((ExpressionSegment) visit(each));
             }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSpecialAnalysisFunction(final SpecialAnalysisFunctionContext ctx) {
+        return null != ctx.geomCollectionFunction() ? visit(ctx.geomCollectionFunction())
+                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitGeomCollectionFunction(final GeomCollectionFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GEOMCOLLECTION().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
         }
         return result;
     }
