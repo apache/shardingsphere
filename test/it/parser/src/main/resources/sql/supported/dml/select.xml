@@ -313,4 +313,5 @@
     <sql-case id="select_with_zone_keyword" value="SELECT order_id, zone FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_reserved_word_range_and_table_owner" value="SELECT * FROM t_order o WHERE o.range = 1" db-types="MySQL"/>
     <sql-case id="select_with_multi_literals" value="SELECT 'x' 'x' 'x'" db-types="MySQL"/>
+    <sql-case id="select_with_mixed_single_double_quoted_literals" value="SELECT 'x' &quot;x&quot; 'x' FROM t_order WHERE status LIKE &quot;%&quot; '123' &quot;%&quot;" db-types="MySQL"/>
 </sql-cases>
