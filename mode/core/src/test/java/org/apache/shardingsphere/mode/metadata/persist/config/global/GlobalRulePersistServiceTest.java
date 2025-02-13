@@ -71,7 +71,7 @@ class GlobalRulePersistServiceTest {
     }
     
     @Test
-    void assertLoadWithRuleTypeName() {
+    void assertLoadWithRuleType() {
         assertFalse(globalRulePersistService.load("foo_rule").isPresent());
         verify(repositoryTuplePersistService).load("/rules/foo_rule");
     }

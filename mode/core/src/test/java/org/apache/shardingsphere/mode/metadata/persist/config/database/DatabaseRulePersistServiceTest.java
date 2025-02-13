@@ -78,9 +78,9 @@ class DatabaseRulePersistServiceTest {
     }
     
     @Test
-    void assertDeleteWithRuleTypeName() {
-        persistService.delete("foo_db", "fixture_rule");
-        verify(repository).delete("/metadata/foo_db/rules/fixture_rule");
+    void assertDeleteWithRuleType() {
+        persistService.delete("foo_db", "foo_rule");
+        verify(repository).delete("/metadata/foo_db/rules/foo_rule");
     }
     
     @Test
