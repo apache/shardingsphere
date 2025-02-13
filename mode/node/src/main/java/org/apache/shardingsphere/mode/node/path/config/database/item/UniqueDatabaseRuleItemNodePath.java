@@ -26,23 +26,14 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
  */
 public final class UniqueDatabaseRuleItemNodePath {
     
-    private final String parentNode;
-    
     private final String type;
     
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
     public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String type) {
-        parentNode = null;
         this.type = type;
         versionNodePathParser = new VersionNodePathParser(databaseRuleRootNodePath.getNodePrefix() + type);
-    }
-    
-    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String parentNode, final String type) {
-        this.parentNode = parentNode;
-        this.type = type;
-        versionNodePathParser = new VersionNodePathParser(String.join("/", databaseRuleRootNodePath.getNodePrefix() + parentNode, type));
     }
     
     /**
@@ -51,6 +42,6 @@ public final class UniqueDatabaseRuleItemNodePath {
      * @return path
      */
     public String getPath() {
-        return null == parentNode ? String.join("/", type) : String.join("/", parentNode, type);
+        return String.join("/", type);
     }
 }

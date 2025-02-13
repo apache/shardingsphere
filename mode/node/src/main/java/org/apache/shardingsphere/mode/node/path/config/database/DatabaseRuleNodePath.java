@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueDatab
 import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Database rule node path.
@@ -45,24 +45,11 @@ public final class DatabaseRuleNodePath {
     }
     
     private Map<String, NamedDatabaseRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
-        Map<String, NamedDatabaseRuleItemNodePath> result = new HashMap<>(namedRuleItemNodePathTypes.size(), 1F);
-        for (String each : namedRuleItemNodePathTypes) {
-            result.put(each, new NamedDatabaseRuleItemNodePath(root, each));
-        }
-        return result;
+        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new NamedDatabaseRuleItemNodePath(root, each)));
     }
     
     private Map<String, UniqueDatabaseRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
-        Map<String, UniqueDatabaseRuleItemNodePath> result = new HashMap<>(uniqueRuleItemNodePathTypes.size(), 1F);
-        for (String each : uniqueRuleItemNodePathTypes) {
-            if (each.contains(".")) {
-                String[] values = each.split("\\.");
-                result.put(values[1], new UniqueDatabaseRuleItemNodePath(root, values[0], values[1]));
-            } else {
-                result.put(each, new UniqueDatabaseRuleItemNodePath(root, each));
-            }
-        }
-        return result;
+        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new UniqueDatabaseRuleItemNodePath(root, each)));
     }
     
     /**
