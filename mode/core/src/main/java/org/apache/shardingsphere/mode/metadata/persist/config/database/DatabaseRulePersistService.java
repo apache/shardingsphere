@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseRuleMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
@@ -90,9 +91,10 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleType, each.getKey());
+            DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleMetaDataNodePath.getVersionNodePathGenerator(databaseName, ruleType, databaseRuleItem);
             int nextVersion = metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
-            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleType, each.getKey()), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
+            result.add(new MetaDataVersion(DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleType, databaseRuleItem), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
         }
         return result;
     }
@@ -130,7 +132,7 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            String toBeDeletedKey = DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleType, each.getKey());
+            String toBeDeletedKey = DatabaseRuleMetaDataNodePath.getRulePath(databaseName, ruleType, new DatabaseRuleItem(each.getKey()));
             repository.delete(toBeDeletedKey);
             result.add(new MetaDataVersion(toBeDeletedKey));
         }

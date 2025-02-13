@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
@@ -57,11 +58,11 @@ public final class DatabaseRuleMetaDataNodePath {
      *
      * @param databaseName database name
      * @param ruleType rule type
-     * @param ruleItemName rule item name
+     * @param databaseRuleItem database rule item
      * @return database rule path
      */
-    public static String getRulePath(final String databaseName, final String ruleType, final String ruleItemName) {
-        return String.join("/", getRulePath(databaseName, ruleType), ruleItemName);
+    public static String getRulePath(final String databaseName, final String ruleType, final DatabaseRuleItem databaseRuleItem) {
+        return String.join("/", getRulePath(databaseName, ruleType), databaseRuleItem.toString());
     }
     
     /**
@@ -69,10 +70,10 @@ public final class DatabaseRuleMetaDataNodePath {
      *
      * @param databaseName database name
      * @param ruleType rule type
-     * @param ruleItemName rule item name
+     * @param databaseRuleItem database rule item
      * @return database rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleType, final String ruleItemName) {
-        return new VersionNodePathGenerator(getRulePath(databaseName, ruleType, ruleItemName));
+    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleType, final DatabaseRuleItem databaseRuleItem) {
+        return new VersionNodePathGenerator(getRulePath(databaseName, ruleType, databaseRuleItem));
     }
 }
