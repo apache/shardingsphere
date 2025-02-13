@@ -26,14 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class UniqueDatabaseRuleItemNodePathTest {
     
     @Test
-    void assertPathWithNullParentNode() {
+    void assertPath() {
         UniqueDatabaseRuleItemNodePath uniqueDatabaseRuleItemNodePath = new UniqueDatabaseRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_path");
         assertThat(uniqueDatabaseRuleItemNodePath.getPath(), is("test_path"));
-    }
-    
-    @Test
-    void assertGetPathWithParentNode() {
-        UniqueDatabaseRuleItemNodePath uniqueDatabaseRuleItemNodePath = new UniqueDatabaseRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_parent", "test_path");
-        assertThat(uniqueDatabaseRuleItemNodePath.getPath(), is("test_parent/test_path"));
     }
 }

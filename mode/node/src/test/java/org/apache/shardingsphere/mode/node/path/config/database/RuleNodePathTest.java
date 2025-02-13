@@ -36,7 +36,7 @@ class RuleNodePathTest {
     @BeforeEach
     void setup() {
         List<String> namedRuleItemNodePathTypes = Collections.singletonList("tables");
-        List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables.type");
+        List<String> uniqueRuleItemNodePathTypes = Arrays.asList("tables", "tables/type");
         databaseRuleNodePath = new DatabaseRuleNodePath("foo", namedRuleItemNodePathTypes, uniqueRuleItemNodePathTypes);
     }
     
@@ -50,7 +50,7 @@ class RuleNodePathTest {
     void assertGetUniqueItem() {
         UniqueDatabaseRuleItemNodePath uniqueRulePath = databaseRuleNodePath.getUniqueItem("tables");
         assertThat(uniqueRulePath.getPath(), is("tables"));
-        UniqueDatabaseRuleItemNodePath uniqueRulePathWithType = databaseRuleNodePath.getUniqueItem("type");
+        UniqueDatabaseRuleItemNodePath uniqueRulePathWithType = databaseRuleNodePath.getUniqueItem("tables/type");
         assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
     }
 }
