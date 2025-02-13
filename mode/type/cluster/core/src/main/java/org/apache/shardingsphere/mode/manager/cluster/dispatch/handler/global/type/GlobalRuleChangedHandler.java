@@ -47,13 +47,13 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Optional<String> ruleTypeName = GlobalRuleNodePath.getVersionNodePathParser().findIdentifierByActiveVersionPath(event.getKey(), 1);
-        if (!ruleTypeName.isPresent()) {
+        Optional<String> ruleType = GlobalRuleNodePath.getVersionNodePathParser().findIdentifierByActiveVersionPath(event.getKey(), 1);
+        if (!ruleType.isPresent()) {
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleTypeName.get());
-        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleTypeName.get());
+        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
+        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleType.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig.get());
     }
 }
