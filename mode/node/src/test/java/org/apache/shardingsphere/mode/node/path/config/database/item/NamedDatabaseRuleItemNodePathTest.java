@@ -20,20 +20,32 @@ package org.apache.shardingsphere.mode.node.path.config.database.item;
 import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UniqueRuleItemNodePathTest {
+class NamedDatabaseRuleItemNodePathTest {
+    
+    private final NamedDatabaseRuleItemNodePath nodePath = new NamedDatabaseRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "tables");
     
     @Test
-    void assertPathWithNullParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_path");
-        assertThat(uniqueRuleItemNodePath.getPath(), is("test_path"));
+    void assertGetPath() {
+        assertThat(nodePath.getPath("foo_tbl"), is("tables/foo_tbl"));
     }
     
     @Test
-    void assertGetPathWithParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_parent", "test_path");
-        assertThat(uniqueRuleItemNodePath.getPath(), is("test_parent/test_path"));
+    void assertFindNameByItemPath() {
+        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertNotFindNameByItemPath() {
+        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl/xxx-xxx");
+        assertFalse(actual.isPresent());
     }
 }
