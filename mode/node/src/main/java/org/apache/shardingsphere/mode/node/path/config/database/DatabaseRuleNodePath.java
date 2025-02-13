@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.node.path.config.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.config.database.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.item.NamedDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 
 import java.util.Collection;
@@ -34,9 +34,9 @@ public final class DatabaseRuleNodePath {
     
     private final DatabaseRuleRootNodePath root;
     
-    private final Map<String, NamedRuleItemNodePath> namedItems;
+    private final Map<String, NamedDatabaseRuleItemNodePath> namedItems;
     
-    private final Map<String, UniqueRuleItemNodePath> uniqueItems;
+    private final Map<String, UniqueDatabaseRuleItemNodePath> uniqueItems;
     
     public DatabaseRuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
         root = new DatabaseRuleRootNodePath(ruleType);
@@ -44,22 +44,22 @@ public final class DatabaseRuleNodePath {
         uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
     }
     
-    private Map<String, NamedRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
-        Map<String, NamedRuleItemNodePath> result = new HashMap<>(namedRuleItemNodePathTypes.size(), 1F);
+    private Map<String, NamedDatabaseRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
+        Map<String, NamedDatabaseRuleItemNodePath> result = new HashMap<>(namedRuleItemNodePathTypes.size(), 1F);
         for (String each : namedRuleItemNodePathTypes) {
-            result.put(each, new NamedRuleItemNodePath(root, each));
+            result.put(each, new NamedDatabaseRuleItemNodePath(root, each));
         }
         return result;
     }
     
-    private Map<String, UniqueRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
-        Map<String, UniqueRuleItemNodePath> result = new HashMap<>(uniqueRuleItemNodePathTypes.size(), 1F);
+    private Map<String, UniqueDatabaseRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
+        Map<String, UniqueDatabaseRuleItemNodePath> result = new HashMap<>(uniqueRuleItemNodePathTypes.size(), 1F);
         for (String each : uniqueRuleItemNodePathTypes) {
             if (each.contains(".")) {
                 String[] values = each.split("\\.");
-                result.put(values[1], new UniqueRuleItemNodePath(root, values[0], values[1]));
+                result.put(values[1], new UniqueDatabaseRuleItemNodePath(root, values[0], values[1]));
             } else {
-                result.put(each, new UniqueRuleItemNodePath(root, each));
+                result.put(each, new UniqueDatabaseRuleItemNodePath(root, each));
             }
         }
         return result;
@@ -71,7 +71,7 @@ public final class DatabaseRuleNodePath {
      * @param itemType item type
      * @return named rule item node path
      */
-    public NamedRuleItemNodePath getNamedItem(final String itemType) {
+    public NamedDatabaseRuleItemNodePath getNamedItem(final String itemType) {
         return namedItems.get(itemType);
     }
     
@@ -81,7 +81,7 @@ public final class DatabaseRuleNodePath {
      * @param itemType item type
      * @return unique rule item node path
      */
-    public UniqueRuleItemNodePath getUniqueItem(final String itemType) {
+    public UniqueDatabaseRuleItemNodePath getUniqueItem(final String itemType) {
         return uniqueItems.get(itemType);
     }
 }

@@ -18,51 +18,39 @@
 package org.apache.shardingsphere.mode.node.path.config.database.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * Named rule item node path.
+ * Unique database rule item node path.
  */
-public final class NamedRuleItemNodePath {
+public final class UniqueDatabaseRuleItemNodePath {
+    
+    private final String parentNode;
     
     private final String type;
-    
-    private final Pattern itemPathPattern;
     
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public NamedRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
+    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String type) {
+        parentNode = null;
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
-        versionNodePathParser = new VersionNodePathParser(pattern);
-        itemPathPattern = Pattern.compile(pattern + "$");
+        versionNodePathParser = new VersionNodePathParser(databaseRuleRootNodePath.getNodePrefix() + type);
+    }
+    
+    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String parentNode, final String type) {
+        this.parentNode = parentNode;
+        this.type = type;
+        versionNodePathParser = new VersionNodePathParser(String.join("/", databaseRuleRootNodePath.getNodePrefix() + parentNode, type));
     }
     
     /**
-     * Get rule item path.
+     * Get path.
      *
-     * @param itemName item name
-     * @return rule item path
+     * @return path
      */
-    public String getPath(final String itemName) {
-        return String.join("/", type, itemName);
-    }
-    
-    /**
-     * Find rule item name by item path.
-     *
-     * @param itemPath item path
-     * @return found rule item name
-     */
-    public Optional<String> findNameByItemPath(final String itemPath) {
-        Matcher matcher = itemPathPattern.matcher(itemPath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    public String getPath() {
+        return null == parentNode ? String.join("/", type) : String.join("/", parentNode, type);
     }
 }
