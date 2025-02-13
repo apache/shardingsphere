@@ -110,7 +110,9 @@ public final class YamlRepositoryTupleSwapperEngine {
                     : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
-            return ((String) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+            return ((String) fieldValue).isEmpty()
+                    ? Collections.emptyList()
+                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
             return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
@@ -197,7 +199,8 @@ public final class YamlRepositoryTupleSwapperEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final DatabaseRuleNodePath databaseRuleNodePath, final RepositoryTuple repositoryTuple) throws IllegalAccessException {
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final DatabaseRuleNodePath databaseRuleNodePath,
+                               final RepositoryTuple repositoryTuple) throws IllegalAccessException {
         Object fieldValue = field.get(yamlRuleConfig);
         String tupleName = getTupleName(field);
         RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);

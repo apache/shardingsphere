@@ -40,7 +40,8 @@ public final class ShadowRuleNodePathProvider implements DatabaseRuleNodePathPro
     
     public static final String DEFAULT_SHADOW_ALGORITHM_NAME = "default_shadow_algorithm_name";
     
-    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
+    private static final DatabaseRuleNodePath INSTANCE =
+            new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
     
     @Override
     public DatabaseRuleNodePath getDatabaseRuleNodePath() {
