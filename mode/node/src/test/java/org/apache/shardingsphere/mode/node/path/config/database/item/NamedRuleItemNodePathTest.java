@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.database.item;
 
-import org.apache.shardingsphere.mode.node.path.config.database.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NamedRuleItemNodePathTest {
     
-    private final NamedRuleItemNodePath nodePath = new NamedRuleItemNodePath(new RuleRootNodePath("foo"), "tables");
+    private final NamedRuleItemNodePath nodePath = new NamedRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "tables");
     
     @Test
     void assertGetPath() {

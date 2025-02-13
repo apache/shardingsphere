@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.database.item;
 
-import org.apache.shardingsphere.mode.node.path.config.database.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,13 +27,13 @@ class UniqueRuleItemNodePathTest {
     
     @Test
     void assertPathWithNullParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_path");
+        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_path");
         assertThat(uniqueRuleItemNodePath.getPath(), is("test_path"));
     }
     
     @Test
     void assertGetPathWithParentNode() {
-        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new RuleRootNodePath("foo"), "test_parent", "test_path");
+        UniqueRuleItemNodePath uniqueRuleItemNodePath = new UniqueRuleItemNodePath(new DatabaseRuleRootNodePath("foo"), "test_parent", "test_path");
         assertThat(uniqueRuleItemNodePath.getPath(), is("test_parent/test_path"));
     }
 }

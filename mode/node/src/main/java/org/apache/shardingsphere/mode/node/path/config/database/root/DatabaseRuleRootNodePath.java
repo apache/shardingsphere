@@ -23,9 +23,9 @@ import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import java.util.regex.Pattern;
 
 /**
- * Rule root node path.
+ * Database rule root node path.
  */
-public final class RuleRootNodePath {
+public final class DatabaseRuleRootNodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
@@ -39,7 +39,7 @@ public final class RuleRootNodePath {
     
     private final Pattern pathPattern;
     
-    public RuleRootNodePath(final String ruleType) {
+    public DatabaseRuleRootNodePath(final String ruleType) {
         this.ruleType = ruleType;
         nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.IDENTIFIER, RULE_NODE, ruleType, "");
         pathPattern = Pattern.compile(nodePrefix + ".*");

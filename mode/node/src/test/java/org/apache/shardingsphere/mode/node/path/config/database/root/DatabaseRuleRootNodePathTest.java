@@ -24,9 +24,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuleRootNodePathTest {
+class DatabaseRuleRootNodePathTest {
     
-    private final RuleRootNodePath nodePath = new RuleRootNodePath("foo");
+    private final DatabaseRuleRootNodePath nodePath = new DatabaseRuleRootNodePath("foo");
     
     @Test
     void assertGetRuleNodePrefix() {

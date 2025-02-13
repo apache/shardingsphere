@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config.database.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.config.database.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -38,7 +38,7 @@ public final class NamedRuleItemNodePath {
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public NamedRuleItemNodePath(final RuleRootNodePath rootNodePath, final String type) {
+    public NamedRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
         this.type = type;
         String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
         versionNodePathParser = new VersionNodePathParser(pattern);

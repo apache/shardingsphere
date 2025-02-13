@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.config.database;
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.config.database.item.NamedRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.config.database.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.config.database.root.DatabaseRuleRootNodePath;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,14 +32,14 @@ import java.util.Map;
 @Getter
 public final class DatabaseRuleNodePath {
     
-    private final RuleRootNodePath root;
+    private final DatabaseRuleRootNodePath root;
     
     private final Map<String, NamedRuleItemNodePath> namedItems;
     
     private final Map<String, UniqueRuleItemNodePath> uniqueItems;
     
     public DatabaseRuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
-        root = new RuleRootNodePath(ruleType);
+        root = new DatabaseRuleRootNodePath(ruleType);
         namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
         uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
     }
