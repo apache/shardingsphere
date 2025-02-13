@@ -979,7 +979,7 @@ columnRefList
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction
+    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction | specialAnalysisFunction
     ;
 
 udfFunction
@@ -1216,6 +1216,14 @@ regularFunctionName
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP
     | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
+    ;
+
+specialAnalysisFunction
+    : geomCollectionFunction
+    ;
+
+geomCollectionFunction
+    : GEOMCOLLECTION LP_ expr (COMMA_ expr)* RP_
     ;
 
 matchExpression
