@@ -19,23 +19,15 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * View meta data path.
+ * View meta data path generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ViewMetaDataNodePath {
+public final class ViewMetaDataNodePathGenerator {
     
     private static final String VIEWS_NODE = "views";
-    
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get view root path.
@@ -45,7 +37,7 @@ public final class ViewMetaDataNodePath {
      * @return view root path
      */
     public static String getViewRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", DatabaseMetaDataNodePath.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
+        return String.join("/", DatabaseMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
     /**
@@ -70,36 +62,5 @@ public final class ViewMetaDataNodePath {
      */
     public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String viewName) {
         return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
-    }
-    
-    /**
-     * Get view name.
-     *
-     * @param path path
-     * @return view name
-     */
-    public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is view path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewPath(final String path) {
-        return findViewName(path).isPresent();
-    }
-    
-    /**
-     * Get view version pattern node path parser.
-     *
-     * @return view version node path parser
-     */
-    public static VersionNodePathParser getVersionNodePathParser() {
-        return PARSER;
     }
 }
