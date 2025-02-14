@@ -20,11 +20,12 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.state.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.state.ComputeNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.state.ComputeNodePathParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNodePath.getRootPath();
+        return ComputeNodePathGenerator.getRootPath();
     }
     
     @Override
@@ -47,18 +48,18 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        ComputeNodePath.findInstanceId(event.getKey()).ifPresent(optional -> handle(contextManager, event, optional));
+        ComputeNodePathParser.findInstanceId(event.getKey()).ifPresent(optional -> handle(contextManager, event, optional));
     }
     
     @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        if (event.getKey().equals(ComputeNodePath.getStatePath(instanceId)) && Type.DELETED != event.getType()) {
+        if (event.getKey().equals(ComputeNodePathGenerator.getStatePath(instanceId)) && Type.DELETED != event.getType()) {
             computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
-        } else if (event.getKey().equals(ComputeNodePath.getLabelsPath(instanceId)) && Type.DELETED != event.getType()) {
+        } else if (event.getKey().equals(ComputeNodePathGenerator.getLabelsPath(instanceId)) && Type.DELETED != event.getType()) {
             // TODO labels may be empty
             computeNodeInstanceContext.updateLabels(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
-        } else if (event.getKey().equals(ComputeNodePath.getWorkerIdPath(instanceId))) {
+        } else if (event.getKey().equals(ComputeNodePathGenerator.getWorkerIdPath(instanceId))) {
             computeNodeInstanceContext.updateWorkerId(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue()));
         }
     }

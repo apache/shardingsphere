@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePathGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,7 +34,7 @@ public final class ClusterStateChangedHandler implements GlobalDataChangedEventH
     
     @Override
     public String getSubscribedKey() {
-        return StatesNodePath.getClusterStatePath();
+        return StatesNodePathGenerator.getClusterStatePath();
     }
     
     @Override

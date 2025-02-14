@@ -26,11 +26,12 @@ import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataS
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
     
     @Override
     public String getSubscribedKey() {
-        return QualifiedDataSourceNodePath.getRootPath();
+        return QualifiedDataSourceNodePathGenerator.getRootPath();
     }
     
     @Override
@@ -56,7 +57,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
         if (Strings.isNullOrEmpty(event.getValue())) {
             return;
         }
-        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNodePath.findQualifiedDataSource(event.getKey());
+        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNodePathParser.findQualifiedDataSource(event.getKey());
         if (!qualifiedDataSource.isPresent()) {
             return;
         }
