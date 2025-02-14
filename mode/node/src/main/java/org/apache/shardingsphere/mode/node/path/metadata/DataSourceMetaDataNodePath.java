@@ -42,10 +42,10 @@ public final class DataSourceMetaDataNodePath {
     private static final String UNITS_NODE = "units";
     
     private static final VersionNodePathParser STORAGE_UNITS_PARSER =
-            new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
+            new VersionNodePathParser(String.join("/", getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     private static final VersionNodePathParser STORAGE_NODES_PARSER =
-            new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.GROUPED_IDENTIFIER), NodePathPattern.GROUPED_IDENTIFIER));
+            new VersionNodePathParser(String.join("/", getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     /**
      * Get data source root path.
@@ -146,7 +146,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageUnitNameByStorageUnitPath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageUnitPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -158,7 +158,7 @@ public final class DataSourceMetaDataNodePath {
      * @return found storage unit name
      */
     public static Optional<String> findStorageNodeNameByStorageNodePath(final String path) {
-        Pattern pattern = Pattern.compile(getStorageNodePath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getStorageNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -170,6 +170,6 @@ public final class DataSourceMetaDataNodePath {
      * @return is data source root path or not
      */
     public static boolean isDataSourceRootPath(final String path) {
-        return Pattern.compile(getDataSourceRootPath(NodePathPattern.GROUPED_IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return Pattern.compile(getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
 }

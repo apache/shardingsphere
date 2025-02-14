@@ -40,7 +40,7 @@ public final class NamedDatabaseRuleItemNodePath {
     
     public NamedDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
+        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
         itemPathPattern = Pattern.compile(pattern + "$");
         versionNodePathParser = new VersionNodePathParser(pattern);
     }

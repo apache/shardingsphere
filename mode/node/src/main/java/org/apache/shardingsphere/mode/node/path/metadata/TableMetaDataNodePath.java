@@ -35,8 +35,7 @@ public final class TableMetaDataNodePath {
     
     private static final String TABLES_NODE = "tables";
     
-    private static final VersionNodePathParser PARSER =
-            new VersionNodePathParser(getTablePath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get table root path.
@@ -80,7 +79,7 @@ public final class TableMetaDataNodePath {
      * @return found table name
      */
     public static Optional<String> findTableName(final String path) {
-        Pattern pattern = Pattern.compile(getTablePath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
