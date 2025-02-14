@@ -1654,6 +1654,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitPlsqlBlock(final PlsqlBlockContext ctx) {
+        if (null != ctx.body() && null != ctx.body().statement()) {
+            ctx.body().statement().forEach(this::visit);
+        }
         return new OraclePLSQLBlockStatement();
     }
     
