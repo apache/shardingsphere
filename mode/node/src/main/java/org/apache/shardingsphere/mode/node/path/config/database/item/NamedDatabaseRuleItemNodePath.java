@@ -41,8 +41,8 @@ public final class NamedDatabaseRuleItemNodePath {
     public NamedDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
         this.type = type;
         String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.GROUPED_IDENTIFIER);
-        versionNodePathParser = new VersionNodePathParser(pattern);
         itemPathPattern = Pattern.compile(pattern + "$");
+        versionNodePathParser = new VersionNodePathParser(pattern);
     }
     
     /**
@@ -63,6 +63,6 @@ public final class NamedDatabaseRuleItemNodePath {
      */
     public Optional<String> findNameByItemPath(final String itemPath) {
         Matcher matcher = itemPathPattern.matcher(itemPath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
 }
