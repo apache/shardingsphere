@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -216,7 +217,15 @@ class DataRecordGroupEngineTest {
     }
     
     @Test
-    void assertGroup() {
+    void assertGroupOnTableHasNoUniqueKey() {
+        DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "order", new IngestPlaceholderPosition(), 3);
+        dataRecord.setActualTableName("order_0");
+        List<DataRecord> dataRecords = Collections.singletonList(dataRecord);
+        assertThrows(IllegalArgumentException.class, () -> groupEngine.group(dataRecords));
+    }
+    
+    @Test
+    void assertGroupOnTableHasUniqueKey() {
         List<DataRecord> dataRecords = mockDataRecords();
         List<GroupedDataRecord> groupedDataRecords = groupEngine.group(dataRecords);
         assertThat(groupedDataRecords.size(), is(2));
