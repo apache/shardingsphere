@@ -206,12 +206,12 @@ public final class YamlRepositoryTupleSwapperEngine {
         RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             databaseRuleNodePath.getNamedItem(tupleName).getVersionNodePathParser()
-                    .findIdentifierByVersionsPath(repositoryTuple.getKey(), 1).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
+                    .findIdentifierByVersionsPath(repositoryTuple.getKey(), 2).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            databaseRuleNodePath.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 1)
+            databaseRuleNodePath.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 2)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }

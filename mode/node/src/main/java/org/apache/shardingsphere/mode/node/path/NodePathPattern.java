@@ -27,11 +27,6 @@ import lombok.NoArgsConstructor;
 public final class NodePathPattern {
     
     /**
-     * Identifier pattern.
-     */
-    public static final String IDENTIFIER = "[\\w\\-]+";
-    
-    /**
      * Grouped identifier pattern.
      */
     public static final String GROUPED_IDENTIFIER = "([\\w\\-]+)";

@@ -41,7 +41,7 @@ public final class DatabaseRuleRootNodePath {
     
     public DatabaseRuleRootNodePath(final String ruleType) {
         this.ruleType = ruleType;
-        nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.IDENTIFIER, RULE_NODE, ruleType, "");
+        nodePrefix = String.join("/", ROOT_NODE, NodePathPattern.GROUPED_IDENTIFIER, RULE_NODE, ruleType, "");
         pathPattern = Pattern.compile(nodePrefix + ".*");
     }
     
