@@ -72,13 +72,16 @@ public final class DataRecordGroupEngine {
     /**
      * Group by table and type.
      *
-     * @param dataRecords data records
+     * @param dataRecords data records, related table must have primary key or unique key
      * @return grouped data records
+     * @throws IllegalArgumentException if related table has no primary key or unique key
      */
     public List<GroupedDataRecord> group(final List<DataRecord> dataRecords) {
+        DataRecord firstDataRecord = dataRecords.get(0);
+        ShardingSpherePreconditions.checkState(!firstDataRecord.getUniqueKeyValue().isEmpty(),
+                () -> new IllegalArgumentException(firstDataRecord.getTableName() + " must have primary key or unique key"));
         List<GroupedDataRecord> result = new ArrayList<>(100);
-        List<DataRecord> mergedDataRecords = dataRecords.get(0).getUniqueKeyValue().isEmpty() ? dataRecords : merge(dataRecords);
-        Map<String, List<DataRecord>> tableGroup = mergedDataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
+        Map<String, List<DataRecord>> tableGroup = merge(dataRecords).stream().collect(Collectors.groupingBy(DataRecord::getTableName));
         for (Entry<String, List<DataRecord>> entry : tableGroup.entrySet()) {
             Map<PipelineSQLOperationType, List<DataRecord>> typeGroup = entry.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
             result.add(new GroupedDataRecord(entry.getKey(), typeGroup.getOrDefault(PipelineSQLOperationType.INSERT, Collections.emptyList()),

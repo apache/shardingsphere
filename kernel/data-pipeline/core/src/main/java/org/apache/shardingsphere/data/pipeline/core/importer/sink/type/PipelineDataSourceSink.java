@@ -41,6 +41,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -78,12 +79,27 @@ public final class PipelineDataSourceSink implements PipelineSink {
         if (dataRecords.isEmpty()) {
             return new PipelineJobUpdateProgress(0);
         }
+        if (dataRecords.iterator().next().getUniqueKeyValue().isEmpty()) {
+            sequentialWrite(dataRecords);
+            return new PipelineJobUpdateProgress(dataRecords.size());
+        }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
             batchWrite(each.getDeleteDataRecords());
             batchWrite(each.getInsertDataRecords());
             batchWrite(each.getUpdateDataRecords());
         }
         return new PipelineJobUpdateProgress((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
+    }
+    
+    private void sequentialWrite(final List<DataRecord> buffer) {
+        // TODO It's better to use transaction, but delete operation may not take effect on PostgreSQL sometimes
+        try {
+            for (DataRecord each : buffer) {
+                doWrite(Collections.singletonList(each), true);
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
+        }
     }
     
     @SuppressWarnings("BusyWait")
