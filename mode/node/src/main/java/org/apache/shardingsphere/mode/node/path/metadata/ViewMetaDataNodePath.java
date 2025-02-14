@@ -35,8 +35,7 @@ public final class ViewMetaDataNodePath {
     
     private static final String VIEWS_NODE = "views";
     
-    private static final VersionNodePathParser PARSER =
-            new VersionNodePathParser(getViewPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER));
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
      * Get view root path.
@@ -80,7 +79,7 @@ public final class ViewMetaDataNodePath {
      * @return view name
      */
     public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(getViewPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }

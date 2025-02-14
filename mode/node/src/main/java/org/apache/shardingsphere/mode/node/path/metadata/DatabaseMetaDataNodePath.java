@@ -84,7 +84,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.GROUPED_IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -98,7 +98,7 @@ public final class DatabaseMetaDataNodePath {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.GROUPED_IDENTIFIER, NodePathPattern.GROUPED_IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
