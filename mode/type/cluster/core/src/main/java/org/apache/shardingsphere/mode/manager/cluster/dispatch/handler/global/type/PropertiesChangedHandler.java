@@ -22,7 +22,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return GlobalPropertiesNodePath.getRootPath();
+        return GlobalPropertiesNodePathGenerator.getRootPath();
     }
     
     @Override
@@ -44,7 +45,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalPropertiesNodePath.getVersionNodePathParser().isActiveVersionPath(event.getKey())) {
+        if (!GlobalPropertiesNodePathParser.getVersionNodePathParser().isActiveVersionPath(event.getKey())) {
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
