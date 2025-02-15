@@ -94,7 +94,7 @@ public final class DataSourceMetaDataNodePathGenerator {
      * @param storageUnitName storage unit name
      * @return storage unit version node path generator
      */
-    public static VersionNodePathGenerator getStorageUnitVersionNodePathGenerator(final String databaseName, final String storageUnitName) {
+    public static VersionNodePathGenerator getStorageUnitVersion(final String databaseName, final String storageUnitName) {
         return new VersionNodePathGenerator(String.join("/", getStorageUnitsPath(databaseName), storageUnitName));
     }
     
@@ -105,7 +105,7 @@ public final class DataSourceMetaDataNodePathGenerator {
      * @param storageNodeName storage node name
      * @return storage node version node path generator
      */
-    public static VersionNodePathGenerator getStorageNodeVersionNodePathGenerator(final String databaseName, final String storageNodeName) {
+    public static VersionNodePathGenerator getStorageNodeVersion(final String databaseName, final String storageNodeName) {
         return new VersionNodePathGenerator(String.join("/", getStorageNodesPath(databaseName), storageNodeName));
     }
 }

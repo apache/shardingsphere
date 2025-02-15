@@ -73,7 +73,7 @@ public final class DatabaseRuleMetaDataNodePathGenerator {
      * @param databaseRuleItem database rule item
      * @return database rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String ruleType, final DatabaseRuleItem databaseRuleItem) {
+    public static VersionNodePathGenerator getVersion(final String databaseName, final String ruleType, final DatabaseRuleItem databaseRuleItem) {
         return new VersionNodePathGenerator(getRulePath(databaseName, ruleType, databaseRuleItem));
     }
 }

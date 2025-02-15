@@ -41,13 +41,13 @@ class DatabaseRuleMetaDataNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetVersionNodePathGenerator() {
+    void assertGetVersion() {
         DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem("foo_rule_item");
-        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_rule", databaseRuleItem).getActiveVersionPath(),
+        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersion("foo_db", "foo_rule", databaseRuleItem).getActiveVersionPath(),
                 is("/metadata/foo_db/rules/foo_rule/foo_rule_item/active_version"));
-        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_rule", databaseRuleItem).getVersionsPath(),
+        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersion("foo_db", "foo_rule", databaseRuleItem).getVersionsPath(),
                 is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions"));
-        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_rule", databaseRuleItem).getVersionPath(0),
+        assertThat(DatabaseRuleMetaDataNodePathGenerator.getVersion("foo_db", "foo_rule", databaseRuleItem).getVersionPath(0),
                 is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions/0"));
     }
 }

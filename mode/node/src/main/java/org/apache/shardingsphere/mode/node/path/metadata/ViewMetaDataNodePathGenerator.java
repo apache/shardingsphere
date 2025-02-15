@@ -60,7 +60,7 @@ public final class ViewMetaDataNodePathGenerator {
      * @param viewName view name
      * @return view version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String viewName) {
+    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String viewName) {
         return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
     }
 }
