@@ -53,7 +53,7 @@ public final class ViewNodePathParser {
      * Is view path.
      *
      * @param path path
-     * @return true or false
+     * @return is view path or not
      */
     public static boolean isViewPath(final String path) {
         return findViewName(path).isPresent();

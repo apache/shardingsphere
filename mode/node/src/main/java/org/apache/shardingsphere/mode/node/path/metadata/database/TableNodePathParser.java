@@ -53,7 +53,7 @@ public final class TableNodePathParser {
      * Is table path.
      *
      * @param path path
-     * @return true or false
+     * @return is table path or not
      */
     public static boolean isTablePath(final String path) {
         return findTableName(path).isPresent();
