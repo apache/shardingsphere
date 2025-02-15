@@ -77,7 +77,7 @@ public final class PipelineJobDataSourcePreparer {
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            String targetSchemaName = each.getTargetName().getSchemaName();
+            String targetSchemaName = each.getTargetName().getSchema();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
             }
@@ -132,7 +132,7 @@ public final class PipelineJobDataSourcePreparer {
     private List<String> getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
-        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String schemaName = createTableConfig.getSourceName().getSchema();
         String sourceTableName = createTableConfig.getSourceName().getTableName();
         String targetTableName = createTableConfig.getTargetName().getTableName();
         return PipelineDDLGenerator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName);
@@ -140,7 +140,7 @@ public final class PipelineJobDataSourcePreparer {
     
     private Optional<String> decorateTargetTableSQL(final CreateTableConfiguration createTableConfig, final SQLParserEngine sqlParserEngine,
                                                     final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
-        String schemaName = createTableConfig.getSourceName().getSchemaName();
+        String schemaName = createTableConfig.getSourceName().getSchema();
         String targetTableName = createTableConfig.getTargetName().getTableName();
         Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, sql);
         return decoratedSQL.map(String::trim).filter(trimmedSql -> !Strings.isNullOrEmpty(trimmedSql));

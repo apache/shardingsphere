@@ -73,7 +73,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     private boolean containsView(final ShardingSphereDatabase database, final Collection<QualifiedTable> singleTables) {
         for (QualifiedTable each : singleTables) {
-            if (database.getSchema(each.getSchemaName()).containsView(each.getTableName())) {
+            if (database.getSchema(each.getSchema()).containsView(each.getTableName())) {
                 return true;
             }
         }
@@ -83,7 +83,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables) {
         Collection<DataNode> result = new HashSet<>(singleTables.size(), 1F);
         for (QualifiedTable each : singleTables) {
-            rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
+            rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchema(), each.getTableName()).ifPresent(result::add);
         }
         return result;
     }

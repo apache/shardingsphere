@@ -79,7 +79,7 @@ class IndexMetaDataUtilsTest {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")));
         Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.singleton(indexSegment));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getSchemaName(), is("foo_db"));
+        assertThat(actual.iterator().next().getSchema(), is("foo_db"));
         assertThat(actual.iterator().next().getTableName(), is("foo_tbl"));
     }
     

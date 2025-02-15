@@ -30,6 +30,10 @@ public final class QualifiedSchema {
     
     private final ShardingSphereIdentifier schemaName;
     
+    public QualifiedSchema(final String schemaName) {
+        this(null, schemaName);
+    }
+    
     public QualifiedSchema(final String databaseName, final String schemaName) {
         this.databaseName = new ShardingSphereIdentifier(databaseName);
         this.schemaName = new ShardingSphereIdentifier(schemaName);
@@ -55,6 +59,6 @@ public final class QualifiedSchema {
     
     @Override
     public String toString() {
-        return String.join(".", getDatabaseName(), getSchemaName());
+        return null == getDatabaseName() ? getSchemaName() : String.join(".", getDatabaseName(), getSchemaName());
     }
 }
