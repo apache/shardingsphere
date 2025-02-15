@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.junit.jupiter.api.Test;
 
-import java.util.regex.Pattern;
+import java.util.Optional;
 
-/**
- * Data source node path parser.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceNodePathParser {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class StorageNodeNodePathParserTest {
     
-    private static final Pattern PATTERN = Pattern.compile(DataSourceNodePathGenerator.getRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE);
+    @Test
+    void assertFindStorageNodeName() {
+        Optional<String> actual = StorageNodeNodePathParser.findStorageNodeName("/metadata/foo_db/data_sources/nodes/foo_ds");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_ds"));
+    }
     
-    /**
-     * Is data source path.
-     *
-     * @param path path
-     * @return is data source path or not
-     */
-    public static boolean isDataSourcePath(final String path) {
-        return PATTERN.matcher(path).find();
+    @Test
+    void assertFindStorageNodeNameIfNotFound() {
+        assertFalse(StorageNodeNodePathParser.findStorageNodeName("/xxx/foo_db/data_sources/nodes/foo_ds").isPresent());
     }
 }
