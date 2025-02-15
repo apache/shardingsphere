@@ -21,12 +21,12 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.statistics.StatisticsNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
-import org.apache.shardingsphere.mode.node.path.metadata.statistics.StatisticsNodePathParser;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
