@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -64,18 +65,18 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, false);
-        if (schemaName.isPresent()) {
-            handleSchemaChanged(databaseName, schemaName.get(), event);
+        Optional<QualifiedSchema> qualifiedSchema = DatabaseMetaDataNodePathParser.findQualifiedSchema(eventKey, false);
+        if (qualifiedSchema.isPresent()) {
+            handleSchemaChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
             return true;
         }
-        schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, true);
-        if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
-            handleTableChanged(databaseName, schemaName.get(), event);
+        qualifiedSchema = DatabaseMetaDataNodePathParser.findQualifiedSchema(eventKey, true);
+        if (qualifiedSchema.isPresent() && isTableMetaDataChanged(eventKey)) {
+            handleTableChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
             return true;
         }
-        if (schemaName.isPresent() && isViewMetaDataChanged(eventKey)) {
-            handleViewChanged(databaseName, schemaName.get(), event);
+        if (qualifiedSchema.isPresent() && isViewMetaDataChanged(eventKey)) {
+            handleViewChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
             return true;
         }
         if (DataSourceMetaDataNodePathParser.isDataSourceRootPath(eventKey)) {

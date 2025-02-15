@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.metadata.MetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
@@ -26,8 +27,6 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceMetaDataNodePathGenerator {
-    
-    private static final String ROOT_NODE = "/metadata";
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     
@@ -42,7 +41,7 @@ public final class DataSourceMetaDataNodePathGenerator {
      * @return data source root path
      */
     public static String getDataSourceRootPath(final String databaseName) {
-        return String.join("/", ROOT_NODE, databaseName, DATA_SOURCES_NODE);
+        return String.join("/", MetaDataNodePath.ROOT_NODE, databaseName, DATA_SOURCES_NODE);
     }
     
     /**

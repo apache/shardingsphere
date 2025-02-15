@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.rule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.metadata.MetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
@@ -27,8 +28,6 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseRuleMetaDataNodePathGenerator {
-    
-    private static final String ROOT_NODE = "/metadata";
     
     private static final String RULE_NODE = "rules";
     
@@ -39,7 +38,7 @@ public final class DatabaseRuleMetaDataNodePathGenerator {
      * @return database root path
      */
     public static String getRootPath(final String databaseName) {
-        return String.join("/", ROOT_NODE, databaseName, RULE_NODE);
+        return String.join("/", MetaDataNodePath.ROOT_NODE, databaseName, RULE_NODE);
     }
     
     /**
