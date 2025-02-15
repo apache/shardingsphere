@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.sql.SQLException;

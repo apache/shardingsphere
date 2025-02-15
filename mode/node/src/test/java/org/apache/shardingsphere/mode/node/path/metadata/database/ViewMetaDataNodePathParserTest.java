@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata;
+package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,22 +26,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TableMetaDataNodePathParserTest {
+class ViewMetaDataNodePathParserTest {
     
     @Test
-    void assertFindTableName() {
-        Optional<String> actual = TableMetaDataNodePathParser.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+    void assertFindViewName() {
+        Optional<String> actual = ViewMetaDataNodePathParser.findViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_tbl"));
+        assertThat(actual.get(), is("foo_view"));
     }
     
     @Test
-    void assertFindTableNameIfNotFound() {
-        assertFalse(TableMetaDataNodePathParser.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
+    void assertFindViewNameIfNotFound() {
+        assertFalse(ViewMetaDataNodePathParser.findViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
     }
     
     @Test
-    void assertIsTablePath() {
-        assertTrue(TableMetaDataNodePathParser.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    void assertIsViewPath() {
+        assertTrue(ViewMetaDataNodePathParser.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
 }
