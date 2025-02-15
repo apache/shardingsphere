@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Dat
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePathParser;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -57,10 +57,10 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         if (ClusterDatabaseListenerCoordinatorType.CREATE == clusterDatabaseListenerCoordinatorType) {
-            repository.watch(DatabaseMetaDataNodePathGenerator.getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
+            repository.watch(DatabaseNodePathGenerator.getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
         } else if (ClusterDatabaseListenerCoordinatorType.DROP == clusterDatabaseListenerCoordinatorType) {
-            repository.removeDataListener(DatabaseMetaDataNodePathGenerator.getDatabasePath(databaseName));
+            repository.removeDataListener(DatabaseNodePathGenerator.getDatabasePath(databaseName));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
         }
         new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);

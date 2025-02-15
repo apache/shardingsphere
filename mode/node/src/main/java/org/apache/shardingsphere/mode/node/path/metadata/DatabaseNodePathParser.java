@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,36 +26,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database meta data node path parser.
+ * Database node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseMetaDataNodePathParser {
+public final class DatabaseNodePathParser {
     
     /**
      * Find database name.
      *
      * @param path path
-     * @param containsChildPath whether contains child path
      * @return found database name
      */
-    public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
-        String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findDatabaseName(final String path) {
+        Pattern pattern = Pattern.compile(DatabaseNodePathGenerator.getDatabasePath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Find qualified schema.
-     *
-     * @param path path
-     * @param containsChildPath whether contains child path
-     * @return found qualified schema
-     */
-    public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
-        String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
 }
