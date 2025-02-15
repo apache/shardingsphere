@@ -22,10 +22,23 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DataSourceNodePathGeneratorTest {
+class StorageUnitNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(DataSourceNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/data_sources"));
+        assertThat(StorageUnitNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/data_sources/units"));
+    }
+    
+    @Test
+    void assertGetStorageUnitPath() {
+        assertThat(StorageUnitNodePathGenerator.getStorageUnitPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+    }
+    
+    @Test
+    void assertGetVersion() {
+        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getActiveVersionPath(),
+                is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
 }

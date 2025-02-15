@@ -29,6 +29,8 @@ import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaNodePath
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageNodeNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePathParser;
 
 import java.util.Optional;
 
@@ -78,7 +80,7 @@ public final class MetaDataChangedHandler {
             handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (DataSourceNodePathParser.isDataSourceRootPath(eventKey)) {
+        if (DataSourceNodePathParser.isDataSourcePath(eventKey)) {
             handleDataSourceChanged(databaseName, event);
             return true;
         }
@@ -118,20 +120,20 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = DataSourceNodePathParser.getStorageUnitVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageUnitName = StorageUnitNodePathParser.getVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
-            storageUnitName = DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath(event.getKey());
+            storageUnitName = StorageUnitNodePathParser.findStorageUnitName(event.getKey());
             isActiveVersion = false;
         }
         if (storageUnitName.isPresent()) {
             handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
             return;
         }
-        Optional<String> storageNodeName = DataSourceNodePathParser.getStorageNodeVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageNodeName = StorageNodeNodePathParser.getVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
         isActiveVersion = true;
         if (!storageNodeName.isPresent()) {
-            storageNodeName = DataSourceNodePathParser.findStorageNodeNameByStorageNodePath(event.getKey());
+            storageNodeName = StorageNodeNodePathParser.findStorageNodeName(event.getKey());
             isActiveVersion = false;
         }
         if (storageNodeName.isPresent()) {

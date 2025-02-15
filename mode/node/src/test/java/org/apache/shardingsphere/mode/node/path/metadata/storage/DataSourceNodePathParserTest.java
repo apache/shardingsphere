@@ -19,41 +19,12 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceNodePathParserTest {
     
     @Test
-    void assertFindStorageUnitNameByStorageUnitPath() {
-        Optional<String> actual = DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath("/metadata/foo_db/data_sources/units/foo_ds");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_ds"));
-    }
-    
-    @Test
-    void assertFindStorageUnitNameByStorageUnitPathIfNotFound() {
-        assertFalse(DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath("/xxx/foo_db/data_sources/units/foo_ds").isPresent());
-    }
-    
-    @Test
-    void assertFindStorageNodeNameByStorageNodePath() {
-        Optional<String> actual = DataSourceNodePathParser.findStorageNodeNameByStorageNodePath("/metadata/foo_db/data_sources/nodes/foo_ds");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_ds"));
-    }
-    
-    @Test
-    void assertFindStorageNodeNameByStorageNodePathIfNotFound() {
-        assertFalse(DataSourceNodePathParser.findStorageNodeNameByStorageNodePath("/xxx/foo_db/data_sources/nodes/foo_ds").isPresent());
-    }
-    
-    @Test
-    void assertIsDataSourceRootPath() {
-        assertTrue(DataSourceNodePathParser.isDataSourceRootPath("/metadata/foo_db/data_sources/foo_ds"));
+    void assertIsDataSourcePath() {
+        assertTrue(DataSourceNodePathParser.isDataSourcePath("/metadata/foo_db/data_sources/foo_ds"));
     }
 }

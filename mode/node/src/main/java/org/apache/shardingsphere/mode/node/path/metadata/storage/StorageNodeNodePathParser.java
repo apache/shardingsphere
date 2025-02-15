@@ -20,24 +20,40 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source node path parser.
+ * Storage node node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceNodePathParser {
+public final class StorageNodeNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(DataSourceNodePathGenerator.getRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile(StorageNodeNodePathGenerator.getStorageNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    
+    private static final VersionNodePathParser VERSION_PARSER =
+            new VersionNodePathParser(String.join("/", StorageNodeNodePathGenerator.getRootPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     /**
-     * Is data source path.
+     * Find storage node name.
      *
      * @param path path
-     * @return is data source path or not
+     * @return found storage node name
      */
-    public static boolean isDataSourcePath(final String path) {
-        return PATTERN.matcher(path).find();
+    public static Optional<String> findStorageNodeName(final String path) {
+        Matcher matcher = PATTERN.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get storage node version node path parser.
+     *
+     * @return storage node version node path parser
+     */
+    public static VersionNodePathParser getVersion() {
+        return VERSION_PARSER;
     }
 }
