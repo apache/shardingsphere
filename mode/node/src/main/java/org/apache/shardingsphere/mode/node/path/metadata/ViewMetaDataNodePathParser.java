@@ -63,7 +63,7 @@ public final class ViewMetaDataNodePathParser {
      *
      * @return view version node path parser
      */
-    public static VersionNodePathParser getVersionParser() {
+    public static VersionNodePathParser getVersion() {
         return VERSION_PARSER;
     }
 }
