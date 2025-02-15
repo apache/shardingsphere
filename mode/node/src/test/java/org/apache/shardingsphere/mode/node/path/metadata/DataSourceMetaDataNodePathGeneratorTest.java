@@ -50,18 +50,18 @@ class DataSourceMetaDataNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetStorageUnitVersionNodePathGenerator() {
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getActiveVersionPath(),
+    void assertGetStorageUnitVersion() {
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersion("foo_db", "foo_ds").getActiveVersionPath(),
                 is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersionNodePathGenerator("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersion("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageUnitVersion("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
     
     @Test
-    void assertGetStorageNodeVersionNodePathGenerator() {
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getActiveVersionPath(),
+    void assertGetStorageNodeVersion() {
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersion("foo_db", "foo_ds").getActiveVersionPath(),
                 is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
-        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersionNodePathGenerator("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/0"));
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersion("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
+        assertThat(DataSourceMetaDataNodePathGenerator.getStorageNodeVersion("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions/0"));
     }
 }

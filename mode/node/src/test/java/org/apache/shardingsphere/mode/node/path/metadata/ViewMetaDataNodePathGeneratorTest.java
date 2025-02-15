@@ -35,11 +35,11 @@ class ViewMetaDataNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetVersionNodePathGenerator() {
-        assertThat(ViewMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getActiveVersionPath(),
+    void assertGetVersion() {
+        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getActiveVersionPath(),
                 is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
-        assertThat(ViewMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
-        assertThat(ViewMetaDataNodePathGenerator.getVersionNodePathGenerator("foo_db", "foo_schema", "foo_view").getVersionPath(0),
+        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
+        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionPath(0),
                 is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
 }

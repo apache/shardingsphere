@@ -60,7 +60,7 @@ public final class TableMetaDataNodePathGenerator {
      * @param tableName table name
      * @return table version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String databaseName, final String schemaName, final String tableName) {
+    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String tableName) {
         return new VersionNodePathGenerator(getTablePath(databaseName, schemaName, tableName));
     }
 }

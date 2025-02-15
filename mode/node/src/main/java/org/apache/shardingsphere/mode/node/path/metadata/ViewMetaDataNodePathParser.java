@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ViewMetaDataNodePathParser {
     
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(
+    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
             ViewMetaDataNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
     /**
@@ -63,7 +63,7 @@ public final class ViewMetaDataNodePathParser {
      *
      * @return view version node path parser
      */
-    public static VersionNodePathParser getVersionNodePathParser() {
-        return PARSER;
+    public static VersionNodePathParser getVersionParser() {
+        return VERSION_PARSER;
     }
 }
