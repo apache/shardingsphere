@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;

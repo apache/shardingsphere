@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Dat
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.state.StatesNodePathParser;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;

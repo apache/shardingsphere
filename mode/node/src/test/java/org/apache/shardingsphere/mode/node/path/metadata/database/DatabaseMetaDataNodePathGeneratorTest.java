@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata;
+package org.apache.shardingsphere.mode.node.path.metadata.database;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ViewMetaDataNodePathParserTest {
+class DatabaseMetaDataNodePathGeneratorTest {
     
     @Test
-    void assertFindViewName() {
-        Optional<String> actual = ViewMetaDataNodePathParser.findViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_view"));
+    void assertGetRootPath() {
+        MatcherAssert.assertThat(DatabaseMetaDataNodePathGenerator.getRootPath(), is("/metadata"));
     }
     
     @Test
-    void assertFindViewNameIfNotFound() {
-        assertFalse(ViewMetaDataNodePathParser.findViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
+    void assertGetDatabasePath() {
+        assertThat(DatabaseMetaDataNodePathGenerator.getDatabasePath("foo_db"), is("/metadata/foo_db"));
     }
     
     @Test
-    void assertIsViewPath() {
-        assertTrue(ViewMetaDataNodePathParser.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+    void assertGetSchemaRootPath() {
+        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaRootPath("foo_db"), is("/metadata/foo_db/schemas"));
+    }
+    
+    @Test
+    void assertGetSchemaPath() {
+        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
 }

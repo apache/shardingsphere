@@ -30,8 +30,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.QualifiedDataSourceNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.QualifiedDataSourceNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;

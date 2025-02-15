@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseMetaDataNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;

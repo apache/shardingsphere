@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata;
+package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.junit.jupiter.api.Test;
 
