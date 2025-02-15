@@ -36,7 +36,7 @@ public final class ViewMetaDataNodePathGenerator {
      * @param schemaName schema name
      * @return view root path
      */
-    public static String getViewRootPath(final String databaseName, final String schemaName) {
+    public static String getRootPath(final String databaseName, final String schemaName) {
         return String.join("/", SchemaMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
@@ -49,7 +49,7 @@ public final class ViewMetaDataNodePathGenerator {
      * @return view path
      */
     public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getViewRootPath(databaseName, schemaName), viewName);
+        return String.join("/", getRootPath(databaseName, schemaName), viewName);
     }
     
     /**

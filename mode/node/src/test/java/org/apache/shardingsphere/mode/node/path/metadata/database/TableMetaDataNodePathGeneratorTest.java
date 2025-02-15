@@ -25,8 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class TableMetaDataNodePathGeneratorTest {
     
     @Test
-    void assertGetTableRootPath() {
-        assertThat(TableMetaDataNodePathGenerator.getTableRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+    void assertGetRootPath() {
+        assertThat(TableMetaDataNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test
