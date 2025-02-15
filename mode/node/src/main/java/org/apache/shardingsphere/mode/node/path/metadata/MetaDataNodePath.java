@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path.metadata;
 
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class DatabaseMetaDataNodePathGeneratorTest {
+/**
+ * Meta data node path.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MetaDataNodePath {
     
-    @Test
-    void assertGetDatabasePath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getDatabasePath("foo_db"), is("/metadata/foo_db"));
-    }
-    
-    @Test
-    void assertGetSchemaRootPath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaRootPath("foo_db"), is("/metadata/foo_db/schemas"));
-    }
-    
-    @Test
-    void assertGetSchemaPath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
-    }
+    /**
+     * Root node.
+     */
+    public static final String ROOT_NODE = "/metadata";
 }

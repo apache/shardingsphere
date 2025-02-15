@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -40,16 +41,16 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = DatabaseMetaDataNodePathParser.findDatabaseName(event.getKey(), true);
-        if (!databaseName.isPresent()) {
+        Optional<QualifiedSchema> qualifiedSchema = DatabaseMetaDataNodePathParser.findQualifiedSchema(event.getKey(), true);
+        if (!qualifiedSchema.isPresent()) {
             return;
         }
         OrderedServicesCache.clearCache();
-        if (new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event)) {
+        if (new MetaDataChangedHandler(contextManager).handle(qualifiedSchema.get().getDatabaseName(), event)) {
             return;
         }
         try {
-            new RuleConfigurationChangedHandler(contextManager).handle(databaseName.get(), event);
+            new RuleConfigurationChangedHandler(contextManager).handle(qualifiedSchema.get().getDatabaseName(), event);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedSchema;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -29,54 +30,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DatabaseMetaDataNodePathParserTest {
     
     @Test
-    void assertFindDatabaseNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findDatabaseName("/metadata/foo_db", false);
+    void assertFindQualifiedSchemaWithNotContainsChildPath() {
+        Optional<QualifiedSchema> actual = DatabaseMetaDataNodePathParser.findQualifiedSchema("/metadata/foo_db/schemas/foo_schema", false);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_db"));
+        assertThat(actual.get().getDatabaseName(), is("foo_db"));
+        assertThat(actual.get().getSchemaName(), is("foo_schema"));
     }
     
     @Test
-    void assertNotFindDatabaseNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findDatabaseName("/metadata/foo_db/schemas/foo_schema", false);
+    void assertNotFindQualifiedSchemaWithNotContainsChildPath() {
+        Optional<QualifiedSchema> actual = DatabaseMetaDataNodePathParser.findQualifiedSchema("/metadata/foo_db/schemas/foo_schema/tables", false);
         assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertFindDatabaseNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findDatabaseName("/metadata/foo_db/schemas/foo_schema", true);
+    void assertFindQualifiedSchemaWithContainsChildPath() {
+        Optional<QualifiedSchema> actual = DatabaseMetaDataNodePathParser.findQualifiedSchema("/metadata/foo_db/schemas/foo_schema/tables", true);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_db"));
+        assertThat(actual.get().getDatabaseName(), is("foo_db"));
+        assertThat(actual.get().getSchemaName(), is("foo_schema"));
     }
     
     @Test
-    void assertNotFindDatabaseNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findDatabaseName("/xxx/foo_db/schemas/foo_schema", true);
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertFindSchemaNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema", false);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_schema"));
-    }
-    
-    @Test
-    void assertNotFindSchemaNameWithNotContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", false);
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertFindSchemaNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", true);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_schema"));
-    }
-    
-    @Test
-    void assertNotFindSchemaNameWithContainsChildPath() {
-        Optional<String> actual = DatabaseMetaDataNodePathParser.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
+    void assertNotFindQualifiedSchemaWithContainsChildPath() {
+        Optional<QualifiedSchema> actual = DatabaseMetaDataNodePathParser.findQualifiedSchema("/xxx/foo_db/schemas/foo_schema/tables", true);
         assertFalse(actual.isPresent());
     }
 }
