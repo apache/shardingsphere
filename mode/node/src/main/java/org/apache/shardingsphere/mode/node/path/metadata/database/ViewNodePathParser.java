@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ViewNodePathParser {
     
+    private static final Pattern PATTERN = Pattern.compile(
+            ViewNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
             ViewNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
@@ -42,9 +45,7 @@ public final class ViewNodePathParser {
      * @return view name
      */
     public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(
-                ViewNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
+        Matcher matcher = PATTERN.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
@@ -52,7 +53,7 @@ public final class ViewNodePathParser {
      * Is view path.
      *
      * @param path path
-     * @return true or false
+     * @return is view path or not
      */
     public static boolean isViewPath(final String path) {
         return findViewName(path).isPresent();

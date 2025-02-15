@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableNodePathParser {
     
+    private static final Pattern PATTERN = Pattern.compile(
+            TableNodePathGenerator.getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
             TableNodePathGenerator.getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
     
@@ -42,9 +45,7 @@ public final class TableNodePathParser {
      * @return found table name
      */
     public static Optional<String> findTableName(final String path) {
-        Pattern pattern = Pattern.compile(
-                TableNodePathGenerator.getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
+        Matcher matcher = PATTERN.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
@@ -52,7 +53,7 @@ public final class TableNodePathParser {
      * Is table path.
      *
      * @param path path
-     * @return true or false
+     * @return is table path or not
      */
     public static boolean isTablePath(final String path) {
         return findTableName(path).isPresent();
