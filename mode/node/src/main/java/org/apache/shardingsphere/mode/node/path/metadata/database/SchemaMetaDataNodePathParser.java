@@ -20,16 +20,17 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database meta data node path parser.
+ * Schema meta data node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseMetaDataNodePathParser {
+public final class SchemaMetaDataNodePathParser {
     
     /**
      * Find database name.
@@ -40,7 +41,7 @@ public final class DatabaseMetaDataNodePathParser {
      */
     public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(DatabaseNodePathGenerator.getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -54,7 +55,7 @@ public final class DatabaseMetaDataNodePathParser {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(SchemaMetaDataNodePathGenerator.getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

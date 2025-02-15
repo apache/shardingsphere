@@ -22,20 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DatabaseMetaDataNodePathGeneratorTest {
+class SchemaMetaDataNodePathGeneratorTest {
     
     @Test
-    void assertGetDatabasePath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getDatabasePath("foo_db"), is("/metadata/foo_db"));
-    }
-    
-    @Test
-    void assertGetSchemaRootPath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaRootPath("foo_db"), is("/metadata/foo_db/schemas"));
+    void assertGetRootPath() {
+        assertThat(SchemaMetaDataNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/schemas"));
     }
     
     @Test
     void assertGetSchemaPath() {
-        assertThat(DatabaseMetaDataNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(SchemaMetaDataNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
 }

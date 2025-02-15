@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceMetaDataNodePathParser;
@@ -64,12 +64,12 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, false);
+        Optional<String> schemaName = SchemaMetaDataNodePathParser.findSchemaName(eventKey, false);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, true);
+        schemaName = SchemaMetaDataNodePathParser.findSchemaName(eventKey, true);
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;

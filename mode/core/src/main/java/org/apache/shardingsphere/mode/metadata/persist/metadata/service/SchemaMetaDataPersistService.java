@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaMetaDataNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -62,7 +62,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(DatabaseMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName));
+        repository.delete(SchemaMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(DatabaseMetaDataNodePathGenerator.getSchemaRootPath(databaseName)).stream()
+        return repository.getChildrenKeys(SchemaMetaDataNodePathGenerator.getRootPath(databaseName)).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }
