@@ -48,7 +48,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Optional<String> ruleType = GlobalRuleNodePathParser.getVersionNodePathParser().findIdentifierByActiveVersionPath(event.getKey(), 1);
+        Optional<String> ruleType = GlobalRuleNodePathParser.getVersion().findIdentifierByActiveVersionPath(event.getKey(), 1);
         if (!ruleType.isPresent()) {
             return;
         }

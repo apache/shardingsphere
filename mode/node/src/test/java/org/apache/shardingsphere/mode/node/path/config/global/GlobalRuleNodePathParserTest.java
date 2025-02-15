@@ -27,15 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GlobalRuleNodePathParserTest {
     
     @Test
-    void assertGetVersionNodePathParser() {
-        assertTrue(GlobalRuleNodePathParser.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).isPresent());
-        assertThat(GlobalRuleNodePathParser.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).get(), is("foo_rule"));
-        assertFalse(GlobalRuleNodePathParser.getVersionNodePathParser().findIdentifierByActiveVersionPath("/rules/foo_rule/versions", 1).isPresent());
+    void assertGetVersion() {
+        assertTrue(GlobalRuleNodePathParser.getVersion().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).isPresent());
+        assertThat(GlobalRuleNodePathParser.getVersion().findIdentifierByActiveVersionPath("/rules/foo_rule/active_version", 1).get(), is("foo_rule"));
+        assertFalse(GlobalRuleNodePathParser.getVersion().findIdentifierByActiveVersionPath("/rules/foo_rule/versions", 1).isPresent());
     }
     
     @Test
-    void assertGetRuleVersionNodePathParser() {
-        assertTrue(GlobalRuleNodePathParser.getRuleVersionNodePathParser("foo_rule").isVersionPath("/rules/foo_rule/versions/0"));
-        assertFalse(GlobalRuleNodePathParser.getRuleVersionNodePathParser("foo_rule").isVersionPath("/rules/foo_rule/active_version"));
+    void assertGetVersionWithRule() {
+        assertTrue(GlobalRuleNodePathParser.getVersion("foo_rule").isVersionPath("/rules/foo_rule/versions/0"));
+        assertFalse(GlobalRuleNodePathParser.getVersion("foo_rule").isVersionPath("/rules/foo_rule/active_version"));
     }
 }
