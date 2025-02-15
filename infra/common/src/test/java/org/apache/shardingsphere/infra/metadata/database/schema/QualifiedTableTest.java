@@ -22,15 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class QualifiedSchemaTest {
+class QualifiedTableTest {
     
     @Test
-    void assertToStringWithoutDatabase() {
-        assertThat(new QualifiedSchema("foo_schema").toString(), is("foo_schema"));
+    void assertToStringWithoutSchema() {
+        assertThat(new QualifiedTable(null, "foo_tbl").toString(), is("foo_tbl"));
     }
     
     @Test
     void assertToString() {
-        assertThat(new QualifiedSchema("foo_db", "foo_schema").toString(), is("foo_db.foo_schema"));
+        assertThat(new QualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
     }
 }

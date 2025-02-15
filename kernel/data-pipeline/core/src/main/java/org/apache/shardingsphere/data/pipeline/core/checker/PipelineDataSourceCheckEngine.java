@@ -108,7 +108,7 @@ public final class PipelineDataSourceCheckEngine {
      * @throws SQLException if there's database operation failure
      */
     public boolean checkEmptyTable(final DataSource dataSource, final QualifiedTable qualifiedTable) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
+        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchema(), qualifiedTable.getTableName());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

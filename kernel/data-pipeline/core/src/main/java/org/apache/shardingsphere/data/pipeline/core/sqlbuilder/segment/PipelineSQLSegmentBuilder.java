@@ -67,6 +67,6 @@ public final class PipelineSQLSegmentBuilder {
      * @return qualified table name
      */
     public String getQualifiedTableName(final QualifiedTable qualifiedTable) {
-        return getQualifiedTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
+        return getQualifiedTableName(qualifiedTable.getSchema(), qualifiedTable.getTableName());
     }
 }

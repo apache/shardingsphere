@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentif
 @EqualsAndHashCode
 public final class QualifiedTable {
     
-    private final ShardingSphereIdentifier schemaName;
+    private final QualifiedSchema schema;
     
     private final ShardingSphereIdentifier tableName;
     
     public QualifiedTable(final String schemaName, final String tableName) {
-        this.schemaName = new ShardingSphereIdentifier(schemaName);
+        this.schema = new QualifiedSchema(schemaName);
         this.tableName = new ShardingSphereIdentifier(tableName);
     }
     
@@ -40,8 +40,8 @@ public final class QualifiedTable {
      *
      * @return schema name
      */
-    public String getSchemaName() {
-        return schemaName.getValue();
+    public String getSchema() {
+        return schema.getSchemaName();
     }
     
     /**
@@ -55,6 +55,6 @@ public final class QualifiedTable {
     
     @Override
     public String toString() {
-        return null == schemaName.getValue() ? tableName.getValue() : String.join(".", schemaName.getValue(), tableName.getValue());
+        return null == getSchema() ? tableName.getValue() : String.join(".", getSchema(), tableName.getValue());
     }
 }
