@@ -32,11 +32,11 @@ import java.util.regex.Pattern;
 public final class SchemaMetaDataNodePathParser {
     
     /**
-     * Find qualified schema.
+     * Find schema name.
      *
      * @param path path
      * @param containsChildPath whether contains child path
-     * @return found qualified schema
+     * @return found schema name
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
