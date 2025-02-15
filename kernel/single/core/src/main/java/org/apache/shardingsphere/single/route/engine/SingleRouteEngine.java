@@ -95,7 +95,7 @@ public final class SingleRouteEngine {
     private void routeDDLStatement(final RouteContext routeContext, final SingleRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTables.iterator().next();
-            Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(table.getSchema(), table.getTableName());
+            Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(table.getSchemaName(), table.getTableName());
             boolean containsIfNotExists = ((CreateTableStatement) sqlStatement).isIfNotExists();
             if (dataNode.isPresent()) {
                 routeDDLStatementWithExistTable(routeContext, containsIfNotExists, dataNode.get(), table);
@@ -121,7 +121,7 @@ public final class SingleRouteEngine {
     private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
-            DataNode dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchema(), tableName)
+            DataNode dataNode = singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(each.getSchemaName(), tableName)
                     .orElseThrow(() -> new SingleTableNotFoundException(tableName));
             String dataSource = dataNode.getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));

@@ -106,7 +106,7 @@ public final class SingleRule implements DatabaseRule {
             return false;
         }
         QualifiedTable sampleTable = singleTables.iterator().next();
-        Optional<DataNode> sampleDataNode = mutableDataNodeRuleAttribute.findTableDataNode(sampleTable.getSchema(), sampleTable.getTableName());
+        Optional<DataNode> sampleDataNode = mutableDataNodeRuleAttribute.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (sampleDataNode.isPresent()) {
             for (DataNode each : dataNodes) {
                 if (!isSameComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
@@ -124,7 +124,7 @@ public final class SingleRule implements DatabaseRule {
     private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
         String sampleDataSourceName = null;
         for (QualifiedTable each : singleTables) {
-            Optional<DataNode> dataNode = mutableDataNodeRuleAttribute.findTableDataNode(each.getSchema(), each.getTableName());
+            Optional<DataNode> dataNode = mutableDataNodeRuleAttribute.findTableDataNode(each.getSchemaName(), each.getTableName());
             if (!dataNode.isPresent()) {
                 continue;
             }
@@ -158,7 +158,7 @@ public final class SingleRule implements DatabaseRule {
     
     private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
         for (DataNode each : dataNodes) {
-            if (qualifiedTable.getSchema().equalsIgnoreCase(each.getSchemaName())) {
+            if (qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
                 return true;
             }
         }

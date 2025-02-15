@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
@@ -33,16 +32,30 @@ import java.util.regex.Pattern;
 public final class DatabaseMetaDataNodePathParser {
     
     /**
+     * Find database name.
+     *
+     * @param path path
+     * @param containsChildPath whether contains child path
+     * @return found database name
+     */
+    public static Optional<String> findDatabaseName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getDatabasePath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
      * Find qualified schema.
      *
      * @param path path
      * @param containsChildPath whether contains child path
      * @return found qualified schema
      */
-    public static Optional<QualifiedSchema> findQualifiedSchema(final String path, final boolean containsChildPath) {
+    public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
         Pattern pattern = Pattern.compile(DatabaseMetaDataNodePathGenerator.getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(new QualifiedSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
 }

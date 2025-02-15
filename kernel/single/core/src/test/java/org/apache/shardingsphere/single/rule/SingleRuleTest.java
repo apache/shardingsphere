@@ -176,7 +176,7 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable("foo_db", "employee"));
-        assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchema(), is("foo_db"));
+        assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchemaName(), is("foo_db"));
         assertThat(singleRule.getSingleTables(tableNames).iterator().next().getTableName(), is("employee"));
     }
     
@@ -188,7 +188,7 @@ class SingleRuleTest {
         singleRule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceName, "foo_db", tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable("foo_db", "teacher"));
-        assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchema(), is("foo_db"));
+        assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchemaName(), is("foo_db"));
         assertThat(singleRule.getSingleTables(tableNames).iterator().next().getTableName(), is("teacher"));
         assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("employee"));
         assertTrue(singleRule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("student"));
