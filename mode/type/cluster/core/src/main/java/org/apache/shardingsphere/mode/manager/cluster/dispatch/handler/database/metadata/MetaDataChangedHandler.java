@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -26,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.DatabaseMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceMetaDataNodePathParser;
 
 import java.util.Optional;
 
@@ -65,18 +64,18 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<QualifiedSchema> qualifiedSchema = DatabaseMetaDataNodePathParser.findQualifiedSchema(eventKey, false);
-        if (qualifiedSchema.isPresent()) {
-            handleSchemaChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
+        Optional<String> schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, false);
+        if (schemaName.isPresent()) {
+            handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        qualifiedSchema = DatabaseMetaDataNodePathParser.findQualifiedSchema(eventKey, true);
-        if (qualifiedSchema.isPresent() && isTableMetaDataChanged(eventKey)) {
-            handleTableChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
+        schemaName = DatabaseMetaDataNodePathParser.findSchemaName(eventKey, true);
+        if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
+            handleTableChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (qualifiedSchema.isPresent() && isViewMetaDataChanged(eventKey)) {
-            handleViewChanged(databaseName, qualifiedSchema.get().getSchemaName(), event);
+        if (schemaName.isPresent() && isViewMetaDataChanged(eventKey)) {
+            handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
         if (DataSourceMetaDataNodePathParser.isDataSourceRootPath(eventKey)) {
