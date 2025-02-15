@@ -15,38 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
- * Qualified data source node path generator.
+ * Qualified data source node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QualifiedDataSourceNodePathGenerator {
+public final class QualifiedDataSourceNodePathParser {
     
-    private static final String ROOT_NODE = "/nodes";
-    
-    private static final String QUALIFIED_DATA_SOURCES_NODE = "qualified_data_sources";
+    private static final String QUALIFIED_DATA_SOURCE_PATTERN = "(\\S+)";
     
     /**
-     * Get qualified data source root path.
+     * Find qualified data source.
      *
-     * @return qualified data source root path
+     * @param qualifiedDataSourcePath qualified data source path
+     * @return found qualified data source
      */
-    public static String getRootPath() {
-        return String.join("/", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
-    }
-    
-    /**
-     * Get qualified data source path.
-     *
-     * @param qualifiedDataSource qualified data source
-     * @return qualified data source path
-     */
-    public static String getQualifiedDataSourcePath(final QualifiedDataSource qualifiedDataSource) {
-        return String.join("/", getRootPath(), qualifiedDataSource.toString());
+    public static Optional<QualifiedDataSource> findQualifiedDataSource(final String qualifiedDataSourcePath) {
+        Pattern pattern = Pattern.compile(String.join("/", QualifiedDataSourceNodePathGenerator.getRootPath(), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
+        return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
 }

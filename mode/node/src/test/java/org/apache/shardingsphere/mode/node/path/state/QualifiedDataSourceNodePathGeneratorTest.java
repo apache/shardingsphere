@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.state;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QualifiedDataSourceNodePathParserTest {
+class QualifiedDataSourceNodePathGeneratorTest {
     
     @Test
-    void assertFindQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePathParser.findQualifiedDataSource("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
-        assertThat(actual.get().getGroupName(), is("readwrite_ds"));
-        assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
+    void assertGetRootPath() {
+        MatcherAssert.assertThat(QualifiedDataSourceNodePathGenerator.getRootPath(), is("/nodes/qualified_data_sources"));
     }
     
     @Test
-    void assertNotFindQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePathParser.findQualifiedDataSource("/nodes/xxx/");
-        assertFalse(actual.isPresent());
+    void assertGetQualifiedDataSourcePath() {
+        assertThat(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
+                is("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0"));
     }
 }
