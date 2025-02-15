@@ -45,7 +45,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!GlobalPropertiesNodePathParser.getVersionNodePathParser().isActiveVersionPath(event.getKey())) {
+        if (!GlobalPropertiesNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);

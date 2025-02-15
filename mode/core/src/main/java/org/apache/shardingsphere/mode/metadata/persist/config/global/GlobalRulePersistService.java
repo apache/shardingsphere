@@ -83,7 +83,7 @@ public final class GlobalRulePersistService {
     
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
-            VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePathGenerator.getVersionNodePathGenerator(each.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePathGenerator.getVersion(each.getKey());
             metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
         }
     }

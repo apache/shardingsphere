@@ -54,7 +54,7 @@ public final class GlobalRuleNodePathGenerator {
      * @param ruleType rule type
      * @return global rule version node path generator
      */
-    public static VersionNodePathGenerator getVersionNodePathGenerator(final String ruleType) {
+    public static VersionNodePathGenerator getVersion(final String ruleType) {
         return new VersionNodePathGenerator(getRulePath(ruleType));
     }
 }

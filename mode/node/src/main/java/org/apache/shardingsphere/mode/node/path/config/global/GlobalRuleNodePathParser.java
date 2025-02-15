@@ -31,21 +31,21 @@ public final class GlobalRuleNodePathParser {
     private static final VersionNodePathParser PARSER = new VersionNodePathParser(GlobalRuleNodePathGenerator.getRootPath() + "/" + NodePathPattern.IDENTIFIER);
     
     /**
-     * Get view version pattern node path parser.
+     * Get global rule version node path parser.
      *
-     * @return view version node path parser
+     * @return global rule version node path parser
      */
-    public static VersionNodePathParser getVersionNodePathParser() {
+    public static VersionNodePathParser getVersion() {
         return PARSER;
     }
     
     /**
-     * Get rule version node path parser.
+     * Get global rule version node path parser.
      *
      * @param ruleType rule type
-     * @return rule version node path parser
+     * @return global rule version node path parser
      */
-    public static VersionNodePathParser getRuleVersionNodePathParser(final String ruleType) {
+    public static VersionNodePathParser getVersion(final String ruleType) {
         return new VersionNodePathParser(ruleType);
     }
 }
