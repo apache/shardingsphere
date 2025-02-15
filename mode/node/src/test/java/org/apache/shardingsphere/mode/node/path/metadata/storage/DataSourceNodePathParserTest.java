@@ -26,34 +26,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DataSourceMetaDataNodePathParserTest {
+class DataSourceNodePathParserTest {
     
     @Test
     void assertFindStorageUnitNameByStorageUnitPath() {
-        Optional<String> actual = DataSourceMetaDataNodePathParser.findStorageUnitNameByStorageUnitPath("/metadata/foo_db/data_sources/units/foo_ds");
+        Optional<String> actual = DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath("/metadata/foo_db/data_sources/units/foo_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
     void assertFindStorageUnitNameByStorageUnitPathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePathParser.findStorageUnitNameByStorageUnitPath("/xxx/foo_db/data_sources/units/foo_ds").isPresent());
+        assertFalse(DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath("/xxx/foo_db/data_sources/units/foo_ds").isPresent());
     }
     
     @Test
     void assertFindStorageNodeNameByStorageNodePath() {
-        Optional<String> actual = DataSourceMetaDataNodePathParser.findStorageNodeNameByStorageNodePath("/metadata/foo_db/data_sources/nodes/foo_ds");
+        Optional<String> actual = DataSourceNodePathParser.findStorageNodeNameByStorageNodePath("/metadata/foo_db/data_sources/nodes/foo_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_ds"));
     }
     
     @Test
     void assertFindStorageNodeNameByStorageNodePathIfNotFound() {
-        assertFalse(DataSourceMetaDataNodePathParser.findStorageNodeNameByStorageNodePath("/xxx/foo_db/data_sources/nodes/foo_ds").isPresent());
+        assertFalse(DataSourceNodePathParser.findStorageNodeNameByStorageNodePath("/xxx/foo_db/data_sources/nodes/foo_ds").isPresent());
     }
     
     @Test
     void assertIsDataSourceRootPath() {
-        assertTrue(DataSourceMetaDataNodePathParser.isDataSourceRootPath("/metadata/foo_db/data_sources/foo_ds"));
+        assertTrue(DataSourceNodePathParser.isDataSourceRootPath("/metadata/foo_db/data_sources/foo_ds"));
     }
 }

@@ -24,10 +24,10 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerat
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Database rule meta data node path generator.
+ * Database rule node path generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseRuleMetaDataNodePathGenerator {
+public final class DatabaseRuleNodePathGenerator {
     
     private static final String RULE_NODE = "rules";
     

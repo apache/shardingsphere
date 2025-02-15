@@ -19,29 +19,27 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TableMetaDataNodePathParserTest {
+class TableNodePathGeneratorTest {
     
     @Test
-    void assertFindTableName() {
-        Optional<String> actual = TableMetaDataNodePathParser.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_tbl"));
+    void assertGetRootPath() {
+        assertThat(TableNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test
-    void assertFindTableNameIfNotFound() {
-        assertFalse(TableMetaDataNodePathParser.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
+    void assertGetTablePath() {
+        assertThat(TableNodePathGenerator.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
-    void assertIsTablePath() {
-        assertTrue(TableMetaDataNodePathParser.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    void assertGetVersion() {
+        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getActiveVersionPath(),
+                is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
+        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getVersionPath(0),
+                is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
 }

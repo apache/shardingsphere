@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePathParser;
 
 /**
  * Table changed handler.
@@ -46,7 +46,7 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = TableMetaDataNodePathParser.getVersion().findIdentifierByActiveVersionPath(event.getKey(), 3)
+        String tableName = TableNodePathParser.getVersion().findIdentifierByActiveVersionPath(event.getKey(), 3)
                 .orElseThrow(() -> new IllegalStateException("Table name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
@@ -62,7 +62,7 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = TableMetaDataNodePathParser.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = TableNodePathParser.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }

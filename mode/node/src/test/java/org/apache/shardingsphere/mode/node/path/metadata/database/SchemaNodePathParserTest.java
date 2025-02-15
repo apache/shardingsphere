@@ -26,22 +26,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ViewMetaDataNodePathParserTest {
+class SchemaNodePathParserTest {
     
     @Test
-    void assertFindViewName() {
-        Optional<String> actual = ViewMetaDataNodePathParser.findViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
+    void assertFindSchemaNameWithNotContainsChildPath() {
+        Optional<String> actual = SchemaNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema", false);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_view"));
+        assertThat(actual.get(), is("foo_schema"));
     }
     
     @Test
-    void assertFindViewNameIfNotFound() {
-        assertFalse(ViewMetaDataNodePathParser.findViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
+    void assertNotFindSchemaNameWithNotContainsChildPath() {
+        Optional<String> actual = SchemaNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", false);
+        assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertIsViewPath() {
-        assertTrue(ViewMetaDataNodePathParser.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+    void assertFindSchemaNameWithContainsChildPath() {
+        Optional<String> actual = SchemaNodePathParser.findSchemaName("/metadata/foo_db/schemas/foo_schema/tables", true);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_schema"));
+    }
+    
+    @Test
+    void assertNotFindSchemaNameWithContainsChildPath() {
+        Optional<String> actual = SchemaNodePathParser.findSchemaName("/xxx/foo_db/schemas/foo_schema/tables", true);
+        assertFalse(actual.isPresent());
     }
 }
