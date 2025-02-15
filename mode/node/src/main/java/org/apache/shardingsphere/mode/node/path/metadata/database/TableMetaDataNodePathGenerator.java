@@ -36,7 +36,7 @@ public final class TableMetaDataNodePathGenerator {
      * @param schemaName schema name
      * @return table root path
      */
-    public static String getTableRootPath(final String databaseName, final String schemaName) {
+    public static String getRootPath(final String databaseName, final String schemaName) {
         return String.join("/", SchemaMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName), TABLES_NODE);
     }
     
@@ -49,7 +49,7 @@ public final class TableMetaDataNodePathGenerator {
      * @return table path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getTableRootPath(databaseName, schemaName), tableName);
+        return String.join("/", getRootPath(databaseName, schemaName), tableName);
     }
     
     /**

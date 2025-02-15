@@ -25,8 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ViewMetaDataNodePathGeneratorTest {
     
     @Test
-    void assertGetViewRootPath() {
-        assertThat(ViewMetaDataNodePathGenerator.getViewRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
+    void assertGetRootPath() {
+        assertThat(ViewMetaDataNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
     }
     
     @Test

@@ -52,7 +52,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(TableMetaDataNodePathGenerator.getTableRootPath(databaseName, schemaName), "");
+        repository.persist(TableMetaDataNodePathGenerator.getRootPath(databaseName, schemaName), "");
     }
     
     /**
