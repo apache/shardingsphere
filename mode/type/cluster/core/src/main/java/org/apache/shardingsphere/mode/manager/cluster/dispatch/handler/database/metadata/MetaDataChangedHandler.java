@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaMetaDataNodePathParser;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
-import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetaDataNodePathParser;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.ViewNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceNodePathParser;
 
 import java.util.Optional;
 
@@ -64,12 +64,12 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = SchemaMetaDataNodePathParser.findSchemaName(eventKey, false);
+        Optional<String> schemaName = SchemaNodePathParser.findSchemaName(eventKey, false);
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        schemaName = SchemaMetaDataNodePathParser.findSchemaName(eventKey, true);
+        schemaName = SchemaNodePathParser.findSchemaName(eventKey, true);
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;
@@ -78,7 +78,7 @@ public final class MetaDataChangedHandler {
             handleViewChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        if (DataSourceMetaDataNodePathParser.isDataSourceRootPath(eventKey)) {
+        if (DataSourceNodePathParser.isDataSourceRootPath(eventKey)) {
             handleDataSourceChanged(databaseName, event);
             return true;
         }
@@ -94,44 +94,44 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return TableMetaDataNodePathParser.isTablePath(key) || TableMetaDataNodePathParser.getVersion().isActiveVersionPath(key);
+        return TableNodePathParser.isTablePath(key) || TableNodePathParser.getVersion().isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && TableMetaDataNodePathParser.isTablePath(event.getKey())) {
+        } else if (Type.DELETED == event.getType() && TableNodePathParser.isTablePath(event.getKey())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return ViewMetaDataNodePathParser.getVersion().isActiveVersionPath(key) || ViewMetaDataNodePathParser.isViewPath(key);
+        return ViewNodePathParser.getVersion().isActiveVersionPath(key) || ViewNodePathParser.isViewPath(key);
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && ViewMetaDataNodePathParser.isViewPath(event.getKey())) {
+        } else if (Type.DELETED == event.getType() && ViewNodePathParser.isViewPath(event.getKey())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = DataSourceMetaDataNodePathParser.getStorageUnitVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageUnitName = DataSourceNodePathParser.getStorageUnitVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
-            storageUnitName = DataSourceMetaDataNodePathParser.findStorageUnitNameByStorageUnitPath(event.getKey());
+            storageUnitName = DataSourceNodePathParser.findStorageUnitNameByStorageUnitPath(event.getKey());
             isActiveVersion = false;
         }
         if (storageUnitName.isPresent()) {
             handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
             return;
         }
-        Optional<String> storageNodeName = DataSourceMetaDataNodePathParser.getStorageNodeVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageNodeName = DataSourceNodePathParser.getStorageNodeVersion().findIdentifierByActiveVersionPath(event.getKey(), 2);
         isActiveVersion = true;
         if (!storageNodeName.isPresent()) {
-            storageNodeName = DataSourceMetaDataNodePathParser.findStorageNodeNameByStorageNodePath(event.getKey());
+            storageNodeName = DataSourceNodePathParser.findStorageNodeNameByStorageNodePath(event.getKey());
             isActiveVersion = false;
         }
         if (storageNodeName.isPresent()) {

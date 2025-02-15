@@ -20,50 +20,28 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * View meta data path parser.
+ * Schema node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ViewMetaDataNodePathParser {
-    
-    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            ViewMetaDataNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+public final class SchemaNodePathParser {
     
     /**
-     * Get view name.
+     * Find schema name.
      *
      * @param path path
-     * @return view name
+     * @param containsChildPath whether contains child path
+     * @return found schema name
      */
-    public static Optional<String> findViewName(final String path) {
-        Pattern pattern = Pattern.compile(
-                ViewMetaDataNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
+        String endPattern = containsChildPath ? "?" : "$";
+        Pattern pattern = Pattern.compile(SchemaNodePathGenerator.getSchemaPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is view path.
-     *
-     * @param path path
-     * @return true or false
-     */
-    public static boolean isViewPath(final String path) {
-        return findViewName(path).isPresent();
-    }
-    
-    /**
-     * Get view version pattern node path parser.
-     *
-     * @return view version node path parser
-     */
-    public static VersionNodePathParser getVersion() {
-        return VERSION_PARSER;
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
 }

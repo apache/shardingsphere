@@ -22,45 +22,45 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Table meta data node path generator.
+ * View path generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaDataNodePathGenerator {
+public final class ViewNodePathGenerator {
     
-    private static final String TABLES_NODE = "tables";
+    private static final String VIEWS_NODE = "views";
     
     /**
-     * Get table root path.
+     * Get view root path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return table root path
+     * @return view root path
      */
     public static String getRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", SchemaMetaDataNodePathGenerator.getSchemaPath(databaseName, schemaName), TABLES_NODE);
+        return String.join("/", SchemaNodePathGenerator.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
     /**
-     * Get table path.
+     * Get view path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param tableName table name
-     * @return table path
+     * @param viewName view name
+     * @return view path
      */
-    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getRootPath(databaseName, schemaName), tableName);
+    public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", getRootPath(databaseName, schemaName), viewName);
     }
     
     /**
-     * Get table version node path generator.
+     * Get view version node path generator.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param tableName table name
-     * @return table version node path generator
+     * @param viewName view name
+     * @return view version node path generator
      */
-    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String tableName) {
-        return new VersionNodePathGenerator(getTablePath(databaseName, schemaName, tableName));
+    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String viewName) {
+        return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
     }
 }

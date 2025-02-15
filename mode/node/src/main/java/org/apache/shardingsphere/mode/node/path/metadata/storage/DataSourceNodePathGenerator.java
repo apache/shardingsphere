@@ -23,10 +23,10 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerat
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Data source meta data node path generator.
+ * Data source node path generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceMetaDataNodePathGenerator {
+public final class DataSourceNodePathGenerator {
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     

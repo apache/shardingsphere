@@ -22,24 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ViewMetaDataNodePathGeneratorTest {
+class SchemaNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(ViewMetaDataNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(SchemaNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/schemas"));
     }
     
     @Test
-    void assertGetViewPath() {
-        assertThat(ViewMetaDataNodePathGenerator.getViewPath("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getActiveVersionPath(),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
-        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
-        assertThat(ViewMetaDataNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionPath(0),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+    void assertGetSchemaPath() {
+        assertThat(SchemaNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
 }

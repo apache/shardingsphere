@@ -19,18 +19,29 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SchemaMetaDataNodePathGeneratorTest {
+class TableNodePathParserTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(SchemaMetaDataNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/schemas"));
+    void assertFindTableName() {
+        Optional<String> actual = TableNodePathParser.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
-    void assertGetSchemaPath() {
-        assertThat(SchemaMetaDataNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+    void assertFindTableNameIfNotFound() {
+        assertFalse(TableNodePathParser.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
+    }
+    
+    @Test
+    void assertIsTablePath() {
+        assertTrue(TableNodePathParser.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
 }

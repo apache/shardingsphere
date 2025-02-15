@@ -27,16 +27,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Data source meta data node path parser.
+ * Data source node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceMetaDataNodePathParser {
+public final class DataSourceNodePathParser {
     
     private static final VersionNodePathParser STORAGE_UNITS_VERSION_PARSER =
-            new VersionNodePathParser(String.join("/", DataSourceMetaDataNodePathGenerator.getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+            new VersionNodePathParser(String.join("/", DataSourceNodePathGenerator.getStorageUnitsPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     private static final VersionNodePathParser STORAGE_NODES_VERSION_PARSER =
-            new VersionNodePathParser(String.join("/", DataSourceMetaDataNodePathGenerator.getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+            new VersionNodePathParser(String.join("/", DataSourceNodePathGenerator.getStorageNodesPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
     
     /**
      * Find storage unit name by storage unit path.
@@ -45,7 +45,7 @@ public final class DataSourceMetaDataNodePathParser {
      * @return found storage unit name
      */
     public static Optional<String> findStorageUnitNameByStorageUnitPath(final String path) {
-        Pattern pattern = Pattern.compile(DataSourceMetaDataNodePathGenerator.getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(DataSourceNodePathGenerator.getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -57,7 +57,7 @@ public final class DataSourceMetaDataNodePathParser {
      * @return found storage unit name
      */
     public static Optional<String> findStorageNodeNameByStorageNodePath(final String path) {
-        Pattern pattern = Pattern.compile(DataSourceMetaDataNodePathGenerator.getStorageNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(DataSourceNodePathGenerator.getStorageNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
@@ -69,7 +69,7 @@ public final class DataSourceMetaDataNodePathParser {
      * @return is data source root path or not
      */
     public static boolean isDataSourceRootPath(final String path) {
-        return Pattern.compile(DataSourceMetaDataNodePathGenerator.getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
+        return Pattern.compile(DataSourceNodePathGenerator.getDataSourceRootPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE).matcher(path).find();
     }
     
     /**
