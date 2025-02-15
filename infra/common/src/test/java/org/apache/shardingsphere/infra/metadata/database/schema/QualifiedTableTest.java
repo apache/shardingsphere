@@ -25,11 +25,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class QualifiedTableTest {
     
     @Test
-    void assertToStringWithoutSchema() {
-        assertThat(new QualifiedTable(null, "foo_tbl").toString(), is("foo_tbl"));
-    }
-    
-    @Test
     void assertToString() {
         assertThat(new QualifiedTable("foo_schema", "foo_tbl").toString(), is("foo_schema.foo_tbl"));
     }
