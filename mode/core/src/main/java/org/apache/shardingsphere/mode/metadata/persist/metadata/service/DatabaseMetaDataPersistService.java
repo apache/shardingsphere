@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.MetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -56,6 +55,6 @@ public final class DatabaseMetaDataPersistService {
      * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(MetaDataNodePath.ROOT_NODE);
+        return repository.getChildrenKeys(DatabaseNodePathGenerator.getRootPath());
     }
 }

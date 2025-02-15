@@ -26,6 +26,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseNodePathGenerator {
     
+    private static final String ROOT_NODE = "/metadata";
+    
+    /**
+     * Get database root path.
+     *
+     * @return schema root path
+     */
+    public static String getRootPath() {
+        return ROOT_NODE;
+    }
+    
     /**
      * Get database path.
      *
@@ -33,6 +44,6 @@ public final class DatabaseNodePathGenerator {
      * @return database path
      */
     public static String getDatabasePath(final String databaseName) {
-        return String.join("/", MetaDataNodePath.ROOT_NODE, databaseName);
+        return String.join("/", ROOT_NODE, databaseName);
     }
 }
