@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -45,11 +45,12 @@ public final class PropertiesPersistService {
      */
     public Properties load() {
         return loadActiveVersion()
-                .map(optional -> YamlEngine.unmarshal(repository.query(GlobalPropertiesNodePath.getVersionNodePathGenerator().getVersionPath(optional)), Properties.class)).orElse(new Properties());
+                .map(optional -> YamlEngine.unmarshal(repository.query(GlobalPropertiesNodePathGenerator.getVersionNodePathGenerator().getVersionPath(optional)), Properties.class))
+                .orElse(new Properties());
     }
     
     private Optional<Integer> loadActiveVersion() {
-        String value = repository.query(GlobalPropertiesNodePath.getVersionNodePathGenerator().getActiveVersionPath());
+        String value = repository.query(GlobalPropertiesNodePathGenerator.getVersionNodePathGenerator().getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(Integer.parseInt(value));
     }
     
@@ -59,7 +60,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePath.getVersionNodePathGenerator();
+        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePathGenerator.getVersionNodePathGenerator();
         metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(props));
     }
 }

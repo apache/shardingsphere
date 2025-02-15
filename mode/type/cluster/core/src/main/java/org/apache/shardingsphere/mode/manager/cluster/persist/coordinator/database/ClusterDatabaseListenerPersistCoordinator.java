@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
@@ -36,7 +36,7 @@ public final class ClusterDatabaseListenerPersistCoordinator {
      * @param clusterDatabaseListenerCoordinatorType database changed listener assisted type
      */
     public void persist(final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
-        repository.persistEphemeral(StatesNodePath.getDatabaseListenerCoordinatorNodePath(databaseName), clusterDatabaseListenerCoordinatorType.name());
+        repository.persistEphemeral(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath(databaseName), clusterDatabaseListenerCoordinatorType.name());
     }
     
     /**
@@ -45,6 +45,6 @@ public final class ClusterDatabaseListenerPersistCoordinator {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(StatesNodePath.getDatabaseListenerCoordinatorNodePath(databaseName));
+        repository.delete(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath(databaseName));
     }
 }

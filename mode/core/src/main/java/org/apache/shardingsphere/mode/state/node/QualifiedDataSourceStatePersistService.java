@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
-import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.QualifiedDataSourceNodePathGenerator;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 
@@ -46,10 +46,10 @@ public final class QualifiedDataSourceStatePersistService {
      * @return loaded qualified data source states
      */
     public Map<String, QualifiedDataSourceState> load() {
-        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNodePath.getRootPath());
+        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNodePathGenerator.getRootPath());
         Map<String, QualifiedDataSourceState> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
-            String yamlContent = repository.query(QualifiedDataSourceNodePath.getQualifiedDataSourcePath(new QualifiedDataSource(each)));
+            String yamlContent = repository.query(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(new QualifiedDataSource(each)));
             if (!Strings.isNullOrEmpty(yamlContent)) {
                 result.put(each, new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceState.class)));
             }
@@ -67,7 +67,7 @@ public final class QualifiedDataSourceStatePersistService {
      */
     public void update(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceState status = new QualifiedDataSourceState(dataSourceState);
-        repository.persist(QualifiedDataSourceNodePath.getQualifiedDataSourcePath(
+        repository.persist(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(
                 new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));
     }
 }

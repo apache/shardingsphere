@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePathGenerator;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,7 @@ class DatabaseListenerChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "CREATE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).addDatabase("foo_db");
-        verify(repository).delete(StatesNodePath.getDatabaseListenerCoordinatorNodePath("foo_db"));
+        verify(repository).delete(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath("foo_db"));
     }
     
     @Test
@@ -81,6 +81,6 @@ class DatabaseListenerChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "DROP", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropDatabase("foo_db");
-        verify(repository).delete(StatesNodePath.getDatabaseListenerCoordinatorNodePath("foo_db"));
+        verify(repository).delete(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath("foo_db"));
     }
 }
