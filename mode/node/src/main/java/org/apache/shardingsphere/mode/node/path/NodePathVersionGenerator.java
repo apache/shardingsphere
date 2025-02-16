@@ -32,5 +32,5 @@ public interface NodePathVersionGenerator<T> extends NodePathGenerator<T> {
      * @param node table name
      * @return table version node path generator
      */
-    VersionNodePathGenerator getVersion(final T node);
+    VersionNodePathGenerator getVersion(T node);
 }
