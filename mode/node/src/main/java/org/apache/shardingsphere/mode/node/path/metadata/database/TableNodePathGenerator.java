@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Table node path generator.
  */
-public final class TableNodePathGenerator implements NodePathGenerator<String> {
+public final class TableNodePathGenerator implements NodePathVersionGenerator<String> {
     
     private static final String TABLES_NODE = "tables";
     
@@ -46,13 +46,8 @@ public final class TableNodePathGenerator implements NodePathGenerator<String> {
         return String.join("/", getRootPath(), node);
     }
     
-    /**
-     * Get table version node path generator.
-     *
-     * @param tableName table name
-     * @return table version node path generator
-     */
-    public VersionNodePathGenerator getVersion(final String tableName) {
-        return new VersionNodePathGenerator(getPath(tableName));
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }
