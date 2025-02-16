@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
  * Storage unit node path.
@@ -28,10 +30,18 @@ public final class StorageUnitNodePath implements NodePath {
     
     private static final String UNITS_NODE = "units";
     
-    private final String databaseName;
+    private final NodePathGenerator nodePathGenerator;
+    
+    public StorageUnitNodePath() {
+        this(NodePathPattern.IDENTIFIER);
+    }
+    
+    public StorageUnitNodePath(final String databaseName) {
+        nodePathGenerator = new NodePathGenerator(new DataSourceNodePath(databaseName));
+    }
     
     @Override
     public String getRootPath() {
-        return String.join("/", new DataSourceNodePath(databaseName).getRootPath(), UNITS_NODE);
+        return nodePathGenerator.getPath(UNITS_NODE);
     }
 }
