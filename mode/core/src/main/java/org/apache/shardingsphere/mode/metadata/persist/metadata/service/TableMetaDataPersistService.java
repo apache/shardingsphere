@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -64,9 +64,9 @@ public final class TableMetaDataPersistService {
      * @return loaded table
      */
     public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
-        VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
-        int activeVersion = Integer.parseInt(repository.query(versionNodePathGenerator.getActiveVersionPath()));
-        String tableContent = repository.query(versionNodePathGenerator.getVersionPath(activeVersion));
+        VersionNodePath versionNodePath = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
+        int activeVersion = Integer.parseInt(repository.query(versionNodePath.getActiveVersionPath()));
+        String tableContent = repository.query(versionNodePath.getVersionPath(activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
     }
     
@@ -80,8 +80,8 @@ public final class TableMetaDataPersistService {
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
             String tableName = each.getName().toLowerCase();
-            VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
-            metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+            VersionNodePath versionNodePath = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
+            metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
     

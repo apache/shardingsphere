@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -42,7 +42,7 @@ public final class RepositoryTuplePersistService {
      * @return loaded repository tuples
      */
     public Collection<RepositoryTuple> load(final String rootNode) {
-        return loadNodes(rootNode).stream().filter(VersionNodePathGenerator::isActiveVersionPath).map(this::createRepositoryTuple).collect(Collectors.toList());
+        return loadNodes(rootNode).stream().filter(VersionNodePath::isActiveVersionPath).map(this::createRepositoryTuple).collect(Collectors.toList());
     }
     
     private Collection<String> loadNodes(final String rootNode) {
@@ -59,7 +59,7 @@ public final class RepositoryTuplePersistService {
     }
     
     private RepositoryTuple createRepositoryTuple(final String activeVersionPath) {
-        String activeVersionKey = VersionNodePathGenerator.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
+        String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
         return new RepositoryTuple(activeVersionKey, repository.query(activeVersionKey));
     }
 }

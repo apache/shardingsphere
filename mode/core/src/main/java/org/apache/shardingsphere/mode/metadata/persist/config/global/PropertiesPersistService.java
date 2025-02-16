@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Optional;
@@ -61,7 +61,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null);
-        metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(props));
+        VersionNodePath versionNodePath = new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null);
+        metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(props));
     }
 }

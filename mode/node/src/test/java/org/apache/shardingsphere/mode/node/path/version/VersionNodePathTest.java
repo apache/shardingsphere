@@ -28,27 +28,27 @@ class VersionNodePathTest {
     
     @Test
     void assertGetActiveVersionPath() {
-        assertThat(new VersionNodePathGenerator("foo").getActiveVersionPath(), is("foo/active_version"));
+        assertThat(new VersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new VersionNodePathGenerator("foo").getVersionsPath(), is("foo/versions"));
+        assertThat(new VersionNodePath("foo").getVersionsPath(), is("foo/versions"));
     }
     
     @Test
     void assertGetVersionPath() {
-        assertThat(new VersionNodePathGenerator("foo").getVersionPath(0), is("foo/versions/0"));
+        assertThat(new VersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
     }
     
     @Test
     void assertGetVersionPathFromActiveVersion() {
-        assertThat(VersionNodePathGenerator.getVersionPath("foo_rule/active_version", 1), is("foo_rule/versions/1"));
+        assertThat(VersionNodePath.getVersionPath("foo_rule/active_version", 1), is("foo_rule/versions/1"));
     }
     
     @Test
     void assertIsActiveVersionPath() {
-        assertTrue(VersionNodePathGenerator.isActiveVersionPath("foo/active_version"));
-        assertFalse(VersionNodePathGenerator.isActiveVersionPath("foo/versions"));
+        assertTrue(VersionNodePath.isActiveVersionPath("foo/active_version"));
+        assertFalse(VersionNodePath.isActiveVersionPath("foo/versions"));
     }
 }
