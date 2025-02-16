@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class MetaDataVersionPersistServiceTest {
     
     @Test
     void assertPersistWithNewMetaData() {
-        assertThat(persistService.persist(new VersionNodePathGenerator("foo_db"), "foo_metadata"), is(0));
+        assertThat(persistService.persist(new VersionNodePath("foo_db"), "foo_metadata"), is(0));
         verify(repository).persist("foo_db/versions/0", "foo_metadata");
         verify(repository).persist("foo_db/active_version", "0");
         verify(repository, times(0)).delete(any());
@@ -58,7 +58,7 @@ class MetaDataVersionPersistServiceTest {
     @Test
     void assertPersistWithExistedMetaData() {
         when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("2", "1", "0"));
-        assertThat(persistService.persist(new VersionNodePathGenerator("foo_db"), "foo_metadata"), is(3));
+        assertThat(persistService.persist(new VersionNodePath("foo_db"), "foo_metadata"), is(3));
         verify(repository).persist("foo_db/versions/3", "foo_metadata");
         verify(repository).persist("foo_db/active_version", "3");
         verify(repository).delete("foo_db/versions/0");

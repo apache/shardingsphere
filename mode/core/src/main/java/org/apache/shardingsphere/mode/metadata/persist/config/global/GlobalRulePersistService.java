@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePer
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -84,8 +84,8 @@ public final class GlobalRulePersistService {
     
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
-            VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new GlobalRuleNodePath()).getVersion(each.getKey());
-            metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
+            VersionNodePath versionNodePath = new NodePathGenerator(new GlobalRuleNodePath()).getVersion(each.getKey());
+            metaDataVersionPersistService.persist(versionNodePath, each.getValue());
         }
     }
 }
