@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
- * Database rule node path generator.
+ * Database rule node path.
  */
 @RequiredArgsConstructor
 public final class DatabaseRuleNodePath implements NodePath {
@@ -31,8 +32,10 @@ public final class DatabaseRuleNodePath implements NodePath {
     
     private final String databaseName;
     
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new DatabaseNodePath());
+    
     @Override
     public String getRootPath() {
-        return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, RULE_NODE);
+        return String.join("/", nodePathGenerator.getPath(databaseName), RULE_NODE);
     }
 }

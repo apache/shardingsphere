@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Database node path generator.
+ * Database node path.
  */
 public final class DatabaseNodePath implements NodePath {
     

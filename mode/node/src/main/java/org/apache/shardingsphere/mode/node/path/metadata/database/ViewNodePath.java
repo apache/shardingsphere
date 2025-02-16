@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
  * View path.
@@ -27,17 +28,21 @@ public final class ViewNodePath implements NodePath {
     
     private static final String VIEWS_NODE = "views";
     
-    private final SchemaNodePath schemaNodePath;
-    
     private final String schemaName;
     
+    private final NodePathGenerator nodePathGenerator;
+    
+    public ViewNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
     public ViewNodePath(final String databaseName, final String schemaName) {
-        schemaNodePath = new SchemaNodePath(databaseName);
         this.schemaName = schemaName;
+        nodePathGenerator = new NodePathGenerator(new SchemaNodePath(databaseName));
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", new NodePathGenerator(schemaNodePath).getPath(schemaName), VIEWS_NODE);
+        return String.join("/", nodePathGenerator.getPath(schemaName), VIEWS_NODE);
     }
 }

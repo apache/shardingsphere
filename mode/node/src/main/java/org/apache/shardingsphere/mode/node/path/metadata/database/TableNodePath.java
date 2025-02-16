@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
  * Table node path.
@@ -27,17 +28,21 @@ public final class TableNodePath implements NodePath {
     
     private static final String TABLES_NODE = "tables";
     
-    private final SchemaNodePath schemaNodePath;
-    
     private final String schemaName;
     
+    private final NodePathGenerator nodePathGenerator;
+    
+    public TableNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
     public TableNodePath(final String databaseName, final String schemaName) {
-        schemaNodePath = new SchemaNodePath(databaseName);
         this.schemaName = schemaName;
+        nodePathGenerator = new NodePathGenerator(new SchemaNodePath(databaseName));
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", new NodePathGenerator(schemaNodePath).getPath(schemaName), TABLES_NODE);
+        return String.join("/", nodePathGenerator.getPath(schemaName), TABLES_NODE);
     }
 }

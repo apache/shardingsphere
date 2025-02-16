@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
@@ -31,8 +33,14 @@ public final class DataSourceNodePath implements NodePath {
     
     private final String databaseName;
     
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new DatabaseNodePath());
+    
+    public DataSourceNodePath() {
+        this(NodePathPattern.IDENTIFIER);
+    }
+    
     @Override
     public String getRootPath() {
-        return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, DATA_SOURCES_NODE);
+        return String.join("/", nodePathGenerator.getPath(databaseName), DATA_SOURCES_NODE);
     }
 }

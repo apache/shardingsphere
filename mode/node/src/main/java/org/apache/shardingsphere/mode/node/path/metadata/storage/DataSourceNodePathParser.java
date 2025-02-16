@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.regex.Pattern;
 
@@ -29,7 +28,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(new DataSourceNodePath(NodePathPattern.IDENTIFIER).getRootPath() + "?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile(new DataSourceNodePath().getRootPath() + "?", Pattern.CASE_INSENSITIVE);
     
     /**
      * Is data source path.
