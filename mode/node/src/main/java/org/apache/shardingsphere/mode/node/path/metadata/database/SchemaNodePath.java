@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
@@ -33,7 +34,7 @@ public final class SchemaNodePath implements NodePath<String> {
     
     @Override
     public String getRootPath() {
-        return String.join("/", new DatabaseNodePath().getPath(databaseName), SCHEMAS_NODE);
+        return String.join("/", new NodePathGenerator(new DatabaseNodePath()).getPath(databaseName), SCHEMAS_NODE);
     }
     
     @Override

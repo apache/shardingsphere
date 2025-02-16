@@ -28,9 +28,4 @@ class SchemaNodePathTest {
     void assertGetRootPath() {
         assertThat(new SchemaNodePath("foo_db").getRootPath(), is("/metadata/foo_db/schemas"));
     }
-    
-    @Test
-    void assertGetPath() {
-        assertThat(new SchemaNodePath("foo_db").getPath("foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
-    }
 }

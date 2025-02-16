@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
@@ -37,7 +38,7 @@ public final class DatabaseRuleItemNodePath implements NodePathVersion<DatabaseR
     
     @Override
     public String getRootPath() {
-        return databaseRuleNodePath.getPath(ruleType);
+        return new NodePathGenerator(databaseRuleNodePath).getPath(ruleType);
     }
     
     @Override

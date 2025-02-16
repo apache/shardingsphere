@@ -31,11 +31,6 @@ class StorageNodeNodePathTest {
     }
     
     @Test
-    void assertGetPath() {
-        assertThat(new StorageNodeNodePath("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds"));
-    }
-    
-    @Test
     void assertGetVersion() {
         VersionNodePathGenerator versionNodePathGenerator = new StorageNodeNodePath("foo_db").getVersion("foo_ds");
         assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/data_sources/nodes/foo_ds/active_version"));

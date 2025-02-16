@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
@@ -38,7 +39,7 @@ public final class ViewNodePath implements NodePathVersion<String> {
     
     @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePath.getPath(schemaName), VIEWS_NODE);
+        return String.join("/", new NodePathGenerator(schemaNodePath).getPath(schemaName), VIEWS_NODE);
     }
     
     @Override

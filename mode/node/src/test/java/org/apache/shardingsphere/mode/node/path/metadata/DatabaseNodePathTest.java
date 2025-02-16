@@ -28,9 +28,4 @@ class DatabaseNodePathTest {
     void assertGetRootPath() {
         assertThat(new DatabaseNodePath().getRootPath(), is("/metadata"));
     }
-    
-    @Test
-    void assertGetPath() {
-        assertThat(new DatabaseNodePath().getPath("foo_db"), is("/metadata/foo_db"));
-    }
 }

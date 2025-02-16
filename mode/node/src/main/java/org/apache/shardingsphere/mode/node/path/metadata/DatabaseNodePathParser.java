@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseNodePathParser {
     
-    private static final Pattern DATABASE_PATTERN = Pattern.compile(new DatabaseNodePath().getPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern DATABASE_PATTERN = Pattern.compile(new NodePathGenerator(new DatabaseNodePath()).getPath(NodePathPattern.IDENTIFIER) + "?", Pattern.CASE_INSENSITIVE);
     
     /**
      * Find database name.

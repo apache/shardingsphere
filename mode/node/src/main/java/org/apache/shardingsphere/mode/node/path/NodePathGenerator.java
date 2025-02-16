@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
-import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class GlobalRuleNodePathTest {
+/**
+ * Node path generator.
+ */
+@RequiredArgsConstructor
+public final class NodePathGenerator {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new GlobalRuleNodePath().getRootPath(), is("/rules"));
+    private final NodePath nodePath;
+    
+    /**
+     * Get path.
+     *
+     * @param leafNode leaf node
+     * @return path
+     */
+    public <T> String getPath(final T leafNode) {
+        return null == leafNode ? nodePath.getRootPath() : String.join("/", nodePath.getRootPath(), leafNode.toString());
     }
     
-    @Test
-    void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalRuleNodePath().getVersion("foo_rule");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/rules/foo_rule/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/rules/foo_rule/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/rules/foo_rule/versions/0"));
+    /**
+     * Get version node path generator.
+     *
+     * @param leafNode leaf node
+     * @return version node path generator
+     */
+    public <T> VersionNodePathGenerator getVersion(T leafNode) {
+        return new VersionNodePathGenerator(getPath(leafNode));
     }
 }
