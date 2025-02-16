@@ -37,12 +37,12 @@ public final class StorageUnitNodePathGenerator implements NodePathVersionGenera
     }
     
     @Override
-    public String getPath(final String storageUnitName) {
-        return String.join("/", getRootPath(), storageUnitName);
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
     }
     
     @Override
     public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(String.join("/", getRootPath(), node));
+        return new VersionNodePathGenerator(getPath(node));
     }
 }
