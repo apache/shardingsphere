@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DatabaseNodePathGeneratorTest {
     
     @Test
-    void assertGetPath() {
+    void assertGetRootPath() {
         assertThat(new DatabaseNodePathGenerator().getRootPath(), is("/metadata"));
     }
     
