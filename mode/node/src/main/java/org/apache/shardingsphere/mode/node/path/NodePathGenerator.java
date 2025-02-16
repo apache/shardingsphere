@@ -44,7 +44,7 @@ public final class NodePathGenerator {
      * @param leafNode leaf node
      * @return version node path generator
      */
-    public VersionNodePathGenerator getVersion(Object leafNode) {
+    public VersionNodePathGenerator getVersion(final Object leafNode) {
         return new VersionNodePathGenerator(getPath(leafNode));
     }
 }
