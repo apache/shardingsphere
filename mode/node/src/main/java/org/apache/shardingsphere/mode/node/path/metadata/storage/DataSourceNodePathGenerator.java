@@ -38,6 +38,6 @@ public final class DataSourceNodePathGenerator implements NodePathGenerator<Stri
     
     @Override
     public String getPath(final String node) {
-        throw new UnsupportedOperationException("Data source node do not need path.");
+        return String.join("/", getRootPath(), node);
     }
 }

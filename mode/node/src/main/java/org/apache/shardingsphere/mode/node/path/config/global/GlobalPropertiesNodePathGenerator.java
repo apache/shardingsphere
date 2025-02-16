@@ -34,11 +34,11 @@ public final class GlobalPropertiesNodePathGenerator implements NodePathVersionG
     
     @Override
     public String getPath(final String node) {
-        throw new UnsupportedOperationException("Global properties node do not need path.");
+        return String.join("/", getRootPath(), node);
     }
     
     @Override
     public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getRootPath());
+        return new VersionNodePathGenerator(getPath(node));
     }
 }
