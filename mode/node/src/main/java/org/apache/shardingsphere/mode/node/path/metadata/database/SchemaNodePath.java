@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.rule;
+package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.junit.jupiter.api.Test;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class DatabaseRuleNodePathGeneratorTest {
+/**
+ * Schema node path generator.
+ */
+@RequiredArgsConstructor
+public final class SchemaNodePath implements NodePath<String> {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/rules"));
+    private static final String SCHEMAS_NODE = "schemas";
+    
+    private final String databaseName;
+    
+    @Override
+    public String getRootPath() {
+        return String.join("/", new DatabaseNodePath().getPath(databaseName), SCHEMAS_NODE);
     }
     
-    @Test
-    void assertGetPath() {
-        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getPath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
     }
 }

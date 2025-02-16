@@ -32,10 +32,10 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageNodeNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(new StorageNodeNodePathGenerator(NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile(new StorageNodeNodePath(NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER =
-            new VersionNodePathParser(String.join("/", new StorageNodeNodePathGenerator(NodePathPattern.IDENTIFIER).getRootPath(), NodePathPattern.IDENTIFIER));
+            new VersionNodePathParser(String.join("/", new StorageNodeNodePath(NodePathPattern.IDENTIFIER).getRootPath(), NodePathPattern.IDENTIFIER));
     
     /**
      * Find storage node name.

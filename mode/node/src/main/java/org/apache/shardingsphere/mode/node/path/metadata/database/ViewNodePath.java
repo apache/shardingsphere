@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Table node path generator.
+ * View path generator.
  */
-public final class TableNodePathGenerator implements NodePathVersionGenerator<String> {
+public final class ViewNodePath implements NodePathVersion<String> {
     
-    private static final String TABLES_NODE = "tables";
+    private static final String VIEWS_NODE = "views";
     
-    private final SchemaNodePathGenerator schemaNodePathGenerator;
+    private final SchemaNodePath schemaNodePathGenerator;
     
     private final String schemaName;
     
-    public TableNodePathGenerator(final String databaseName, final String schemaName) {
-        schemaNodePathGenerator = new SchemaNodePathGenerator(databaseName);
+    public ViewNodePath(final String databaseName, final String schemaName) {
+        schemaNodePathGenerator = new SchemaNodePath(databaseName);
         this.schemaName = schemaName;
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePathGenerator.getPath(schemaName), TABLES_NODE);
+        return String.join("/", schemaNodePathGenerator.getPath(schemaName), VIEWS_NODE);
     }
     
     @Override

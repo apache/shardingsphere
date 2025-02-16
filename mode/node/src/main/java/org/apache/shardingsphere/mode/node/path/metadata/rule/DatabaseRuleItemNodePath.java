@@ -15,30 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Global properties node path generator.
+ * Database rule item node path generator.
  */
-public final class GlobalPropertiesNodePathGenerator implements NodePathVersionGenerator<String> {
+public final class DatabaseRuleItemNodePath implements NodePathVersion<DatabaseRuleItem> {
     
-    private static final String ROOT_NODE = "/props";
+    private final DatabaseRuleNodePath databaseRuleNodePathGenerator;
+    
+    private final String ruleType;
+    
+    public DatabaseRuleItemNodePath(final String databaseName, final String ruleType) {
+        databaseRuleNodePathGenerator = new DatabaseRuleNodePath(databaseName);
+        this.ruleType = ruleType;
+    }
     
     @Override
     public String getRootPath() {
-        return ROOT_NODE;
+        return databaseRuleNodePathGenerator.getPath(ruleType);
     }
     
     @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
+    public String getPath(final DatabaseRuleItem databaseRuleItem) {
+        return String.join("/", getRootPath(), databaseRuleItem.toString());
     }
     
     @Override
-    public VersionNodePathGenerator getVersion(final String node) {
+    public VersionNodePathGenerator getVersion(final DatabaseRuleItem node) {
         return new VersionNodePathGenerator(getPath(node));
     }
 }

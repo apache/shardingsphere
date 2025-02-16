@@ -40,7 +40,7 @@ public final class SchemaNodePathParser {
      */
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(new SchemaNodePathGenerator(NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(new SchemaNodePath(NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

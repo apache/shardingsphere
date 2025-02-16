@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.state;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
+import org.junit.jupiter.api.Test;
 
-/**
- * Data source node path generator.
- */
-@RequiredArgsConstructor
-public final class DataSourceNodePathGenerator implements NodePathGenerator<String> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ProcessNodePathTest {
     
-    private static final String DATA_SOURCES_NODE = "data_sources";
-    
-    private final String databaseName;
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", new DatabaseNodePathGenerator().getRootPath(), databaseName, DATA_SOURCES_NODE);
+    @Test
+    void assertGetRootPath() {
+        assertThat(ProcessNodePathGenerator.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
     }
     
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
+    @Test
+    void assertGetInstanceProcessList() {
+        assertThat(ProcessNodePathGenerator.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }
 }

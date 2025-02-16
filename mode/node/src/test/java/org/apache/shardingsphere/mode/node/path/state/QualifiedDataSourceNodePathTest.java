@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata;
+package org.apache.shardingsphere.mode.node.path.state;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DatabaseNodePathGeneratorTest {
+class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new DatabaseNodePathGenerator().getRootPath(), is("/metadata"));
+        MatcherAssert.assertThat(QualifiedDataSourceNodePathGenerator.getRootPath(), is("/nodes/qualified_data_sources"));
     }
     
     @Test
-    void assertGetPath() {
-        assertThat(new DatabaseNodePathGenerator().getPath("foo_db"), is("/metadata/foo_db"));
+    void assertGetQualifiedDataSourcePath() {
+        assertThat(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
+                is("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0"));
     }
 }

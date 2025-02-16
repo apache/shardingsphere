@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StorageUnitNodePathGeneratorTest {
+class ViewNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new StorageUnitNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/data_sources/units"));
+        assertThat(new ViewNodePath("foo_db", "foo_schema").getRootPath(), is("/metadata/foo_db/schemas/foo_schema/views"));
     }
     
     @Test
     void assertGetPath() {
-        assertThat(new StorageUnitNodePathGenerator("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+        assertThat(new ViewNodePath("foo_db", "foo_schema").getPath("foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test
     void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator("foo_db").getVersion("foo_ds");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+        assertThat(new ViewNodePath("foo_db", "foo_schema").getVersion("foo_view").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+        assertThat(new ViewNodePath("foo_db", "foo_schema").getVersion("foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
+        assertThat(new ViewNodePath("foo_db", "foo_schema").getVersion("foo_view").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
 }

@@ -15,17 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
-import static org.hamcrest.CoreMatchers.is;
-
-class ReservationNodePathGeneratorTest {
+/**
+ * Global props node path generator.
+ */
+public final class GlobalRuleNodePath implements NodePathVersion<String> {
     
-    @Test
-    void assertGetWorkerIdReservationPath() {
-        MatcherAssert.assertThat(ReservationNodePathGenerator.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
+    private static final String ROOT_NODE = "/rules";
+    
+    @Override
+    public String getRootPath() {
+        return ROOT_NODE;
+    }
+    
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
+    }
+    
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }

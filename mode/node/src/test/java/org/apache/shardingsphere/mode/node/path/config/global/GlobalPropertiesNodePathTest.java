@@ -17,28 +17,24 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.junit.jupiter.api.Test;
 
-/**
- * Global props node path generator.
- */
-public final class GlobalRuleNodePathGenerator implements NodePathVersionGenerator<String> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class GlobalPropertiesNodePathTest {
     
-    private static final String ROOT_NODE = "/rules";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
+    @Test
+    void assertGetRootPath() {
+        assertThat(new GlobalPropertiesNodePath().getRootPath(), is("/props"));
     }
     
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
-    }
-    
-    @Override
-    public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getPath(node));
+    @Test
+    void assertGetVersion() {
+        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePath().getVersion("");
+        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/props/active_version"));
+        assertThat(versionNodePathGenerator.getVersionsPath(), is("/props/versions"));
+        assertThat(versionNodePathGenerator.getVersionPath(0), is("/props/versions/0"));
     }
 }

@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Global properties node path parser.
+ * Global properties node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalPropertiesNodePathParser {
+public final class GlobalPropertiesNodePath implements NodePathVersion<String> {
     
-    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(new GlobalPropertiesNodePath().getRootPath());
+    private static final String ROOT_NODE = "/props";
     
-    /**
-     * Get properties version node path parser.
-     *
-     * @return properties version node path parser
-     */
-    public static VersionNodePathParser getVersion() {
-        return VERSION_PARSER;
+    @Override
+    public String getRootPath() {
+        return ROOT_NODE;
+    }
+    
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
+    }
+    
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getRootPath());
     }
 }

@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata;
+package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Database node path generator.
+ * Storage unit node path generator.
  */
-public final class DatabaseNodePathGenerator implements NodePathGenerator<String> {
+@RequiredArgsConstructor
+public final class StorageUnitNodePath implements NodePathVersion<String> {
     
-    private static final String ROOT_NODE = "/metadata";
+    private static final String UNITS_NODE = "units";
+    
+    private final String databaseName;
     
     @Override
     public String getRootPath() {
-        return ROOT_NODE;
+        return String.join("/", new DataSourceNodePath(databaseName).getRootPath(), UNITS_NODE);
     }
     
     @Override
-    public String getPath(final String databaseName) {
-        return String.join("/", ROOT_NODE, databaseName);
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
+    }
+    
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }

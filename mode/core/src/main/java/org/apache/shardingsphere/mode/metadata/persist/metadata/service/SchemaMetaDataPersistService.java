@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.database.SchemaNodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.database.TableNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -52,7 +52,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(new TableNodePathGenerator(databaseName, schemaName).getRootPath(), "");
+        repository.persist(new TableNodePath(databaseName, schemaName).getRootPath(), "");
     }
     
     /**
@@ -62,7 +62,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(new SchemaNodePathGenerator(databaseName).getPath(schemaName));
+        repository.delete(new SchemaNodePath(databaseName).getPath(schemaName));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(new SchemaNodePathGenerator(databaseName).getRootPath()).stream()
+        return repository.getChildrenKeys(new SchemaNodePath(databaseName).getRootPath()).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }
