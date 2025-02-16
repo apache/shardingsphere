@@ -39,6 +39,6 @@ public final class GlobalPropertiesNodePath implements NodePathVersion<String> {
     
     @Override
     public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getPath(node));
+        return new VersionNodePathGenerator(getRootPath());
     }
 }
