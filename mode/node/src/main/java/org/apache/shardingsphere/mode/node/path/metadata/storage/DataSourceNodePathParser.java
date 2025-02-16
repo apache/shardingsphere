@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.regex.Pattern;
 
