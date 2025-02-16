@@ -32,7 +32,7 @@ class GlobalPropertiesNodePathGeneratorTest {
     
     @Test
     void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePathGenerator().getVersion();
+        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePathGenerator().getVersion("");
         assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/props/active_version"));
         assertThat(versionNodePathGenerator.getVersionsPath(), is("/props/versions"));
         assertThat(versionNodePathGenerator.getVersionPath(0), is("/props/versions/0"));

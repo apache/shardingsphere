@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Storage unit node path generator.
  */
 @RequiredArgsConstructor
-public final class StorageUnitNodePathGenerator implements NodePathGenerator<String> {
+public final class StorageUnitNodePathGenerator implements NodePathVersionGenerator<String> {
     
     private static final String UNITS_NODE = "units";
     
@@ -41,13 +41,8 @@ public final class StorageUnitNodePathGenerator implements NodePathGenerator<Str
         return String.join("/", getRootPath(), storageUnitName);
     }
     
-    /**
-     * Get storage unit version node path generator.
-     *
-     * @param storageUnitName storage unit name
-     * @return storage unit version node path generator
-     */
-    public VersionNodePathGenerator getVersion(final String storageUnitName) {
-        return new VersionNodePathGenerator(String.join("/", getRootPath(), storageUnitName));
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(String.join("/", getRootPath(), node));
     }
 }

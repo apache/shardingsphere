@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Global props node path generator.
+ * Node path generator.
+ * 
+ * @param <T> type of node
  */
-public final class GlobalRuleNodePathGenerator implements NodePathVersionGenerator<String> {
+public interface NodePathVersionGenerator<T> extends NodePathGenerator<T> {
     
-    private static final String ROOT_NODE = "/rules";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
-    }
-    
-    @Override
-    public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getPath(node));
-    }
+    /**
+     * Get table version node path generator.
+     *
+     * @param node table name
+     * @return table version node path generator
+     */
+    VersionNodePathGenerator getVersion(T node);
 }

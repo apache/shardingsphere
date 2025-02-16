@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Database rule item node path generator.
  */
-public final class DatabaseRuleItemNodePathGenerator implements NodePathGenerator<DatabaseRuleItem> {
+public final class DatabaseRuleItemNodePathGenerator implements NodePathVersionGenerator<DatabaseRuleItem> {
     
     private final DatabaseRuleNodePathGenerator databaseRuleNodePathGenerator;
     
@@ -45,13 +45,8 @@ public final class DatabaseRuleItemNodePathGenerator implements NodePathGenerato
         return String.join("/", getRootPath(), databaseRuleItem.toString());
     }
     
-    /**
-     * Get database rule item version node path generator.
-     *
-     * @param databaseRuleItem database rule item
-     * @return database rule item version node path generator
-     */
-    public VersionNodePathGenerator getVersion(final DatabaseRuleItem databaseRuleItem) {
-        return new VersionNodePathGenerator(getPath(databaseRuleItem));
+    @Override
+    public VersionNodePathGenerator getVersion(final DatabaseRuleItem node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }

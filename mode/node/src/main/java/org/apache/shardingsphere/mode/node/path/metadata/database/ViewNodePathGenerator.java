@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * View path generator.
  */
-public final class ViewNodePathGenerator implements NodePathGenerator<String> {
+public final class ViewNodePathGenerator implements NodePathVersionGenerator<String> {
     
     private static final String VIEWS_NODE = "views";
     
@@ -46,13 +46,8 @@ public final class ViewNodePathGenerator implements NodePathGenerator<String> {
         return String.join("/", getRootPath(), node);
     }
     
-    /**
-     * Get view version node path generator.
-     *
-     * @param viewName view name
-     * @return view version node path generator
-     */
-    public VersionNodePathGenerator getVersion(final String viewName) {
-        return new VersionNodePathGenerator(getPath(viewName));
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }
