@@ -33,10 +33,10 @@ import java.util.regex.Pattern;
 public final class ViewNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            ViewNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+            new ViewNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getViewPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            ViewNodePathGenerator.getViewPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+            new ViewNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getViewPath(NodePathPattern.IDENTIFIER));
     
     /**
      * Get view name.

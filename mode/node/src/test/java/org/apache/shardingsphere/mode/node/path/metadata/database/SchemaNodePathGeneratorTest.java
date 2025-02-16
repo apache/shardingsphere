@@ -26,11 +26,11 @@ class SchemaNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(SchemaNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/schemas"));
+        assertThat(new SchemaNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/schemas"));
     }
     
     @Test
     void assertGetSchemaPath() {
-        assertThat(SchemaNodePathGenerator.getSchemaPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(new SchemaNodePathGenerator("foo_db").getSchemaPath("foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
 }

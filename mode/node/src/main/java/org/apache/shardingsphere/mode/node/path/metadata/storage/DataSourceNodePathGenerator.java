@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
 
 /**
  * Data source node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class DataSourceNodePathGenerator {
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     
+    private final String databaseName;
+    
     /**
      * Get data source root path.
      *
-     * @param databaseName database name
      * @return data source root path
      */
-    public static String getRootPath(final String databaseName) {
-        return String.join("/", DatabaseNodePathGenerator.getRootPath(), databaseName, DATA_SOURCES_NODE);
+    public String getRootPath() {
+        return String.join("/", new DatabaseNodePathGenerator().getRootPath(), databaseName, DATA_SOURCES_NODE);
     }
 }

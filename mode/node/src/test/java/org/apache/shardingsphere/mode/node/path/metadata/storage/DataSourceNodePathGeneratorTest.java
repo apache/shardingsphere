@@ -26,6 +26,6 @@ class DataSourceNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(DataSourceNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/data_sources"));
+        assertThat(new DataSourceNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/data_sources"));
     }
 }

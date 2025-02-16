@@ -17,47 +17,45 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Storage unit node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class StorageUnitNodePathGenerator {
     
     private static final String UNITS_NODE = "units";
     
+    private final String databaseName;
+    
     /**
      * Get storage unit root path.
      *
-     * @param databaseName database name
      * @return storage unit root path
      */
-    public static String getRootPath(final String databaseName) {
-        return String.join("/", DataSourceNodePathGenerator.getRootPath(databaseName), UNITS_NODE);
+    public String getRootPath() {
+        return String.join("/", new DataSourceNodePathGenerator(databaseName).getRootPath(), UNITS_NODE);
     }
     
     /**
      * Get storage unit path.
      *
-     * @param databaseName database name
      * @param storageUnitName storage unit name
      * @return storage unit path
      */
-    public static String getStorageUnitPath(final String databaseName, final String storageUnitName) {
-        return String.join("/", getRootPath(databaseName), storageUnitName);
+    public String getStorageUnitPath(final String storageUnitName) {
+        return String.join("/", getRootPath(), storageUnitName);
     }
     
     /**
      * Get storage unit version node path generator.
      *
-     * @param databaseName database name
      * @param storageUnitName storage unit name
      * @return storage unit version node path generator
      */
-    public static VersionNodePathGenerator getVersion(final String databaseName, final String storageUnitName) {
-        return new VersionNodePathGenerator(String.join("/", getRootPath(databaseName), storageUnitName));
+    public VersionNodePathGenerator getVersion(final String storageUnitName) {
+        return new VersionNodePathGenerator(String.join("/", getRootPath(), storageUnitName));
     }
 }

@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Database node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseNodePathGenerator {
     
     private static final String ROOT_NODE = "/metadata";
@@ -33,7 +29,7 @@ public final class DatabaseNodePathGenerator {
      *
      * @return schema root path
      */
-    public static String getRootPath() {
+    public String getRootPath() {
         return ROOT_NODE;
     }
     
@@ -43,7 +39,7 @@ public final class DatabaseNodePathGenerator {
      * @param databaseName database name
      * @return database path
      */
-    public static String getDatabasePath(final String databaseName) {
+    public String getDatabasePath(final String databaseName) {
         return String.join("/", ROOT_NODE, databaseName);
     }
 }

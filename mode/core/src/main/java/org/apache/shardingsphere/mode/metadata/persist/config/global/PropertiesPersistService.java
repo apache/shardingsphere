@@ -45,12 +45,12 @@ public final class PropertiesPersistService {
      */
     public Properties load() {
         return loadActiveVersion()
-                .map(optional -> YamlEngine.unmarshal(repository.query(GlobalPropertiesNodePathGenerator.getVersion().getVersionPath(optional)), Properties.class))
+                .map(optional -> YamlEngine.unmarshal(repository.query(new GlobalPropertiesNodePathGenerator().getVersion().getVersionPath(optional)), Properties.class))
                 .orElse(new Properties());
     }
     
     private Optional<Integer> loadActiveVersion() {
-        String value = repository.query(GlobalPropertiesNodePathGenerator.getVersion().getActiveVersionPath());
+        String value = repository.query(new GlobalPropertiesNodePathGenerator().getVersion().getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(Integer.parseInt(value));
     }
     
@@ -60,7 +60,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePathGenerator versionNodePathGenerator = GlobalPropertiesNodePathGenerator.getVersion();
+        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePathGenerator().getVersion();
         metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(props));
     }
 }

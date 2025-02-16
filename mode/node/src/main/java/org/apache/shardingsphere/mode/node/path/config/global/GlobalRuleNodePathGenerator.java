@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Global props node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalRuleNodePathGenerator {
     
     private static final String ROOT_NODE = "/rules";
@@ -34,7 +31,7 @@ public final class GlobalRuleNodePathGenerator {
      *
      * @return global rule root path
      */
-    public static String getRootPath() {
+    public String getRootPath() {
         return ROOT_NODE;
     }
     
@@ -44,7 +41,7 @@ public final class GlobalRuleNodePathGenerator {
      * @param ruleType rule type
      * @return global rule path
      */
-    public static String getRulePath(final String ruleType) {
+    public String getRulePath(final String ruleType) {
         return String.join("/", getRootPath(), ruleType);
     }
     
@@ -54,7 +51,7 @@ public final class GlobalRuleNodePathGenerator {
      * @param ruleType rule type
      * @return global rule version node path generator
      */
-    public static VersionNodePathGenerator getVersion(final String ruleType) {
+    public VersionNodePathGenerator getVersion(final String ruleType) {
         return new VersionNodePathGenerator(getRulePath(ruleType));
     }
 }

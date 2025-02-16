@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,19 +27,19 @@ class StorageUnitNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(StorageUnitNodePathGenerator.getRootPath("foo_db"), is("/metadata/foo_db/data_sources/units"));
+        assertThat(new StorageUnitNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/data_sources/units"));
     }
     
     @Test
     void assertGetStorageUnitPath() {
-        assertThat(StorageUnitNodePathGenerator.getStorageUnitPath("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+        assertThat(new StorageUnitNodePathGenerator("foo_db").getStorageUnitPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
     }
     
     @Test
     void assertGetVersion() {
-        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getActiveVersionPath(),
-                is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-        assertThat(StorageUnitNodePathGenerator.getVersion("foo_db", "foo_ds").getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator("foo_db").getVersion("foo_ds");
+        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
+        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
+        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
 }

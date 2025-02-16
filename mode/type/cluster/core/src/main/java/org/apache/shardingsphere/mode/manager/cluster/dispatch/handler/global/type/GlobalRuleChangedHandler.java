@@ -38,7 +38,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return GlobalRuleNodePathGenerator.getRootPath();
+        return new GlobalRuleNodePathGenerator().getRootPath();
     }
     
     @Override
