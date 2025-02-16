@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.DatabaseMetaDataChangedListener;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.GlobalMetaDataChangedListener;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerDatabaseListeners(final String databaseName) {
-        repository.watch(new DatabaseNodePathGenerator().getPath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
+        repository.watch(new DatabaseNodePath().getPath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
     }
     
     private void registerGlobalHandlers(final GlobalDataChangedEventHandler handler) {

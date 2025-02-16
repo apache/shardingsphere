@@ -24,17 +24,17 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DatabaseRuleItemNodePathGeneratorTest {
+class DatabaseRuleItemNodePathTest {
     
     @Test
     void assertGetPath() {
-        assertThat(new DatabaseRuleItemNodePathGenerator("foo_db", "foo_rule").getPath(new DatabaseRuleItem("foo_rule_item")), is("/metadata/foo_db/rules/foo_rule/foo_rule_item"));
+        assertThat(new DatabaseRuleItemNodePath("foo_db", "foo_rule").getPath(new DatabaseRuleItem("foo_rule_item")), is("/metadata/foo_db/rules/foo_rule/foo_rule_item"));
     }
     
     @Test
     void assertGetVersion() {
         DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem("foo_rule_item");
-        VersionNodePathGenerator versionNodePathGenerator = new DatabaseRuleItemNodePathGenerator("foo_db", "foo_rule").getVersion(databaseRuleItem);
+        VersionNodePathGenerator versionNodePathGenerator = new DatabaseRuleItemNodePath("foo_db", "foo_rule").getVersion(databaseRuleItem);
         assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/active_version"));
         assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions"));
         assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions/0"));

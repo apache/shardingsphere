@@ -15,39 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersionGenerator;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
- * View path generator.
+ * Data source node path generator.
  */
-public final class ViewNodePathGenerator implements NodePathVersionGenerator<String> {
+@RequiredArgsConstructor
+public final class DataSourceNodePath implements NodePath<String> {
     
-    private static final String VIEWS_NODE = "views";
+    private static final String DATA_SOURCES_NODE = "data_sources";
     
-    private final SchemaNodePathGenerator schemaNodePathGenerator;
-    
-    private final String schemaName;
-    
-    public ViewNodePathGenerator(final String databaseName, final String schemaName) {
-        schemaNodePathGenerator = new SchemaNodePathGenerator(databaseName);
-        this.schemaName = schemaName;
-    }
+    private final String databaseName;
     
     @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePathGenerator.getPath(schemaName), VIEWS_NODE);
+        return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, DATA_SOURCES_NODE);
     }
     
     @Override
     public String getPath(final String node) {
         return String.join("/", getRootPath(), node);
-    }
-    
-    @Override
-    public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getPath(node));
     }
 }

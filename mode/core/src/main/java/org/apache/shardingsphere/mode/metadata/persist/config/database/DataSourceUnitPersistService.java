@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -55,7 +55,7 @@ public final class DataSourceUnitPersistService {
      * @return data source pool properties map
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        Collection<String> childrenKeys = repository.getChildrenKeys(new StorageUnitNodePathGenerator(databaseName).getRootPath());
+        Collection<String> childrenKeys = repository.getChildrenKeys(new StorageUnitNodePath(databaseName).getRootPath());
         return childrenKeys.stream().collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (a, b) -> b, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
     }
     
@@ -68,7 +68,7 @@ public final class DataSourceUnitPersistService {
      */
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
-        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator(databaseName).getVersion(dataSourceName);
+        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePath(databaseName).getVersion(dataSourceName);
         int activeVersion = Integer.parseInt(repository.query(versionNodePathGenerator.getActiveVersionPath()));
         String dataSourceContent = repository.query(versionNodePathGenerator.getVersionPath(activeVersion));
         return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class));
@@ -82,7 +82,7 @@ public final class DataSourceUnitPersistService {
      */
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
-            VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator(databaseName).getVersion(entry.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePath(databaseName).getVersion(entry.getKey());
             metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
         }
     }
@@ -94,6 +94,6 @@ public final class DataSourceUnitPersistService {
      * @param dataSourceName data source name
      */
     public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(new StorageUnitNodePathGenerator(databaseName).getPath(dataSourceName));
+        repository.delete(new StorageUnitNodePath(databaseName).getPath(dataSourceName));
     }
 }

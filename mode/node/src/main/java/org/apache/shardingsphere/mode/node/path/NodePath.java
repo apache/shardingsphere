@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class DataSourceNodePathGeneratorTest {
+/**
+ * Node path generator.
+ * 
+ * @param <T> type of node
+ */
+public interface NodePath<T> {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new DataSourceNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/data_sources"));
-    }
+    /**
+     * Get root path.
+     *
+     * @return root path
+     */
+    String getRootPath();
+    
+    /**
+     * Get path.
+     *
+     * @param node node
+     * @return path
+     */
+    String getPath(T node);
 }

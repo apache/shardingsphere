@@ -17,27 +17,20 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
+import org.junit.jupiter.api.Test;
 
-/**
- * Database rule node path generator.
- */
-@RequiredArgsConstructor
-public final class DatabaseRuleNodePathGenerator implements NodePathGenerator<String> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class DatabaseRuleNodePathTest {
     
-    private static final String RULE_NODE = "rules";
-    
-    private final String databaseName;
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", new DatabaseNodePathGenerator().getRootPath(), databaseName, RULE_NODE);
+    @Test
+    void assertGetRootPath() {
+        assertThat(new DatabaseRuleNodePath("foo_db").getRootPath(), is("/metadata/foo_db/rules"));
     }
     
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
+    @Test
+    void assertGetPath() {
+        assertThat(new DatabaseRuleNodePath("foo_db").getPath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
     }
 }

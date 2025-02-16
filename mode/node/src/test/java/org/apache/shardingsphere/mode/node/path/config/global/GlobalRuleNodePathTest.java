@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.hamcrest.MatcherAssert;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class QualifiedDataSourceNodePathGeneratorTest {
+class GlobalRuleNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        MatcherAssert.assertThat(QualifiedDataSourceNodePathGenerator.getRootPath(), is("/nodes/qualified_data_sources"));
+        assertThat(new GlobalRuleNodePath().getRootPath(), is("/rules"));
     }
     
     @Test
-    void assertGetQualifiedDataSourcePath() {
-        assertThat(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(new QualifiedDataSource("replica_query_db.readwrite_ds.replica_ds_0")),
-                is("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0"));
+    void assertGetPath() {
+        assertThat(new GlobalRuleNodePath().getPath("foo_rule"), is("/rules/foo_rule"));
+    }
+    
+    @Test
+    void assertGetVersion() {
+        VersionNodePathGenerator versionNodePathGenerator = new GlobalRuleNodePath().getVersion("foo_rule");
+        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/rules/foo_rule/active_version"));
+        assertThat(versionNodePathGenerator.getVersionsPath(), is("/rules/foo_rule/versions"));
+        assertThat(versionNodePathGenerator.getVersionPath(0), is("/rules/foo_rule/versions/0"));
     }
 }

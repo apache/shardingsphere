@@ -15,26 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
-import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class GlobalPropertiesNodePathGeneratorTest {
+/**
+ * Storage node node path generator.
+ */
+@RequiredArgsConstructor
+public final class StorageNodeNodePath implements NodePathVersion<String> {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new GlobalPropertiesNodePathGenerator().getRootPath(), is("/props"));
+    private static final String NODES_NODE = "nodes";
+    
+    private final String databaseName;
+    
+    @Override
+    public String getRootPath() {
+        return String.join("/", new DataSourceNodePath(databaseName).getRootPath(), NODES_NODE);
     }
     
-    @Test
-    void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePathGenerator().getVersion("");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/props/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/props/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/props/versions/0"));
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
+    }
+    
+    @Override
+    public VersionNodePathGenerator getVersion(final String node) {
+        return new VersionNodePathGenerator(getPath(node));
     }
 }

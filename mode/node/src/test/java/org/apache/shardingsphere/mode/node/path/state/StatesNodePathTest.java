@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path;
+package org.apache.shardingsphere.mode.node.path.state;
 
-/**
- * Node path generator.
- * 
- * @param <T> type of node
- */
-public interface NodePathGenerator<T> {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class StatesNodePathTest {
     
-    /**
-     * Get root path.
-     *
-     * @return root path
-     */
-    String getRootPath();
+    @Test
+    void assertGetClusterStatePath() {
+        assertThat(StatesNodePathGenerator.getClusterStatePath(), is("/states/cluster_state"));
+    }
     
-    /**
-     * Get path.
-     *
-     * @param node node
-     * @return path
-     */
-    String getPath(T node);
+    @Test
+    void assertGetDatabaseListenerCoordinatorNodeRootPath() {
+        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodeRootPath(), is("/states/database_listener_coordinator"));
+    }
+    
+    @Test
+    void assertGetDatabaseListenerCoordinatorNodePath() {
+        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath("foo_db"), is("/states/database_listener_coordinator/foo_db"));
+    }
 }

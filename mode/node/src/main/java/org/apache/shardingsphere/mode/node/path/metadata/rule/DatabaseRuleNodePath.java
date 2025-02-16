@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
- * Schema node path generator.
+ * Database rule node path generator.
  */
 @RequiredArgsConstructor
-public final class SchemaNodePathGenerator implements NodePathGenerator<String> {
+public final class DatabaseRuleNodePath implements NodePath<String> {
     
-    private static final String SCHEMAS_NODE = "schemas";
+    private static final String RULE_NODE = "rules";
     
     private final String databaseName;
     
     @Override
     public String getRootPath() {
-        return String.join("/", new DatabaseNodePathGenerator().getPath(databaseName), SCHEMAS_NODE);
+        return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, RULE_NODE);
     }
     
     @Override

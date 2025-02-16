@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ProcessNodePathGeneratorTest {
+/**
+ * Node path generator.
+ * 
+ * @param <T> type of node
+ */
+public interface NodePathVersion<T> extends NodePath<T> {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(ProcessNodePathGenerator.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
-    }
-    
-    @Test
-    void assertGetInstanceProcessList() {
-        assertThat(ProcessNodePathGenerator.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
-    }
+    /**
+     * Get table version node path generator.
+     *
+     * @param node table name
+     * @return table version node path generator
+     */
+    VersionNodePathGenerator getVersion(T node);
 }

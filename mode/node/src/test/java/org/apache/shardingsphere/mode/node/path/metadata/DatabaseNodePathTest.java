@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path.metadata;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SchemaNodePathGeneratorTest {
+class DatabaseNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new SchemaNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/schemas"));
+        assertThat(new DatabaseNodePath().getRootPath(), is("/metadata"));
     }
     
     @Test
     void assertGetPath() {
-        assertThat(new SchemaNodePathGenerator("foo_db").getPath("foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(new DatabaseNodePath().getPath("foo_db"), is("/metadata/foo_db"));
     }
 }

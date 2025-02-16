@@ -17,25 +17,15 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatesNodePathGeneratorTest {
+class ReservationNodePathTest {
     
     @Test
-    void assertGetClusterStatePath() {
-        assertThat(StatesNodePathGenerator.getClusterStatePath(), is("/states/cluster_state"));
-    }
-    
-    @Test
-    void assertGetDatabaseListenerCoordinatorNodeRootPath() {
-        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodeRootPath(), is("/states/database_listener_coordinator"));
-    }
-    
-    @Test
-    void assertGetDatabaseListenerCoordinatorNodePath() {
-        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath("foo_db"), is("/states/database_listener_coordinator/foo_db"));
+    void assertGetWorkerIdReservationPath() {
+        MatcherAssert.assertThat(ReservationNodePathGenerator.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
     }
 }
