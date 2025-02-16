@@ -18,35 +18,27 @@
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Storage node node path generator.
  */
 @RequiredArgsConstructor
-public final class StorageNodeNodePathGenerator {
+public final class StorageNodeNodePathGenerator implements NodePathGenerator<String> {
     
     private static final String NODES_NODE = "nodes";
     
     private final String databaseName;
     
-    /**
-     * Get storage node root path.
-     *
-     * @return storage node root path
-     */
+    @Override
     public String getRootPath() {
         return String.join("/", new DataSourceNodePathGenerator(databaseName).getRootPath(), NODES_NODE);
     }
     
-    /**
-     * Get storage node path.
-     *
-     * @param storageNodeName storage node name
-     * @return storage node path
-     */
-    public String getStorageNodePath(final String storageNodeName) {
-        return String.join("/", getRootPath(), storageNodeName);
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
     }
     
     /**

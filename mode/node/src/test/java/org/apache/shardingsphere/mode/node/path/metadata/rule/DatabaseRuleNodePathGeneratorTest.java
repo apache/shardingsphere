@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
-import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,21 +30,7 @@ class DatabaseRuleNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetRulePath() {
-        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getRulePath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
-    }
-    
-    @Test
-    void assertGetRulePathWithKey() {
-        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getRulePath("foo_rule", new DatabaseRuleItem("foo_rule_item")), is("/metadata/foo_db/rules/foo_rule/foo_rule_item"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem("foo_rule_item");
-        VersionNodePathGenerator versionNodePathGenerator = new DatabaseRuleNodePathGenerator("foo_db").getVersion("foo_rule", databaseRuleItem);
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions/0"));
+    void assertGetPath() {
+        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getPath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
     }
 }

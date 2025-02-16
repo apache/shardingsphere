@@ -94,6 +94,6 @@ public final class DataSourceUnitPersistService {
      * @param dataSourceName data source name
      */
     public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(new StorageUnitNodePathGenerator(databaseName).getStorageUnitPath(dataSourceName));
+        repository.delete(new StorageUnitNodePathGenerator(databaseName).getPath(dataSourceName));
     }
 }

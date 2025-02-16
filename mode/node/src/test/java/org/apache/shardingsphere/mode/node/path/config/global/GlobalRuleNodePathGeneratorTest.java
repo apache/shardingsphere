@@ -32,7 +32,7 @@ class GlobalRuleNodePathGeneratorTest {
     
     @Test
     void assertGetRulePath() {
-        assertThat(new GlobalRuleNodePathGenerator().getRulePath("foo_rule"), is("/rules/foo_rule"));
+        assertThat(new GlobalRuleNodePathGenerator().getPath("foo_rule"), is("/rules/foo_rule"));
     }
     
     @Test

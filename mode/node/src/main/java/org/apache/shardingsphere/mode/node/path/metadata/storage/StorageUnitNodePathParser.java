@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class StorageUnitNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            new StorageUnitNodePathGenerator(NodePathPattern.IDENTIFIER).getStorageUnitPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+            new StorageUnitNodePathGenerator(NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
             String.join("/", new StorageUnitNodePathGenerator(NodePathPattern.IDENTIFIER).getRootPath(), NodePathPattern.IDENTIFIER));

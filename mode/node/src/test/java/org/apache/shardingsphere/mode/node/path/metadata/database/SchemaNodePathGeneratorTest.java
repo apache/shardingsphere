@@ -31,6 +31,6 @@ class SchemaNodePathGeneratorTest {
     
     @Test
     void assertGetSchemaPath() {
-        assertThat(new SchemaNodePathGenerator("foo_db").getSchemaPath("foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(new SchemaNodePathGenerator("foo_db").getPath("foo_schema"), is("/metadata/foo_db/schemas/foo_schema"));
     }
 }

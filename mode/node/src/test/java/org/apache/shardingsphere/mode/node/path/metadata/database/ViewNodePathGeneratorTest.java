@@ -30,8 +30,8 @@ class ViewNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetViewPath() {
-        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getViewPath("foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+    void assertGetPath() {
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getPath("foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test

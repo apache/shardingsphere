@@ -18,24 +18,26 @@
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
 
 /**
  * Data source node path generator.
  */
 @RequiredArgsConstructor
-public final class DataSourceNodePathGenerator {
+public final class DataSourceNodePathGenerator implements NodePathGenerator<String> {
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     
     private final String databaseName;
     
-    /**
-     * Get data source root path.
-     *
-     * @return data source root path
-     */
+    @Override
     public String getRootPath() {
         return String.join("/", new DatabaseNodePathGenerator().getRootPath(), databaseName, DATA_SOURCES_NODE);
+    }
+    
+    @Override
+    public String getPath(final String node) {
+        throw new UnsupportedOperationException("Data source node do not need path.");
     }
 }

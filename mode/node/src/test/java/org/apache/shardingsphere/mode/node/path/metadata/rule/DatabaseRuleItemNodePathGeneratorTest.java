@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StorageUnitNodePathGeneratorTest {
-    
-    @Test
-    void assertGetRootPath() {
-        assertThat(new StorageUnitNodePathGenerator("foo_db").getRootPath(), is("/metadata/foo_db/data_sources/units"));
-    }
+class DatabaseRuleItemNodePathGeneratorTest {
     
     @Test
     void assertGetPath() {
-        assertThat(new StorageUnitNodePathGenerator("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+        assertThat(new DatabaseRuleItemNodePathGenerator("foo_db", "foo_rule").getPath(new DatabaseRuleItem("foo_rule_item")), is("/metadata/foo_db/rules/foo_rule/foo_rule_item"));
     }
     
     @Test
     void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator("foo_db").getVersion("foo_ds");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
+        DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem("foo_rule_item");
+        VersionNodePathGenerator versionNodePathGenerator = new DatabaseRuleItemNodePathGenerator("foo_db", "foo_rule").getVersion(databaseRuleItem);
+        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/active_version"));
+        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions"));
+        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/foo_rule_item/versions/0"));
     }
 }

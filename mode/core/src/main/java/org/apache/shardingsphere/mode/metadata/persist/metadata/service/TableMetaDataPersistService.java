@@ -92,7 +92,7 @@ public final class TableMetaDataPersistService {
      * @param tableName to be dropped table name
      */
     public void drop(final String databaseName, final String schemaName, final String tableName) {
-        repository.delete(new TableNodePathGenerator(databaseName, schemaName).getTablePath(tableName.toLowerCase()));
+        repository.delete(new TableNodePathGenerator(databaseName, schemaName).getPath(tableName.toLowerCase()));
     }
     
     /**

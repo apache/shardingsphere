@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * View path generator.
  */
-public final class ViewNodePathGenerator {
+public final class ViewNodePathGenerator implements NodePathGenerator<String> {
     
     private static final String VIEWS_NODE = "views";
     
@@ -35,23 +36,14 @@ public final class ViewNodePathGenerator {
         this.schemaName = schemaName;
     }
     
-    /**
-     * Get view root path.
-     *
-     * @return view root path
-     */
+    @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePathGenerator.getSchemaPath(schemaName), VIEWS_NODE);
+        return String.join("/", schemaNodePathGenerator.getPath(schemaName), VIEWS_NODE);
     }
     
-    /**
-     * Get view path.
-     *
-     * @param viewName view name
-     * @return view path
-     */
-    public String getViewPath(final String viewName) {
-        return String.join("/", getRootPath(), viewName);
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
     }
     
     /**
@@ -61,6 +53,6 @@ public final class ViewNodePathGenerator {
      * @return view version node path generator
      */
     public VersionNodePathGenerator getVersion(final String viewName) {
-        return new VersionNodePathGenerator(getViewPath(viewName));
+        return new VersionNodePathGenerator(getPath(viewName));
     }
 }

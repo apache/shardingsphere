@@ -62,7 +62,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(new SchemaNodePathGenerator(databaseName).getSchemaPath(schemaName));
+        repository.delete(new SchemaNodePathGenerator(databaseName).getPath(schemaName));
     }
     
     /**

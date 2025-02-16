@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.rule;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
+package org.apache.shardingsphere.mode.node.path;
 
 /**
- * Database rule node path generator.
+ * Node path generator.
+ * 
+ * @param <T> type of node
  */
-@RequiredArgsConstructor
-public final class DatabaseRuleNodePathGenerator implements NodePathGenerator<String> {
+public interface NodePathGenerator<T> {
     
-    private static final String RULE_NODE = "rules";
+    /**
+     * Get root path.
+     *
+     * @return root path
+     */
+    String getRootPath();
     
-    private final String databaseName;
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", new DatabaseNodePathGenerator().getRootPath(), databaseName, RULE_NODE);
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
-    }
+    /**
+     * Get path.
+     *
+     * @param node node
+     * @return path
+     */
+    String getPath(T node);
 }
