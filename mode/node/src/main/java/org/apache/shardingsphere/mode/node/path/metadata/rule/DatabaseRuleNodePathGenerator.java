@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Database rule node path generator.
@@ -49,27 +47,5 @@ public final class DatabaseRuleNodePathGenerator {
      */
     public String getRulePath(final String ruleType) {
         return String.join("/", getRootPath(), ruleType);
-    }
-    
-    /**
-     * Get database rule path.
-     *
-     * @param ruleType rule type
-     * @param databaseRuleItem database rule item
-     * @return database rule path
-     */
-    public String getRulePath(final String ruleType, final DatabaseRuleItem databaseRuleItem) {
-        return String.join("/", getRulePath(ruleType), databaseRuleItem.toString());
-    }
-    
-    /**
-     * Get database rule version node path generator.
-     *
-     * @param ruleType rule type
-     * @param databaseRuleItem database rule item
-     * @return database rule version node path generator
-     */
-    public VersionNodePathGenerator getVersion(final String ruleType, final DatabaseRuleItem databaseRuleItem) {
-        return new VersionNodePathGenerator(getRulePath(ruleType, databaseRuleItem));
     }
 }
