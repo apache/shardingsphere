@@ -17,32 +17,24 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Global props node path generator.
  */
-public final class GlobalRuleNodePathGenerator {
+public final class GlobalRuleNodePathGenerator implements NodePathGenerator<String> {
     
     private static final String ROOT_NODE = "/rules";
     
-    /**
-     * Get global rule root path.
-     *
-     * @return global rule root path
-     */
+    @Override
     public String getRootPath() {
         return ROOT_NODE;
     }
     
-    /**
-     * Get global rule path.
-     *
-     * @param ruleType rule type
-     * @return global rule path
-     */
-    public String getRulePath(final String ruleType) {
-        return String.join("/", getRootPath(), ruleType);
+    @Override
+    public String getPath(final String node) {
+        return String.join("/", getRootPath(), node);
     }
     
     /**
@@ -52,6 +44,6 @@ public final class GlobalRuleNodePathGenerator {
      * @return global rule version node path generator
      */
     public VersionNodePathGenerator getVersion(final String ruleType) {
-        return new VersionNodePathGenerator(getRulePath(ruleType));
+        return new VersionNodePathGenerator(getPath(ruleType));
     }
 }

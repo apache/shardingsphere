@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Database rule item node path generator.
  */
-public final class DatabaseRuleItemNodePathGenerator {
+public final class DatabaseRuleItemNodePathGenerator implements NodePathGenerator<DatabaseRuleItem> {
     
     private final DatabaseRuleNodePathGenerator databaseRuleNodePathGenerator;
     
@@ -34,14 +35,14 @@ public final class DatabaseRuleItemNodePathGenerator {
         this.ruleType = ruleType;
     }
     
-    /**
-     * Get database rule item path.
-     *
-     * @param databaseRuleItem database rule item
-     * @return database rule item path
-     */
-    public String getRuleItemPath(final DatabaseRuleItem databaseRuleItem) {
-        return String.join("/", databaseRuleNodePathGenerator.getRulePath(ruleType), databaseRuleItem.toString());
+    @Override
+    public String getRootPath() {
+        return databaseRuleNodePathGenerator.getPath(ruleType);
+    }
+    
+    @Override
+    public String getPath(final DatabaseRuleItem databaseRuleItem) {
+        return String.join("/", getRootPath(), databaseRuleItem.toString());
     }
     
     /**
@@ -51,6 +52,6 @@ public final class DatabaseRuleItemNodePathGenerator {
      * @return database rule item version node path generator
      */
     public VersionNodePathGenerator getVersion(final DatabaseRuleItem databaseRuleItem) {
-        return new VersionNodePathGenerator(getRuleItemPath(databaseRuleItem));
+        return new VersionNodePathGenerator(getPath(databaseRuleItem));
     }
 }

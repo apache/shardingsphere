@@ -30,8 +30,8 @@ class TableNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetTablePath() {
-        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getTablePath("foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+    void assertGetPath() {
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getPath("foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test

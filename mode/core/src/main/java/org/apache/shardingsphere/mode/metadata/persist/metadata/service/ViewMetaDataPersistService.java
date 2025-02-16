@@ -92,6 +92,6 @@ public final class ViewMetaDataPersistService {
      * @param viewName to be dropped view name
      */
     public void drop(final String databaseName, final String schemaName, final String viewName) {
-        repository.delete(new ViewNodePathGenerator(databaseName, schemaName).getViewPath(viewName.toLowerCase()));
+        repository.delete(new ViewNodePathGenerator(databaseName, schemaName).getPath(viewName.toLowerCase()));
     }
 }

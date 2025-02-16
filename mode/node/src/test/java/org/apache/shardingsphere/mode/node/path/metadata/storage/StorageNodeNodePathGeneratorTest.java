@@ -31,8 +31,8 @@ class StorageNodeNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetStorageNodePath() {
-        assertThat(new StorageNodeNodePathGenerator("foo_db").getStorageNodePath("foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds"));
+    void assertGetPath() {
+        assertThat(new StorageNodeNodePathGenerator("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds"));
     }
     
     @Test

@@ -33,10 +33,10 @@ import java.util.regex.Pattern;
 public final class TableNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            new TableNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getTablePath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+            new TableNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            new TableNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getTablePath(NodePathPattern.IDENTIFIER));
+            new TableNodePathGenerator(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER));
     
     /**
      * Find table name.

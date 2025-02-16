@@ -57,10 +57,10 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         if (ClusterDatabaseListenerCoordinatorType.CREATE == clusterDatabaseListenerCoordinatorType) {
-            repository.watch(new DatabaseNodePathGenerator().getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
+            repository.watch(new DatabaseNodePathGenerator().getPath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
         } else if (ClusterDatabaseListenerCoordinatorType.DROP == clusterDatabaseListenerCoordinatorType) {
-            repository.removeDataListener(new DatabaseNodePathGenerator().getDatabasePath(databaseName));
+            repository.removeDataListener(new DatabaseNodePathGenerator().getPath(databaseName));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
         }
         new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);

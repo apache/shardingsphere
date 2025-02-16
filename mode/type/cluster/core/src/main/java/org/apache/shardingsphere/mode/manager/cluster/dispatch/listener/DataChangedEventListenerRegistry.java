@@ -53,7 +53,7 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerDatabaseListeners(final String databaseName) {
-        repository.watch(new DatabaseNodePathGenerator().getDatabasePath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
+        repository.watch(new DatabaseNodePathGenerator().getPath(databaseName), new DatabaseMetaDataChangedListener(contextManager));
     }
     
     private void registerGlobalHandlers(final GlobalDataChangedEventHandler handler) {

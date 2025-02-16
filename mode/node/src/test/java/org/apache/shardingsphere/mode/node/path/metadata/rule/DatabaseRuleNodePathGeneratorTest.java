@@ -30,7 +30,7 @@ class DatabaseRuleNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetRulePath() {
-        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getRulePath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
+    void assertGetPath() {
+        assertThat(new DatabaseRuleNodePathGenerator("foo_db").getPath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
     }
 }

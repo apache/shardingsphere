@@ -31,8 +31,8 @@ class StorageUnitNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetStorageUnitPath() {
-        assertThat(new StorageUnitNodePathGenerator("foo_db").getStorageUnitPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
+    void assertGetPath() {
+        assertThat(new StorageUnitNodePathGenerator("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
     }
     
     @Test

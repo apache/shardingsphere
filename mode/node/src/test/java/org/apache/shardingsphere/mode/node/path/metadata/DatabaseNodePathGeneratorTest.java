@@ -30,7 +30,7 @@ class DatabaseNodePathGeneratorTest {
     }
     
     @Test
-    void assertGetDatabasePath() {
-        assertThat(new DatabaseNodePathGenerator().getDatabasePath("foo_db"), is("/metadata/foo_db"));
+    void assertGetPath() {
+        assertThat(new DatabaseNodePathGenerator().getPath("foo_db"), is("/metadata/foo_db"));
     }
 }
