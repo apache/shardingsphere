@@ -17,20 +17,34 @@
 
 package org.apache.shardingsphere.mode.node.path;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Node path generator.
- * 
- * @param <T> type of node
  */
-public interface NodePathVersion<T> extends NodePath<T> {
+@RequiredArgsConstructor
+public final class NodePathGenerator {
+    
+    private final NodePath nodePath;
     
     /**
-     * Get table version node path generator.
+     * Get path.
      *
-     * @param node table name
-     * @return table version node path generator
+     * @param leafNode leaf node
+     * @return path
      */
-    VersionNodePathGenerator getVersion(T node);
+    public String getPath(final Object leafNode) {
+        return null == leafNode ? nodePath.getRootPath() : String.join("/", nodePath.getRootPath(), leafNode.toString());
+    }
+    
+    /**
+     * Get version node path generator.
+     *
+     * @param leafNode leaf node
+     * @return version node path generator
+     */
+    public VersionNodePathGenerator getVersion(final Object leafNode) {
+        return new VersionNodePathGenerator(getPath(leafNode));
+    }
 }

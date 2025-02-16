@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
@@ -33,10 +34,10 @@ import java.util.regex.Pattern;
 public final class ViewNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            new ViewNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+            new NodePathGenerator(new ViewNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).getPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            new ViewNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER).getPath(NodePathPattern.IDENTIFIER));
+            new NodePathGenerator(new ViewNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).getPath(NodePathPattern.IDENTIFIER));
     
     /**
      * Get view name.

@@ -29,8 +29,4 @@ class DatabaseRuleNodePathTest {
         assertThat(new DatabaseRuleNodePath("foo_db").getRootPath(), is("/metadata/foo_db/rules"));
     }
     
-    @Test
-    void assertGetPath() {
-        assertThat(new DatabaseRuleNodePath("foo_db").getPath("foo_rule"), is("/metadata/foo_db/rules/foo_rule"));
-    }
 }

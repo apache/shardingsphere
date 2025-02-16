@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -45,12 +46,12 @@ public final class PropertiesPersistService {
      */
     public Properties load() {
         return loadActiveVersion()
-                .map(optional -> YamlEngine.unmarshal(repository.query(new GlobalPropertiesNodePath().getVersion("").getVersionPath(optional)), Properties.class))
+                .map(optional -> YamlEngine.unmarshal(repository.query(new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null).getVersionPath(optional)), Properties.class))
                 .orElse(new Properties());
     }
     
     private Optional<Integer> loadActiveVersion() {
-        String value = repository.query(new GlobalPropertiesNodePath().getVersion("").getActiveVersionPath());
+        String value = repository.query(new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null).getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(Integer.parseInt(value));
     }
     
@@ -60,7 +61,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePath().getVersion("");
+        VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null);
         metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(props));
     }
 }

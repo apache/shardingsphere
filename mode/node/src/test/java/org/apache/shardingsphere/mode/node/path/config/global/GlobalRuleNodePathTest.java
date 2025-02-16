@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,18 +27,5 @@ class GlobalRuleNodePathTest {
     @Test
     void assertGetRootPath() {
         assertThat(new GlobalRuleNodePath().getRootPath(), is("/rules"));
-    }
-    
-    @Test
-    void assertGetPath() {
-        assertThat(new GlobalRuleNodePath().getPath("foo_rule"), is("/rules/foo_rule"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalRuleNodePath().getVersion("foo_rule");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/rules/foo_rule/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/rules/foo_rule/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/rules/foo_rule/versions/0"));
     }
 }

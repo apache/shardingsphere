@@ -28,16 +28,4 @@ class TableNodePathTest {
     void assertGetRootPath() {
         assertThat(new TableNodePath("foo_db", "foo_schema").getRootPath(), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
-    
-    @Test
-    void assertGetPath() {
-        assertThat(new TableNodePath("foo_db", "foo_schema").getPath("foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        assertThat(new TableNodePath("foo_db", "foo_schema").getVersion("foo_tbl").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-        assertThat(new TableNodePath("foo_db", "foo_schema").getVersion("foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
-        assertThat(new TableNodePath("foo_db", "foo_schema").getVersion("foo_tbl").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
-    }
 }

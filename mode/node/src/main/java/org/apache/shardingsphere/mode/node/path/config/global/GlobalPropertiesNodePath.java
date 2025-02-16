@@ -17,28 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.NodePathVersion;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Global properties node path generator.
+ * Global properties node path.
  */
-public final class GlobalPropertiesNodePath implements NodePathVersion<String> {
+public final class GlobalPropertiesNodePath implements NodePath {
     
     private static final String ROOT_NODE = "/props";
     
     @Override
     public String getRootPath() {
         return ROOT_NODE;
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
-    }
-    
-    @Override
-    public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getRootPath());
     }
 }

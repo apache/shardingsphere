@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathVersion;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Storage node node path generator.
+ * Storage node node path.
  */
 @RequiredArgsConstructor
-public final class StorageNodeNodePath implements NodePathVersion<String> {
+public final class StorageNodeNodePath implements NodePath {
     
     private static final String NODES_NODE = "nodes";
     
@@ -34,15 +33,5 @@ public final class StorageNodeNodePath implements NodePathVersion<String> {
     @Override
     public String getRootPath() {
         return String.join("/", new DataSourceNodePath(databaseName).getRootPath(), NODES_NODE);
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
-    }
-    
-    @Override
-    public VersionNodePathGenerator getVersion(final String node) {
-        return new VersionNodePathGenerator(getPath(node));
     }
 }

@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.mode.node.path;
 
 /**
- * Node path generator.
- * 
- * @param <T> type of node
+ * Node path.
  */
-public interface NodePath<T> {
+public interface NodePath {
     
     /**
      * Get root path.
@@ -30,12 +28,4 @@ public interface NodePath<T> {
      * @return root path
      */
     String getRootPath();
-    
-    /**
-     * Get path.
-     *
-     * @param node node
-     * @return path
-     */
-    String getPath(T node);
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,18 +27,5 @@ class StorageUnitNodePathTest {
     @Test
     void assertGetRootPath() {
         assertThat(new StorageUnitNodePath("foo_db").getRootPath(), is("/metadata/foo_db/data_sources/units"));
-    }
-    
-    @Test
-    void assertGetPath() {
-        assertThat(new StorageUnitNodePath("foo_db").getPath("foo_ds"), is("/metadata/foo_db/data_sources/units/foo_ds"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePath("foo_db").getVersion("foo_ds");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/metadata/foo_db/data_sources/units/foo_ds/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/metadata/foo_db/data_sources/units/foo_ds/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/metadata/foo_db/data_sources/units/foo_ds/versions/0"));
     }
 }
