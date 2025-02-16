@@ -34,7 +34,7 @@ public final class NodePathGenerator {
      * @param leafNode leaf node
      * @return path
      */
-    public <T> String getPath(final T leafNode) {
+    public String getPath(final Object leafNode) {
         return null == leafNode ? nodePath.getRootPath() : String.join("/", nodePath.getRootPath(), leafNode.toString());
     }
     
@@ -44,7 +44,7 @@ public final class NodePathGenerator {
      * @param leafNode leaf node
      * @return version node path generator
      */
-    public <T> VersionNodePathGenerator getVersion(T leafNode) {
+    public VersionNodePathGenerator getVersion(Object leafNode) {
         return new VersionNodePathGenerator(getPath(leafNode));
     }
 }

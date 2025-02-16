@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
  * Schema node path.
  */
 @RequiredArgsConstructor
-public final class SchemaNodePath implements NodePath<String> {
+public final class SchemaNodePath implements NodePath {
     
     private static final String SCHEMAS_NODE = "schemas";
     
@@ -35,10 +35,5 @@ public final class SchemaNodePath implements NodePath<String> {
     @Override
     public String getRootPath() {
         return String.join("/", new NodePathGenerator(new DatabaseNodePath()).getPath(databaseName), SCHEMAS_NODE);
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
     }
 }

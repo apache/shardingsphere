@@ -22,17 +22,12 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 /**
  * Database node path generator.
  */
-public final class DatabaseNodePath implements NodePath<String> {
+public final class DatabaseNodePath implements NodePath {
     
     private static final String ROOT_NODE = "/metadata";
     
     @Override
     public String getRootPath() {
         return ROOT_NODE;
-    }
-    
-    @Override
-    public String getPath(final String databaseName) {
-        return String.join("/", ROOT_NODE, databaseName);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
  * Database rule node path generator.
  */
 @RequiredArgsConstructor
-public final class DatabaseRuleNodePath implements NodePath<String> {
+public final class DatabaseRuleNodePath implements NodePath {
     
     private static final String RULE_NODE = "rules";
     
@@ -34,10 +34,5 @@ public final class DatabaseRuleNodePath implements NodePath<String> {
     @Override
     public String getRootPath() {
         return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, RULE_NODE);
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
     }
 }

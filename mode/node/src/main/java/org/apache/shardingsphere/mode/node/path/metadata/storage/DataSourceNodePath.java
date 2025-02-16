@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
  * Data source node path.
  */
 @RequiredArgsConstructor
-public final class DataSourceNodePath implements NodePath<String> {
+public final class DataSourceNodePath implements NodePath {
     
     private static final String DATA_SOURCES_NODE = "data_sources";
     
@@ -34,10 +34,5 @@ public final class DataSourceNodePath implements NodePath<String> {
     @Override
     public String getRootPath() {
         return String.join("/", new DatabaseNodePath().getRootPath(), databaseName, DATA_SOURCES_NODE);
-    }
-    
-    @Override
-    public String getPath(final String node) {
-        return String.join("/", getRootPath(), node);
     }
 }
