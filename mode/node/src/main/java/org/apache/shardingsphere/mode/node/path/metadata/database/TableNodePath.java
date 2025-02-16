@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Table node path generator.
+ * Table node path.
  */
 public final class TableNodePath implements NodePathVersion<String> {
     

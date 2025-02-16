@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Global props node path generator.
+ * Global props node path.
  */
 public final class GlobalRuleNodePath implements NodePathVersion<String> {
     

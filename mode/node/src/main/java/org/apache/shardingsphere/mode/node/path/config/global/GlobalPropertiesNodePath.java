@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Global properties node path generator.
+ * Global properties node path.
  */
 public final class GlobalPropertiesNodePath implements NodePathVersion<String> {
     

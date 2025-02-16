@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRul
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Database rule item node path generator.
+ * Database rule item node path.
  */
 public final class DatabaseRuleItemNodePath implements NodePathVersion<DatabaseRuleItem> {
     

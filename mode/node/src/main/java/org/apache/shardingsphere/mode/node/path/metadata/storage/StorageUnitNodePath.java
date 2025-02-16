@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Storage unit node path generator.
+ * Storage unit node path.
  */
 @RequiredArgsConstructor
 public final class StorageUnitNodePath implements NodePathVersion<String> {

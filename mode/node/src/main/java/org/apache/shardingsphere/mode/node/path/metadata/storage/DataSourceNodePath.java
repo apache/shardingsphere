@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
- * Data source node path generator.
+ * Data source node path.
  */
 @RequiredArgsConstructor
 public final class DataSourceNodePath implements NodePath<String> {

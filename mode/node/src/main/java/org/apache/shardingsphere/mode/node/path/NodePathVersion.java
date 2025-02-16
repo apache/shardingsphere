@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * Node path generator.
+ * Node path version.
  * 
  * @param <T> type of node
  */

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path;
 
 /**
- * Node path generator.
+ * Node path.
  * 
  * @param <T> type of node
  */

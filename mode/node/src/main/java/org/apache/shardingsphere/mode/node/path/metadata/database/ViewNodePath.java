@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
- * View path generator.
+ * View path.
  */
 public final class ViewNodePath implements NodePathVersion<String> {
     

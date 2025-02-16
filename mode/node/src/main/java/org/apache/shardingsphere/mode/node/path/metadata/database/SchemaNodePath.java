@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
 
 /**
- * Schema node path generator.
+ * Schema node path.
  */
 @RequiredArgsConstructor
 public final class SchemaNodePath implements NodePath<String> {
