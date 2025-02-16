@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,13 +27,5 @@ class GlobalPropertiesNodePathTest {
     @Test
     void assertGetRootPath() {
         assertThat(new GlobalPropertiesNodePath().getRootPath(), is("/props"));
-    }
-    
-    @Test
-    void assertGetVersion() {
-        VersionNodePathGenerator versionNodePathGenerator = new GlobalPropertiesNodePath().getVersion("");
-        assertThat(versionNodePathGenerator.getActiveVersionPath(), is("/props/active_version"));
-        assertThat(versionNodePathGenerator.getVersionsPath(), is("/props/versions"));
-        assertThat(versionNodePathGenerator.getVersionPath(0), is("/props/versions/0"));
     }
 }

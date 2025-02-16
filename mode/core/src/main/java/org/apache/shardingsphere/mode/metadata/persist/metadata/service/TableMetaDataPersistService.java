@@ -64,7 +64,7 @@ public final class TableMetaDataPersistService {
      * @return loaded table
      */
     public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
-        VersionNodePathGenerator versionNodePathGenerator = new TableNodePath(databaseName, schemaName).getVersion(tableName);
+        VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
         int activeVersion = Integer.parseInt(repository.query(versionNodePathGenerator.getActiveVersionPath()));
         String tableContent = repository.query(versionNodePathGenerator.getVersionPath(activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
@@ -80,7 +80,7 @@ public final class TableMetaDataPersistService {
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
             String tableName = each.getName().toLowerCase();
-            VersionNodePathGenerator versionNodePathGenerator = new TableNodePath(databaseName, schemaName).getVersion(tableName);
+            VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new TableNodePath(databaseName, schemaName)).getVersion(tableName);
             metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }

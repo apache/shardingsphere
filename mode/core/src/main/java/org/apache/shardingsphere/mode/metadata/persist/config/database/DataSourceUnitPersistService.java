@@ -69,7 +69,7 @@ public final class DataSourceUnitPersistService {
      */
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
-        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePath(databaseName).getVersion(dataSourceName);
+        VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new StorageUnitNodePath(databaseName)).getVersion(dataSourceName);
         int activeVersion = Integer.parseInt(repository.query(versionNodePathGenerator.getActiveVersionPath()));
         String dataSourceContent = repository.query(versionNodePathGenerator.getVersionPath(activeVersion));
         return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class));
@@ -83,7 +83,7 @@ public final class DataSourceUnitPersistService {
      */
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
-            VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePath(databaseName).getVersion(entry.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = new NodePathGenerator(new StorageUnitNodePath(databaseName)).getVersion(entry.getKey());
             metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
         }
     }
