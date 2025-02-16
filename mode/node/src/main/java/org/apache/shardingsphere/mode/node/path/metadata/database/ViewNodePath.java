@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
- * View path.
+ * View node path.
  */
 public final class ViewNodePath implements NodePath {
     
