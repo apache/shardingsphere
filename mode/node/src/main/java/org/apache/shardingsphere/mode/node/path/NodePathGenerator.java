@@ -37,5 +37,5 @@ public interface NodePathGenerator<T> {
      * @param node node
      * @return path
      */
-    String getPath(final T node);
+    String getPath(T node);
 }
