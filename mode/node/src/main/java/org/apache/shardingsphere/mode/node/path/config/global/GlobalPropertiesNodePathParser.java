@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalPropertiesNodePathParser {
     
-    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(GlobalPropertiesNodePathGenerator.getRootPath());
+    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(new GlobalPropertiesNodePathGenerator().getRootPath());
     
     /**
      * Get properties version node path parser.

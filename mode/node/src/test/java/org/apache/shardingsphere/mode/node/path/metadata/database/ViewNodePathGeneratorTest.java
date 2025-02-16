@@ -26,20 +26,18 @@ class ViewNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(ViewNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getRootPath(), is("/metadata/foo_db/schemas/foo_schema/views"));
     }
     
     @Test
     void assertGetViewPath() {
-        assertThat(ViewNodePathGenerator.getViewPath("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getViewPath("foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test
     void assertGetVersion() {
-        assertThat(ViewNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getActiveVersionPath(),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
-        assertThat(ViewNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
-        assertThat(ViewNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_view").getVersionPath(0),
-                is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getVersion("foo_view").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getVersion("foo_view").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
+        assertThat(new ViewNodePathGenerator("foo_db", "foo_schema").getVersion("foo_view").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
     }
 }

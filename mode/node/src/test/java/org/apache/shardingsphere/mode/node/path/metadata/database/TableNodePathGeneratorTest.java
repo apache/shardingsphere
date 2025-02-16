@@ -26,20 +26,18 @@ class TableNodePathGeneratorTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(TableNodePathGenerator.getRootPath("foo_db", "foo_schema"), is("/metadata/foo_db/schemas/foo_schema/tables"));
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getRootPath(), is("/metadata/foo_db/schemas/foo_schema/tables"));
     }
     
     @Test
     void assertGetTablePath() {
-        assertThat(TableNodePathGenerator.getTablePath("foo_db", "foo_schema", "foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getTablePath("foo_tbl"), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
     void assertGetVersion() {
-        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getActiveVersionPath(),
-                is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
-        assertThat(TableNodePathGenerator.getVersion("foo_db", "foo_schema", "foo_tbl").getVersionPath(0),
-                is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getVersion("foo_tbl").getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getVersion("foo_tbl").getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
+        assertThat(new TableNodePathGenerator("foo_db", "foo_schema").getVersion("foo_tbl").getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
 }

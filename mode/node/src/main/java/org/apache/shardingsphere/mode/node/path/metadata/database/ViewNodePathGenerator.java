@@ -17,50 +17,50 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * View path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ViewNodePathGenerator {
     
     private static final String VIEWS_NODE = "views";
     
+    private final SchemaNodePathGenerator schemaNodePathGenerator;
+    
+    private final String schemaName;
+    
+    public ViewNodePathGenerator(final String databaseName, final String schemaName) {
+        schemaNodePathGenerator = new SchemaNodePathGenerator(databaseName);
+        this.schemaName = schemaName;
+    }
+    
     /**
      * Get view root path.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @return view root path
      */
-    public static String getRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", SchemaNodePathGenerator.getSchemaPath(databaseName, schemaName), VIEWS_NODE);
+    public String getRootPath() {
+        return String.join("/", schemaNodePathGenerator.getSchemaPath(schemaName), VIEWS_NODE);
     }
     
     /**
      * Get view path.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param viewName view name
      * @return view path
      */
-    public static String getViewPath(final String databaseName, final String schemaName, final String viewName) {
-        return String.join("/", getRootPath(databaseName, schemaName), viewName);
+    public String getViewPath(final String viewName) {
+        return String.join("/", getRootPath(), viewName);
     }
     
     /**
      * Get view version node path generator.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param viewName view name
      * @return view version node path generator
      */
-    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String viewName) {
-        return new VersionNodePathGenerator(getViewPath(databaseName, schemaName, viewName));
+    public VersionNodePathGenerator getVersion(final String viewName) {
+        return new VersionNodePathGenerator(getViewPath(viewName));
     }
 }

@@ -32,10 +32,11 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageUnitNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(StorageUnitNodePathGenerator.getStorageUnitPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile(
+            new StorageUnitNodePathGenerator(NodePathPattern.IDENTIFIER).getStorageUnitPath(NodePathPattern.IDENTIFIER) + "$", Pattern.CASE_INSENSITIVE);
     
-    private static final VersionNodePathParser VERSION_PARSER =
-            new VersionNodePathParser(String.join("/", StorageUnitNodePathGenerator.getRootPath(NodePathPattern.IDENTIFIER), NodePathPattern.IDENTIFIER));
+    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
+            String.join("/", new StorageUnitNodePathGenerator(NodePathPattern.IDENTIFIER).getRootPath(), NodePathPattern.IDENTIFIER));
     
     /**
      * Find storage unit name.

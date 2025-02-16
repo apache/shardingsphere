@@ -17,50 +17,50 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator;
 
 /**
  * Table node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableNodePathGenerator {
     
     private static final String TABLES_NODE = "tables";
     
+    private final SchemaNodePathGenerator schemaNodePathGenerator;
+    
+    private final String schemaName;
+    
+    public TableNodePathGenerator(final String databaseName, final String schemaName) {
+        schemaNodePathGenerator = new SchemaNodePathGenerator(databaseName);
+        this.schemaName = schemaName;
+    }
+    
     /**
      * Get table root path.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @return table root path
      */
-    public static String getRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", SchemaNodePathGenerator.getSchemaPath(databaseName, schemaName), TABLES_NODE);
+    public String getRootPath() {
+        return String.join("/", schemaNodePathGenerator.getSchemaPath(schemaName), TABLES_NODE);
     }
     
     /**
      * Get table path.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param tableName table name
      * @return table path
      */
-    public static String getTablePath(final String databaseName, final String schemaName, final String tableName) {
-        return String.join("/", getRootPath(databaseName, schemaName), tableName);
+    public String getTablePath(final String tableName) {
+        return String.join("/", getRootPath(), tableName);
     }
     
     /**
      * Get table version node path generator.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param tableName table name
      * @return table version node path generator
      */
-    public static VersionNodePathGenerator getVersion(final String databaseName, final String schemaName, final String tableName) {
-        return new VersionNodePathGenerator(getTablePath(databaseName, schemaName, tableName));
+    public VersionNodePathGenerator getVersion(final String tableName) {
+        return new VersionNodePathGenerator(getTablePath(tableName));
     }
 }

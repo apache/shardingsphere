@@ -67,7 +67,7 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(DatabaseRuleNodePathGenerator.getRootPath(databaseName)));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(new DatabaseRuleNodePathGenerator(databaseName).getRootPath()));
     }
     
     /**
@@ -92,9 +92,9 @@ public final class DatabaseRulePersistService {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
             DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
-            VersionNodePathGenerator versionNodePathGenerator = DatabaseRuleNodePathGenerator.getVersion(databaseName, ruleType, databaseRuleItem);
+            VersionNodePathGenerator versionNodePathGenerator = new DatabaseRuleNodePathGenerator(databaseName).getVersion(ruleType, databaseRuleItem);
             int nextVersion = metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
-            result.add(new MetaDataVersion(DatabaseRuleNodePathGenerator.getRulePath(databaseName, ruleType, databaseRuleItem), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
+            result.add(new MetaDataVersion(new DatabaseRuleNodePathGenerator(databaseName).getRulePath(ruleType, databaseRuleItem), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
         }
         return result;
     }
@@ -106,7 +106,7 @@ public final class DatabaseRulePersistService {
      * @param ruleType rule type
      */
     public void delete(final String databaseName, final String ruleType) {
-        repository.delete(DatabaseRuleNodePathGenerator.getRulePath(databaseName, ruleType));
+        repository.delete(new DatabaseRuleNodePathGenerator(databaseName).getRulePath(ruleType));
     }
     
     /**
@@ -132,7 +132,7 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            String toBeDeletedKey = DatabaseRuleNodePathGenerator.getRulePath(databaseName, ruleType, new DatabaseRuleItem(each.getKey()));
+            String toBeDeletedKey = new DatabaseRuleNodePathGenerator(databaseName).getRulePath(ruleType, new DatabaseRuleItem(each.getKey()));
             repository.delete(toBeDeletedKey);
             result.add(new MetaDataVersion(toBeDeletedKey));
         }

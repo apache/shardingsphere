@@ -55,7 +55,7 @@ public final class DataSourceUnitPersistService {
      * @return data source pool properties map
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        Collection<String> childrenKeys = repository.getChildrenKeys(StorageUnitNodePathGenerator.getRootPath(databaseName));
+        Collection<String> childrenKeys = repository.getChildrenKeys(new StorageUnitNodePathGenerator(databaseName).getRootPath());
         return childrenKeys.stream().collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (a, b) -> b, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
     }
     
@@ -68,8 +68,9 @@ public final class DataSourceUnitPersistService {
      */
     @SuppressWarnings("unchecked")
     public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
-        int activeVersion = Integer.parseInt(repository.query(StorageUnitNodePathGenerator.getVersion(databaseName, dataSourceName).getActiveVersionPath()));
-        String dataSourceContent = repository.query(StorageUnitNodePathGenerator.getVersion(databaseName, dataSourceName).getVersionPath(activeVersion));
+        VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator(databaseName).getVersion(dataSourceName);
+        int activeVersion = Integer.parseInt(repository.query(versionNodePathGenerator.getActiveVersionPath()));
+        String dataSourceContent = repository.query(versionNodePathGenerator.getVersionPath(activeVersion));
         return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class));
     }
     
@@ -81,7 +82,7 @@ public final class DataSourceUnitPersistService {
      */
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
-            VersionNodePathGenerator versionNodePathGenerator = StorageUnitNodePathGenerator.getVersion(databaseName, entry.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = new StorageUnitNodePathGenerator(databaseName).getVersion(entry.getKey());
             metaDataVersionPersistService.persist(versionNodePathGenerator, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
         }
     }
@@ -93,6 +94,6 @@ public final class DataSourceUnitPersistService {
      * @param dataSourceName data source name
      */
     public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(StorageUnitNodePathGenerator.getStorageUnitPath(databaseName, dataSourceName));
+        repository.delete(new StorageUnitNodePathGenerator(databaseName).getStorageUnitPath(dataSourceName));
     }
 }

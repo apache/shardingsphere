@@ -57,7 +57,7 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(GlobalRuleNodePathGenerator.getRootPath()));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(new GlobalRuleNodePathGenerator().getRootPath()));
     }
     
     /**
@@ -67,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(GlobalRuleNodePathGenerator.getRulePath(ruleType)));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(new GlobalRuleNodePathGenerator().getRulePath(ruleType)));
     }
     
     /**
@@ -83,7 +83,7 @@ public final class GlobalRulePersistService {
     
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
-            VersionNodePathGenerator versionNodePathGenerator = GlobalRuleNodePathGenerator.getVersion(each.getKey());
+            VersionNodePathGenerator versionNodePathGenerator = new GlobalRuleNodePathGenerator().getVersion(each.getKey());
             metaDataVersionPersistService.persist(versionNodePathGenerator, each.getValue());
         }
     }
