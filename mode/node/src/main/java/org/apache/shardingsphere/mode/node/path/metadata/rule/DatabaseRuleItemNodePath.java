@@ -26,18 +26,18 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathGenerator
  */
 public final class DatabaseRuleItemNodePath implements NodePathVersion<DatabaseRuleItem> {
     
-    private final DatabaseRuleNodePath databaseRuleNodePathGenerator;
+    private final DatabaseRuleNodePath databaseRuleNodePath;
     
     private final String ruleType;
     
     public DatabaseRuleItemNodePath(final String databaseName, final String ruleType) {
-        databaseRuleNodePathGenerator = new DatabaseRuleNodePath(databaseName);
+        databaseRuleNodePath = new DatabaseRuleNodePath(databaseName);
         this.ruleType = ruleType;
     }
     
     @Override
     public String getRootPath() {
-        return databaseRuleNodePathGenerator.getPath(ruleType);
+        return databaseRuleNodePath.getPath(ruleType);
     }
     
     @Override

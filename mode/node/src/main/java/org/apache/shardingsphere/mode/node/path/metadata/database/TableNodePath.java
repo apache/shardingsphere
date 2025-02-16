@@ -27,18 +27,18 @@ public final class TableNodePath implements NodePathVersion<String> {
     
     private static final String TABLES_NODE = "tables";
     
-    private final SchemaNodePath schemaNodePathGenerator;
+    private final SchemaNodePath schemaNodePath;
     
     private final String schemaName;
     
     public TableNodePath(final String databaseName, final String schemaName) {
-        schemaNodePathGenerator = new SchemaNodePath(databaseName);
+        schemaNodePath = new SchemaNodePath(databaseName);
         this.schemaName = schemaName;
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePathGenerator.getPath(schemaName), TABLES_NODE);
+        return String.join("/", schemaNodePath.getPath(schemaName), TABLES_NODE);
     }
     
     @Override

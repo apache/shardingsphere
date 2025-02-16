@@ -27,18 +27,18 @@ public final class ViewNodePath implements NodePathVersion<String> {
     
     private static final String VIEWS_NODE = "views";
     
-    private final SchemaNodePath schemaNodePathGenerator;
+    private final SchemaNodePath schemaNodePath;
     
     private final String schemaName;
     
     public ViewNodePath(final String databaseName, final String schemaName) {
-        schemaNodePathGenerator = new SchemaNodePath(databaseName);
+        schemaNodePath = new SchemaNodePath(databaseName);
         this.schemaName = schemaName;
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", schemaNodePathGenerator.getPath(schemaName), VIEWS_NODE);
+        return String.join("/", schemaNodePath.getPath(schemaName), VIEWS_NODE);
     }
     
     @Override
