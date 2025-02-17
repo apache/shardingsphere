@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwappe
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDatabaseNodePath;
-import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsSchemaNodePath;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsTableNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public final class StatisticsPersistService {
     
     private SchemaStatistics load(final String databaseName, final ShardingSphereSchema schema) {
         SchemaStatistics result = new SchemaStatistics();
-        for (String each : repository.getChildrenKeys(StatisticsNodePathGenerator.getTableRootPath(databaseName, schema.getName())).stream().filter(schema::containsTable)
+        for (String each : repository.getChildrenKeys(new StatisticsTableNodePath(databaseName, schema.getName()).getRootPath()).stream().filter(schema::containsTable)
                 .collect(Collectors.toList())) {
             result.putTableStatistics(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             

@@ -71,8 +71,7 @@ public final class StatisticsNodePathParser {
      */
     public static Optional<String> findTableName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        Pattern pattern = Pattern.compile(
-                StatisticsNodePathGenerator.getTablePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(new NodePathGenerator(new StatisticsTableNodePath()).getPath(NodePathPattern.IDENTIFIER) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
@@ -84,8 +83,7 @@ public final class StatisticsNodePathParser {
      * @return found row unique key
      */
     public static Optional<String> findRowUniqueKey(final String path) {
-        Pattern pattern = Pattern.compile(
-                StatisticsNodePathGenerator.getTableRowPath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(new NodePathGenerator(new StatisticsTableRowNodePath()).getPath(UNIQUE_KEY_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }

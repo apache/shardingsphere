@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.mode.node.path.statistics;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.junit.jupiter.api.Test;
 
-/**
- * Statistics database node path.
- */
-public final class StatisticsDatabaseNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class StatisticsJobNodePathTest {
     
-    private static final String DATABASES_NODE = "databases";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(DATABASES_NODE);
+    @Test
+    void assertGetRootPath() {
+        assertThat(new StatisticsJobNodePath().getRootPath(), is("/statistics/job"));
     }
 }

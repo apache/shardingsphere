@@ -19,18 +19,30 @@ package org.apache.shardingsphere.mode.node.path.statistics;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
- * Statistics database node path.
+ * Statistics table node path.
  */
-public final class StatisticsDatabaseNodePath implements NodePath {
+public final class StatisticsTableNodePath implements NodePath {
     
-    private static final String DATABASES_NODE = "databases";
+    private static final String TABLES_NODE = "tables";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsNodePath());
+    private final String schemaName;
+    
+    private final NodePathGenerator nodePathGenerator;
+    
+    public StatisticsTableNodePath(final String databaseName, final String schemaName) {
+        this.schemaName = schemaName;
+        nodePathGenerator = new NodePathGenerator(new StatisticsSchemaNodePath(databaseName));
+    }
+    
+    public StatisticsTableNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
     
     @Override
     public String getRootPath() {
-        return nodePathGenerator.getPath(DATABASES_NODE);
+        return String.join("/", nodePathGenerator.getPath(schemaName), TABLES_NODE);
     }
 }
