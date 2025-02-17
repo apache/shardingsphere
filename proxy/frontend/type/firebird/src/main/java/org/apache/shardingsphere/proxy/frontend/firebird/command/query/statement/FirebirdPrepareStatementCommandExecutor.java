@@ -219,9 +219,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     @SuppressWarnings("unchecked")
     private int processInfoItems(SQLStatementContext sqlStatementContext, MetaDataContexts metaDataContexts, ByteBuf buffer, boolean returnAll, List<FirebirdSQLInfoPacketType> requestedItems) {
-//        if (!(sqlStatementContext.getSqlStatement() instanceof InsertStatement)) {
-//            return 0;
-//        }
         List<Projection> projections = getProjections(sqlStatementContext);
         String databaseName = connectionSession.getCurrentDatabaseName();
         String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
