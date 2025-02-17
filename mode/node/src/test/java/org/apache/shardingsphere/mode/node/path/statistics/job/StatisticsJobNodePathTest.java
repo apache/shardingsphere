@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics;
+package org.apache.shardingsphere.mode.node.path.statistics.job;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatisticsTableRowNodePathTest {
+class StatisticsJobNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new StatisticsTableRowNodePath("foo_db", "foo_schema", "foo_tbl").getRootPath(), is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertThat(new StatisticsJobNodePath().getRootPath(), is("/statistics/job"));
     }
 }

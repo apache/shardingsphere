@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
-import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDatabaseNodePath;
+import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsDatabaseNodePath;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathParser;
 
 import java.util.Arrays;

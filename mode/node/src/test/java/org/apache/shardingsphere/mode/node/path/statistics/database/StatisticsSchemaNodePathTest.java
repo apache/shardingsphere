@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics;
+package org.apache.shardingsphere.mode.node.path.statistics.database;
 
 import org.junit.jupiter.api.Test;
 

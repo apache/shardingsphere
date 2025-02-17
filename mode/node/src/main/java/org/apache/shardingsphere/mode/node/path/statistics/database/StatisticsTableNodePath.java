@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics;
+package org.apache.shardingsphere.mode.node.path.statistics.database;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
- * Statistics schema node path.
+ * Statistics table node path.
  */
-@RequiredArgsConstructor
-public final class StatisticsSchemaNodePath implements NodePath {
+public final class StatisticsTableNodePath implements NodePath {
     
-    private static final String SCHEMAS_NODE = "schemas";
+    private static final String TABLES_NODE = "tables";
     
-    private final String databaseName;
+    private final String schemaName;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsDatabaseNodePath());
+    private final NodePathGenerator nodePathGenerator;
     
-    public StatisticsSchemaNodePath() {
-        this(NodePathPattern.IDENTIFIER);
+    public StatisticsTableNodePath(final String databaseName, final String schemaName) {
+        this.schemaName = schemaName;
+        nodePathGenerator = new NodePathGenerator(new StatisticsSchemaNodePath(databaseName));
+    }
+    
+    public StatisticsTableNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override
     public String getRootPath() {
-        return String.join("/", nodePathGenerator.getPath(databaseName), SCHEMAS_NODE);
+        return String.join("/", nodePathGenerator.getPath(schemaName), TABLES_NODE);
     }
 }

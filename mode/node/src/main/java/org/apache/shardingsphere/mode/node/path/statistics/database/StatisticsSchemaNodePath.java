@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics;
+package org.apache.shardingsphere.mode.node.path.statistics.database;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 /**
- * Statistics database node path.
+ * Statistics schema node path.
  */
-public final class StatisticsDatabaseNodePath implements NodePath {
+@RequiredArgsConstructor
+public final class StatisticsSchemaNodePath implements NodePath {
     
-    private static final String DATABASES_NODE = "databases";
+    private static final String SCHEMAS_NODE = "schemas";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsNodePath());
+    private final String databaseName;
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsDatabaseNodePath());
+    
+    public StatisticsSchemaNodePath() {
+        this(NodePathPattern.IDENTIFIER);
+    }
     
     @Override
     public String getRootPath() {
-        return nodePathGenerator.getPath(DATABASES_NODE);
+        return String.join("/", nodePathGenerator.getPath(databaseName), SCHEMAS_NODE);
     }
 }

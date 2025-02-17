@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics;
+package org.apache.shardingsphere.mode.node.path.statistics.database;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class StatisticsTableNodePathTest {
+/**
+ * Statistics database node path.
+ */
+public final class StatisticsDatabaseNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new StatisticsTableNodePath("foo_db", "foo_schema").getRootPath(), is("/statistics/databases/foo_db/schemas/foo_schema/tables"));
+    private static final String DATABASES_NODE = "databases";
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatisticsNodePath());
+    
+    @Override
+    public String getRootPath() {
+        return nodePathGenerator.getPath(DATABASES_NODE);
     }
 }

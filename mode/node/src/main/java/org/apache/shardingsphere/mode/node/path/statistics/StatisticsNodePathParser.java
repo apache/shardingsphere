@@ -21,6 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsDatabaseNodePath;
+import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsSchemaNodePath;
+import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsTableNodePath;
+import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsTableRowNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
