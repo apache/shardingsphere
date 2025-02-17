@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRow
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDatabaseNodePath;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsSchemaNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public final class StatisticsPersistService {
     
     private DatabaseStatistics load(final ShardingSphereDatabase database) {
         DatabaseStatistics result = new DatabaseStatistics();
-        for (String each : repository.getChildrenKeys(StatisticsNodePathGenerator.getSchemaRootPath(database.getName())).stream().filter(database::containsSchema).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(new StatisticsSchemaNodePath(database.getName()).getRootPath()).stream().filter(database::containsSchema).collect(Collectors.toList())) {
             result.putSchemaStatistics(each, load(database.getName(), database.getSchema(each)));
         }
         return result;
@@ -100,7 +101,7 @@ public final class StatisticsPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(StatisticsNodePathGenerator.getSchemaPath(databaseName, schemaName), "");
+        repository.persist(new NodePathGenerator(new StatisticsSchemaNodePath(databaseName)).getPath(schemaName), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {

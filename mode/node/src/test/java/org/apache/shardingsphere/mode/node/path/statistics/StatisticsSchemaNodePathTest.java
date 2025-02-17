@@ -22,25 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatisticsNodePathGeneratorTest {
+class StatisticsSchemaNodePathTest {
     
     @Test
-    void assertGetTableRootPath() {
-        assertThat(StatisticsNodePathGenerator.getTableRootPath("foo_db", "db_schema"), is("/statistics/databases/foo_db/schemas/db_schema/tables"));
-    }
-    
-    @Test
-    void assertGetTablePath() {
-        assertThat(StatisticsNodePathGenerator.getTablePath("foo_db", "db_schema", "tbl_name"), is("/statistics/databases/foo_db/schemas/db_schema/tables/tbl_name"));
-    }
-    
-    @Test
-    void assertGetTableRowPath() {
-        assertThat(StatisticsNodePathGenerator.getTableRowPath("foo_db", "db_schema", "tbl_name", "key"), is("/statistics/databases/foo_db/schemas/db_schema/tables/tbl_name/key"));
-    }
-    
-    @Test
-    void assertGetJobPath() {
-        assertThat(StatisticsNodePathGenerator.getJobPath(), is("/statistics/job"));
+    void assertGetRootPath() {
+        assertThat(new StatisticsSchemaNodePath("foo_db").getRootPath(), is("/statistics/databases/foo_db/schemas"));
     }
 }

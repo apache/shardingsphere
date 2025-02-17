@@ -29,21 +29,9 @@ public final class StatisticsNodePathGenerator {
     
     private static final String ROOT_NODE = "/statistics";
     
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String TABLES_NODE = "tables";
     
     private static final String JOB_NODE = "job";
-    
-    /**
-     * Get schema root path.
-     *
-     * @param databaseName database name
-     * @return schema root path
-     */
-    public static String getSchemaRootPath(final String databaseName) {
-        return String.join("/", new NodePathGenerator(new StatisticsDatabaseNodePath()).getPath(databaseName), SCHEMAS_NODE);
-    }
     
     /**
      * Get schema path.
@@ -53,7 +41,7 @@ public final class StatisticsNodePathGenerator {
      * @return schema path
      */
     public static String getSchemaPath(final String databaseName, final String schemaName) {
-        return String.join("/", getSchemaRootPath(databaseName), schemaName);
+        return new NodePathGenerator(new StatisticsSchemaNodePath(databaseName)).getPath(schemaName);
     }
     
     /**
@@ -64,7 +52,7 @@ public final class StatisticsNodePathGenerator {
      * @return table root path
      */
     public static String getTableRootPath(final String databaseName, final String schemaName) {
-        return String.join("/", getSchemaPath(databaseName, schemaName), TABLES_NODE);
+        return String.join("/", new NodePathGenerator(new StatisticsSchemaNodePath(databaseName)).getPath(schemaName), TABLES_NODE);
     }
     
     /**
