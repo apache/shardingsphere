@@ -23,6 +23,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.Attribute;
 import io.netty.util.concurrent.Promise;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
@@ -40,6 +41,7 @@ import org.mockito.quality.Strictness;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -131,9 +133,11 @@ class MySQLBinlogClientTest {
         new Thread(() -> mockChannelResponseInThread(response)).start();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @SuppressWarnings("unchecked")
     private void mockChannelResponseInThread(final Object response) {
-        while (true) {
+        long t1 = System.currentTimeMillis();
+        do {
             Promise<Object> responseCallback;
             try {
                 responseCallback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLBinlogClient.class.getDeclaredField("responseCallback"), client);
@@ -142,9 +146,9 @@ class MySQLBinlogClientTest {
             }
             if (null != responseCallback) {
                 responseCallback.setSuccess(response);
-                break;
             }
-        }
+            TimeUnit.SECONDS.sleep(1L);
+        } while (System.currentTimeMillis() - t1 <= TimeUnit.SECONDS.toMillis(20L));
     }
     
     @Test
