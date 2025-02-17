@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.statistics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 
 /**
  * Statistics node path generator.
@@ -28,32 +29,11 @@ public final class StatisticsNodePathGenerator {
     
     private static final String ROOT_NODE = "/statistics";
     
-    private static final String DATABASES_NODE = "databases";
-    
     private static final String SCHEMAS_NODE = "schemas";
     
     private static final String TABLES_NODE = "tables";
     
     private static final String JOB_NODE = "job";
-    
-    /**
-     * Get database root path.
-     *
-     * @return database root path
-     */
-    public static String getDatabasesRootPath() {
-        return String.join("/", ROOT_NODE, DATABASES_NODE);
-    }
-    
-    /**
-     * Get database path.
-     *
-     * @param databaseName database name
-     * @return database path
-     */
-    public static String getDatabasePath(final String databaseName) {
-        return String.join("/", getDatabasesRootPath(), databaseName);
-    }
     
     /**
      * Get schema root path.
@@ -62,7 +42,7 @@ public final class StatisticsNodePathGenerator {
      * @return schema root path
      */
     public static String getSchemaRootPath(final String databaseName) {
-        return String.join("/", getDatabasePath(databaseName), SCHEMAS_NODE);
+        return String.join("/", new NodePathGenerator(new StatisticsDatabaseNodePath()).getPath(databaseName), SCHEMAS_NODE);
     }
     
     /**

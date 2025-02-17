@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDatabaseNodePath;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathGenerator;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -54,7 +56,7 @@ public final class StatisticsPersistService {
      * @return statistics
      */
     public ShardingSphereStatistics load(final ShardingSphereMetaData metaData) {
-        Collection<String> databaseNames = repository.getChildrenKeys(StatisticsNodePathGenerator.getDatabasesRootPath());
+        Collection<String> databaseNames = repository.getChildrenKeys(new StatisticsDatabaseNodePath().getRootPath());
         if (databaseNames.isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -133,6 +135,6 @@ public final class StatisticsPersistService {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(StatisticsNodePathGenerator.getDatabasePath(databaseName));
+        repository.delete(new NodePathGenerator(new StatisticsDatabaseNodePath()).getPath(databaseName));
     }
 }

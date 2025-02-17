@@ -22,17 +22,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatisticsNodePathTest {
-    
-    @Test
-    void assertGetDatabasesRootPath() {
-        assertThat(StatisticsNodePathGenerator.getDatabasesRootPath(), is("/statistics/databases"));
-    }
-    
-    @Test
-    void assertGetDatabasePath() {
-        assertThat(StatisticsNodePathGenerator.getDatabasePath("foo_db"), is("/statistics/databases/foo_db"));
-    }
+class StatisticsNodePathGeneratorTest {
     
     @Test
     void assertGetSchemaRootPath() {
