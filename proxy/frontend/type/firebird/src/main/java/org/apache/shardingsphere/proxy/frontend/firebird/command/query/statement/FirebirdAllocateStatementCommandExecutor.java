@@ -41,6 +41,7 @@ public final class FirebirdAllocateStatementCommandExecutor implements CommandEx
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int transactionId = FirebirdTransactionIdGenerator.getInstance().getTransactionId(connectionSession.getConnectionId());
+        FirebirdStatementIdGenerator.getInstance().registerTransaction(transactionId);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(FirebirdStatementIdGenerator.getInstance().nextStatementId(transactionId)));
     }
 }

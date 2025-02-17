@@ -49,7 +49,7 @@ public final class FirebirdStatementIdGenerator {
      * @param transactionId transaction ID
      */
     public void registerTransaction(final int transactionId) {
-        transactionRegistry.put(transactionId, new AtomicInteger());
+        transactionRegistry.computeIfAbsent(transactionId, k -> new AtomicInteger());
     }
     
     /**
