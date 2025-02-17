@@ -808,7 +808,7 @@
         </on-duplicate-key-columns>
     </insert>
 
-    <insert sql-case-id="insert_on_duplicate_key_update_with_placeholders_postgres" parameters="1, 1, 'init', 'init'">
+    <insert sql-case-id="insert_on_conflict_key_update_with_placeholders_postgres" parameters="1, 1, 'init', 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
             <column name="order_id" start-index="21" stop-index="28" />
@@ -831,7 +831,7 @@
                 </assignment-value>
             </value>
         </values>
-        <on-duplicate-key-columns start-index="65" stop-index="111" literal-start-index="70" literal-stop-index="121">
+        <on-conflict-key-columns start-index="65" stop-index="111" literal-start-index="70" literal-stop-index="121">
             <assignment start-index="102" stop-index="107" literal-start-index="107" literal-stop-index="121">
                 <column name="status" start-index="102" stop-index="107" literal-start-index="107" literal-stop-index="112" />
                 <assignment-value>
@@ -839,7 +839,7 @@
                     <literal-expression value="init" start-index="116" stop-index="121" />
                 </assignment-value>
             </assignment>
-        </on-duplicate-key-columns>
+        </on-conflict-key-columns>
     </insert>
 
     <insert sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
@@ -4159,18 +4159,116 @@
 
     <insert sql-case-id="insert_into_with_conflict_action_do_nothing" parameters="1">
         <table name="sj_event" start-index="12" stop-index="19" />
-        <columns start-index="20" stop-index="29">
-            <column name="event_id" start-index="21" stop-index="28" />
+        <columns start-index="21" stop-index="30">
+            <column name="event_id" start-index="22" stop-index="29" />
         </columns>
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression parameter-index="0" start-index="39" stop-index="39" />
-                    <literal-expression value="1" start-index="39" stop-index="39" />
+                    <parameter-marker-expression parameter-index="0" start-index="40" stop-index="40" />
+                    <literal-expression value="1" start-index="40" stop-index="40" />
                 </assignment-value>
             </value>
         </values>
         <on-duplicate-key-columns start-index="42" stop-index="73"/>
+    </insert>
+
+    <insert sql-case-id="insert_into_with_conflict_action_do_update" parameters="1, 'eventName'">
+        <table name="sj_event" start-index="12" stop-index="19" />
+        <columns start-index="21" stop-index="54">
+            <column name="event_id" start-index="22" stop-index="29" />
+            <column name="event_time" start-index="32" stop-index="41" />
+            <column name="event_name" start-index="44" stop-index="53" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="64" stop-index="64" />
+                    <literal-expression value="1" start-index="64" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="23.56" start-index="66" stop-index="70" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="72" stop-index="72" />
+                    <literal-expression value="eventName" start-index="72" stop-index="82" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-conflict-key-columns start-index="75" stop-index="140" literal-start-index="85" literal-stop-index="150">
+            <assignment start-index="123" stop-index="160" literal-start-index="107" literal-stop-index="165">
+                <column name="event_time" start-index="123" stop-index="132" literal-start-index="133" literal-stop-index="142" />
+                <assignment-value>
+                    <literal-expression value="23.56" start-index="136" stop-index="140" literal-start-index="146" literal-stop-index="150" />                </assignment-value>
+            </assignment>
+        </on-conflict-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_into_with_conflict_action_do_update_where" parameters="1, 'eventName', 1, 'old_event'">
+        <table name="my_event" start-index="12" stop-index="19" />
+        <columns start-index="21" stop-index="54">
+            <column name="event_id" start-index="22" stop-index="29" />
+            <column name="event_time" start-index="32" stop-index="41" />
+            <column name="event_name" start-index="44" stop-index="53" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="64" stop-index="64" />
+                    <literal-expression value="1" start-index="64" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="12.23" start-index="66" stop-index="70" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="72" stop-index="72" />
+                    <literal-expression value="eventName" start-index="72" stop-index="82" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-conflict-key-columns start-index="75" stop-index="194" literal-start-index="85" literal-stop-index="214">
+            <assignment start-index="123" stop-index="160" literal-start-index="107" literal-stop-index="205">
+                <column name="event_time" start-index="123" stop-index="132" literal-start-index="133" literal-stop-index="142" />
+                <assignment-value>
+                    <literal-expression value="12.23" start-index="136" stop-index="140" literal-start-index="146" literal-stop-index="150" />
+                </assignment-value>
+            </assignment>
+            <where start-index="142" stop-index="194" literal-start-index="152" literal-stop-index="214">
+                <expr>
+                    <binary-operation-expression start-index="148" stop-index="194" literal-start-index="158" literal-stop-index="214">
+                        <left>
+                            <binary-operation-expression start-index="148" stop-index="167" literal-start-index="158" literal-stop-index="177">
+                                <left>
+                                    <column name="event_id" start-index="148" stop-index="164" literal-start-index="158" literal-stop-index="174">
+                                        <owner name="my_event" start-index="148" stop-index="155" literal-start-index="158" literal-stop-index="165" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="177" stop-index="177" />
+                                    <parameter-marker-expression parameter-index="2" start-index="167" stop-index="167" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="173" stop-index="194" literal-start-index="183" literal-stop-index="214">
+                                <left>
+                                    <column name="event_name" start-index="173" stop-index="191" literal-start-index="183" literal-stop-index="201">
+                                        <owner name="my_event" start-index="173" stop-index="180" literal-start-index="183" literal-stop-index="190" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="old_event" start-index="204" stop-index="214" />
+                                    <parameter-marker-expression parameter-index="3" start-index="194" stop-index="194" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </on-conflict-key-columns>
     </insert>
 
     <insert sql-case-id="insert_on_duplicate_key_with_column_aliases">

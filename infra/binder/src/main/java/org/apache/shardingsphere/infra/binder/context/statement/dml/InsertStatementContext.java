@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.Gene
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnConflictUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -92,6 +94,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     @Getter
     private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
+    @Getter
+    private OnConflictUpdateContext onConflictKeyUpdateValueContext;
+    
     private GeneratedKeyContext generatedKeyContext;
     
     public InsertStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final InsertStatement sqlStatement, final String currentDatabaseName) {
@@ -103,6 +108,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
+        onConflictKeyUpdateValueContext = getOnConflictKeyUpdateValueContext(params, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         List<String> insertColumnNames = getInsertColumnNames();
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
@@ -179,6 +185,18 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         return Optional.of(onDuplicateUpdateContext);
     }
     
+    private Optional<OnConflictUpdateContext> getOnConflictKeyUpdateValueContext(final List<Object> params, final AtomicInteger parametersOffset) {
+        Optional<OnConflictKeyColumnsSegment> onConflictKeyColumnsSegment = getSqlStatement().getOnConflictKeyColumns();
+        if (!onConflictKeyColumnsSegment.isPresent()) {
+            return Optional.empty();
+        }
+        Collection<ColumnAssignmentSegment> onConflictKeyColumns = onConflictKeyColumnsSegment.get().getColumns();
+        Optional<WhereSegment> whereSegment = getSqlStatement().getOnConflictKeyColumns().flatMap(OnConflictKeyColumnsSegment::getWhere);
+        OnConflictUpdateContext onConflictUpdateContext = new OnConflictUpdateContext(onConflictKeyColumns, params, parametersOffset.get(), whereSegment);
+        parametersOffset.addAndGet(onConflictUpdateContext.getParameterCount());
+        return Optional.of(onConflictUpdateContext);
+    }
+    
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromInsert(getSqlStatement());
@@ -225,7 +243,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        return null == onDuplicateKeyUpdateValueContext ? new ArrayList<>() : onDuplicateKeyUpdateValueContext.getParameters();
+        return onConflictKeyUpdateValueContext != null
+                ? onConflictKeyUpdateValueContext.getParameters()
+                : (onDuplicateKeyUpdateValueContext != null
+                        ? onDuplicateKeyUpdateValueContext.getParameters()
+                        : new ArrayList<>());
     }
     
     /**
@@ -315,6 +337,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
+        onConflictKeyUpdateValueContext = getOnConflictKeyUpdateValueContext(params, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
         generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
