@@ -176,6 +176,7 @@ public final class MySQLBinlogClient {
      */
     public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
+        configureHeartbeat();
         registerSlave();
         dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
         log.info("subscribe binlog file: {}, position: {}", binlogFileName, binlogPosition);
@@ -185,6 +186,10 @@ public final class MySQLBinlogClient {
         if (serverVersion.greaterThanOrEqualTo(5, 6, 0)) {
             execute("SET @MASTER_BINLOG_CHECKSUM= @@GLOBAL.BINLOG_CHECKSUM");
         }
+    }
+    
+    private void configureHeartbeat() {
+        execute("SET @master_heartbeat_period=15000000");
     }
     
     private void registerSlave() {
