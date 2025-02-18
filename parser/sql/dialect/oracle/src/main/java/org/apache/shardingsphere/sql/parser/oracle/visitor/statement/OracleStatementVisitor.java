@@ -69,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredictionCostFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PrivateExprOfDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
@@ -1044,9 +1045,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.wmConcatFunction()) {
             return visit(ctx.wmConcatFunction());
         }
+        if (null != ctx.predictionCostFunction()) {
+            return visit(ctx.predictionCostFunction());
+        }
         throw new IllegalStateException(
-                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction, approxCount"
-                        + " or featureFunction.");
+                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, "
+                        + "trimFunction, toDateFunction, approxCount, predictionCostFunction or featureFunction.");
+    }
+    
+    @Override
+    public ASTNode visitPredictionCostFunction(final PredictionCostFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PREDICTION_COST().getText(), getOriginalText(ctx));
     }
     
     @Override

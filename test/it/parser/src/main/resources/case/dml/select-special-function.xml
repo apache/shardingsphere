@@ -4881,4 +4881,33 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_prediction_cost">
+        <projections distinct-row="false" start-index="7" stop-index="13">
+            <column-projection name="cust_id" start-delimiter="" end-delimiter="" start-index="7" stop-index="13"/>
+        </projections>
+        <from start-delimiter="" end-delimiter="" start-index="20" stop-index="38">
+            <simple-table name="mining_data_apply_v" start-delimiter="" end-delimiter="" start-index="20" stop-index="38"/>
+        </from>
+        <where start-index="40" stop-index="67">
+            <expr start-index="46" stop-index="67">
+                <binary-operation-expression start-index="46" stop-index="67">
+                    <left start-index="46" stop-index="57">
+                        <column name="country_name" start-delimiter="" end-delimiter="" start-index="46" stop-index="57"/>
+                    </left>
+                    <operator>=</operator>
+                    <right start-index="61" stop-index="67">
+                        <literal-expression value="Italy" start-index="61" stop-index="67"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by start-index="69" stop-index="133">
+            <expression-item expression="PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" order-direction="ASC" start-delimiter="" end-delimiter="" start-index="78" stop-index="133">
+                <expr start-index="78" stop-index="133">
+                    <function function-name="PREDICTION_COST" text="PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" start-index="78" stop-index="133"/>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

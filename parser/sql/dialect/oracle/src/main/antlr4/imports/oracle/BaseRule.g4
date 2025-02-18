@@ -796,7 +796,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction | predictionCostFunction
+    ;
+
+predictionCostFunction
+    : PREDICTION_COST LP_ (schemaName DOT_)? modelName (COMMA_ classExpr=expr)? costMatrixClause? miningAttributeClause? RP_
     ;
 
 wmConcatFunction
@@ -825,7 +829,7 @@ setFunction
 
 featureFunction
     : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
-    (DESC | ASC | ABS)? cost_matrix_clause? miningAttributeClause (AND miningAttributeClause)? RP_
+    (DESC | ASC | ABS)? costMatrixClause? miningAttributeClause (AND miningAttributeClause)? RP_
     ;
 
 featureFunctionName
@@ -833,7 +837,7 @@ featureFunctionName
     | PREDICTION_PROBABILITY | PREDICTION_SET | PREDICTION_BOUNDS | PREDICTION | PREDICTION_DETAILS
     ;
 
-cost_matrix_clause
+costMatrixClause
     : COST (MODEL (AUTO)?)? | LP_ literals RP_ (COMMA_ LP_ literals RP_)* VALUES LP_ LP_ literals (COMMA_ literals)* RP_ (COMMA_ LP_ literals (COMMA_ literals)* RP_) RP_
     ;
 
