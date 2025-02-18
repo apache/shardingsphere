@@ -147,10 +147,22 @@ public final class ExpressionExtractor {
      */
     public static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final Collection<WhereSegment> whereSegments) {
         for (WhereSegment each : whereSegments) {
-            if (each.getExpr() instanceof BinaryOperationExpression && ((BinaryOperationExpression) each.getExpr()).getLeft() instanceof ColumnSegment
-                    && ((BinaryOperationExpression) each.getExpr()).getRight() instanceof ColumnSegment) {
-                joinConditions.add((BinaryOperationExpression) each.getExpr());
+            if (each.getExpr() instanceof BinaryOperationExpression) {
+                extractJoinConditions(joinConditions, (BinaryOperationExpression) each.getExpr());
             }
+        }
+    }
+    
+    private static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final BinaryOperationExpression binaryOperationExpression) {
+        if (binaryOperationExpression.getLeft() instanceof ColumnSegment
+                && binaryOperationExpression.getRight() instanceof ColumnSegment) {
+            joinConditions.add(binaryOperationExpression);
+        }
+        if (binaryOperationExpression.getLeft() instanceof BinaryOperationExpression) {
+            extractJoinConditions(joinConditions, (BinaryOperationExpression) binaryOperationExpression.getLeft());
+        }
+        if (binaryOperationExpression.getRight() instanceof BinaryOperationExpression) {
+            extractJoinConditions(joinConditions, (BinaryOperationExpression) binaryOperationExpression.getRight());
         }
     }
     
