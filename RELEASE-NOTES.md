@@ -101,6 +101,7 @@
 1. SQL Parser: Fixes PostgreSQL and openGauss time extract function parse week and quarter error - [#33564](https://github.com/apache/shardingsphere/pull/33564)
 1. SQL Parser: Fixes MySQL parse zone unreserved keyword error - [#33720](https://github.com/apache/shardingsphere/pull/33720)
 1. SQL Parser: Fixes MySQL range parse error when use table owner - [#33874](https://github.com/apache/shardingsphere/pull/33874)
+1. SQL Parser: Fix the issue where join conditions cannot be extracted when more than two conditions are used - [#34707](https://github.com/apache/shardingsphere/pull/34707)
 1. SQL Binder: Fixes table does not exist exception when use HintManager#setDatabaseName to transparent - [#33370](https://github.com/apache/shardingsphere/pull/33370)
 1. SQL Binder: Use Multimap and CaseInsensitiveString to replace CaseInsensitiveMap for supporting MySQL multi table join with same table alias - [#33303](https://github.com/apache/shardingsphere/pull/33303)
 1. SQL Binder: Fixes the combine statement cannot find the outer table when bind - [#33357](https://github.com/apache/shardingsphere/pull/33357)
