@@ -282,4 +282,5 @@
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
+    <sql-case id="select_prediction_cost" value="SELECT cust_id FROM mining_data_apply_v WHERE country_name = 'Italy' ORDER BY PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" db-types="Oracle" />
 </sql-cases>
