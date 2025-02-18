@@ -1049,8 +1049,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.predictionCostFunction());
         }
         throw new IllegalStateException(
-                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction, approxCount, predictionCostFunction"
-                        + " or featureFunction.");
+                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, "
+                        + "trimFunction, toDateFunction, approxCount, predictionCostFunction or featureFunction.");
     }
     
     @Override
