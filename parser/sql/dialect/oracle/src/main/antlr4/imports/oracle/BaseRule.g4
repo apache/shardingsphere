@@ -684,7 +684,7 @@ notOperator
     ;
 
 booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL | NAN)
     | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
