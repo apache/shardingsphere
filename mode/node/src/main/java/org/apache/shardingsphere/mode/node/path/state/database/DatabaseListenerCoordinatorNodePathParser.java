@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.state.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * States node path parser.
+ * Database listener coordinator node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatesNodePathParser {
+public final class DatabaseListenerCoordinatorNodePathParser {
     
     private static final String DATABASE_PATTERN = "(\\w+)";
     
@@ -39,7 +40,7 @@ public final class StatesNodePathParser {
      * @return found database name
      */
     public static Optional<String> findDatabaseName(final String databaseListenerCoordinatorNodePath) {
-        Pattern pattern = Pattern.compile(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(new NodePathGenerator(new DatabaseListenerCoordinatorNodePath()).getPath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(databaseListenerCoordinatorNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
