@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.reservation;
+package org.apache.shardingsphere.mode.node.path.execution;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Reservation node path.
+ * Execution node path.
  */
-public final class ReservationNodePath implements NodePath {
+public final class ExecutionNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "/reservation";
+    private static final String ROOT_NODE = "/execution_nodes";
     
     @Override
     public String getRootPath() {

@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.reservation;
+package org.apache.shardingsphere.mode.node.path.execution.process;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.execution.ExecutionNodePath;
 
 /**
- * Reservation node path.
+ * Process node path.
  */
-public final class ReservationNodePath implements NodePath {
+@RequiredArgsConstructor
+public final class ProcessNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "/reservation";
+    private final String processId;
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ExecutionNodePath());
     
     @Override
     public String getRootPath() {
-        return ROOT_NODE;
+        return String.join("/", nodePathGenerator.getPath(processId));
     }
 }

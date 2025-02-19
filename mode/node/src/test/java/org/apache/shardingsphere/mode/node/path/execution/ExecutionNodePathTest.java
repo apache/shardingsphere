@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.execution;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.junit.jupiter.api.Test;
 
-/**
- * Process node path generator.
- */
-@RequiredArgsConstructor
-public final class ProcessNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ExecutionNodePathTest {
     
-    private static final String ROOT_NODE = "/execution_nodes";
-    
-    private final String processId;
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", ROOT_NODE, processId);
+    @Test
+    void assertGetRootPath() {
+        assertThat(new ExecutionNodePath().getRootPath(), is("/execution_nodes"));
     }
 }
