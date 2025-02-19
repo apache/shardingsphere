@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePath;
+import org.apache.shardingsphere.mode.node.path.node.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
