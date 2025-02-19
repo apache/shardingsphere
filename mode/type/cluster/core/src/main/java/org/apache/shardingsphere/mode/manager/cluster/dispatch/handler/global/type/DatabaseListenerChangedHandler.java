@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePathParser;
+import org.apache.shardingsphere.mode.node.path.state.database.DatabaseListenerCoordinatorNodePathParser;
 import org.apache.shardingsphere.mode.node.path.state.database.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -52,7 +52,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatesNodePathParser.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ClusterDatabaseListenerCoordinatorType.valueOf(event.getValue())));
+        DatabaseListenerCoordinatorNodePathParser.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ClusterDatabaseListenerCoordinatorType.valueOf(event.getValue())));
     }
     
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {

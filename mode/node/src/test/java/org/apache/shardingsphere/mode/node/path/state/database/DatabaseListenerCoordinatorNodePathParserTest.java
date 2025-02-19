@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.state.database;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +25,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class StatesNodePathParserTest {
+class DatabaseListenerCoordinatorNodePathParserTest {
     
     @Test
     void assertFindDatabaseName() {
-        assertThat(StatesNodePathParser.findDatabaseName("/states/database_listener_coordinator/foo_db"), is(Optional.of("foo_db")));
-        assertFalse(StatesNodePathParser.findDatabaseName("/states/database_listener_coordinator").isPresent());
+        assertThat(DatabaseListenerCoordinatorNodePathParser.findDatabaseName("/states/database_listener_coordinator/foo_db"), is(Optional.of("foo_db")));
+        assertFalse(DatabaseListenerCoordinatorNodePathParser.findDatabaseName("/states/database_listener_coordinator").isPresent());
     }
 }
