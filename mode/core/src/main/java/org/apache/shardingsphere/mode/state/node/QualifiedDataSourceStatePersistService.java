@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQuali
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePath;
+import org.apache.shardingsphere.mode.node.path.node.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
