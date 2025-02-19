@@ -694,7 +694,7 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_ | (GT_ | LT_) EQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_ | (GT_ | LT_) EQ_ | LT_ GT_ | (NOT_ | CARET_) EQ_
     ;
 
 predicate
