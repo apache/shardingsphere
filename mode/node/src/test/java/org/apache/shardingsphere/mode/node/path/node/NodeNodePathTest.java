@@ -17,30 +17,15 @@
 
 package org.apache.shardingsphere.mode.node.path.node;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class QualifiedDataSourceNodePathParserTest {
+class NodeNodePathTest {
     
     @Test
-    void assertFindQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePathParser.findQualifiedDataSource("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
-        assertThat(actual.get().getGroupName(), is("readwrite_ds"));
-        assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
-    }
-    
-    @Test
-    void assertNotFindQualifiedDataSource() {
-        Optional<QualifiedDataSource> actual = QualifiedDataSourceNodePathParser.findQualifiedDataSource("/nodes/xxx/");
-        assertFalse(actual.isPresent());
+    void assertGetRootPath() {
+        assertThat(new NodeNodePath().getRootPath(), is("/nodes"));
     }
 }

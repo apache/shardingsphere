@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.node.ComputeNodePathGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineTypeNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNodePathGenerator.getOnlineRootPath();
+        return new OnlineTypeNodePath().getRootPath();
     }
     
     @Override
@@ -67,6 +67,6 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     }
     
     private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
-        return Pattern.compile(ComputeNodePathGenerator.getOnlineRootPath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+        return Pattern.compile(new OnlineTypeNodePath().getRootPath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

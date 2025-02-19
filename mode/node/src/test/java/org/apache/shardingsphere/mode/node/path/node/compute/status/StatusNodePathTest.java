@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.junit.jupiter.api.Test;
 
-/**
- * Qualified data source node path.
- */
-public final class QualifiedDataSourceNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class StatusNodePathTest {
     
-    private static final String ROOT_NODE = "/nodes";
-    
-    private static final String QUALIFIED_DATA_SOURCES_NODE = "qualified_data_sources";
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
+    @Test
+    void assertGetRootPath() {
+        assertThat(new StatusNodePath().getRootPath(), is("/nodes/compute_nodes/status"));
     }
 }

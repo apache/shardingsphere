@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-
-class QualifiedDataSourceNodePathTest {
+/**
+ * Online type node path.
+ */
+public final class OnlineTypeNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        MatcherAssert.assertThat(new QualifiedDataSourceNodePath().getRootPath(), is("/nodes/qualified_data_sources"));
+    private static final String ROOT_NODE = "online";
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
+    
+    @Override
+    public String getRootPath() {
+        return nodePathGenerator.getPath(ROOT_NODE);
     }
 }

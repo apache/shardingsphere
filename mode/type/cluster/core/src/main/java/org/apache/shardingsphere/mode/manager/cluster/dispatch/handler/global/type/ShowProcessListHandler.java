@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.node.ComputeNodePathGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
+import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNodePathGenerator.getShowProcessListTriggerRootPath();
+        return new ShowProcessListTriggerNodePath().getRootPath();
     }
     
     @Override
@@ -66,6 +66,6 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
     }
     
     private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(ComputeNodePathGenerator.getShowProcessListTriggerRootPath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        return Pattern.compile(new ShowProcessListTriggerNodePath().getRootPath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

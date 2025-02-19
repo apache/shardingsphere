@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Compute node path parser.
+ * Qualified data source node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ComputeNodePathParser {
+public final class QualifiedDataSourceNodePathParser {
     
-    private static final String INSTANCE_ID_PATTERN = "([\\S]+)";
+    private static final String QUALIFIED_DATA_SOURCE_PATTERN = "(\\S+)";
     
     /**
-     * Find instance id by compute node path.
+     * Find qualified data source.
      *
-     * @param computeNodePath compute node path
-     * @return found instance ID
+     * @param qualifiedDataSourcePath qualified data source path
+     * @return found qualified data source
      */
-    public static Optional<String> findInstanceId(final String computeNodePath) {
-        Pattern pattern = Pattern.compile(ComputeNodePathGenerator.getRootPath() + "(/status|/worker_id|/labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(computeNodePath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    public static Optional<QualifiedDataSource> findQualifiedDataSource(final String qualifiedDataSourcePath) {
+        Pattern pattern = Pattern.compile(String.join("/", new QualifiedDataSourceNodePath().getRootPath(), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
+        return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
 }
