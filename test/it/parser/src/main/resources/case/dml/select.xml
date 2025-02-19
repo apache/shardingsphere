@@ -10106,4 +10106,58 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_with_not_equal_comparison_with_space">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="17">
+            <simple-table name="test" start-index="14" stop-index="17"/>
+        </from>
+        <where start-index="19" stop-index="62">
+            <expr start-index="25" stop-index="62">
+                <binary-operation-expression start-index="25" stop-index="62">
+                    <left start-index="25" stop-index="49">
+                        <binary-operation-expression start-index="25" stop-index="49">
+                            <left start-index="25" stop-index="33">
+                                <binary-operation-expression start-index="25" stop-index="33">
+                                    <left start-index="25" stop-index="26">
+                                        <column name="id" start-index="25" stop-index="26"/>
+                                    </left>
+                                    <operator>&lt;&gt;</operator>
+                                    <right start-index="33" stop-index="33">
+                                        <literal-expression value="1" start-index="33" stop-index="33"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>and</operator>
+                            <right start-index="39" stop-index="49">
+                                <binary-operation-expression start-index="39" stop-index="49">
+                                    <left start-index="39" stop-index="42">
+                                        <column name="name" start-index="39" stop-index="42"/>
+                                    </left>
+                                    <operator>!=</operator>
+                                    <right start-index="49" stop-index="49">
+                                        <literal-expression value="1" start-index="49" stop-index="49"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>and</operator>
+                    <right start-index="55" stop-index="62">
+                        <binary-operation-expression start-index="55" stop-index="62">
+                            <left start-index="55" stop-index="56">
+                                <column name="id" start-index="55" stop-index="56"/>
+                            </left>
+                            <operator>^=</operator>
+                            <right start-index="62" stop-index="62">
+                                <literal-expression value="3" start-index="62" stop-index="62"/>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
