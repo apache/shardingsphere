@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.reservation;
+package org.apache.shardingsphere.mode.node.path.reservation.workerid;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.junit.jupiter.api.Test;
 
-/**
- * Reservation node path.
- */
-public final class ReservationNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class WorkerIDNodePathTest {
     
-    private static final String ROOT_NODE = "/reservation";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
+    @Test
+    void assertGetRootPath() {
+        assertThat(new WorkerIDNodePath().getRootPath(), is("/reservation/worker_id"));
     }
 }
