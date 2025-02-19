@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePathParser;
 import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.StatusNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.worker_id.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 
 import java.util.ArrayList;
 import java.util.Arrays;

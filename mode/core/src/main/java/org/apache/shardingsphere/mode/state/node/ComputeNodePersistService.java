@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineInstanceNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineTypeNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.StatusNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.worker_id.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Arrays;

@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute.worker_id;
+package org.apache.shardingsphere.mode.node.path.node.compute.workerid;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ComputeNodeWorkerIDNodePathTest {
+/**
+ * Compute node worker ID node path.
+ */
+public final class ComputeNodeWorkerIDNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new ComputeNodeWorkerIDNodePath().getRootPath(), is("/nodes/compute_nodes/worker_id"));
+    private static final String ROOT_NODE = "worker_id";
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
+    
+    @Override
+    public String getRootPath() {
+        return nodePathGenerator.getPath(ROOT_NODE);
     }
 }
