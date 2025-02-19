@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 
 /**
  * Status node path.
@@ -28,7 +28,7 @@ public final class StatusNodePath implements NodePath {
     
     private static final String ROOT_NODE = "status";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
     
     @Override
     public String getRootPath() {

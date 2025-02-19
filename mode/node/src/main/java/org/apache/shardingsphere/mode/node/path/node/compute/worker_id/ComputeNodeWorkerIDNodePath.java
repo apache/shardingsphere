@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute.worker_id;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 
 /**
  * Compute node worker ID node path.
@@ -28,7 +28,7 @@ public final class ComputeNodeWorkerIDNodePath implements NodePath {
     
     private static final String ROOT_NODE = "worker_id";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
     
     @Override
     public String getRootPath() {

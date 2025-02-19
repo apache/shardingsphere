@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 
 /**
  * Online type node path.
@@ -28,7 +28,7 @@ public final class OnlineTypeNodePath implements NodePath {
     
     private static final String ROOT_NODE = "online";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
     
     @Override
     public String getRootPath() {
