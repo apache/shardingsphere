@@ -19,19 +19,13 @@ package org.apache.shardingsphere.mode.node.path.node;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class ComputeNodePathParserTest {
+class NodeNodePathTest {
     
     @Test
-    void assertFindInstanceId() {
-        assertThat(ComputeNodePathParser.findInstanceId("/nodes/compute_nodes/status/foo_instance_1"), is(Optional.of("foo_instance_1")));
-        assertThat(ComputeNodePathParser.findInstanceId("/nodes/compute_nodes/worker_id/foo_instance_2"), is(Optional.of("foo_instance_2")));
-        assertThat(ComputeNodePathParser.findInstanceId("/nodes/compute_nodes/labels/foo_instance_3"), is(Optional.of("foo_instance_3")));
-        assertFalse(ComputeNodePathParser.findInstanceId("/nodes/compute_nodes/invalid/foo_instance_4").isPresent());
+    void assertGetRootPath() {
+        assertThat(new NodeNodePath().getRootPath(), is("/nodes"));
     }
 }

@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.node;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-
-class QualifiedDataSourceNodePathTest {
+/**
+ * Node node path.
+ */
+public final class NodeNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        MatcherAssert.assertThat(new QualifiedDataSourceNodePath().getRootPath(), is("/nodes/qualified_data_sources"));
+    private static final String ROOT_NODE = "/nodes";
+    
+    @Override
+    public String getRootPath() {
+        return ROOT_NODE;
     }
 }

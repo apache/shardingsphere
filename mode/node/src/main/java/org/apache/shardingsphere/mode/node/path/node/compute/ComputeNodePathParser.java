@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.compute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -39,7 +39,7 @@ public final class ComputeNodePathParser {
      * @return found instance ID
      */
     public static Optional<String> findInstanceId(final String computeNodePath) {
-        Pattern pattern = Pattern.compile(ComputeNodePathGenerator.getRootPath() + "(/status|/worker_id|/labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ComputeNodePath.getRootPath() + "(/status|/worker_id|/labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(computeNodePath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

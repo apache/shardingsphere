@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.ComputeNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.execution.process.ProcessNodePath;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -63,8 +63,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNodePathGenerator.getOnlinePath(each)).stream()
-                        .map(instanceId -> ComputeNodePathGenerator.getShowProcessListTriggerPath(instanceId, taskId)))
+                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream()
+                        .map(instanceId -> ComputeNodePath.getShowProcessListTriggerPath(instanceId, taskId)))
                 .collect(Collectors.toList());
     }
     
@@ -93,8 +93,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNodePathGenerator.getOnlinePath(each)).stream()
-                        .map(onlinePath -> ComputeNodePathGenerator.getKillProcessTriggerPath(onlinePath, processId)))
+                .flatMap(each -> repository.getChildrenKeys(ComputeNodePath.getOnlinePath(each)).stream()
+                        .map(onlinePath -> ComputeNodePath.getKillProcessTriggerPath(onlinePath, processId)))
                 .collect(Collectors.toList());
     }
     

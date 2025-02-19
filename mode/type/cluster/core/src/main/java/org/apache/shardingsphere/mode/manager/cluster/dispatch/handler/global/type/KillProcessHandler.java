@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.node.ComputeNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -40,7 +40,7 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNodePathGenerator.getKillProcessTriggerRootPath();
+        return ComputeNodePath.getKillProcessTriggerRootPath();
     }
     
     @Override
@@ -72,6 +72,6 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     }
     
     private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(ComputeNodePathGenerator.getKillProcessTriggerRootPath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        return Pattern.compile(ComputeNodePath.getKillProcessTriggerRootPath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

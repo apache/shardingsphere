@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.storage;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.junit.jupiter.api.Test;

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node;
+package org.apache.shardingsphere.mode.node.path.node.compute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
- * Compute node path generator.
+ * Compute node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ComputeNodePathGenerator {
+public final class ComputeNodePath {
     
     private static final String ROOT_NODE = "/nodes/compute_nodes";
     
