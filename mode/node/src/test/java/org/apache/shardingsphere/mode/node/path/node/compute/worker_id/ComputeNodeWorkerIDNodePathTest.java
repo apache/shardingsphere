@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.reservation.workerid;
+package org.apache.shardingsphere.mode.node.path.node.compute.worker_id;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class WorkerIDNodePathTest {
+class ComputeNodeWorkerIDNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new WorkerIDNodePath().getRootPath(), is("/reservation/worker_id"));
+        assertThat(new ComputeNodeWorkerIDNodePath().getRootPath(), is("/nodes/compute_nodes/worker_id"));
     }
 }

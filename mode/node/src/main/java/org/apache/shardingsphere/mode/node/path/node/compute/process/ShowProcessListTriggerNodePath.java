@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute;
+package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
 
 /**
- * Compute node path.
+ * Show process list trigger node path.
  */
-public final class ComputeNodePath implements NodePath {
+public final class ShowProcessListTriggerNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "compute_nodes";
+    private static final String ROOT_NODE = "show_process_list_trigger";
     
     private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
     

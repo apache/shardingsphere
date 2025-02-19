@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute;
+package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
 
 /**
- * Compute node path.
+ * Online instance node path.
  */
-public final class ComputeNodePath implements NodePath {
+@RequiredArgsConstructor
+public final class OnlineInstanceNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "compute_nodes";
+    private final InstanceType instanceType;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new OnlineTypeNodePath());
     
     @Override
     public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
+        return nodePathGenerator.getPath(instanceType.name().toLowerCase());
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,64 +26,6 @@ class ComputeNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(ComputeNodePath.getRootPath(), is("/nodes/compute_nodes"));
-    }
-    
-    @Test
-    void assertGetOnlineRootPath() {
-        assertThat(ComputeNodePath.getOnlineRootPath(), is("/nodes/compute_nodes/online"));
-    }
-    
-    @Test
-    void assertGetOnlinePathWithInstanceType() {
-        assertThat(ComputeNodePath.getOnlinePath(InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy"));
-        assertThat(ComputeNodePath.getOnlinePath(InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc"));
-    }
-    
-    @Test
-    void assertGetOnlinePathWithInstanceId() {
-        assertThat(ComputeNodePath.getOnlinePath("foo_instance_1", InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
-        assertThat(ComputeNodePath.getOnlinePath("foo_instance_2", InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
-    }
-    
-    @Test
-    void assertGetShowProcessListTriggerRootPath() {
-        assertThat(ComputeNodePath.getShowProcessListTriggerRootPath(), is("/nodes/compute_nodes/show_process_list_trigger"));
-    }
-    
-    @Test
-    void assertGetShowProcessListTriggerPathWithInstanceId() {
-        assertThat(ComputeNodePath.getShowProcessListTriggerPath("foo_instance", "foo_process_id"), is("/nodes/compute_nodes/show_process_list_trigger/foo_instance:foo_process_id"));
-        assertThat(ComputeNodePath.getShowProcessListTriggerPath("foo_instance", "foo_process_id"), is("/nodes/compute_nodes/show_process_list_trigger/foo_instance:foo_process_id"));
-    }
-    
-    @Test
-    void assertGetKillProcessTriggerRootPath() {
-        assertThat(ComputeNodePath.getKillProcessTriggerRootPath(), is("/nodes/compute_nodes/kill_process_trigger"));
-    }
-    
-    @Test
-    void assertGetKillProcessTriggerPathWithInstanceId() {
-        assertThat(ComputeNodePath.getKillProcessTriggerPath("foo_instance", "foo_process_id"), is("/nodes/compute_nodes/kill_process_trigger/foo_instance:foo_process_id"));
-    }
-    
-    @Test
-    void assertGetStatePath() {
-        assertThat(ComputeNodePath.getStatePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
-    }
-    
-    @Test
-    void assertGetWorkerIdRootPath() {
-        assertThat(ComputeNodePath.getWorkerIdRootPath(), is("/nodes/compute_nodes/worker_id"));
-    }
-    
-    @Test
-    void assertGetWorkerIdPathWithInstanceId() {
-        assertThat(ComputeNodePath.getWorkerIdPath("foo_instance"), is("/nodes/compute_nodes/worker_id/foo_instance"));
-    }
-    
-    @Test
-    void assertGetLabelsPath() {
-        assertThat(ComputeNodePath.getLabelsPath("foo_instance"), is("/nodes/compute_nodes/labels/foo_instance"));
+        assertThat(new ComputeNodePath().getRootPath(), is("/nodes/compute_nodes"));
     }
 }

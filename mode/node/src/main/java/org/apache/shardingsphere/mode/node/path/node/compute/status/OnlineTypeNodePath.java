@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute;
+package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
 
 /**
- * Compute node path.
+ * Online type node path.
  */
-public final class ComputeNodePath implements NodePath {
+public final class OnlineTypeNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "compute_nodes";
+    private static final String ROOT_NODE = "online";
     
     private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
     

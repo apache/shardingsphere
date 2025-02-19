@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute;
+package org.apache.shardingsphere.mode.node.path.reservation.workerid;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import org.apache.shardingsphere.mode.node.path.reservation.ReservationNodePath;
 
 /**
- * Compute node path.
+ * Worker ID reservation node path.
  */
-public final class ComputeNodePath implements NodePath {
+public final class WorkerIDReservationNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "compute_nodes";
+    private static final String ROOT_NODE = "worker_id";
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ReservationNodePath());
     
     @Override
     public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
+        return String.join("/", nodePathGenerator.getPath(ROOT_NODE));
     }
 }

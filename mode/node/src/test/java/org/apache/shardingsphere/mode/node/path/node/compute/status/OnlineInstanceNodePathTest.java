@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute;
+package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.junit.jupiter.api.Test;
 
-/**
- * Compute node path.
- */
-public final class ComputeNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class OnlineInstanceNodePathTest {
     
-    private static final String ROOT_NODE = "compute_nodes";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
+    @Test
+    void assertGetRootPath() {
+        assertThat(new OnlineInstanceNodePath(InstanceType.JDBC).getRootPath(), is("/nodes/compute_nodes/online/jdbc"));
+        assertThat(new OnlineInstanceNodePath(InstanceType.PROXY).getRootPath(), is("/nodes/compute_nodes/online/proxy"));
     }
 }
