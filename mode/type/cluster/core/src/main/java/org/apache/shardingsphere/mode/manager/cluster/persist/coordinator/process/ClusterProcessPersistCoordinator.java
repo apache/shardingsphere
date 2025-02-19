@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.ComputeNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.execution.process.ProcessNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
