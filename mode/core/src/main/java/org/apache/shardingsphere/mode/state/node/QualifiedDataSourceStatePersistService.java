@@ -21,12 +21,13 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
-import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePathGenerator;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.qualified.yaml.YamlQualifiedDataSourceStateSwapper;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePath;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,10 +47,10 @@ public final class QualifiedDataSourceStatePersistService {
      * @return loaded qualified data source states
      */
     public Map<String, QualifiedDataSourceState> load() {
-        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(QualifiedDataSourceNodePathGenerator.getRootPath());
+        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(new QualifiedDataSourceNodePath().getRootPath());
         Map<String, QualifiedDataSourceState> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
-            String yamlContent = repository.query(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(new QualifiedDataSource(each)));
+            String yamlContent = repository.query(new NodePathGenerator(new QualifiedDataSourceNodePath()).getPath(new QualifiedDataSource(each)));
             if (!Strings.isNullOrEmpty(yamlContent)) {
                 result.put(each, new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceState.class)));
             }
@@ -67,7 +68,7 @@ public final class QualifiedDataSourceStatePersistService {
      */
     public void update(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceState status = new QualifiedDataSourceState(dataSourceState);
-        repository.persist(QualifiedDataSourceNodePathGenerator.getQualifiedDataSourcePath(
-                new QualifiedDataSource(databaseName, groupName, storageUnitName)), YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));
+        repository.persist(new NodePathGenerator(new QualifiedDataSourceNodePath()).getPath(new QualifiedDataSource(databaseName, groupName, storageUnitName)),
+                YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));
     }
 }

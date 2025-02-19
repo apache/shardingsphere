@@ -17,36 +17,19 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Qualified data source node path generator.
+ * Qualified data source node path.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QualifiedDataSourceNodePathGenerator {
+public final class QualifiedDataSourceNodePath implements NodePath {
     
     private static final String ROOT_NODE = "/nodes";
     
     private static final String QUALIFIED_DATA_SOURCES_NODE = "qualified_data_sources";
     
-    /**
-     * Get qualified data source root path.
-     *
-     * @return qualified data source root path
-     */
-    public static String getRootPath() {
+    @Override
+    public String getRootPath() {
         return String.join("/", ROOT_NODE, QUALIFIED_DATA_SOURCES_NODE);
-    }
-    
-    /**
-     * Get qualified data source path.
-     *
-     * @param qualifiedDataSource qualified data source
-     * @return qualified data source path
-     */
-    public static String getQualifiedDataSourcePath(final QualifiedDataSource qualifiedDataSource) {
-        return String.join("/", getRootPath(), qualifiedDataSource.toString());
     }
 }
