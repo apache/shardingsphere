@@ -52,7 +52,8 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        DatabaseListenerCoordinatorNodePathParser.findDatabaseName(event.getKey()).ifPresent(optional -> handle(contextManager, optional, ClusterDatabaseListenerCoordinatorType.valueOf(event.getValue())));
+        DatabaseListenerCoordinatorNodePathParser.findDatabaseName(event.getKey())
+                .ifPresent(optional -> handle(contextManager, optional, ClusterDatabaseListenerCoordinatorType.valueOf(event.getValue())));
     }
     
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
