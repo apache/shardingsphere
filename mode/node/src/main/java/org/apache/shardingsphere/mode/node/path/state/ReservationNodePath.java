@@ -17,26 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
- * Reservation node path generator.
+ * Reservation node path.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReservationNodePathGenerator {
+public final class ReservationNodePath implements NodePath {
     
-    private static final String ROOT_NODE = "/reservation";
+    private static final String ROOT_NODE = "/reservation/worker_id";
     
-    private static final String WORKER_ID_NODE = "worker_id";
-    
-    /**
-     * Get worker id reservation path.
-     *
-     * @param workerId worker id
-     * @return worker id reservation path
-     */
-    public static String getWorkerIdReservationPath(final int workerId) {
-        return String.join("/", ROOT_NODE, WORKER_ID_NODE, String.valueOf(workerId));
+    @Override
+    public String getRootPath() {
+        return ROOT_NODE;
     }
 }

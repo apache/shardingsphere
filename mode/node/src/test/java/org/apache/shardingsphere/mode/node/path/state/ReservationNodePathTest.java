@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class ReservationNodePathTest {
     
     @Test
     void assertGetWorkerIdReservationPath() {
-        MatcherAssert.assertThat(ReservationNodePathGenerator.getWorkerIdReservationPath(1), is("/reservation/worker_id/1"));
+        assertThat(new ReservationNodePath().getRootPath(), is("/reservation/worker_id"));
     }
 }
