@@ -10068,4 +10068,42 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_with_comparison_with_space">
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-delimiter="" end-delimiter="" start-index="14" stop-index="17">
+            <simple-table name="test" start-delimiter="" end-delimiter="" start-index="14" stop-index="17"/>
+        </from>
+        <where start-index="19" stop-index="48">
+            <expr start-index="25" stop-index="48">
+                <binary-operation-expression start-index="25" stop-index="48">
+                    <left start-index="25" stop-index="32">
+                        <binary-operation-expression start-index="25" stop-index="32">
+                            <left start-index="25" stop-index="26">
+                                <column name="id" start-delimiter="" end-delimiter="" start-index="25" stop-index="26"/>
+                            </left>
+                            <operator>&gt;=</operator>
+                            <right start-index="32" stop-index="32">
+                                <literal-expression value="1" start-index="32" stop-index="32"/>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>or</operator>
+                    <right start-index="37" stop-index="48">
+                        <binary-operation-expression start-index="37" stop-index="48">
+                            <left start-index="37" stop-index="40">
+                                <column name="name" start-delimiter="" end-delimiter="" start-index="37" stop-index="40"/>
+                            </left>
+                            <operator>&lt;=</operator>
+                            <right start-index="48" stop-index="48">
+                                <literal-expression value="2" start-index="48" stop-index="48"/>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

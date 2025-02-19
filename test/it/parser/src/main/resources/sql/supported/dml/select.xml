@@ -315,4 +315,5 @@
     <sql-case id="select_with_multi_literals" value="SELECT 'x' 'x' 'x'" db-types="MySQL"/>
     <sql-case id="select_with_mixed_single_double_quoted_literals" value="SELECT 'x' &quot;x&quot; 'x' FROM t_order WHERE status LIKE &quot;%&quot; '123' &quot;%&quot;" db-types="MySQL"/>
     <sql-case id="select_is_not_nan" value="SELECT COUNT(*) FROM employees WHERE commission_pct IS NOT NAN" db-types="Oracle"/>
+    <sql-case id="select_with_comparison_with_space" value="select * from test where id &gt; = 1 or name &lt;   = 2" db-types="Oracle"/>
 </sql-cases>
