@@ -17,35 +17,21 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
  * Process node path generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProcessNodePathGenerator {
+@RequiredArgsConstructor
+public final class ProcessNodePath implements NodePath {
     
     private static final String ROOT_NODE = "/execution_nodes";
     
-    /**
-     * Get process ID root path.
-     *
-     * @param processId process ID
-     * @return process ID root path
-     */
-    public static String getRootPath(final String processId) {
-        return String.join("/", ROOT_NODE, processId);
-    }
+    private final String processId;
     
-    /**
-     * Get instance process list.
-     *
-     * @param processId process ID
-     * @param instanceId instance ID
-     * @return instance process list
-     */
-    public static String getInstanceProcessList(final String processId, final String instanceId) {
-        return String.join("/", getRootPath(processId), instanceId);
+    @Override
+    public String getRootPath() {
+        return String.join("/", ROOT_NODE, processId);
     }
 }

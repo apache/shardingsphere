@@ -26,11 +26,6 @@ class ProcessNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(ProcessNodePathGenerator.getRootPath("foo_process_id"), is("/execution_nodes/foo_process_id"));
-    }
-    
-    @Test
-    void assertGetInstanceProcessList() {
-        assertThat(ProcessNodePathGenerator.getInstanceProcessList("foo_process_id", "foo_instance_id"), is("/execution_nodes/foo_process_id/foo_instance_id"));
+        assertThat(new ProcessNodePath("foo_process_id").getRootPath(), is("/execution_nodes/foo_process_id"));
     }
 }
