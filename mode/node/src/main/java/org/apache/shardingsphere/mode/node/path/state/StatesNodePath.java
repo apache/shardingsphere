@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class StatesNodePathTest {
+/**
+ * States node path.
+ */
+public final class StatesNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new StatesNodePath().getRootPath(), is("/states"));
+    private static final String ROOT_NODE = "/states";
+    
+    @Override
+    public String getRootPath() {
+        return ROOT_NODE;
     }
 }

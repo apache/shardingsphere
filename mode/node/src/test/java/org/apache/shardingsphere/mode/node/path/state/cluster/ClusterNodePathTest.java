@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.state.cluster;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatesNodePathTest {
+class ClusterNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new StatesNodePath().getRootPath(), is("/states"));
+        assertThat(new ClusterNodePath().getRootPath(), is("/states/cluster_state"));
     }
 }

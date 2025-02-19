@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.state.cluster;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class StatesNodePathTest {
+/**
+ * Cluster node path.
+ */
+public final class ClusterNodePath implements NodePath {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new StatesNodePath().getRootPath(), is("/states"));
+    private static final String ROOT_NODE = "cluster_state";
+    
+    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatesNodePath());
+    
+    @Override
+    public String getRootPath() {
+        return nodePathGenerator.getPath(ROOT_NODE);
     }
 }

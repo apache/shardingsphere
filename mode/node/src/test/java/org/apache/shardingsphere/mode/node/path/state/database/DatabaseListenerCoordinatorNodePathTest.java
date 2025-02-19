@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state;
+package org.apache.shardingsphere.mode.node.path.state.database;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StatesNodePathTest {
+class DatabaseListenerCoordinatorNodePathTest {
     
     @Test
     void assertGetRootPath() {
-        assertThat(new StatesNodePath().getRootPath(), is("/states"));
+        assertThat(new DatabaseListenerCoordinatorNodePath().getRootPath(), is("/states/database_listener_coordinator"));
     }
 }

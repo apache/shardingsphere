@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.node.path.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.state.database.DatabaseListenerCoordinatorNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -39,7 +41,7 @@ public final class StatesNodePathParser {
      * @return found database name
      */
     public static Optional<String> findDatabaseName(final String databaseListenerCoordinatorNodePath) {
-        Pattern pattern = Pattern.compile(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(new NodePathGenerator(new DatabaseListenerCoordinatorNodePath()).getPath(DATABASE_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(databaseListenerCoordinatorNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
