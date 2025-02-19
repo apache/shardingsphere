@@ -10046,4 +10046,26 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_is_not_nan">
+        <projections distinct-row="false" start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14"/>
+        </projections>
+        <from start-delimiter="" end-delimiter="" start-index="21" stop-index="29">
+            <simple-table name="employees" start-delimiter="" end-delimiter="" start-index="21" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="61">
+            <expr start-index="37" stop-index="61">
+                <binary-operation-expression start-index="37" stop-index="61">
+                    <left start-index="37" stop-index="50">
+                        <column name="commission_pct" start-delimiter="" end-delimiter="" start-index="37" stop-index="50"/>
+                    </left>
+                    <operator>IS</operator>
+                    <right start-index="55" stop-index="61">
+                        <literal-expression value="NOT NAN" start-index="55" stop-index="61"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

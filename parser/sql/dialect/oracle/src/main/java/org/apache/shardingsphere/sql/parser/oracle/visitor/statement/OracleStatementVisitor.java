@@ -487,6 +487,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             if (null != ctx.FALSE()) {
                 operatorToken = ctx.FALSE().getSymbol();
             }
+            if (null != ctx.NAN()) {
+                operatorToken = ctx.NAN().getSymbol();
+            }
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
             rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
