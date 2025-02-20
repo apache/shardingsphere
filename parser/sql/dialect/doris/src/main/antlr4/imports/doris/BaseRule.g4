@@ -667,6 +667,10 @@ databaseName
     : identifier
     ;
 
+databaseId
+    : identifier
+    ;
+
 databaseNames
     : databaseName (COMMA_ databaseName)*
     ;
@@ -685,6 +689,10 @@ databasePair
 
 tableName
     : (owner DOT_)? name
+    ;
+
+tableId
+    : identifier
     ;
 
 columnName
@@ -840,6 +848,10 @@ userOrRole
     ;
 
 partitionName
+    : identifier
+    ;
+
+partitionId
     : identifier
     ;
 
