@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
+package org.apache.shardingsphere.encrypt.checker.cryptographic;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.token.comparator.EncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -30,26 +33,24 @@ import java.util.Collection;
  * Join conditions encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JoinConditionsEncryptorComparator {
+public final class JoinConditionsEncryptorChecker {
     
     /**
-     * Compare whether same encryptor.
+     * Check whether same encryptor.
      *
      * @param joinConditions join conditions
      * @param encryptRule encrypt rule
-     * @return same encryptors or not
+     * @param scenario scenario
      */
-    public static boolean isSame(final Collection<BinaryOperationExpression> joinConditions, final EncryptRule encryptRule) {
+    public static void checkIsSame(final Collection<BinaryOperationExpression> joinConditions, final EncryptRule encryptRule, final String scenario) {
         for (BinaryOperationExpression each : joinConditions) {
             if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
                 continue;
             }
             ColumnSegmentBoundInfo leftColumnInfo = ((ColumnSegment) each.getLeft()).getColumnBoundInfo();
             ColumnSegmentBoundInfo rightColumnInfo = ((ColumnSegment) each.getRight()).getColumnBoundInfo();
-            if (!EncryptorComparator.isSame(encryptRule, leftColumnInfo, rightColumnInfo)) {
-                return false;
-            }
+            ShardingSpherePreconditions.checkState(EncryptorComparator.isSame(encryptRule, leftColumnInfo, rightColumnInfo),
+                    () -> new UnsupportedSQLOperationException("Can not use different encryptor for " + leftColumnInfo + " and " + rightColumnInfo + " in " + scenario));
         }
-        return true;
     }
 }

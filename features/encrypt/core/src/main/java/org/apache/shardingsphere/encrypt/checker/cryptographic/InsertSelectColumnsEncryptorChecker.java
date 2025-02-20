@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
+package org.apache.shardingsphere.encrypt.checker.cryptographic;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.token.comparator.EncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -26,6 +27,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -39,7 +42,33 @@ import java.util.Iterator;
  * Insert select columns encryptor comparator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertSelectColumnsEncryptorComparator {
+public final class InsertSelectColumnsEncryptorChecker {
+    
+    /**
+     * Check whether same encryptor.
+     *
+     * @param insertColumns insert columns
+     * @param projections projections
+     * @param encryptRule encrypt rule
+     */
+    public static void checkIsSame(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
+        Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
+        Iterator<Projection> projectionIterator = projections.iterator();
+        while (insertColumnsIterator.hasNext()) {
+            ColumnSegment insertColumnSegment = insertColumnsIterator.next();
+            Projection projection = projectionIterator.next();
+            if (isLiteralOrParameterMarker(projection)) {
+                continue;
+            }
+            ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
+            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
+                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
+            EncryptAlgorithm projectionEncryptor =
+                    encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
+            ShardingSpherePreconditions.checkState(EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor), () -> new UnsupportedSQLOperationException(
+                    "Can not use different encryptor for " + insertColumnSegment.getColumnBoundInfo() + " and " + projectionColumnBoundInfo + " in insert select columns"));
+        }
+    }
     
     /**
      * Compare whether same encryptor.
@@ -54,13 +83,13 @@ public final class InsertSelectColumnsEncryptorComparator {
         Iterator<Projection> projectionIterator = projections.iterator();
         while (insertColumnsIterator.hasNext()) {
             ColumnSegment insertColumnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
-                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             Projection projection = projectionIterator.next();
             if (isLiteralOrParameterMarker(projection)) {
                 continue;
             }
             ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
+            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
+                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
             EncryptAlgorithm projectionEncryptor =
                     encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
             if (!EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor)) {

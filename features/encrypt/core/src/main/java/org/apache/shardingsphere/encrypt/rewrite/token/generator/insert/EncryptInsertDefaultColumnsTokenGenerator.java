@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.token.comparator.InsertSelectColumnsEncryptorComparator;
+import org.apache.shardingsphere.encrypt.checker.cryptographic.InsertSelectColumnsEncryptorChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -95,8 +95,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
             Collection<ColumnSegment> derivedInsertColumns = insertStatementContext.getSqlStatement().getDerivedInsertColumns();
             Collection<Projection> projections = insertStatementContext.getInsertSelectContext().getSelectStatementContext().getProjectionsContext().getExpandProjections();
             ShardingSpherePreconditions.checkState(derivedInsertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
-            ShardingSpherePreconditions.checkState(InsertSelectColumnsEncryptorComparator.isSame(derivedInsertColumns, projections, rule),
-                    () -> new UnsupportedSQLOperationException("Can not use different encryptor in insert select columns"));
+            InsertSelectColumnsEncryptorChecker.checkIsSame(derivedInsertColumns, projections, rule);
         }
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         return new UseDefaultInsertColumnsToken(
