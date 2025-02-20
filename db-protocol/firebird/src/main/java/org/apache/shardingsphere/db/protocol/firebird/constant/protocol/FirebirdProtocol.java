@@ -31,10 +31,10 @@ public final class FirebirdProtocol {
     private final int weight;
 
     public FirebirdProtocol(ByteBuf buffer) {
-        this.version = FirebirdProtocolVersion.valueOf(buffer.readInt());
-        this.arch = FirebirdArchType.valueOf(buffer.readInt());
-        this.minType = buffer.readInt();
-        this.maxType = buffer.readInt();
-        this.weight = buffer.readInt();
+        version = FirebirdProtocolVersion.valueOf(buffer.readInt());
+        arch = FirebirdArchType.valueOf(buffer.readInt());
+        minType = buffer.readInt();
+        maxType = buffer.readInt();
+        weight = buffer.readInt();
     }
 }

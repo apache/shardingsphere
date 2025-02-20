@@ -69,6 +69,8 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
             case TEXT:
                 return 4;
             case NULL:
+            case LEGACY_TEXT:
+            case LEGACY_VARYING:
                 return 2;
             case BLOB:
             case ARRAY:

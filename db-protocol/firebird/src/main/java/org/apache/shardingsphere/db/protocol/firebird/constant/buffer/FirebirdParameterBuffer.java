@@ -35,6 +35,7 @@ public final class FirebirdParameterBuffer {
 
     private final Map<FirebirdParameterBufferType, Object> parameterBuffer = new HashMap<>();
     private final Function<Integer, FirebirdParameterBufferType> valueOf;
+    private final Function<Integer, Boolean> isTraditionalType;
 
     public void parseBuffer(final ByteBuf buffer) {
         version = buffer.readUnsignedByte();
@@ -45,14 +46,19 @@ public final class FirebirdParameterBuffer {
     }
 
     private Object parseValue(final ByteBuf parameterBuffer, final FirebirdParameterBufferType type) {
+        boolean traditionalStyle = isTraditionalType.apply(version);
         switch (type.getFormat()) {
             case INT:
-                parameterBuffer.skipBytes(4);
+                if (traditionalStyle) {
+                    parameterBuffer.skipBytes(1);
+                } else {
+                    parameterBuffer.skipBytes(4);
+                }
                 return parameterBuffer.readIntLE();
             case BOOLEAN:
                 return true;
             case STRING:
-                int length = parameterBuffer.readIntLE();
+                int length = traditionalStyle ? parameterBuffer.readByte() : parameterBuffer.readIntLE();
                 return parameterBuffer.readRetainedSlice(length).toString(StandardCharsets.UTF_8);
         }
         throw new FirebirdProtocolException("Unsupported format type %s", type.getFormat().name());

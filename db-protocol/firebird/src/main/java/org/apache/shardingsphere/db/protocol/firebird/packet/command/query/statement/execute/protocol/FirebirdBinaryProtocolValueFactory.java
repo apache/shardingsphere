@@ -53,6 +53,8 @@ public final class FirebirdBinaryProtocolValueFactory {
         FirebirdStringBinaryProtocolValue binaryProtocolValue = new FirebirdStringBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.VARYING, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TEXT, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LEGACY_VARYING, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LEGACY_TEXT, binaryProtocolValue);
     }
     
     private static void setByteBinaryProtocolValue() {

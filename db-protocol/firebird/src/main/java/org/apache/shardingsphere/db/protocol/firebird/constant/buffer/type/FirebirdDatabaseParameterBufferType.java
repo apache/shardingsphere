@@ -167,6 +167,16 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
         Preconditions.checkNotNull(result, "Cannot find code '%d' in dpb type", code);
         return result;
     }
+    
+    /**
+     * Decides whether to use a traditional type for integers
+     *
+     * @param version verstion of parameter buffer
+     * @return Is traditional type
+     */
+    public static boolean isTraditionalType(final int version) {
+        return version == 1;
+    }
 
     /**
      * Creates parameter buffer of this type.
@@ -174,6 +184,6 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
      * @return Firebird database parameter buffer
      */
     public static FirebirdParameterBuffer createBuffer() {
-        return new FirebirdParameterBuffer(FirebirdDatabaseParameterBufferType::valueOf);
+        return new FirebirdParameterBuffer(FirebirdDatabaseParameterBufferType::valueOf, FirebirdDatabaseParameterBufferType::isTraditionalType);
     }
 }

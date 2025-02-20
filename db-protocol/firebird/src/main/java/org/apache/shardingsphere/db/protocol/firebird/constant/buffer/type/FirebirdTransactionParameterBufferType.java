@@ -81,6 +81,16 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
         Preconditions.checkNotNull(result, "Cannot find code '%d' in tpb type", code);
         return result;
     }
+    
+    /**
+     * Decides whether to use a traditional type for integers
+     *
+     * @param version verstion of parameter buffer
+     * @return Is traditional type
+     */
+    public static boolean isTraditionalType(final int version) {
+        return true;
+    }
 
     /**
      * Creates parameter buffer of this type.
@@ -88,6 +98,6 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
      * @return Firebird transaction parameter buffer
      */
     public static FirebirdParameterBuffer createBuffer() {
-        return new FirebirdParameterBuffer(FirebirdTransactionParameterBufferType::valueOf);
+        return new FirebirdParameterBuffer(FirebirdTransactionParameterBufferType::valueOf, FirebirdTransactionParameterBufferType::isTraditionalType);
     }
 }

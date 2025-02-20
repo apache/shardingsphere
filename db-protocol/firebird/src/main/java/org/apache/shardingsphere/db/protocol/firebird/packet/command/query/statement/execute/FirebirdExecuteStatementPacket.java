@@ -89,6 +89,8 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             case TEXT:
                 return 4;
             case NULL:
+            case LEGACY_TEXT:
+            case LEGACY_VARYING:
                 return 2;
             case BLOB:
             case ARRAY:

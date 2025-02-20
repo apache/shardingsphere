@@ -37,6 +37,8 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
     //TODO add different varying length based on a row length
     TEXT(452, 255),
     VARYING(448, 255),
+    LEGACY_TEXT(452, 255),
+    LEGACY_VARYING(448, 255),
     SHORT(500, 2),
     LONG(496, 4),
     FLOAT(482, 4),
@@ -96,7 +98,8 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_varying2, VARYING);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_text2, TEXT);
-        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_text, NULL);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_text, LEGACY_TEXT);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_varying, LEGACY_VARYING);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_double, DOUBLE);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_float, FLOAT);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_d_float, D_FLOAT);
