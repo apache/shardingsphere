@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.OracleProjectionIdentifierExtractor
+org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.MySQLProjectionIdentifierExtractor
 org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.PostgreSQLProjectionIdentifierExtractor
 org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.OpenGaussProjectionIdentifierExtractor
+org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.OracleProjectionIdentifierExtractor
