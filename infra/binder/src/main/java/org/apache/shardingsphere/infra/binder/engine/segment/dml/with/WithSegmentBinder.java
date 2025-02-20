@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.with;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
@@ -37,14 +40,16 @@ public final class WithSegmentBinder {
      *
      * @param segment with segment
      * @param binderContext SQL statement binder context
+     * @param externalTableBinderContexts external table binder contexts
      * @return bound with segment
      */
-    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext) {
+    public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext,
+                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts) {
         Collection<CommonTableExpressionSegment> boundCommonTableExpressions = new LinkedList<>();
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
-            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, segment.isRecursive());
+            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, externalTableBinderContexts, segment.isRecursive());
             boundCommonTableExpressions.add(boundCommonTableExpression);
         }
-        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions);
+        return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions, segment.isRecursive());
     }
 }

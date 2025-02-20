@@ -75,7 +75,7 @@ class SubqueryTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SubqueryTableSegment actual =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts,
-                        LinkedHashMultimap.create());
+                        LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
@@ -110,7 +110,7 @@ class SubqueryTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SubqueryTableSegment actual =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts,
-                        LinkedHashMultimap.create());
+                        LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
@@ -134,7 +134,7 @@ class SubqueryTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SubqueryTableSegment actual =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts,
-                        LinkedHashMultimap.create());
+                        LinkedHashMultimap.create(), false);
         assertFalse(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("")));
     }

@@ -92,6 +92,8 @@ public final class ColumnSegmentBinder {
     
     private static ColumnSegment copy(final ColumnSegment segment) {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
+        result.setNestedObjectAttributes(segment.getNestedObjectAttributes());
+        result.setVariable(segment.isVariable());
         segment.getLeftParentheses().ifPresent(result::setLeftParentheses);
         segment.getRightParentheses().ifPresent(result::setRightParentheses);
         return result;
@@ -157,6 +159,9 @@ public final class ColumnSegmentBinder {
             }
             result = getColumnSegment(projectionSegment.get());
             isFindInputColumn = true;
+            if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isFromWithSegment()) {
+                break;
+            }
         }
         if (!isFindInputColumn) {
             Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts);
