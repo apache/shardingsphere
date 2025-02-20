@@ -17,32 +17,22 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Table node path.
+ * View metadata node path.
  */
-public final class TableNodePath implements NodePath {
+@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/views/${viewName}")
+@RequiredArgsConstructor
+@Getter
+public final class ViewMetadataNodePath implements NewNodePath {
     
-    private static final String TABLES_NODE = "tables";
+    private final String databaseName; 
     
     private final String schemaName;
     
-    private final NodePathGenerator nodePathGenerator;
-    
-    public TableNodePath() {
-        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
-    }
-    
-    public TableNodePath(final String databaseName, final String schemaName) {
-        this.schemaName = schemaName;
-        nodePathGenerator = new NodePathGenerator(new SchemaNodePath(databaseName));
-    }
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", nodePathGenerator.getPath(schemaName), TABLES_NODE);
-    }
+    private final String viewName;
 }

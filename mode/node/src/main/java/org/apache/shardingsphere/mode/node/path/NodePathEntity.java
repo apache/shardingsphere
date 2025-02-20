@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.metadata.database;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.junit.jupiter.api.Test;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class SchemaNodePathTest {
+/**
+ * Node path entity.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NodePathEntity {
     
-    @Test
-    void assertGetRootPath() {
-        assertThat(new SchemaNodePath("foo_db").getRootPath(), is("/metadata/foo_db/schemas"));
-    }
+    /**
+     * Get repository node path.
+     *
+     * @return repository node path
+     */
+    String value();
 }

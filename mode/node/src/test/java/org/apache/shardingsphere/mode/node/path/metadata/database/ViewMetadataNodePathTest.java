@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ViewNodePathTest {
+class ViewMetadataNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new ViewNodePath("foo_db", "foo_schema").getRootPath(), is("/metadata/foo_db/schemas/foo_schema/views"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
+        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
 }
