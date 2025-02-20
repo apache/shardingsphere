@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.execution;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ExecutionNodePathTest {
+class ProcessNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new ExecutionNodePath().getRootPath(), is("/execution_nodes"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", null), false), is("/execution_nodes/foo_process_id"));
+        assertThat(NewNodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", "foo_instance_id"), false), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }
 }

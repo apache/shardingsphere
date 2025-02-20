@@ -24,8 +24,9 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.execution.process.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.execution.ProcessNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.KillProcessTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineTypeNodePath;
@@ -56,7 +57,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
             isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
-            repository.delete(new ProcessNodePath(taskId).getRootPath());
+            repository.delete(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false));
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -72,8 +73,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
-        for (String each : repository.getChildrenKeys(new ProcessNodePath(taskId).getRootPath()).stream()
-                .map(each -> repository.query(new NodePathGenerator(new ProcessNodePath(taskId)).getPath(each))).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false)).stream()
+                .map(each -> repository.query(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, each), false))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);

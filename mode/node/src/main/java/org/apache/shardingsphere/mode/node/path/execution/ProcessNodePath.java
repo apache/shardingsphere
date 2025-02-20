@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.execution.process;
+package org.apache.shardingsphere.mode.node.path.execution;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.execution.ExecutionNodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Process node path.
+ * Execution node path.
  */
+@NodePathEntity("/execution_nodes/${processId}/${instanceId}")
 @RequiredArgsConstructor
-public final class ProcessNodePath implements NodePath {
+@Getter
+public final class ProcessNodePath implements NewNodePath {
     
     private final String processId;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ExecutionNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return String.join("/", nodePathGenerator.getPath(processId));
-    }
+    private final String instanceId;
 }
