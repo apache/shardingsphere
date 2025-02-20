@@ -60,7 +60,7 @@ public final class TableSegmentBinder {
             return JoinTableSegmentBinder.bind((JoinTableSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts);
+            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts, false);
         }
         if (segment instanceof DeleteMultiTableSegment) {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, binderContext, tableBinderContexts);

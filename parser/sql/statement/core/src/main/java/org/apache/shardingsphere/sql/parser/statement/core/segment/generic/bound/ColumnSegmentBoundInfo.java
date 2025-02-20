@@ -60,4 +60,22 @@ public final class ColumnSegmentBoundInfo {
     public IdentifierValue getOriginalSchema() {
         return tableBoundInfo.getOriginalSchema();
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (null != getOriginalDatabase()) {
+            result.append(getOriginalDatabase().getValue()).append(".");
+        }
+        if (null != getOriginalSchema()) {
+            result.append(getOriginalSchema().getValue()).append(".");
+        }
+        if (null != originalTable) {
+            result.append(originalTable.getValue()).append(".");
+        }
+        if (null != originalColumn) {
+            result.append(originalColumn.getValue());
+        }
+        return result.toString();
+    }
 }

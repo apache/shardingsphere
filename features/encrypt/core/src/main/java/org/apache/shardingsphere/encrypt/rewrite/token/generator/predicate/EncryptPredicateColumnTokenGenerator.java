@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -68,18 +69,27 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        Collection<ColumnSegment> columnSegments = SQLStatementContextExtractor.getColumnSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
         Collection<AndPredicate> andPredicates = getAndPredicates(whereSegments);
-        return generateSQLTokens(columnSegments, andPredicates, sqlStatementContext);
+        return generateSQLTokens(andPredicates, sqlStatementContext);
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Collection<AndPredicate> andPredicates, final SQLStatementContext sqlStatementContext) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<AndPredicate> andPredicates, final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        for (ColumnSegment each : columnSegments) {
+        for (AndPredicate each : andPredicates) {
+            for (ExpressionSegment expression : each.getPredicates()) {
+                result.addAll(generateSQLTokens(sqlStatementContext, expression));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
+        Collection<SQLToken> result = new LinkedList<>();
+        for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
                 EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue());
-                result.add(buildSubstitutableColumnNameToken(encryptColumn, each, andPredicates, sqlStatementContext.getDatabaseType()));
+                result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatementContext.getDatabaseType()));
             }
         }
         return result;
@@ -93,38 +103,25 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return result;
     }
     
-    private SQLToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment,
-                                                       final Collection<AndPredicate> andPredicates, final DatabaseType databaseType) {
+    private Collection<SQLToken> buildSubstitutableColumnNameTokens(final EncryptColumn encryptColumn, final ColumnSegment columnSegment,
+                                                                    final ExpressionSegment expression, final DatabaseType databaseType) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
-        if (isIncludeLike(andPredicates, columnSegment)) {
+        if (isIncludeLike(expression)) {
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
-            return new SubstitutableColumnNameToken(startIndex, stopIndex,
-                    createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType);
+            Collection<Projection> columnProjections =
+                    createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType);
+            return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
         }
         Collection<Projection> columnProjections = encryptColumn.getAssistedQuery()
                 .map(optional -> createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType))
                 .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType));
-        return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType);
+        return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
     }
     
-    private boolean isIncludeLike(final Collection<AndPredicate> andPredicates, final ColumnSegment targetColumnSegment) {
-        for (AndPredicate each : andPredicates) {
-            if (isLikeColumnSegment(each, targetColumnSegment)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isLikeColumnSegment(final AndPredicate andPredicate, final ColumnSegment targetColumnSegment) {
-        for (ExpressionSegment each : andPredicate.getPredicates()) {
-            if (each instanceof BinaryOperationExpression && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) && isContainsColumnSegment(each, targetColumnSegment)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isIncludeLike(final ExpressionSegment expression) {
+        return expression instanceof BinaryOperationExpression && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator());
     }
     
     private boolean isContainsColumnSegment(final ExpressionSegment expressionSegment, final ColumnSegment targetColumnSegment) {
@@ -132,6 +129,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {
-        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
+        ColumnProjection columnProjection = new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType);
+        return Collections.singleton(columnProjection);
     }
 }

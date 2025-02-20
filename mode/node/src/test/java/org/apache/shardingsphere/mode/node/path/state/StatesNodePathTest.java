@@ -25,17 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class StatesNodePathTest {
     
     @Test
-    void assertGetClusterStatePath() {
-        assertThat(StatesNodePathGenerator.getClusterStatePath(), is("/states/cluster_state"));
-    }
-    
-    @Test
-    void assertGetDatabaseListenerCoordinatorNodeRootPath() {
-        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodeRootPath(), is("/states/database_listener_coordinator"));
-    }
-    
-    @Test
-    void assertGetDatabaseListenerCoordinatorNodePath() {
-        assertThat(StatesNodePathGenerator.getDatabaseListenerCoordinatorNodePath("foo_db"), is("/states/database_listener_coordinator/foo_db"));
+    void assertGetRootPath() {
+        assertThat(new StatesNodePath().getRootPath(), is("/states"));
     }
 }
