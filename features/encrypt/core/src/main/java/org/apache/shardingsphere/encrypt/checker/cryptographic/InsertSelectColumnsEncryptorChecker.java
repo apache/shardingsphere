@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.checker.sql.predicate;
+package org.apache.shardingsphere.encrypt.checker.cryptographic;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql.predicate;
 
+import org.apache.shardingsphere.encrypt.checker.cryptographic.JoinConditionsEncryptorChecker;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
