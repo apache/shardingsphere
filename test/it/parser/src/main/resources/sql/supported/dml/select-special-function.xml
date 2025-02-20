@@ -283,4 +283,18 @@
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
     <sql-case id="select_prediction_cost" value="SELECT cust_id FROM mining_data_apply_v WHERE country_name = 'Italy' ORDER BY PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" db-types="Oracle" />
+    <sql-case id="select_name_const" value="SELECT NAME_CONST('myname',14)" db-types="MySQL" />
+    <sql-case id="select_not_in" value="SELECT (3,4) NOT IN ((1,2), (3,4))" db-types="MySQL" />
+    <sql-case id="select_not_like" value="SELECT 'hello world' NOT LIKE '%test%'" db-types="MySQL" />
+    <sql-case id="select_now" value="SELECT NOW()" db-types="MySQL" />
+    <sql-case id="select_nth_value" value="SELECT NTH_VALUE(salary, 3) OVER (ORDER BY salary) AS third_highest_salary FROM employees" db-types="MySQL" />
+    <sql-case id="select_nullif" value="SELECT NULLIF(1,1)" db-types="MySQL" />
+    <sql-case id="select_oct" value="SELECT OCT(12)" db-types="MySQL" />
+    <sql-case id="select_octet_length" value="SELECT OCTET_LENGTH('text')" db-types="MySQL" />
+    <sql-case id="select_ord" value="SELECT ORD('2')" db-types="MySQL" />
+    <sql-case id="select_period_add" value="SELECT PERIOD_ADD(200801,2)" db-types="MySQL" />
+    <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
+    <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
+    <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL" />
 </sql-cases>

@@ -4881,7 +4881,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_prediction_cost">
         <projections distinct-row="false" start-index="7" stop-index="13">
             <column-projection name="cust_id" start-delimiter="" end-delimiter="" start-index="7" stop-index="13"/>
@@ -4909,5 +4909,254 @@
                 </expr>
             </expression-item>
         </order-by>
+    </select>
+
+    <select sql-case-id="select_name_const">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="NAME_CONST('myname',14)">
+                <expr>
+                    <function start-index="7" stop-index="29" function-name="NAME_CONST" text="NAME_CONST('myname',14)">
+                        <parameter>
+                            <literal-expression value="myname" start-index="18" stop-index="25"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="14" start-index="27" stop-index="28"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_not_in">
+        <projections start-index="7" stop-index="33">
+            <expression-projection start-index="7" stop-index="33" text="3,4) NOT IN ((1,2), (3,4)">
+                <expr>
+                    <in-expression start-index="7" stop-index="33">
+                        <left>
+                            <row-expression  start-index="7" stop-index="11" text="(3,4)">
+                                <items>
+                                    <literal-expression start-index="8" stop-index="8" value="3" />
+                                </items>
+                                <items>
+                                    <literal-expression start-index="10" stop-index="10" value="4" />
+                                </items>
+                            </row-expression>
+                        </left>
+                        <not>true</not>>
+                        <right>
+                            <list-expression start-index="20" stop-index="33">
+                                <items>
+                                    <row-expression start-index="21" stop-index="25" text="(1,2)" >
+                                        <items>
+                                            <literal-expression start-index="22" stop-index="22" value="1"/>
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="24" stop-index="24" value="2"/>
+                                        </items>
+                                    </row-expression>
+                                </items>
+                                <items>
+                                    <row-expression start-index="28" stop-index="32" text="(3,4)" >
+                                        <items>
+                                            <literal-expression start-index="29" stop-index="29" value="3"/>
+                                        </items>
+                                        <items>
+                                            <literal-expression start-index="31" stop-index="31" value="4"/>
+                                        </items>
+                                    </row-expression>
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_not_like">
+        <projections start-index="7" stop-index="37">
+            <expression-projection start-index="7" stop-index="37" text="'hello world' NOT LIKE '%test%'">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="37" text="'hello world' NOT LIKE '%test%'">
+                            <left>
+                                <literal-expression start-index="7" stop-index="19" value="hello world" />
+                            </left>
+                            <operator>NOT LIKE</operator>
+                            <right>
+                                <list-expression start-index="30" stop-index="37">
+                                    <items>
+                                        <literal-expression start-index="30" stop-index="37" value="%test%"/>
+                                    </items>
+                                </list-expression>
+                            </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_now">
+        <projections start-index="7" stop-index="11">
+            <expression-projection start-index="7" stop-index="11" text="NOW()">
+                <expr>
+                    <function function-name="NOW"  start-index="7" stop-index="11" text="NOW()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_nth_value">
+        <from>
+            <simple-table start-index="80" stop-index="88" name="employees"/>
+        </from>
+            <projections start-index="7" stop-index="73">
+                <expression-projection start-index="7" stop-index="73" alias="third_highest_salary" text="NTH_VALUE(salary, 3) OVER (ORDER BY salary)" >
+                    <expr>
+                        <function function-name="NTH_VALUE" start-index="7" stop-index="49" text="NTH_VALUE(salary, 3) OVER (ORDER BY salary)">
+                            <parameter>
+                                <column start-index="17" stop-index="22" name="salary"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="25" stop-index="25" value="3"/>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+    </select>
+
+    <select sql-case-id="select_nullif">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="NULLIF(1,1)">
+                <expr>
+                    <function function-name="NULLIF" start-index="7" stop-index="17" text="NULLIF(1,1)">
+                        <parameter>
+                            <literal-expression start-index="14" stop-index="14" value="1"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="16" stop-index="16" value="1"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oct">
+        <projections start-index="7" stop-index="13">
+            <expression-projection start-index="7" stop-index="13" text="OCT(12)">
+                <expr>
+                    <function function-name="OCT" start-index="7" stop-index="13" text="OCT(12)">
+                        <parameter>
+                            <literal-expression start-index="11" stop-index="12" value="12"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_octet_length">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="26" text="OCTET_LENGTH('text')">
+                <expr>
+                    <function function-name="OCTET_LENGTH" start-index="7" stop-index="26" text="OCTET_LENGTH('text')">
+                        <parameter>
+                            <literal-expression start-index="20" stop-index="25" value="text"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ord">
+        <projections start-index="7" stop-index="14">
+            <expression-projection start-index="7" stop-index="14" text="ORD('2')">
+                <expr>
+                    <function function-name="ORD" start-index="7" stop-index="14" text="ORD('2')">
+                        <parameter>
+                            <literal-expression start-index="11" stop-index="13" value="2"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_period_add">
+        <projections start-index="7" stop-index="26">
+            <expression-projection start-index="7" stop-index="26" text="PERIOD_ADD(200801,2)">
+                <expr>
+                    <function function-name="PERIOD_ADD" start-index="7" stop-index="26" text="PERIOD_ADD(200801,2)">
+                        <parameter>
+                            <literal-expression start-index="18" stop-index="23" value="200801"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="25" stop-index="25" value="2"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_period_diff">
+        <projections start-index="7" stop-index="32">
+            <expression-projection start-index="7" stop-index="32" text="PERIOD_DIFF(200802,200703)">
+                <expr>
+                    <function function-name="PERIOD_DIFF" start-index="7" stop-index="32" text="PERIOD_DIFF(200802,200703)">
+                        <parameter>
+                            <literal-expression start-index="19" stop-index="24" value="200802"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="26" stop-index="31" value="200703"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_percent_rank">
+        <from>
+            <simple-table start-index="50" stop-index="58" name="employees"/>
+        </from>
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="PERCENT_RANK() OVER (ORDER BY salary)" >
+                <expr>
+                    <function function-name="PERCENT_RANK" start-index="7" stop-index="43" text="PERCENT_RANK() OVER (ORDER BY salary)"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_pi">
+        <projections start-index="7" stop-index="10">
+            <expression-projection start-index="7" stop-index="10" text="PI()">
+                <expr>
+                    <function function-name="PI" start-index="7" stop-index="10" text="PI()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_regexp" >
+        <projections start-index="7" stop-index="25">
+            <expression-projection start-index="7" stop-index="25" text="'a' REGEXP '^[a-d]'">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="25" text="'a' REGEXP '^[a-d]'">
+                        <left>
+                            <literal-expression start-index="7" stop-index="9" value="a"/>
+                        </left>
+                        <operator>REGEXP</operator>
+                        <right>
+                            <literal-expression start-index="18" stop-index="25" value="^[a-d]"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>
