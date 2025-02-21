@@ -33,7 +33,7 @@ public final class NewNodePathGenerator {
     
     /**
      * Generate path.
-     * 
+     *
      * @param nodePath node path
      * @param trimEmptyNode whether to trim empty node
      * @return path

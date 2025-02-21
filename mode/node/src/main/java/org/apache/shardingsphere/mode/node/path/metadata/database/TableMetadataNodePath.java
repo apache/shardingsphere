@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 @Getter
 public final class TableMetadataNodePath implements NewNodePath {
     
-    private final String databaseName; 
+    private final String databaseName;
     
     private final String schemaName;
     
