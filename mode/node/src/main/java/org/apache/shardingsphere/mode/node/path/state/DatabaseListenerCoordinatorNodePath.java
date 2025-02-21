@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.state;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 @NodePathEntity("/states/database_listener_coordinator/${databaseName}")
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseListenerCoordinatorNodePath implements NewNodePath {
+public final class DatabaseListenerCoordinatorNodePath implements NodePath {
     
     private final String databaseName;
 }

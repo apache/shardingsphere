@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.deliver;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.storage.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -39,6 +39,6 @@ public final class ReadwriteSplittingQualifiedDataSourceChangedSubscriber implem
      */
     @Subscribe
     public void delete(final QualifiedDataSourceDeletedEvent event) {
-        repository.delete(NewNodePathGenerator.generatePath(new QualifiedDataSourceNodePath(event.getQualifiedDataSource()), false));
+        repository.delete(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(event.getQualifiedDataSource()), false));
     }
 }

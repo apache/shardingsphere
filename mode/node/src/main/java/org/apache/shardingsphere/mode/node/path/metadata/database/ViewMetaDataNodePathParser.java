@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            NewNodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
+            NodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            NewNodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
+            NodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
     
     /**
      * Get view name.

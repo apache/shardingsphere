@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path;
 
 /**
- * New node path.
+ * Node path.
  */
-public interface NewNodePath {
+public interface NodePath {
 }

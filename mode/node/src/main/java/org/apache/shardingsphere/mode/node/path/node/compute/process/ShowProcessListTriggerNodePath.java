@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 @NodePathEntity("/nodes/compute_nodes/show_process_list_trigger/${instanceId}:${taskId}")
 @RequiredArgsConstructor
 @Getter
-public final class ShowProcessListTriggerNodePath implements NewNodePath {
+public final class ShowProcessListTriggerNodePath implements NodePath {
     
     private final String instanceId;
     

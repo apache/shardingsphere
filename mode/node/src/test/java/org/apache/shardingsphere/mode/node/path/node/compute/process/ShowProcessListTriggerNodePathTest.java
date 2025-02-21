@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,8 +27,8 @@ class ShowProcessListTriggerNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(null, null), false), is("/nodes/compute_nodes/show_process_list_trigger"));
-        assertThat(NewNodePathGenerator.generatePath(new ShowProcessListTriggerNodePath("foo_instance_id", "foo_process_id"), false),
+        assertThat(NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(null, null), false), is("/nodes/compute_nodes/show_process_list_trigger"));
+        assertThat(NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath("foo_instance_id", "foo_process_id"), false),
                 is("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id"));
     }
 }

@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * Node path generator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NewNodePathGenerator {
+public final class NodePathGenerator {
     
     /**
      * Generate path.
@@ -38,7 +38,7 @@ public final class NewNodePathGenerator {
      * @param trimEmptyNode whether to trim empty node
      * @return path
      */
-    public static String generatePath(final NewNodePath nodePath, final boolean trimEmptyNode) {
+    public static String generatePath(final NodePath nodePath, final boolean trimEmptyNode) {
         LinkedList<String> result = new LinkedList<>();
         String path = nodePath.getClass().getAnnotation(NodePathEntity.class).value();
         for (String each : path.split("/")) {
@@ -74,7 +74,7 @@ public final class NewNodePathGenerator {
      * @param nodePath node path
      * @return version node path
      */
-    public static VersionNodePath generateVersionPath(final NewNodePath nodePath) {
+    public static VersionNodePath generateVersionPath(final NodePath nodePath) {
         return new VersionNodePath(generatePath(nodePath, false));
     }
 }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
 
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NewNodePathGenerator.generatePath(new OnlineNodePath(null, null), false);
+        return NodePathGenerator.generatePath(new OnlineNodePath(null, null), false);
     }
     
     @Override
@@ -68,6 +68,6 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     }
     
     private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
-        return Pattern.compile(NewNodePathGenerator.generatePath(new OnlineNodePath(null, null), false) + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+        return Pattern.compile(NodePathGenerator.generatePath(new OnlineNodePath(null, null), false) + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

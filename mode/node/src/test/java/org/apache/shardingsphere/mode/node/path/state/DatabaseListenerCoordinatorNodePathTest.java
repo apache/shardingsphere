@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ class DatabaseListenerCoordinatorNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
-        assertThat(NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
+        assertThat(NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
+        assertThat(NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
     }
 }

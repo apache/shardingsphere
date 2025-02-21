@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 @NodePathEntity("/metadata/${databaseName}/data_sources/units/${storageUnitName}")
 @RequiredArgsConstructor
 @Getter
-public final class StorageUnitNodePath implements NewNodePath {
+public final class StorageUnitNodePath implements NodePath {
     
     private final String databaseName;
     

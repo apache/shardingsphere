@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.node.storage;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +28,7 @@ class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new QualifiedDataSourceNodePath(new QualifiedDataSource("foo_db.foo_group.foo_ds")), false),
+        assertThat(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(new QualifiedDataSource("foo_db.foo_group.foo_ds")), false),
                 is("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds"));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +27,6 @@ class GlobalPropertiesNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false), is("/props"));
+        assertThat(NodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false), is("/props"));
     }
 }

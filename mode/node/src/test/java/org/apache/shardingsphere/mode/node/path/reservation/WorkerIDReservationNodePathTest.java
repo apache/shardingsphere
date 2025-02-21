@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.reservation;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ class WorkerIDReservationNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new WorkerIDReservationNodePath(null), false), is("/reservation/worker_id"));
-        assertThat(NewNodePathGenerator.generatePath(new WorkerIDReservationNodePath(1), false), is("/reservation/worker_id/1"));
+        assertThat(NodePathGenerator.generatePath(new WorkerIDReservationNodePath(null), false), is("/reservation/worker_id"));
+        assertThat(NodePathGenerator.generatePath(new WorkerIDReservationNodePath(1), false), is("/reservation/worker_id/1"));
     }
 }

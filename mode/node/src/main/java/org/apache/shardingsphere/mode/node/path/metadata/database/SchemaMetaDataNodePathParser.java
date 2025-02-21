@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
@@ -42,7 +42,7 @@ public final class SchemaMetaDataNodePathParser {
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
         Pattern pattern = Pattern.compile(
-                NewNodePathGenerator.generatePath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true) + endPattern, Pattern.CASE_INSENSITIVE);
+                NodePathGenerator.generatePath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

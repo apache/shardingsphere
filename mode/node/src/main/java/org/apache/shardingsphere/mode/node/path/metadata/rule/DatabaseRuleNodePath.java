@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRul
 @NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseRuleNodePath implements NewNodePath {
+public final class DatabaseRuleNodePath implements NodePath {
     
     private final String databaseName;
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,8 +28,8 @@ class OnlineNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
-        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
-        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
+        assertThat(NodePathGenerator.generatePath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
+        assertThat(NodePathGenerator.generatePath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
+        assertThat(NodePathGenerator.generatePath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
     }
 }

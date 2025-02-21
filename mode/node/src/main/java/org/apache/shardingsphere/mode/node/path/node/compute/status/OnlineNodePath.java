@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
  */
 @NodePathEntity("/nodes/compute_nodes/online/${instanceType}/${instanceId}")
 @Getter
-public final class OnlineNodePath implements NewNodePath {
+public final class OnlineNodePath implements NodePath {
     
     private final String instanceType;
     

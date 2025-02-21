@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.execution;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ class ProcessNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", null), false), is("/execution_nodes/foo_process_id"));
-        assertThat(NewNodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", "foo_instance_id"), false), is("/execution_nodes/foo_process_id/foo_instance_id"));
+        assertThat(NodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", null), false), is("/execution_nodes/foo_process_id"));
+        assertThat(NodePathGenerator.generatePath(new ProcessNodePath("foo_process_id", "foo_instance_id"), false), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }
 }

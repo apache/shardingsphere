@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathParser;
 import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDataNodePath;
 
@@ -40,7 +40,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NewNodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false);
+        return NodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false);
     }
     
     @Override

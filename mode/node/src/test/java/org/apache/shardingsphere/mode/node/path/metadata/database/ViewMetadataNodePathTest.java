@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -28,15 +28,15 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
-        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
-        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
-        assertThat(NewNodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
+        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test
     void assertGenerateVersionPath() {
-        VersionNodePath versionNodePath = NewNodePathGenerator.generateVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
+        VersionNodePath versionNodePath = NodePathGenerator.generateVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
