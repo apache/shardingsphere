@@ -332,6 +332,9 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     private String buildFetchAllSQLWithStreamingQuery() {
         String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         List<String> columnNames = dumperContext.getQueryColumnNames();
+        if (dumperContext.hasUniqueKey()) {
+            return sqlBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName(), columnNames, dumperContext.getUniqueKeyColumns().get(0).getName());
+        }
         return sqlBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName(), columnNames);
     }
     
