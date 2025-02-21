@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
 
 /**
  * Database rule node path.
  */
+@NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
 @RequiredArgsConstructor
-public final class DatabaseRuleNodePath implements NodePath {
-    
-    private static final String RULE_NODE = "rules";
+@Getter
+public final class DatabaseRuleNodePath implements NewNodePath {
     
     private final String databaseName;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new DatabaseNodePath());
+    private final String ruleType;
     
-    @Override
-    public String getRootPath() {
-        return String.join("/", nodePathGenerator.getPath(databaseName), RULE_NODE);
-    }
+    private final DatabaseRuleItem databaseRuleItem;
 }

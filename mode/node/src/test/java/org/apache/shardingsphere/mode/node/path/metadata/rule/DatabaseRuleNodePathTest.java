@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.rule;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +28,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DatabaseRuleNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new DatabaseRuleNodePath("foo_db").getRootPath(), is("/metadata/foo_db/rules"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseRuleNodePath("foo_db", null, null), false), is("/metadata/foo_db/rules"));
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseRuleNodePath("foo_db", "foo_rule", null), false), is("/metadata/foo_db/rules/foo_rule"));
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("unique_rule_item")), false),
+                is("/metadata/foo_db/rules/foo_rule/unique_rule_item"));
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")), false),
+                is("/metadata/foo_db/rules/foo_rule/named_rule_item/item"));
+    }
+    
+    @Test
+    void assertGenerateVersionPath() {
+        VersionNodePath versionNodePath = NewNodePathGenerator.generateVersionPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")));
+        assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version"));
+        assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions"));
+        assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions/0"));
     }
 }
