@@ -42,32 +42,23 @@ public final class NewNodePathGenerator {
         LinkedList<String> result = new LinkedList<>();
         String path = nodePath.getClass().getAnnotation(NodePathEntity.class).value();
         for (String each : path.split("/")) {
-            if (each.contains(":")) {
-                Collection<String> segments = new LinkedList<>();
-                for (String eachVariable: each.split(":")) {
-                    if (eachVariable.startsWith("${") && eachVariable.endsWith("}")) {
-                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachVariable.substring(2, eachVariable.length() - 1)).orElse(null);
+            if (each.contains("$") || each.contains(":")) {
+                Collection<String> nodeSegments = new LinkedList<>();
+                for (String eachSegment : each.split(":")) {
+                    if (eachSegment.startsWith("${") && eachSegment.endsWith("}")) {
+                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
                         if (null == fieldValue) {
                             if (trimEmptyNode) {
                                 result.removeLast();
                             }
                             return String.join("/", result);
                         }
-                        segments.add(fieldValue.toString());
-                    }    
-                }
-                result.add(String.join(":", segments));
-                continue;
-            }
-            if (each.startsWith("${") && each.endsWith("}")) {
-                Object fieldValue = ReflectionUtils.getFieldValue(nodePath, each.substring(2, each.length() - 1)).orElse(null);
-                if (null == fieldValue) {
-                    if (trimEmptyNode) {
-                        result.removeLast();
+                        nodeSegments.add(fieldValue.toString());
+                    } else {
+                        nodeSegments.add(each);
                     }
-                    return String.join("/", result);
                 }
-                result.add(fieldValue.toString());
+                result.add(String.join(":", nodeSegments));
             } else {
                 result.add(each);
             }
