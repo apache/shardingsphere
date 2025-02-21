@@ -97,7 +97,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(new NodePathGenerator(new OnlineTypeNodePath()).getPath(each.name().toLowerCase())).stream()
-                        .map(onlinePath -> new NodePathGenerator(new KillProcessTriggerNodePath()).getPath(String.join(":", onlinePath, processId))))
+                        .map(onlinePath -> NewNodePathGenerator.generatePath(new KillProcessTriggerNodePath(onlinePath, processId), false)))
                 .collect(Collectors.toList());
     }
     

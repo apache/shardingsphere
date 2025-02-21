@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class KillProcessTriggerNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new KillProcessTriggerNodePath().getRootPath(), is("/nodes/compute_nodes/kill_process_trigger"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new KillProcessTriggerNodePath(null, null), false), is("/nodes/compute_nodes/kill_process_trigger"));
+        assertThat(NewNodePathGenerator.generatePath(new KillProcessTriggerNodePath("foo_instance_id", "foo_process_id"), false),
+                is("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id"));
     }
 }

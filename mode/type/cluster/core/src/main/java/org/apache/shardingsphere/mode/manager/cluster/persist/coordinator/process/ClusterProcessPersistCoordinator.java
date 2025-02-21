@@ -62,6 +62,6 @@ public final class ClusterProcessPersistCoordinator {
      * @param processId process ID
      */
     public void cleanProcess(final String instanceId, final String processId) {
-        repository.delete(new NodePathGenerator(new KillProcessTriggerNodePath()).getPath(String.join(":", instanceId, processId)));
+        repository.delete(NewNodePathGenerator.generatePath(new KillProcessTriggerNodePath(instanceId, processId)), false);
     }
 }

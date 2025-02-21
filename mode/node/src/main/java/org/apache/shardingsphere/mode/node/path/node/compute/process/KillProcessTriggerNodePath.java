@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Kill process trigger node path.
  */
-public final class KillProcessTriggerNodePath implements NodePath {
+@NodePathEntity("/nodes/compute_nodes/kill_process_trigger/${instanceId}:${processId}")
+@RequiredArgsConstructor
+@Getter
+public final class KillProcessTriggerNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "kill_process_trigger";
+    private final String instanceId;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+    private final String processId;
 }

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -41,6 +42,23 @@ public final class NewNodePathGenerator {
         LinkedList<String> result = new LinkedList<>();
         String path = nodePath.getClass().getAnnotation(NodePathEntity.class).value();
         for (String each : path.split("/")) {
+            if (each.contains(":")) {
+                Collection<String> segments = new LinkedList<>();
+                for (String eachVariable: each.split(":")) {
+                    if (eachVariable.startsWith("${") && eachVariable.endsWith("}")) {
+                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachVariable.substring(2, eachVariable.length() - 1)).orElse(null);
+                        if (null == fieldValue) {
+                            if (trimEmptyNode) {
+                                result.removeLast();
+                            }
+                            return String.join("/", result);
+                        }
+                        segments.add(fieldValue.toString());
+                    }    
+                }
+                result.add(String.join(":", segments));
+                continue;
+            }
             if (each.startsWith("${") && each.endsWith("}")) {
                 Object fieldValue = ReflectionUtils.getFieldValue(nodePath, each.substring(2, each.length() - 1)).orElse(null);
                 if (null == fieldValue) {
