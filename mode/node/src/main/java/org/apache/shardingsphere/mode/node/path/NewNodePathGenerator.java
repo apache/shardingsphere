@@ -47,12 +47,14 @@ public final class NewNodePathGenerator {
                 for (String eachSegment : each.split(":")) {
                     if (eachSegment.startsWith("${") && eachSegment.endsWith("}")) {
                         Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
+                        // CHECKSTYLE: OFF
                         if (null == fieldValue) {
                             if (trimEmptyNode) {
                                 result.removeLast();
                             }
                             return String.join("/", result);
                         }
+                        // CHECKSTYLE: ON
                         nodeSegments.add(fieldValue.toString());
                     } else {
                         nodeSegments.add(each);
