@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mode.node.path.reservation;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Reservation node path.
+ * Worker ID reservation node path.
  */
-public final class ReservationNodePath implements NodePath {
+@NodePathEntity("/reservation/worker_id/${preselectedWorkerId}")
+@RequiredArgsConstructor
+@Getter
+public final class WorkerIDReservationNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "/reservation";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
-    }
+    private final Integer preselectedWorkerId;
 }

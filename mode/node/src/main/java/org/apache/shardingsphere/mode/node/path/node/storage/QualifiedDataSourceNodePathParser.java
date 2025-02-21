@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.node.path.node.storage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -40,7 +41,8 @@ public final class QualifiedDataSourceNodePathParser {
      * @return found qualified data source
      */
     public static Optional<QualifiedDataSource> findQualifiedDataSource(final String qualifiedDataSourcePath) {
-        Pattern pattern = Pattern.compile(String.join("/", new QualifiedDataSourceNodePath().getRootPath(), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(
+                String.join("/", NewNodePathGenerator.generatePath(new QualifiedDataSourceNodePath(null), false), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
         return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }
