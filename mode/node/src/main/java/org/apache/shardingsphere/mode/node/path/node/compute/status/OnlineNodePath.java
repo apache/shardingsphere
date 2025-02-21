@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Online instance node path.
+ * Online node path.
  */
-@RequiredArgsConstructor
-public final class OnlineInstanceNodePath implements NodePath {
+@NodePathEntity("/nodes/compute_nodes/online/${instanceType}/${instanceId}")
+@Getter
+public final class OnlineNodePath implements NewNodePath {
     
-    private final InstanceType instanceType;
+    private final String instanceType;
     
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new OnlineTypeNodePath());
+    private final String instanceId;
     
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(instanceType.name().toLowerCase());
+    public OnlineNodePath(final InstanceType instanceType, final String instanceId) {
+        this.instanceType = null == instanceType ? null : instanceType.name().toLowerCase();
+        this.instanceId = instanceId;
     }
 }

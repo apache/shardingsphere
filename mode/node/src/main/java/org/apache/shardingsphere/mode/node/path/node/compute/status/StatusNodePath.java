@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Status node path.
  */
-public final class StatusNodePath implements NodePath {
+@NodePathEntity("/nodes/compute_nodes/status/${instanceId}")
+@RequiredArgsConstructor
+@Getter
+public final class StatusNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "status";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+    private final String instanceId;
 }

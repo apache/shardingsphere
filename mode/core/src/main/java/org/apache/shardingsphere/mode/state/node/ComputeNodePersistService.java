@@ -30,10 +30,8 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineInstanceNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineTypeNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.StatusNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -69,7 +67,7 @@ public final class ComputeNodePersistService {
     private void persistOnline(final ComputeNodeInstance computeNodeInstance) {
         ComputeNodeData computeNodeData = new ComputeNodeData(
                 computeNodeInstance.getMetaData().getDatabaseName(), computeNodeInstance.getMetaData().getAttributes(), computeNodeInstance.getMetaData().getVersion());
-        repository.persistEphemeral(new NodePathGenerator(new OnlineInstanceNodePath(computeNodeInstance.getMetaData().getType())).getPath(computeNodeInstance.getMetaData().getId()),
+        repository.persistEphemeral(NewNodePathGenerator.generatePath(new OnlineNodePath(computeNodeInstance.getMetaData().getType(), computeNodeInstance.getMetaData().getId()), false),
                 YamlEngine.marshal(new YamlComputeNodeDataSwapper().swapToYamlConfiguration(computeNodeData)));
     }
     
@@ -79,7 +77,7 @@ public final class ComputeNodePersistService {
      * @param computeNodeInstance compute node instance
      */
     public void offline(final ComputeNodeInstance computeNodeInstance) {
-        repository.delete(new NodePathGenerator(new OnlineInstanceNodePath(computeNodeInstance.getMetaData().getType())).getPath(computeNodeInstance.getMetaData().getId()));
+        repository.delete(NewNodePathGenerator.generatePath(new OnlineNodePath(computeNodeInstance.getMetaData().getType(), computeNodeInstance.getMetaData().getId()), false));
     }
     
     /**
@@ -93,8 +91,8 @@ public final class ComputeNodePersistService {
     
     private Collection<ComputeNodeInstance> loadInstances(final InstanceType instanceType) {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (String each : repository.getChildrenKeys(new NodePathGenerator(new OnlineTypeNodePath()).getPath(instanceType.name().toLowerCase()))) {
-            String value = repository.query(new NodePathGenerator(new OnlineInstanceNodePath(instanceType)).getPath(each));
+        for (String each : repository.getChildrenKeys(NewNodePathGenerator.generatePath(new OnlineNodePath(instanceType, null), false))) {
+            String value = repository.query(NewNodePathGenerator.generatePath(new OnlineNodePath(instanceType, each), false));
             if (!Strings.isNullOrEmpty(value)) {
                 result.add(loadInstance(InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
             }
@@ -117,7 +115,7 @@ public final class ComputeNodePersistService {
     }
     
     private String loadState(final String instanceId) {
-        return repository.query(new NodePathGenerator(new StatusNodePath()).getPath(instanceId));
+        return repository.query(NewNodePathGenerator.generatePath(new StatusNodePath(instanceId), false));
     }
     
     @SuppressWarnings("unchecked")
@@ -133,7 +131,7 @@ public final class ComputeNodePersistService {
      * @param instanceState instance state
      */
     public void updateState(final String instanceId, final InstanceState instanceState) {
-        repository.persistEphemeral(new NodePathGenerator(new StatusNodePath()).getPath(instanceId), instanceState.name());
+        repository.persistEphemeral(NewNodePathGenerator.generatePath(new StatusNodePath(instanceId), false), instanceState.name());
     }
     
     /**

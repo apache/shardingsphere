@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePathParser;
 import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
@@ -59,7 +58,7 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        if (event.getKey().equals(new NodePathGenerator(new StatusNodePath()).getPath(instanceId)) && Type.DELETED != event.getType()) {
+        if (event.getKey().equals(NewNodePathGenerator.generatePath(new StatusNodePath(instanceId), false)) && Type.DELETED != event.getType()) {
             computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
         } else if (event.getKey().equals(NewNodePathGenerator.generatePath(new LabelNodePath(instanceId), false)) && Type.DELETED != event.getType()) {
             // TODO labels may be empty

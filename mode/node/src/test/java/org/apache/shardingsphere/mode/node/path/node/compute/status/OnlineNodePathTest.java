@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class OnlineInstanceNodePathTest {
+class OnlineNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new OnlineInstanceNodePath(InstanceType.JDBC).getRootPath(), is("/nodes/compute_nodes/online/jdbc"));
-        assertThat(new OnlineInstanceNodePath(InstanceType.PROXY).getRootPath(), is("/nodes/compute_nodes/online/proxy"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
+        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
+        assertThat(NewNodePathGenerator.generatePath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
     }
 }
