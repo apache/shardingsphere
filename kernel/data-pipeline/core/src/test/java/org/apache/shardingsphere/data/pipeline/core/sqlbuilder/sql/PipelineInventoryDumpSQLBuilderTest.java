@@ -65,5 +65,9 @@ class PipelineInventoryDumpSQLBuilderTest {
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order"));
         actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"));
         assertThat(actual, is("SELECT * FROM t_order"));
+        actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Arrays.asList("order_id", "user_id", "status"), "order_id");
+        assertThat(actual, is("SELECT order_id,user_id,status FROM t_order ORDER BY order_id ASC"));
+        actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"), "order_id");
+        assertThat(actual, is("SELECT * FROM t_order ORDER BY order_id ASC"));
     }
 }

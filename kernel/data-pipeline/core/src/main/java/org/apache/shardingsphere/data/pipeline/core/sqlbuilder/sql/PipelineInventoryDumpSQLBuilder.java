@@ -104,4 +104,20 @@ public final class PipelineInventoryDumpSQLBuilder {
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         return String.format("SELECT %s FROM %s", queryColumns, qualifiedTableName);
     }
+    
+    /**
+     * Build fetch all inventory dump SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return built SQL
+     */
+    public String buildFetchAllSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        return String.format("SELECT %s FROM %s ORDER BY %s ASC", queryColumns, qualifiedTableName, quotedUniqueKey);
+    }
 }
