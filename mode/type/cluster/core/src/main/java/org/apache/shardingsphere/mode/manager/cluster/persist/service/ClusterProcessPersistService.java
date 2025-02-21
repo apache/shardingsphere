@@ -67,7 +67,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(new NodePathGenerator(new OnlineTypeNodePath()).getPath(each.name().toLowerCase())).stream()
-                        .map(instanceId -> new NodePathGenerator(new ShowProcessListTriggerNodePath()).getPath(String.join(":", instanceId, taskId))))
+                        .map(instanceId -> NewNodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(instanceId, taskId), false)))
                 .collect(Collectors.toList());
     }
     
