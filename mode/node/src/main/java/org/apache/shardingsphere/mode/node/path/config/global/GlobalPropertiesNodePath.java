@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Global properties node path.
  */
-public final class GlobalPropertiesNodePath implements NodePath {
-    
-    private static final String ROOT_NODE = "/props";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
-    }
+@NodePathEntity("/props")
+@RequiredArgsConstructor
+@Getter
+public final class GlobalPropertiesNodePath implements NewNodePath {
 }
