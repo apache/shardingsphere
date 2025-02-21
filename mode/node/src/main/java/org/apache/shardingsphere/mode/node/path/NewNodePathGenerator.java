@@ -45,20 +45,20 @@ public final class NewNodePathGenerator {
             if (each.contains("$") || each.contains(":")) {
                 Collection<String> nodeSegments = new LinkedList<>();
                 for (String eachSegment : each.split(":")) {
+                    // CHECKSTYLE: OFF
                     if (eachSegment.startsWith("${") && eachSegment.endsWith("}")) {
                         Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
-                        // CHECKSTYLE: OFF
                         if (null == fieldValue) {
                             if (trimEmptyNode) {
                                 result.removeLast();
                             }
                             return String.join("/", result);
                         }
-                        // CHECKSTYLE: ON
                         nodeSegments.add(fieldValue.toString());
                     } else {
                         nodeSegments.add(each);
                     }
+                    // CHECKSTYLE: ON
                 }
                 result.add(String.join(":", nodeSegments));
             } else {
