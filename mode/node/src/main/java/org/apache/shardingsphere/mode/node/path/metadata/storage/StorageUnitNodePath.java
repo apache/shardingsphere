@@ -17,31 +17,20 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Storage unit node path.
  */
+@NodePathEntity("/metadata/${databaseName}/data_sources/units/${storageUnitName}")
 @RequiredArgsConstructor
-public final class StorageUnitNodePath implements NodePath {
+@Getter
+public final class StorageUnitNodePath implements NewNodePath {
     
-    private static final String UNITS_NODE = "units";
+    private final String databaseName;
     
-    private final NodePathGenerator nodePathGenerator;
-    
-    public StorageUnitNodePath() {
-        this(NodePathPattern.IDENTIFIER);
-    }
-    
-    public StorageUnitNodePath(final String databaseName) {
-        nodePathGenerator = new NodePathGenerator(new DataSourceNodePath(databaseName));
-    }
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(UNITS_NODE);
-    }
+    private final String storageUnitName;
 }
