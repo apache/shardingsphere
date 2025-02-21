@@ -135,6 +135,6 @@ public final class StatisticsPersistService {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, null, null, null), false));
+        repository.delete(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, null, null, null), true));
     }
 }

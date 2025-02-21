@@ -28,8 +28,8 @@ class StatisticsDataNodePathTest {
     @Test
     void assertGeneratePath() {
         assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false), is("/statistics/databases"));
-        assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));
         assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", null, null, null), true), is("/statistics/databases/foo_db"));
+        assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));
         assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), true), is("/statistics/databases/foo_db/schemas/foo_schema"));
         assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false), is("/statistics/databases/foo_db/schemas/foo_schema/tables"));
         assertThat(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", null), false),
