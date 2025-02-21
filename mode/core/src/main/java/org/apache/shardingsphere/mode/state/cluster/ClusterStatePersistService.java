@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.state.cluster;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.cluster.ClusterNodePath;
+import org.apache.shardingsphere.mode.node.path.state.ClusterNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**

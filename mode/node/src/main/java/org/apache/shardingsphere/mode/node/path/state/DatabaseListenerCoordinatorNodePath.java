@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.state.database;
+package org.apache.shardingsphere.mode.node.path.state;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Database listener coordinator node path.
  */
-public final class DatabaseListenerCoordinatorNodePath implements NodePath {
+@NodePathEntity("/states/database_listener_coordinator/${databaseName}")
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseListenerCoordinatorNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "database_listener_coordinator";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatesNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+    private final String databaseName;
 }

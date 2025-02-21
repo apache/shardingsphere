@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.mode.node.path.state;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.junit.jupiter.api.Test;
 
-/**
- * States node path.
- */
-public final class StatesNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class DatabaseListenerCoordinatorNodePathTest {
     
-    private static final String ROOT_NODE = "/states";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
+    @Test
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
+        assertThat(NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
     }
 }
