@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.storage.QualifiedDataSourceNodePath;
 import org.apache.shardingsphere.mode.node.path.node.storage.QualifiedDataSourceNodePathParser;
 
@@ -44,7 +45,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
     
     @Override
     public String getSubscribedKey() {
-        return new QualifiedDataSourceNodePath().getRootPath();
+        return NewNodePathGenerator.generatePath(new QualifiedDataSourceNodePath(null), false);
     }
     
     @Override

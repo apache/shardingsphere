@@ -22,9 +22,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -58,7 +57,7 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(new GlobalRuleNodePath().getRootPath()));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(NewNodePathGenerator.generatePath(new GlobalRuleNodePath(null), false)));
     }
     
     /**
@@ -68,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(new NodePathGenerator(new GlobalRuleNodePath()).getPath(ruleType)));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, repositoryTuplePersistService.load(NewNodePathGenerator.generatePath(new GlobalRuleNodePath(ruleType), false)));
     }
     
     /**
@@ -84,8 +83,7 @@ public final class GlobalRulePersistService {
     
     private void persistTuples(final Collection<RepositoryTuple> tuples) {
         for (RepositoryTuple each : tuples) {
-            VersionNodePath versionNodePath = new NodePathGenerator(new GlobalRuleNodePath()).getVersion(each.getKey());
-            metaDataVersionPersistService.persist(versionNodePath, each.getValue());
+            metaDataVersionPersistService.persist(NewNodePathGenerator.generateVersionPath(new GlobalRuleNodePath(each.getKey())), each.getValue());
         }
     }
 }

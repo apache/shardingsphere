@@ -26,10 +26,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsDatabaseNodePath;
-import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsSchemaNodePath;
-import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsTableNodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.statistics.StatisticsDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -57,7 +55,7 @@ public final class StatisticsPersistService {
      * @return statistics
      */
     public ShardingSphereStatistics load(final ShardingSphereMetaData metaData) {
-        Collection<String> databaseNames = repository.getChildrenKeys(new StatisticsDatabaseNodePath().getRootPath());
+        Collection<String> databaseNames = repository.getChildrenKeys(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false));
         if (databaseNames.isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -70,7 +68,8 @@ public final class StatisticsPersistService {
     
     private DatabaseStatistics load(final ShardingSphereDatabase database) {
         DatabaseStatistics result = new DatabaseStatistics();
-        for (String each : repository.getChildrenKeys(new StatisticsSchemaNodePath(database.getName()).getRootPath()).stream().filter(database::containsSchema).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(database.getName(), null, null, null), false)).stream()
+                .filter(database::containsSchema).collect(Collectors.toList())) {
             result.putSchemaStatistics(each, load(database.getName(), database.getSchema(each)));
         }
         return result;
@@ -78,8 +77,8 @@ public final class StatisticsPersistService {
     
     private SchemaStatistics load(final String databaseName, final ShardingSphereSchema schema) {
         SchemaStatistics result = new SchemaStatistics();
-        for (String each : repository.getChildrenKeys(new StatisticsTableNodePath(databaseName, schema.getName()).getRootPath()).stream().filter(schema::containsTable)
-                .collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NewNodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false)).stream()
+                .filter(schema::containsTable).collect(Collectors.toList())) {
             result.putTableStatistics(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
         }
@@ -101,7 +100,7 @@ public final class StatisticsPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(new NodePathGenerator(new StatisticsSchemaNodePath(databaseName)).getPath(schemaName), "");
+        repository.persist(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, schemaName, null, null), true), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
@@ -136,6 +135,6 @@ public final class StatisticsPersistService {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(new NodePathGenerator(new StatisticsDatabaseNodePath()).getPath(databaseName));
+        repository.delete(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, null, null, null), true));
     }
 }

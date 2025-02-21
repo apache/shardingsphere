@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.execution.process.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.execution.ProcessNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.KillProcessTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineTypeNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -56,7 +56,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
             isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
-            repository.delete(new ProcessNodePath(taskId).getRootPath());
+            repository.delete(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false));
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -65,15 +65,15 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(new NodePathGenerator(new OnlineTypeNodePath()).getPath(each.name().toLowerCase())).stream()
-                        .map(instanceId -> new NodePathGenerator(new ShowProcessListTriggerNodePath()).getPath(String.join(":", instanceId, taskId))))
+                .flatMap(each -> repository.getChildrenKeys(NewNodePathGenerator.generatePath(new OnlineNodePath(each, null), false)).stream()
+                        .map(instanceId -> NewNodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(instanceId, taskId), false)))
                 .collect(Collectors.toList());
     }
     
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
-        for (String each : repository.getChildrenKeys(new ProcessNodePath(taskId).getRootPath()).stream()
-                .map(each -> repository.query(new NodePathGenerator(new ProcessNodePath(taskId)).getPath(each))).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false)).stream()
+                .map(each -> repository.query(NewNodePathGenerator.generatePath(new ProcessNodePath(taskId, each), false))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);
@@ -95,8 +95,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(new NodePathGenerator(new OnlineTypeNodePath()).getPath(each.name().toLowerCase())).stream()
-                        .map(onlinePath -> new NodePathGenerator(new KillProcessTriggerNodePath()).getPath(String.join(":", onlinePath, processId))))
+                .flatMap(each -> repository.getChildrenKeys(NewNodePathGenerator.generatePath(new OnlineNodePath(each, null), false)).stream()
+                        .map(onlinePath -> NewNodePathGenerator.generatePath(new KillProcessTriggerNodePath(onlinePath, processId), false)))
                 .collect(Collectors.toList());
     }
     

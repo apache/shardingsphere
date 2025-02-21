@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.config.global;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalPropertiesNodePathParser {
     
-    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(new GlobalPropertiesNodePath().getRootPath());
+    private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(NewNodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false));
     
     /**
      * Get properties version node path parser.

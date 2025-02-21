@@ -26,10 +26,11 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Dat
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePath;
-import org.apache.shardingsphere.mode.node.path.state.database.DatabaseListenerCoordinatorNodePathParser;
-import org.apache.shardingsphere.mode.node.path.state.database.DatabaseListenerCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.state.DatabaseListenerCoordinatorNodePathParser;
+import org.apache.shardingsphere.mode.node.path.state.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     @Override
     public String getSubscribedKey() {
-        return new DatabaseListenerCoordinatorNodePath().getRootPath();
+        return NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false);
     }
     
     @Override

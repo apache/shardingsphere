@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePathParser;
 import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
@@ -58,12 +58,12 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        if (event.getKey().equals(new NodePathGenerator(new StatusNodePath()).getPath(instanceId)) && Type.DELETED != event.getType()) {
+        if (event.getKey().equals(NewNodePathGenerator.generatePath(new StatusNodePath(instanceId), false)) && Type.DELETED != event.getType()) {
             computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
-        } else if (event.getKey().equals(new NodePathGenerator(new LabelNodePath()).getPath(instanceId)) && Type.DELETED != event.getType()) {
+        } else if (event.getKey().equals(NewNodePathGenerator.generatePath(new LabelNodePath(instanceId), false)) && Type.DELETED != event.getType()) {
             // TODO labels may be empty
             computeNodeInstanceContext.updateLabels(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
-        } else if (event.getKey().equals(new NodePathGenerator(new ComputeNodeWorkerIDNodePath()).getPath(instanceId))) {
+        } else if (event.getKey().equals(NewNodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath(instanceId), false))) {
             computeNodeInstanceContext.updateWorkerId(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue()));
         }
     }

@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.mode.node.path.node.storage;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.NodeNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Qualified data source node path.
  */
-public final class QualifiedDataSourceNodePath implements NodePath {
+@NodePathEntity("/nodes/qualified_data_sources/${qualifiedDataSource}")
+@RequiredArgsConstructor
+@Getter
+public final class QualifiedDataSourceNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "qualified_data_sources";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new NodeNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+    private final QualifiedDataSource qualifiedDataSource;
 }

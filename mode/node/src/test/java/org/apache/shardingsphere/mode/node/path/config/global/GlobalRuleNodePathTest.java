@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class GlobalRuleNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new GlobalRuleNodePath().getRootPath(), is("/rules"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new GlobalRuleNodePath(null), false), is("/rules"));
+        assertThat(NewNodePathGenerator.generatePath(new GlobalRuleNodePath("foo_rule"), false), is("/rules/foo_rule"));
     }
 }
