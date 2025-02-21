@@ -28,10 +28,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Table node path parser.
+ * Table meta data node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableNodePathParser {
+public final class TableMetaDataNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(NewNodePathGenerator.generatePath(
             new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);

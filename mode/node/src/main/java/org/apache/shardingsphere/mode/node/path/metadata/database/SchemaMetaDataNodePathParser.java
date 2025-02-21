@@ -27,10 +27,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Schema node path parser.
+ * Schema meta data node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaNodePathParser {
+public final class SchemaMetaDataNodePathParser {
     
     /**
      * Find schema name.

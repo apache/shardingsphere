@@ -26,22 +26,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TableNodePathParserTest {
+class TableMetaDataNodePathParserTest {
     
     @Test
     void assertFindTableName() {
-        Optional<String> actual = TableNodePathParser.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
+        Optional<String> actual = TableMetaDataNodePathParser.findTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_tbl"));
     }
     
     @Test
     void assertFindTableNameIfNotFound() {
-        assertFalse(TableNodePathParser.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
+        assertFalse(TableMetaDataNodePathParser.findTableName("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl").isPresent());
     }
     
     @Test
     void assertIsTablePath() {
-        assertTrue(TableNodePathParser.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertTrue(TableMetaDataNodePathParser.isTablePath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
 }

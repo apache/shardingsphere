@@ -26,22 +26,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ViewNodePathParserTest {
+class ViewMetaDataNodePathParserTest {
     
     @Test
     void assertFindViewName() {
-        Optional<String> actual = ViewNodePathParser.findViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
+        Optional<String> actual = ViewMetaDataNodePathParser.findViewName("/metadata/foo_db/schemas/foo_schema/views/foo_view");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_view"));
     }
     
     @Test
     void assertFindViewNameIfNotFound() {
-        assertFalse(ViewNodePathParser.findViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
+        assertFalse(ViewMetaDataNodePathParser.findViewName("/xxx/foo_db/schemas/foo_schema/views/foo_view").isPresent());
     }
     
     @Test
     void assertIsViewPath() {
-        assertTrue(ViewNodePathParser.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+        assertTrue(ViewMetaDataNodePathParser.isViewPath("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
 }
