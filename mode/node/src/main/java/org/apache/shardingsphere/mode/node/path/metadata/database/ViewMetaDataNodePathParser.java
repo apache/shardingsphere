@@ -28,10 +28,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * View path parser.
+ * View meta data path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ViewNodePathParser {
+public final class ViewMetaDataNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
             NewNodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
