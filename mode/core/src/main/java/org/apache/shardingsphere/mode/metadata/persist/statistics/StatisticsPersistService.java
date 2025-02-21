@@ -100,7 +100,7 @@ public final class StatisticsPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, schemaName, null, null), false), "");
+        repository.persist(NewNodePathGenerator.generatePath(new StatisticsDataNodePath(databaseName, schemaName, null, null), true), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
