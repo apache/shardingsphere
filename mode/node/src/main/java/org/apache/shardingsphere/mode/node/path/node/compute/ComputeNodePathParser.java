@@ -33,13 +33,13 @@ public final class ComputeNodePathParser {
     private static final String INSTANCE_ID_PATTERN = "([\\S]+)";
     
     /**
-     * Find instance id by compute node path.
+     * Find instance ID by compute node path.
      *
      * @param computeNodePath compute node path
      * @return found instance ID
      */
     public static Optional<String> findInstanceId(final String computeNodePath) {
-        Pattern pattern = Pattern.compile(new ComputeNodePath().getRootPath() + "(/status|/worker_id|/labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("/nodes/compute_nodes/" + "(status|worker_id|labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(computeNodePath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
