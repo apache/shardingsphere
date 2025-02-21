@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePathParser;
 
@@ -36,7 +36,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NewNodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false);
+        return NodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false);
     }
     
     @Override

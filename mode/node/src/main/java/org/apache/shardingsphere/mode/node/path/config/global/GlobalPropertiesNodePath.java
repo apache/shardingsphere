@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.config.global;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -26,5 +26,5 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
  */
 @NodePathEntity("/props")
 @Getter
-public final class GlobalPropertiesNodePath implements NewNodePath {
+public final class GlobalPropertiesNodePath implements NodePath {
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -28,15 +28,15 @@ class TableMetadataNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
-        assertThat(NewNodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/tables"));
-        assertThat(NewNodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
-        assertThat(NewNodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"), false), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertThat(NodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
+        assertThat(NodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/tables"));
+        assertThat(NodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(NodePathGenerator.generatePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"), false), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
     
     @Test
     void assertGenerateVersionPath() {
-        VersionNodePath versionNodePath = NewNodePathGenerator.generateVersionPath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"));
+        VersionNodePath versionNodePath = NodePathGenerator.generateVersionPath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));

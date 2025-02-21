@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -38,7 +38,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be added database name
      */
     public void add(final String databaseName) {
-        repository.persist(NewNodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true), "");
+        repository.persist(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true), "");
     }
     
     /**
@@ -47,7 +47,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be dropped database name
      */
     public void drop(final String databaseName) {
-        repository.delete(NewNodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true));
+        repository.delete(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true));
     }
     
     /**
@@ -56,6 +56,6 @@ public final class DatabaseMetaDataPersistService {
      * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(NewNodePathGenerator.generatePath(new TableMetadataNodePath(null, null, null), false));
+        return repository.getChildrenKeys(NodePathGenerator.generatePath(new TableMetadataNodePath(null, null, null), false));
     }
 }

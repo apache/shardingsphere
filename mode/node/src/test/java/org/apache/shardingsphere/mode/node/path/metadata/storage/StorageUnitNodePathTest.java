@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ class StorageUnitNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new StorageUnitNodePath("foo_db", null), false), is("/metadata/foo_db/data_sources/units"));
-        assertThat(NewNodePathGenerator.generatePath(new StorageUnitNodePath("foo_db", "foo_storage_unit"), false), is("/metadata/foo_db/data_sources/units/foo_storage_unit"));
+        assertThat(NodePathGenerator.generatePath(new StorageUnitNodePath("foo_db", null), false), is("/metadata/foo_db/data_sources/units"));
+        assertThat(NodePathGenerator.generatePath(new StorageUnitNodePath("foo_db", "foo_storage_unit"), false), is("/metadata/foo_db/data_sources/units/foo_storage_unit"));
     }
 }

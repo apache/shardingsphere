@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.statistics;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +27,6 @@ class StatisticsJobNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new StatisticsJobNodePath(), false), is("/statistics/job"));
+        assertThat(NodePathGenerator.generatePath(new StatisticsJobNodePath(), false), is("/statistics/job"));
     }
 }

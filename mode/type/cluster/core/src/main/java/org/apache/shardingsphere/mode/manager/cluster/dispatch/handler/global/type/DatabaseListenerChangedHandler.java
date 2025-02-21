@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Dat
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.state.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.node.path.state.DatabaseListenerCoordinatorNodePathParser;
@@ -42,7 +42,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     @Override
     public String getSubscribedKey() {
-        return NewNodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false);
+        return NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false);
     }
     
     @Override
@@ -59,10 +59,10 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         if (ClusterDatabaseListenerCoordinatorType.CREATE == clusterDatabaseListenerCoordinatorType) {
-            repository.watch(NewNodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true), new DatabaseMetaDataChangedListener(contextManager));
+            repository.watch(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
         } else if (ClusterDatabaseListenerCoordinatorType.DROP == clusterDatabaseListenerCoordinatorType) {
-            repository.removeDataListener(NewNodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true));
+            repository.removeDataListener(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
         }
         new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);

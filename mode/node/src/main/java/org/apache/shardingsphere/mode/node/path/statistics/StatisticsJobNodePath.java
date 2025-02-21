@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.node.path.statistics;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Statistics job node path.
  */
 @NodePathEntity("/statistics/job")
-public final class StatisticsJobNodePath implements NewNodePath {
+public final class StatisticsJobNodePath implements NodePath {
 }

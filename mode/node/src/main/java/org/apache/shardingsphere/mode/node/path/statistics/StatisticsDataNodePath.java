@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.statistics;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 @NodePathEntity("/statistics/databases/${databaseName}/schemas/${schemaName}/tables/${tableName}/${uniqueKey}")
 @RequiredArgsConstructor
 @Getter
-public final class StatisticsDataNodePath implements NewNodePath {
+public final class StatisticsDataNodePath implements NodePath {
     
     private final String databaseName;
     

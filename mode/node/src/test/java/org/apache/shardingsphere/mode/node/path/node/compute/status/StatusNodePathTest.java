@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
-import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ class StatusNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NewNodePathGenerator.generatePath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
-        assertThat(NewNodePathGenerator.generatePath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
+        assertThat(NodePathGenerator.generatePath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
+        assertThat(NodePathGenerator.generatePath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
     }
 }
