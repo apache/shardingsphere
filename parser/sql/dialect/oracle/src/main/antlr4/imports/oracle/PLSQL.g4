@@ -75,7 +75,7 @@ returnDateType
     ;
 
 body
-    : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_
+    : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_?
     ;
 
 // TODO need add more statement type according to the doc
