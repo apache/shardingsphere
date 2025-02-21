@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.state.cluster;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ClusterNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new ClusterNodePath().getRootPath(), is("/states/cluster_state"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new ClusterNodePath(), false), is("/states/cluster_state"));
     }
 }

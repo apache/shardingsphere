@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.mode.node.path.state.cluster;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.StatesNodePath;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Cluster node path.
  */
-public final class ClusterNodePath implements NodePath {
-    
-    private static final String ROOT_NODE = "cluster_state";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new StatesNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+@NodePathEntity("/states/cluster_state")
+public final class ClusterNodePath implements NewNodePath {
 }
