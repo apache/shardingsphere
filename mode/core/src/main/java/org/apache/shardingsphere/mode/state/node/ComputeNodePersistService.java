@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineInstanceNodePath;
@@ -121,7 +122,7 @@ public final class ComputeNodePersistService {
     
     @SuppressWarnings("unchecked")
     private Collection<String> loadLabels(final String instanceId) {
-        String yamlContent = repository.query(new NodePathGenerator(new LabelNodePath()).getPath(instanceId));
+        String yamlContent = repository.query(NewNodePathGenerator.generatePath(new LabelNodePath(instanceId), false));
         return Strings.isNullOrEmpty(yamlContent) ? Collections.emptyList() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -142,7 +143,7 @@ public final class ComputeNodePersistService {
      * @param labels instance labels
      */
     public void persistLabels(final String instanceId, final Collection<String> labels) {
-        repository.persistEphemeral(new NodePathGenerator(new LabelNodePath()).getPath(instanceId), YamlEngine.marshal(labels));
+        repository.persistEphemeral(NewNodePathGenerator.generatePath(new LabelNodePath(instanceId), false), YamlEngine.marshal(labels));
     }
     
     /**
@@ -152,7 +153,7 @@ public final class ComputeNodePersistService {
      * @param workerId worker ID
      */
     public void persistWorkerId(final String instanceId, final int workerId) {
-        repository.persistEphemeral(new NodePathGenerator(new ComputeNodeWorkerIDNodePath()).getPath(instanceId), String.valueOf(workerId));
+        repository.persistEphemeral(NewNodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath(instanceId), false), String.valueOf(workerId));
     }
     
     /**
@@ -163,7 +164,7 @@ public final class ComputeNodePersistService {
      */
     public Optional<Integer> loadWorkerId(final String instanceId) {
         try {
-            String workerId = repository.query(new NodePathGenerator(new ComputeNodeWorkerIDNodePath()).getPath(instanceId));
+            String workerId = repository.query(NewNodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath(instanceId), false));
             return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
@@ -177,8 +178,8 @@ public final class ComputeNodePersistService {
      * @return assigned worker IDs
      */
     public Collection<Integer> getAssignedWorkerIds() {
-        Collection<String> instanceIds = repository.getChildrenKeys(new ComputeNodeWorkerIDNodePath().getRootPath());
-        return instanceIds.stream()
-                .map(each -> repository.query(new NodePathGenerator(new ComputeNodeWorkerIDNodePath()).getPath(each))).filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toSet());
+        Collection<String> instanceIds = repository.getChildrenKeys(NewNodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath(null), false));
+        return instanceIds.stream().map(each -> repository.query(NewNodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath(each), false)))
+                .filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toSet());
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.label;
 
+import org.apache.shardingsphere.mode.node.path.NewNodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class LabelNodePathTest {
     
     @Test
-    void assertGetRootPath() {
-        assertThat(new LabelNodePath().getRootPath(), is("/nodes/compute_nodes/labels"));
+    void assertGeneratePath() {
+        assertThat(NewNodePathGenerator.generatePath(new LabelNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/labels/foo_instance_id"));
     }
 }

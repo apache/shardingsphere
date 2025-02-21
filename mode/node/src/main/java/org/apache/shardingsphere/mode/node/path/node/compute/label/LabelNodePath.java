@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.mode.node.path.node.compute.label;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Label node path.
  */
-public final class LabelNodePath implements NodePath {
+@NodePathEntity("/nodes/compute_nodes/labels/${instanceId}")
+@RequiredArgsConstructor
+@Getter
+public final class LabelNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "labels";
-    
-    private final NodePathGenerator nodePathGenerator = new NodePathGenerator(new ComputeNodePath());
-    
-    @Override
-    public String getRootPath() {
-        return nodePathGenerator.getPath(ROOT_NODE);
-    }
+    private final String instanceId;
 }
