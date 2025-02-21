@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mode.node.path.config.global;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Global props node path.
+ * Global rule node path.
  */
-public final class GlobalRuleNodePath implements NodePath {
+@NodePathEntity("/rules/${ruleType}")
+@RequiredArgsConstructor
+@Getter
+public final class GlobalRuleNodePath implements NewNodePath {
     
-    private static final String ROOT_NODE = "/rules";
-    
-    @Override
-    public String getRootPath() {
-        return ROOT_NODE;
-    }
+    private final String ruleType;
 }

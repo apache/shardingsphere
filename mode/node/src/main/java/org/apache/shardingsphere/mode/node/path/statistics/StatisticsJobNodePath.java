@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.statistics.database;
+package org.apache.shardingsphere.mode.node.path.statistics;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.node.path.NewNodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class StatisticsSchemaNodePathTest {
-    
-    @Test
-    void assertGetRootPath() {
-        assertThat(new StatisticsSchemaNodePath("foo_db").getRootPath(), is("/statistics/databases/foo_db/schemas"));
-    }
+/**
+ * Statistics job node path.
+ */
+@NodePathEntity("/statistics/job")
+public final class StatisticsJobNodePath implements NewNodePath {
 }
