@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class NodePathSearchCriteria {
     
-    private final NodePath nodePathExample;
+    private final NodePath searchExample;
     
     private final boolean trimEmptyNode;
     
