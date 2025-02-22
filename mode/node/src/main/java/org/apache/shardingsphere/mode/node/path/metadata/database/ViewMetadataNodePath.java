@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * View metadata node path.
@@ -35,4 +37,17 @@ public final class ViewMetadataNodePath implements NodePath {
     private final String schemaName;
     
     private final String viewName;
+    
+    public ViewMetadataNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
+    /**
+     * Create view search criteria.
+     *
+     * @return created view search criteria
+     */
+    public static NodePathSearchCriteria createViewSearchCriteria() {
+        return new NodePathSearchCriteria(new ViewMetadataNodePath(), false, true, 3);
+    }
 }

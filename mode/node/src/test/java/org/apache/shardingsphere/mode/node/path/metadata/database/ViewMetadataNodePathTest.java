@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -49,16 +48,13 @@ class ViewMetadataNodePathTest {
     }
     
     @Test
-    void assertFind() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/views/foo_view",
-                new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true, 3), is(Optional.of("foo_view")));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view",
-                new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true, 3).isPresent());
+    void assertCreateViewSearchCriteria() {
+        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()), is(Optional.of("foo_view")));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()).isPresent());
     }
     
     @Test
     void assertIsMatchedPath() {
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view",
-                new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()));
     }
 }

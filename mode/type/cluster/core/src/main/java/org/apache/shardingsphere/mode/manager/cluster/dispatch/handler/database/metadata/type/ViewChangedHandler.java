@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetadataNodePath;
 
 /**
@@ -48,8 +47,7 @@ public final class ViewChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.getVersion(
-                new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).findIdentifierByActiveVersionPath(event.getKey(), 3)
+        String viewName = NodePathSearcher.getVersion(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
                 .orElseThrow(() -> new IllegalStateException("View name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
@@ -65,8 +63,7 @@ public final class ViewChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.find(event.getKey(), new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true, 3)
-                .orElseThrow(() -> new IllegalStateException("View name not found."));
+        String viewName = NodePathSearcher.find(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria()).orElseThrow(() -> new IllegalStateException("View name not found."));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }
