@@ -52,9 +52,12 @@ class TableMetadataNodePathTest {
     void assertFind() {
         assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1), is(Optional.of("foo_db")));
         assertFalse(NodePathParser.find("/xxx/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1).isPresent());
-        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2), is(Optional.of("foo_schema")));
-        assertFalse(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2).isPresent());
-        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2), is(Optional.of("foo_schema")));
+        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2),
+                is(Optional.of("foo_schema")));
+        assertFalse(
+                NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2).isPresent());
+        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2),
+                is(Optional.of("foo_schema")));
         assertFalse(NodePathParser.find("/xxx/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2).isPresent());
         assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl",
                 new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3), is(Optional.of("foo_tbl")));

@@ -33,7 +33,7 @@ public final class NodePathParser {
     
     /**
      * Find node segment.
-     * 
+     *
      * @param path to be searched path
      * @param nodePathCriteria node path criteria
      * @param trimEmptyNode null variable should trim parent node if true
@@ -66,7 +66,7 @@ public final class NodePathParser {
     
     /**
      * Get version node path parser.
-     * 
+     *
      * @param nodePathCriteria node path criteria
      * @return version node path parser
      */
