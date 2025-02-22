@@ -39,7 +39,7 @@ public final class NodePathSearcher {
      * @return found node segment
      */
     public static Optional<String> find(final String path, final NodePathSearchCriteria criteria) {
-        Matcher matcher = createPattern(criteria.getNodePathExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path);
+        Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path);
         return matcher.find() ? Optional.of(matcher.group(criteria.getSearchSegmentIndex())) : Optional.empty();
     }
     
@@ -51,7 +51,7 @@ public final class NodePathSearcher {
      * @return is matched path or not
      */
     public static boolean isMatchedPath(final String path, final NodePathSearchCriteria criteria) {
-        return createPattern(criteria.getNodePathExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
+        return createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
     }
     
     private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
