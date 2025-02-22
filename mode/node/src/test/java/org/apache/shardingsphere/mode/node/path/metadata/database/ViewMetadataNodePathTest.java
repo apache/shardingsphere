@@ -51,10 +51,7 @@ class ViewMetadataNodePathTest {
     void assertCreateViewSearchCriteria() {
         assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()), is(Optional.of("foo_view")));
         assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()).isPresent());
-    }
-    
-    @Test
-    void assertIsMatchedPath() {
         assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()));
+        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetadataNodePath.createViewSearchCriteria()));
     }
 }
