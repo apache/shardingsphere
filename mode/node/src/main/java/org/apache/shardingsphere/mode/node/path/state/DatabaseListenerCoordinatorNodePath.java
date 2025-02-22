@@ -36,7 +36,7 @@ public final class DatabaseListenerCoordinatorNodePath implements NodePath {
     
     /**
      * Create database search criteria.
-     * 
+     *
      * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria() {
