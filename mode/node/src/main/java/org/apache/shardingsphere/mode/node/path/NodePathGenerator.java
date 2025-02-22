@@ -57,7 +57,7 @@ public final class NodePathGenerator {
         return String.join(PATH_DELIMITER, nodeSegments);
     }
     
-    private static void trimLastParentNode(LinkedList<String> nodeSegments) {
+    private static void trimLastParentNode(final LinkedList<String> nodeSegments) {
         if (!nodeSegments.isEmpty()) {
             nodeSegments.removeLast();
         }
