@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.LinkedList;
@@ -43,30 +42,24 @@ public final class NodePathGenerator {
      */
     public static String toPath(final NodePath nodePath, final boolean trimEmptyNode) {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
-        LinkedList<String> nodes = new LinkedList<>();
+        LinkedList<String> nodeSegments = new LinkedList<>();
         for (String each : templatePath.split(PATH_DELIMITER)) {
-            String node;
-            Optional<String> variableName = new NodePathVariable(each).findVariableName();
-            if (variableName.isPresent()) {
-                Object variableValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
-                if (null == variableValue) {
-                    if (trimEmptyNode) {
-                        trimLastParentNode(nodes);
-                    }
-                    break;
-                }
-                node = variableValue.toString();
-            } else {
-                node = each;
+            Optional<String> segmentLiteral = new NodePathSegment(each).getLiteral(nodePath);
+            if (segmentLiteral.isPresent()) {
+                nodeSegments.add(segmentLiteral.get());
+                continue;
             }
-            nodes.add(node);
+            if (trimEmptyNode) {
+                trimLastParentNode(nodeSegments);
+            }
+            break;
         }
-        return String.join(PATH_DELIMITER, nodes);
+        return String.join(PATH_DELIMITER, nodeSegments);
     }
     
-    private static void trimLastParentNode(LinkedList<String> nodes) {
-        if (!nodes.isEmpty()) {
-            nodes.removeLast();
+    private static void trimLastParentNode(LinkedList<String> nodeSegments) {
+        if (!nodeSegments.isEmpty()) {
+            nodeSegments.removeLast();
         }
     }
     
