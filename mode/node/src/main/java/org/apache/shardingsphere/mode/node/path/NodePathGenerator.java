@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,13 +35,7 @@ public final class NodePathGenerator {
     
     private static final String PATH_DELIMITER = "/";
     
-    private static final String VARIABLE_PREFIX = "${";
-    
-    private static final String COLON_DELIMITER = ":";
-    
     private static final Pattern PATH_SPLITTER = Pattern.compile(PATH_DELIMITER);
-    
-    private static final Pattern COLON_SPLITTER = Pattern.compile(COLON_DELIMITER);
     
     /**
      * Generate to path.
@@ -55,26 +48,16 @@ public final class NodePathGenerator {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
         LinkedList<String> resolvedSegments = new LinkedList<>();
         for (String each : PATH_SPLITTER.split(templatePath)) {
-            if (each.contains(VARIABLE_PREFIX) || each.contains(COLON_DELIMITER)) {
-                Collection<String> nodeSegments = new LinkedList<>();
-                for (String eachSegment : COLON_SPLITTER.split(each)) {
-                    Optional<String> variableName = new NodePathVariable(eachSegment).getVariableName();
-                    if (variableName.isPresent()) {
-                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
-                        // CHECKSTYLE:OFF
-                        if (null == fieldValue) {
-                            if (trimEmptyNode) {
-                                resolvedSegments.removeLast();
-                            }
-                            return String.join(PATH_DELIMITER, resolvedSegments);
-                        }
-                        // CHECKSTYLE:ON
-                        nodeSegments.add(fieldValue.toString());
-                    } else {
-                        nodeSegments.add(each);
+            Optional<String> variableName = new NodePathVariable(each).getVariableName();
+            if (variableName.isPresent()) {
+                Object fieldValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
+                if (null == fieldValue) {
+                    if (trimEmptyNode) {
+                        resolvedSegments.removeLast();
                     }
+                    return String.join(PATH_DELIMITER, resolvedSegments);
                 }
-                resolvedSegments.add(String.join(COLON_DELIMITER, nodeSegments));
+                resolvedSegments.add(fieldValue.toString());
             } else {
                 resolvedSegments.add(each);
             }
