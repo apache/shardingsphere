@@ -45,7 +45,7 @@ public final class TableMetadataNodePath implements NodePath {
     /**
      * Create database search criteria.
      *
-     * @return created database search criteria
+     * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria() {
         return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1);
@@ -55,7 +55,7 @@ public final class TableMetadataNodePath implements NodePath {
      * Create schema search criteria.
      *
      * @param containsChildPath contains child path
-     * @return created schema search criteria
+     * @return created search criteria
      */
     public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
         return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 2);
@@ -64,7 +64,7 @@ public final class TableMetadataNodePath implements NodePath {
     /**
      * Create table search criteria.
      *
-     * @return created table search criteria
+     * @return created search criteria
      */
     public static NodePathSearchCriteria createTableSearchCriteria() {
         return new NodePathSearchCriteria(new TableMetadataNodePath(), false, false, 3);
