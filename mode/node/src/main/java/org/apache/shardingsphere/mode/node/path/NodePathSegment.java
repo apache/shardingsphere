@@ -32,7 +32,7 @@ public final class NodePathSegment {
     
     /**
      * Get segment literal.
-     * 
+     *
      * @param nodePath node path
      * @return segment literal
      */

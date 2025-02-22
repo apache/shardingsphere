@@ -35,7 +35,7 @@ public final class NodePathVariable {
     
     /**
      * Find variable name.
-     * 
+     *
      * @return found variable name
      */
     public Optional<String> findVariableName() {
