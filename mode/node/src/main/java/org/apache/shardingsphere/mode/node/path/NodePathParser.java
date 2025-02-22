@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -61,5 +62,15 @@ public final class NodePathParser {
     private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
         return Pattern.compile(NodePathGenerator.toPath(nodePathCriteria, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
+    }
+    
+    /**
+     * Get version node path parser.
+     * 
+     * @param nodePathCriteria node path criteria
+     * @return version node path parser
+     */
+    public static VersionNodePathParser getVersion(final NodePath nodePathCriteria) {
+        return new VersionNodePathParser(NodePathGenerator.toPath(nodePathCriteria, false));
     }
 }

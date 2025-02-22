@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePathParser;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetaDataNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceNodePathParser;
@@ -99,11 +98,12 @@ public final class MetaDataChangedHandler {
     
     private boolean isTableMetaDataChanged(final String key) {
         return NodePathParser.isMatchedPath(key, new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false)
-                || TableMetaDataNodePathParser.getVersion().isActiveVersionPath(key);
+                || NodePathParser.getVersion(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && TableMetaDataNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
+                && NodePathParser.getVersion(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType()
                 && NodePathParser.isMatchedPath(event.getKey(), new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false)) {
