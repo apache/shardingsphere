@@ -23,42 +23,14 @@ import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Table meta data node path parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(NodePathGenerator.toPath(
-            new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
-    
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
             NodePathGenerator.toPath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
-    
-    /**
-     * Find table name.
-     *
-     * @param path path
-     * @return found table name
-     */
-    public static Optional<String> findTableName(final String path) {
-        Matcher matcher = PATTERN.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
-    }
-    
-    /**
-     * Is table path.
-     *
-     * @param path path
-     * @return is table path or not
-     */
-    public static boolean isTablePath(final String path) {
-        return findTableName(path).isPresent();
-    }
     
     /**
      * Get table version pattern node path parser.

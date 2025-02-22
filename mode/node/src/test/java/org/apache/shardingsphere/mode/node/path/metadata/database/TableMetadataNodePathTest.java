@@ -28,6 +28,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TableMetadataNodePathTest {
     
@@ -55,5 +56,15 @@ class TableMetadataNodePathTest {
         assertFalse(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2).isPresent());
         assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2), is(Optional.of("foo_schema")));
         assertFalse(NodePathParser.find("/xxx/foo_db/schemas/foo_schema/tables", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2).isPresent());
+        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl",
+                new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3), is(Optional.of("foo_tbl")));
+        assertFalse(NodePathParser.find("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl",
+                new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3).isPresent());
+    }
+    
+    @Test
+    void assertIsTablePath() {
+        assertTrue(NodePathParser.isMatchedPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl",
+                new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false));
     }
 }

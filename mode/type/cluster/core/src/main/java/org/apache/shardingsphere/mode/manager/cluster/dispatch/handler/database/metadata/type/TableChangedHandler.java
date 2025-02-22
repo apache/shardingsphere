@@ -22,7 +22,10 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePathParser;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 
 /**
  * Table changed handler.
@@ -62,7 +65,8 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = TableMetaDataNodePathParser.findTableName(event.getKey()).orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = NodePathParser.find(event.getKey(), new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3)
+                .orElseThrow(() -> new IllegalStateException("Table name not found."));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }
