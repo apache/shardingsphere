@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.node.path.NodePathParser;
 import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetaDataNodePathParser;
+import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.DataSourceNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageNodeNodePathParser;
 import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePathParser;
@@ -112,13 +112,16 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return ViewMetaDataNodePathParser.getVersion().isActiveVersionPath(key) || ViewMetaDataNodePathParser.isViewPath(key);
+        return NodePathParser.getVersion(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(key)
+                || NodePathParser.isMatchedPath(key, new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true);
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && ViewMetaDataNodePathParser.getVersion().isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
+                && NodePathParser.getVersion(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && ViewMetaDataNodePathParser.isViewPath(event.getKey())) {
+        } else if (Type.DELETED == event.getType()
+                && NodePathParser.isMatchedPath(event.getKey(), new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true)) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }
