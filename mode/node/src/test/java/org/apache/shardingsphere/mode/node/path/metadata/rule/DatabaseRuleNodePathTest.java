@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DatabaseRuleNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", null, null), false), is("/metadata/foo_db/rules"));
         assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", null), false), is("/metadata/foo_db/rules/foo_rule"));
         assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("unique_rule_item")), false),
@@ -38,7 +38,7 @@ class DatabaseRuleNodePathTest {
     }
     
     @Test
-    void assertGenerateVersionPath() {
+    void assertToVersionPath() {
         VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions"));

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DatabaseListenerCoordinatorNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
         assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
     }

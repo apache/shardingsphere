@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ProcessNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ProcessNodePath("foo_process_id", null), false), is("/execution_nodes/foo_process_id"));
         assertThat(NodePathGenerator.toPath(new ProcessNodePath("foo_process_id", "foo_instance_id"), false), is("/execution_nodes/foo_process_id/foo_instance_id"));
     }

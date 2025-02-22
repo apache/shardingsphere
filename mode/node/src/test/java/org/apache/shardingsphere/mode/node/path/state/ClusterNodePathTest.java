@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ClusterNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ClusterNodePath(), false), is("/states/cluster_state"));
     }
 }

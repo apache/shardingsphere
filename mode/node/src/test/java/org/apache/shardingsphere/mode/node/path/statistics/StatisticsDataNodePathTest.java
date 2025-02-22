@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class StatisticsDataNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false), is("/statistics/databases"));
         assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), true), is("/statistics/databases/foo_db"));
         assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));

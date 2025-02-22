@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ViewMetadataNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
@@ -35,7 +35,7 @@ class ViewMetadataNodePathTest {
     }
     
     @Test
-    void assertGenerateVersionPath() {
+    void assertToVersionPath() {
         VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));

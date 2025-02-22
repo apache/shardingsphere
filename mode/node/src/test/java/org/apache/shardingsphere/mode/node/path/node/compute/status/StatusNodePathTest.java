@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class StatusNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
         assertThat(NodePathGenerator.toPath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
     }

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class StorageUnitNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", null), false), is("/metadata/foo_db/data_sources/units"));
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", "foo_storage_unit"), false), is("/metadata/foo_db/data_sources/units/foo_storage_unit"));
     }

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class GlobalRuleNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false), is("/rules"));
         assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath("foo_rule"), false), is("/rules/foo_rule"));
     }
