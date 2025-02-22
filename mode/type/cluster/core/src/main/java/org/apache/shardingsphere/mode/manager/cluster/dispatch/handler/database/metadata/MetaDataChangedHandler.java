@@ -98,16 +98,13 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return NodePathSearcher.isMatchedPath(key, new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false))
-                || NodePathSearcher.getVersion(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(key);
+        return NodePathSearcher.isMatchedPath(key, TableMetadataNodePath.createTableSearchCriteria()) || NodePathSearcher.getVersion(new TableMetadataNodePath()).isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
-                && NodePathSearcher.getVersion(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && NodePathSearcher.getVersion(new TableMetadataNodePath()).isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(),
-                new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false))) {
+        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createTableSearchCriteria())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }

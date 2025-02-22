@@ -38,6 +38,19 @@ public final class TableMetadataNodePath implements NodePath {
     
     private final String tableName;
     
+    public TableMetadataNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
+    /**
+     * Create database search criteria.
+     *
+     * @return created database search criteria
+     */
+    public static NodePathSearchCriteria createDatabaseSearchCriteria() {
+        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1);
+    }
+    
     /**
      * Create schema search criteria.
      * 
@@ -46,5 +59,14 @@ public final class TableMetadataNodePath implements NodePath {
      */
     public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
         return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 2);
+    }
+    
+    /**
+     * Create table search criteria.
+     *
+     * @return created table search criteria
+     */
+    public static NodePathSearchCriteria createTableSearchCriteria() {
+        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3);
     }
 }

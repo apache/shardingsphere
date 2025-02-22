@@ -22,9 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 
 /**
@@ -49,7 +47,7 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.getVersion(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER))
+        String tableName = NodePathSearcher.getVersion(new TableMetadataNodePath())
                 .findIdentifierByActiveVersionPath(event.getKey(), 3).orElseThrow(() -> new IllegalStateException("Table name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
@@ -65,9 +63,7 @@ public final class TableChangedHandler {
      * @param event data changed event
      */
     public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.find(event.getKey(),
-                        new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3))
-                .orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createTableSearchCriteria()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }
