@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ShowProcessListTriggerNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false), is("/nodes/compute_nodes/show_process_list_trigger"));
         assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id")), false),
                 is("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id"));

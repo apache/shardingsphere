@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ComputeNodeWorkerIDNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/worker_id/foo_instance_id"));
     }
 }

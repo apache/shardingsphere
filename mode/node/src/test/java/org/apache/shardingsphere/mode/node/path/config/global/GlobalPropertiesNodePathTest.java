@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class GlobalPropertiesNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
     }
 }

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class WorkerIDReservationNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(null), false), is("/reservation/worker_id"));
         assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(1), false), is("/reservation/worker_id/1"));
     }

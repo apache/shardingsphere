@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class StatisticsJobNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StatisticsJobNodePath(), false), is("/statistics/job"));
     }
 }

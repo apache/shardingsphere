@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class OnlineNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));

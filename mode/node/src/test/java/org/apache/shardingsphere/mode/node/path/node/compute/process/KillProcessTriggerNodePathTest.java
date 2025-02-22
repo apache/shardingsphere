@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class KillProcessTriggerNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false), is("/nodes/compute_nodes/kill_process_trigger"));
         assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id")), false),
                 is("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id"));

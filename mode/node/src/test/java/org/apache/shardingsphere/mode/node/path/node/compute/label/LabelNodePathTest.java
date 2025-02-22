@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class LabelNodePathTest {
     
     @Test
-    void assertGeneratePath() {
+    void assertToPath() {
         assertThat(NodePathGenerator.toPath(new LabelNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/labels/foo_instance_id"));
     }
 }
