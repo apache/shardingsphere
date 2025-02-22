@@ -53,7 +53,7 @@ public final class TableMetadataNodePath implements NodePath {
     
     /**
      * Create schema search criteria.
-     * 
+     *
      * @param containsChildPath contains child path
      * @return created schema search criteria
      */
