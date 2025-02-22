@@ -38,7 +38,7 @@ public final class NodePathParser {
      * @param nodePathCriteria node path criteria
      * @param trimEmptyNode null variable should trim parent node if true
      * @param containsChildPath whether contains child path
-     @param searchSegmentIndex search segment index, start from 1
+     * @param searchSegmentIndex search segment index, start from 1
      * @return found node segment
      */
     public static Optional<String> find(final String path, final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath, final int searchSegmentIndex) {
