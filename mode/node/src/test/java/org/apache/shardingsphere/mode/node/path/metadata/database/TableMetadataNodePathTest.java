@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathParser;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class TableMetadataNodePathTest {
     
@@ -40,5 +45,11 @@ class TableMetadataNodePathTest {
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+    }
+    
+    @Test
+    void assertFind() {
+        assertThat(NodePathParser.find("/metadata/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1), is(Optional.of("foo_db")));
+        assertFalse(NodePathParser.find("/xxx/foo_db/schemas/foo_schema", new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1).isPresent());
     }
 }

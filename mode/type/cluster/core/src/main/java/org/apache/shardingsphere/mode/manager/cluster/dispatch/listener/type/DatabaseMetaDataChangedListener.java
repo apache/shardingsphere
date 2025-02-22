@@ -24,7 +24,9 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
-import org.apache.shardingsphere.mode.node.path.metadata.DatabaseNodePathParser;
+import org.apache.shardingsphere.mode.node.path.NodePathParser;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.sql.SQLException;
@@ -40,7 +42,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = DatabaseNodePathParser.findDatabaseName(event.getKey());
+        Optional<String> databaseName = NodePathParser.find(event.getKey(), new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1);
         if (!databaseName.isPresent()) {
             return;
         }
