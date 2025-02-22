@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * Database listener coordinator node path.
@@ -31,4 +33,13 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 public final class DatabaseListenerCoordinatorNodePath implements NodePath {
     
     private final String databaseName;
+    
+    /**
+     * Create database search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createDatabaseSearchCriteria() {
+        return new NodePathSearchCriteria(new DatabaseListenerCoordinatorNodePath(NodePathPattern.IDENTIFIER), false, false, 1);
+    }
 }

@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.mode.node.path.state;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DatabaseListenerCoordinatorNodePathTest {
     
@@ -29,5 +33,11 @@ class DatabaseListenerCoordinatorNodePathTest {
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
         assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
+    }
+    
+    @Test
+    void assertCreateDatabaseSearchCriteria() {
+        assertThat(NodePathSearcher.find("/states/database_listener_coordinator/foo_db", DatabaseListenerCoordinatorNodePath.createDatabaseSearchCriteria()), is(Optional.of("foo_db")));
+        assertFalse(NodePathSearcher.find("/states/database_listener_coordinator", DatabaseListenerCoordinatorNodePath.createDatabaseSearchCriteria()).isPresent());
     }
 }

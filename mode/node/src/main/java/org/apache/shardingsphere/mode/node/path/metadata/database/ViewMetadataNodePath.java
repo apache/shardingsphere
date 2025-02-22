@@ -45,7 +45,7 @@ public final class ViewMetadataNodePath implements NodePath {
     /**
      * Create view search criteria.
      *
-     * @return created view search criteria
+     * @return created search criteria
      */
     public static NodePathSearchCriteria createViewSearchCriteria() {
         return new NodePathSearchCriteria(new ViewMetadataNodePath(), false, false, 3);
