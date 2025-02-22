@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * Node path generator.
@@ -34,8 +33,6 @@ import java.util.regex.Pattern;
 public final class NodePathGenerator {
     
     private static final String PATH_DELIMITER = "/";
-    
-    private static final Pattern PATH_SPLITTER = Pattern.compile(PATH_DELIMITER);
     
     /**
      * Generate to path.
@@ -46,23 +43,31 @@ public final class NodePathGenerator {
      */
     public static String toPath(final NodePath nodePath, final boolean trimEmptyNode) {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
-        LinkedList<String> resolvedSegments = new LinkedList<>();
-        for (String each : PATH_SPLITTER.split(templatePath)) {
+        LinkedList<String> nodes = new LinkedList<>();
+        for (String each : templatePath.split(PATH_DELIMITER)) {
+            String node;
             Optional<String> variableName = new NodePathVariable(each).findVariableName();
             if (variableName.isPresent()) {
-                Object fieldValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
-                if (null == fieldValue) {
+                Object variableValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
+                if (null == variableValue) {
                     if (trimEmptyNode) {
-                        resolvedSegments.removeLast();
+                        trimLastParentNode(nodes);
                     }
-                    return String.join(PATH_DELIMITER, resolvedSegments);
+                    break;
                 }
-                resolvedSegments.add(fieldValue.toString());
+                node = variableValue.toString();
             } else {
-                resolvedSegments.add(each);
+                node = each;
             }
+            nodes.add(node);
         }
-        return String.join(PATH_DELIMITER, resolvedSegments);
+        return String.join(PATH_DELIMITER, nodes);
+    }
+    
+    private static void trimLastParentNode(LinkedList<String> nodes) {
+        if (!nodes.isEmpty()) {
+            nodes.removeLast();
+        }
     }
     
     /**
