@@ -28,15 +28,15 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
-        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
-        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
-        assertThat(NodePathGenerator.generatePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
+        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
+        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test
     void assertGenerateVersionPath() {
-        VersionNodePath versionNodePath = NodePathGenerator.generateVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
+        VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));

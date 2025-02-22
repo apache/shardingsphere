@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.node.path;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Node path generator.
@@ -31,50 +31,45 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodePathGenerator {
     
+    private static final String PATH_DELIMITER = "/";
+    
     /**
-     * Generate path.
+     * Generate to path.
      *
      * @param nodePath node path
-     * @param trimEmptyNode whether to trim empty node
+     * @param trimEmptyNode null variable should trim parent node if true
      * @return path
      */
-    public static String generatePath(final NodePath nodePath, final boolean trimEmptyNode) {
-        LinkedList<String> result = new LinkedList<>();
-        String path = nodePath.getClass().getAnnotation(NodePathEntity.class).value();
-        for (String each : path.split("/")) {
-            if (each.contains("$") || each.contains(":")) {
-                Collection<String> nodeSegments = new LinkedList<>();
-                for (String eachSegment : each.split(":")) {
-                    if (eachSegment.startsWith("${") && eachSegment.endsWith("}")) {
-                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
-                        // CHECKSTYLE:OFF
-                        if (null == fieldValue) {
-                            if (trimEmptyNode) {
-                                result.removeLast();
-                            }
-                            return String.join("/", result);
-                        }
-                        // CHECKSTYLE:ON
-                        nodeSegments.add(fieldValue.toString());
-                    } else {
-                        nodeSegments.add(each);
-                    }
-                }
-                result.add(String.join(":", nodeSegments));
-            } else {
-                result.add(each);
+    public static String toPath(final NodePath nodePath, final boolean trimEmptyNode) {
+        String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
+        LinkedList<String> nodeSegments = new LinkedList<>();
+        for (String each : templatePath.split(PATH_DELIMITER)) {
+            Optional<String> segmentLiteral = new NodePathSegment(each).getLiteral(nodePath);
+            if (segmentLiteral.isPresent()) {
+                nodeSegments.add(segmentLiteral.get());
+                continue;
             }
+            if (trimEmptyNode) {
+                trimLastParentNode(nodeSegments);
+            }
+            break;
         }
-        return String.join("/", result);
+        return String.join(PATH_DELIMITER, nodeSegments);
+    }
+    
+    private static void trimLastParentNode(final LinkedList<String> nodeSegments) {
+        if (!nodeSegments.isEmpty()) {
+            nodeSegments.removeLast();
+        }
     }
     
     /**
-     * Generate version node path.
+     * Generate to version node path.
      *
      * @param nodePath node path
      * @return version node path
      */
-    public static VersionNodePath generateVersionPath(final NodePath nodePath) {
-        return new VersionNodePath(generatePath(nodePath, false));
+    public static VersionNodePath toVersionPath(final NodePath nodePath) {
+        return new VersionNodePath(toPath(nodePath, false));
     }
 }

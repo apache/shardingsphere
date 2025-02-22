@@ -42,7 +42,7 @@ public final class QualifiedDataSourceNodePathParser {
      */
     public static Optional<QualifiedDataSource> findQualifiedDataSource(final String qualifiedDataSourcePath) {
         Pattern pattern = Pattern.compile(
-                String.join("/", NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(null), false), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
+                String.join("/", NodePathGenerator.toPath(new QualifiedDataSourceNodePath(null), false), QUALIFIED_DATA_SOURCE_PATTERN + "$"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(qualifiedDataSourcePath);
         return matcher.find() ? Optional.of(new QualifiedDataSource(matcher.group(1))) : Optional.empty();
     }

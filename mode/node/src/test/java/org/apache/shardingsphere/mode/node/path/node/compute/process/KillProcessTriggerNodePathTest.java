@@ -27,8 +27,8 @@ class KillProcessTriggerNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new KillProcessTriggerNodePath(null, null), false), is("/nodes/compute_nodes/kill_process_trigger"));
-        assertThat(NodePathGenerator.generatePath(new KillProcessTriggerNodePath("foo_instance_id", "foo_process_id"), false),
+        assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false), is("/nodes/compute_nodes/kill_process_trigger"));
+        assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id")), false),
                 is("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id"));
     }
 }

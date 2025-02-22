@@ -28,7 +28,7 @@ class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(new QualifiedDataSource("foo_db.foo_group.foo_ds")), false),
+        assertThat(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(new QualifiedDataSource("foo_db.foo_group.foo_ds")), false),
                 is("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds"));
     }
 }

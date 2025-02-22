@@ -37,7 +37,7 @@ public final class ClusterDatabaseListenerPersistCoordinator {
      * @param clusterDatabaseListenerCoordinatorType database changed listener assisted type
      */
     public void persist(final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
-        repository.persistEphemeral(NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(databaseName), false), clusterDatabaseListenerCoordinatorType.name());
+        repository.persistEphemeral(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(databaseName), false), clusterDatabaseListenerCoordinatorType.name());
     }
     
     /**
@@ -46,6 +46,6 @@ public final class ClusterDatabaseListenerPersistCoordinator {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(databaseName), false));
+        repository.delete(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(databaseName), false));
     }
 }

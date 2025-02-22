@@ -38,7 +38,7 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(null, null), false);
+        return NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false);
     }
     
     @Override
@@ -67,6 +67,6 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
     }
     
     private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(null, null), false) + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        return Pattern.compile(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false) + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

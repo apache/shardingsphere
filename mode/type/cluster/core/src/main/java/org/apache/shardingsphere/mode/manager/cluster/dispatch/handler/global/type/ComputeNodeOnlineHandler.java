@@ -44,7 +44,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new OnlineNodePath(null, null), false);
+        return NodePathGenerator.toPath(new OnlineNodePath(null, null), false);
     }
     
     @Override
@@ -68,6 +68,6 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     }
     
     private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
-        return Pattern.compile(NodePathGenerator.generatePath(new OnlineNodePath(null, null), false) + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+        return Pattern.compile(NodePathGenerator.toPath(new OnlineNodePath(null, null), false) + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

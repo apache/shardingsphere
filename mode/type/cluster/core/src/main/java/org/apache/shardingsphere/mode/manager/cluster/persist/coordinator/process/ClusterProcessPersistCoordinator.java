@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.execution.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.process.InstanceProcessNodeValue;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.KillProcessTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -49,9 +50,9 @@ public final class ClusterProcessPersistCoordinator {
     public void reportLocalProcesses(final String instanceId, final String taskId) {
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            repository.persist(NodePathGenerator.generatePath(new ProcessNodePath(taskId, instanceId), false), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
+            repository.persist(NodePathGenerator.toPath(new ProcessNodePath(taskId, instanceId), false), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        repository.delete(NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(instanceId, taskId), false));
+        repository.delete(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue(instanceId, taskId)), false));
     }
     
     /**
@@ -61,6 +62,6 @@ public final class ClusterProcessPersistCoordinator {
      * @param processId process ID
      */
     public void cleanProcess(final String instanceId, final String processId) {
-        repository.delete(NodePathGenerator.generatePath(new KillProcessTriggerNodePath(instanceId, processId), false));
+        repository.delete(NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue(instanceId, processId)), false));
     }
 }

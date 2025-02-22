@@ -27,6 +27,6 @@ class ClusterNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new ClusterNodePath(), false), is("/states/cluster_state"));
+        assertThat(NodePathGenerator.toPath(new ClusterNodePath(), false), is("/states/cluster_state"));
     }
 }

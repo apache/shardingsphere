@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class GlobalPropertiesNodePathTest {
+class NodePathVariableTest {
     
     @Test
-    void assertGeneratePath() {
-        assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
+    void assertFindVariableName() {
+        assertThat(new NodePathVariable("${foo_variable}").findVariableName(), is(Optional.of("foo_variable")));
+    }
+    
+    @Test
+    void assertNotFindVariableName() {
+        assertFalse(new NodePathVariable("${foo_variable").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("foo_variable}").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("$foo_variable").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("foo_variable").findVariableName().isPresent());
     }
 }

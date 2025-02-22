@@ -15,20 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.node.compute.process;
+package org.apache.shardingsphere.mode.node.path;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
+
+import java.util.Optional;
 
 /**
- * Kill process trigger node path.
+ * Node path segment.
  */
-@NodePathEntity("/nodes/compute_nodes/kill_process_trigger/${instanceProcess}")
 @RequiredArgsConstructor
-@Getter
-public final class KillProcessTriggerNodePath implements NodePath {
+public final class NodePathSegment {
     
-    private final InstanceProcessNodeValue instanceProcess;
+    private final String input;
+    
+    /**
+     * Get segment literal.
+     *
+     * @param nodePath node path
+     * @return segment literal
+     */
+    public Optional<String> getLiteral(final NodePath nodePath) {
+        Optional<String> variableName = new NodePathVariable(input).findVariableName();
+        if (variableName.isPresent()) {
+            Object variableValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
+            return null == variableValue ? Optional.empty() : Optional.of(variableValue.toString());
+        }
+        return Optional.of(input);
+    }
 }

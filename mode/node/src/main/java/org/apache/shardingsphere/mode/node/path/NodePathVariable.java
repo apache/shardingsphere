@@ -15,18 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.junit.jupiter.api.Test;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Optional;
 
-class GlobalPropertiesNodePathTest {
+/**
+ * Node path variable.
+ */
+@RequiredArgsConstructor
+public final class NodePathVariable {
     
-    @Test
-    void assertGeneratePath() {
-        assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
+    private static final String PREFIX = "${";
+    
+    private static final String SUFFIX = "}";
+    
+    private final String input;
+    
+    /**
+     * Find variable name.
+     *
+     * @return found variable name
+     */
+    public Optional<String> findVariableName() {
+        return isVariable() ? Optional.of(input.substring(PREFIX.length(), input.length() - SUFFIX.length())) : Optional.empty();
+    }
+    
+    private boolean isVariable() {
+        return input.startsWith(PREFIX) && input.endsWith(SUFFIX);
     }
 }

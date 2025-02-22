@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 public final class StorageUnitNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            NodePathGenerator.generatePath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
+            NodePathGenerator.toPath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            NodePathGenerator.generatePath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
+            NodePathGenerator.toPath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
     
     /**
      * Find storage unit name.

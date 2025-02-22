@@ -41,7 +41,7 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new KillProcessTriggerNodePath(null, null), false);
+        return NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false);
     }
     
     @Override
@@ -73,6 +73,6 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     }
     
     private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(NodePathGenerator.generatePath(new KillProcessTriggerNodePath(null, null), false) + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        return Pattern.compile(NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false) + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

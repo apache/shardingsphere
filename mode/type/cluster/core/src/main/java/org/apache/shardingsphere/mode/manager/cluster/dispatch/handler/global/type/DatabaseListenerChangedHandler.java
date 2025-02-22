@@ -42,7 +42,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new DatabaseListenerCoordinatorNodePath(null), false);
+        return NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(null), false);
     }
     
     @Override
@@ -59,10 +59,10 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     private static void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType clusterDatabaseListenerCoordinatorType) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
         if (ClusterDatabaseListenerCoordinatorType.CREATE == clusterDatabaseListenerCoordinatorType) {
-            repository.watch(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true), new DatabaseMetaDataChangedListener(contextManager));
+            repository.watch(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true), new DatabaseMetaDataChangedListener(contextManager));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
         } else if (ClusterDatabaseListenerCoordinatorType.DROP == clusterDatabaseListenerCoordinatorType) {
-            repository.removeDataListener(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), true));
+            repository.removeDataListener(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true));
             contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
         }
         new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);

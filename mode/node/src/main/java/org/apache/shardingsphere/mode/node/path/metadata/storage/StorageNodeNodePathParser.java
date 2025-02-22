@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 public final class StorageNodeNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            NodePathGenerator.generatePath(new StorageNodeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
+            NodePathGenerator.toPath(new StorageNodeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            NodePathGenerator.generatePath(new StorageNodeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
+            NodePathGenerator.toPath(new StorageNodeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
     
     /**
      * Find storage node name.

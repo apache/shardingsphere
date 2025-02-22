@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 public final class ViewMetaDataNodePathParser {
     
     private static final Pattern PATTERN = Pattern.compile(
-            NodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
+            NodePathGenerator.toPath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            NodePathGenerator.generatePath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
+            NodePathGenerator.toPath(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
     
     /**
      * Get view name.

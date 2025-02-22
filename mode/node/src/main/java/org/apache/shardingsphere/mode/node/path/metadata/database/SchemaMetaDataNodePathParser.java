@@ -42,7 +42,7 @@ public final class SchemaMetaDataNodePathParser {
     public static Optional<String> findSchemaName(final String path, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
         Pattern pattern = Pattern.compile(
-                NodePathGenerator.generatePath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true) + endPattern, Pattern.CASE_INSENSITIVE);
+                NodePathGenerator.toPath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true) + endPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }

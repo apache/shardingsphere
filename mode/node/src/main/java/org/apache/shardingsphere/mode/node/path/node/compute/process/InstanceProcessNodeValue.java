@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.config.global;
+package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.junit.jupiter.api.Test;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class GlobalPropertiesNodePathTest {
+/**
+ * Instance process node value.
+ */
+@RequiredArgsConstructor
+public final class InstanceProcessNodeValue {
     
-    @Test
-    void assertGeneratePath() {
-        assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
+    private final String instanceId;
+    
+    private final String processId;
+    
+    @Override
+    public String toString() {
+        return String.join(":", instanceId, processId);
     }
 }

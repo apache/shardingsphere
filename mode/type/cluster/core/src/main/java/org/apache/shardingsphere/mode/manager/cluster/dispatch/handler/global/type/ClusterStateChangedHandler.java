@@ -35,7 +35,7 @@ public final class ClusterStateChangedHandler implements GlobalDataChangedEventH
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new ClusterNodePath(), false);
+        return NodePathGenerator.toPath(new ClusterNodePath(), false);
     }
     
     @Override

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(NodePathGenerator.generatePath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, null), true) + "?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile(NodePathGenerator.toPath(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, null), true) + "?", Pattern.CASE_INSENSITIVE);
     
     /**
      * Is data source path.

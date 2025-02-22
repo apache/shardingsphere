@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableMetaDataNodePathParser {
     
-    private static final Pattern PATTERN = Pattern.compile(NodePathGenerator.generatePath(
+    private static final Pattern PATTERN = Pattern.compile(NodePathGenerator.toPath(
             new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false) + "$", Pattern.CASE_INSENSITIVE);
     
     private static final VersionNodePathParser VERSION_PARSER = new VersionNodePathParser(
-            NodePathGenerator.generatePath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
+            NodePathGenerator.toPath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false));
     
     /**
      * Find table name.

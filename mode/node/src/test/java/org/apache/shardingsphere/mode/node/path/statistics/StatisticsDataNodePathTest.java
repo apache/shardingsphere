@@ -27,14 +27,14 @@ class StatisticsDataNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false), is("/statistics/databases"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", null, null, null), true), is("/statistics/databases/foo_db"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), true), is("/statistics/databases/foo_db/schemas/foo_schema"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false), is("/statistics/databases/foo_db/schemas/foo_schema/tables"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", null), false),
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false), is("/statistics/databases"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), true), is("/statistics/databases/foo_db"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), true), is("/statistics/databases/foo_db/schemas/foo_schema"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false), is("/statistics/databases/foo_db/schemas/foo_schema/tables"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", null), false),
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl"));
-        assertThat(NodePathGenerator.generatePath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
     }
 }
