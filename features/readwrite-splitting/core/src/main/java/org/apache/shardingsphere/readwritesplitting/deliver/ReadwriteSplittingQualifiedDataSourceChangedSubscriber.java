@@ -39,6 +39,6 @@ public final class ReadwriteSplittingQualifiedDataSourceChangedSubscriber implem
      */
     @Subscribe
     public void delete(final QualifiedDataSourceDeletedEvent event) {
-        repository.delete(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(event.getQualifiedDataSource()), false));
+        repository.delete(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(event.getQualifiedDataSource()), false));
     }
 }

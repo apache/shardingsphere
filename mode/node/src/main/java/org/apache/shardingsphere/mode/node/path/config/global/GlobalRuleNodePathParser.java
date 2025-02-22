@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalRuleNodePathParser {
     
-    private static final VersionNodePathParser PARSER = new VersionNodePathParser(NodePathGenerator.generatePath(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER), false));
+    private static final VersionNodePathParser PARSER = new VersionNodePathParser(NodePathGenerator.toPath(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER), false));
     
     /**
      * Get global rule version node path parser.

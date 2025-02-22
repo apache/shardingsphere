@@ -52,7 +52,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, schemaName, null), false), "");
+        repository.persist(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, schemaName, null), false), "");
     }
     
     /**
@@ -62,7 +62,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, schemaName, null), true));
+        repository.delete(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, schemaName, null), true));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(NodePathGenerator.generatePath(new TableMetadataNodePath(databaseName, null, null), false)).stream()
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), false)).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }

@@ -27,6 +27,6 @@ class ComputeNodeWorkerIDNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new ComputeNodeWorkerIDNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/worker_id/foo_instance_id"));
+        assertThat(NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/worker_id/foo_instance_id"));
     }
 }

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public final class DatabaseNodePathParser {
     
     private static final Pattern DATABASE_PATTERN = Pattern.compile(
-            NodePathGenerator.generatePath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true) + "?", Pattern.CASE_INSENSITIVE);
+            NodePathGenerator.toPath(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true) + "?", Pattern.CASE_INSENSITIVE);
     
     /**
      * Find database name.

@@ -45,7 +45,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(null), false);
+        return NodePathGenerator.toPath(new QualifiedDataSourceNodePath(null), false);
     }
     
     @Override

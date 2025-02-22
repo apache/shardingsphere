@@ -40,7 +40,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new StatisticsDataNodePath(null, null, null, null), false);
+        return NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false);
     }
     
     @Override

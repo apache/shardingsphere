@@ -43,7 +43,7 @@ public final class ReservationPersistService {
     public Optional<Integer> reserveWorkerId(final Integer preselectedWorkerId, final String instanceId) {
         try {
             return repository.persistExclusiveEphemeral(
-                    NodePathGenerator.generatePath(new WorkerIDReservationNodePath(preselectedWorkerId), false), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
+                    NodePathGenerator.toPath(new WorkerIDReservationNodePath(preselectedWorkerId), false), instanceId) ? Optional.of(preselectedWorkerId) : Optional.empty();
         } catch (final ClusterRepositoryPersistException ignore) {
             return Optional.empty();
         }

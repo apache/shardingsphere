@@ -47,10 +47,10 @@ public final class QualifiedDataSourceStatePersistService {
      * @return loaded qualified data source states
      */
     public Map<String, QualifiedDataSourceState> load() {
-        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(null), false));
+        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(null), false));
         Map<String, QualifiedDataSourceState> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
-            String yamlContent = repository.query(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(new QualifiedDataSource(each)), false));
+            String yamlContent = repository.query(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(new QualifiedDataSource(each)), false));
             if (!Strings.isNullOrEmpty(yamlContent)) {
                 result.put(each, new YamlQualifiedDataSourceStateSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlQualifiedDataSourceState.class)));
             }
@@ -68,7 +68,7 @@ public final class QualifiedDataSourceStatePersistService {
      */
     public void update(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
         QualifiedDataSourceState status = new QualifiedDataSourceState(dataSourceState);
-        repository.persist(NodePathGenerator.generatePath(new QualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)), false),
+        repository.persist(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(new QualifiedDataSource(databaseName, groupName, storageUnitName)), false),
                 YamlEngine.marshal(new YamlQualifiedDataSourceStateSwapper().swapToYamlConfiguration(status)));
     }
 }

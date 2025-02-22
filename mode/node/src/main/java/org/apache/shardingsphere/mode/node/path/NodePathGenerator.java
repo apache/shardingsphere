@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Node path generator.
@@ -31,28 +33,40 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodePathGenerator {
     
+    private static final String PATH_DELIMITER = "/";
+    
+    private static final String VARIABLE_PREFIX = "${";
+    
+    private static final String VARIABLE_SUFFIX = "}";
+    
+    private static final String COLON_DELIMITER = ":";
+    
+    private static final Pattern PATH_SPLITTER = Pattern.compile(PATH_DELIMITER);
+    
+    private static final Pattern COLON_SPLITTER = Pattern.compile(COLON_DELIMITER);
+    
     /**
-     * Generate path.
+     * Generate to path.
      *
      * @param nodePath node path
-     * @param trimEmptyNode whether to trim empty node
+     * @param trimEmptyNode null variable should trim parent node if true
      * @return path
      */
-    public static String generatePath(final NodePath nodePath, final boolean trimEmptyNode) {
-        LinkedList<String> result = new LinkedList<>();
-        String path = nodePath.getClass().getAnnotation(NodePathEntity.class).value();
-        for (String each : path.split("/")) {
-            if (each.contains("$") || each.contains(":")) {
+    public static String toPath(final NodePath nodePath, final boolean trimEmptyNode) {
+        String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
+        LinkedList<String> resolvedSegments = new LinkedList<>();
+        for (String each : PATH_SPLITTER.split(templatePath)) {
+            if (each.contains(VARIABLE_PREFIX) || each.contains(COLON_DELIMITER)) {
                 Collection<String> nodeSegments = new LinkedList<>();
-                for (String eachSegment : each.split(":")) {
-                    if (eachSegment.startsWith("${") && eachSegment.endsWith("}")) {
+                for (String eachSegment : COLON_SPLITTER.split(each)) {
+                    if (eachSegment.startsWith(VARIABLE_PREFIX) && eachSegment.endsWith(VARIABLE_SUFFIX)) {
                         Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
                         // CHECKSTYLE:OFF
                         if (null == fieldValue) {
                             if (trimEmptyNode) {
-                                result.removeLast();
+                                resolvedSegments.removeLast();
                             }
-                            return String.join("/", result);
+                            return String.join(PATH_DELIMITER, resolvedSegments);
                         }
                         // CHECKSTYLE:ON
                         nodeSegments.add(fieldValue.toString());
@@ -60,21 +74,21 @@ public final class NodePathGenerator {
                         nodeSegments.add(each);
                     }
                 }
-                result.add(String.join(":", nodeSegments));
+                resolvedSegments.add(String.join(COLON_DELIMITER, nodeSegments));
             } else {
-                result.add(each);
+                resolvedSegments.add(each);
             }
         }
-        return String.join("/", result);
+        return String.join(PATH_DELIMITER, resolvedSegments);
     }
     
     /**
-     * Generate version node path.
+     * Generate to version node path.
      *
      * @param nodePath node path
      * @return version node path
      */
-    public static VersionNodePath generateVersionPath(final NodePath nodePath) {
-        return new VersionNodePath(generatePath(nodePath, false));
+    public static VersionNodePath toVersionPath(final NodePath nodePath) {
+        return new VersionNodePath(toPath(nodePath, false));
     }
 }

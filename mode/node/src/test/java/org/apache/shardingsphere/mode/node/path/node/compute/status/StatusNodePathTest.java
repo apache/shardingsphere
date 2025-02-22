@@ -27,7 +27,7 @@ class StatusNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
-        assertThat(NodePathGenerator.generatePath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
+        assertThat(NodePathGenerator.toPath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
+        assertThat(NodePathGenerator.toPath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
     }
 }

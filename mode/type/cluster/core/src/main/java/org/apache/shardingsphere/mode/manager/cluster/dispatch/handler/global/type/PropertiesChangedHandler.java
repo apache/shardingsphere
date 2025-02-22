@@ -36,7 +36,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.generatePath(new GlobalPropertiesNodePath(), false);
+        return NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false);
     }
     
     @Override

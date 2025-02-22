@@ -27,6 +27,6 @@ class LabelNodePathTest {
     
     @Test
     void assertGeneratePath() {
-        assertThat(NodePathGenerator.generatePath(new LabelNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/labels/foo_instance_id"));
+        assertThat(NodePathGenerator.toPath(new LabelNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/labels/foo_instance_id"));
     }
 }

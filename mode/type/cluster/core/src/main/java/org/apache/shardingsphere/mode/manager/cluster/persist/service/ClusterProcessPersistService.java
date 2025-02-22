@@ -56,7 +56,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
             isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
             return getShowProcessListData(taskId);
         } finally {
-            repository.delete(NodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false));
+            repository.delete(NodePathGenerator.toPath(new ProcessNodePath(taskId, null), false));
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -65,15 +65,15 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.generatePath(new OnlineNodePath(each, null), false)).stream()
-                        .map(instanceId -> NodePathGenerator.generatePath(new ShowProcessListTriggerNodePath(instanceId, taskId), false)))
+                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null), false)).stream()
+                        .map(instanceId -> NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(instanceId, taskId), false)))
                 .collect(Collectors.toList());
     }
     
     private Collection<Process> getShowProcessListData(final String taskId) {
         YamlProcessList yamlProcessList = new YamlProcessList();
-        for (String each : repository.getChildrenKeys(NodePathGenerator.generatePath(new ProcessNodePath(taskId, null), false)).stream()
-                .map(each -> repository.query(NodePathGenerator.generatePath(new ProcessNodePath(taskId, each), false))).collect(Collectors.toList())) {
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new ProcessNodePath(taskId, null), false)).stream()
+                .map(each -> repository.query(NodePathGenerator.toPath(new ProcessNodePath(taskId, each), false))).collect(Collectors.toList())) {
             yamlProcessList.getProcesses().addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
         }
         return new YamlProcessListSwapper().swapToObject(yamlProcessList);
@@ -95,8 +95,8 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.generatePath(new OnlineNodePath(each, null), false)).stream()
-                        .map(onlinePath -> NodePathGenerator.generatePath(new KillProcessTriggerNodePath(onlinePath, processId), false)))
+                .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null), false)).stream()
+                        .map(onlinePath -> NodePathGenerator.toPath(new KillProcessTriggerNodePath(onlinePath, processId), false)))
                 .collect(Collectors.toList());
     }
     

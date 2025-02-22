@@ -37,7 +37,7 @@ public final class ClusterStatePersistService {
      * @param state to be updated cluster state
      */
     public void update(final ClusterState state) {
-        repository.persist(NodePathGenerator.generatePath(new ClusterNodePath(), false), state.name());
+        repository.persist(NodePathGenerator.toPath(new ClusterNodePath(), false), state.name());
     }
     
     /**
@@ -46,7 +46,7 @@ public final class ClusterStatePersistService {
      * @return loaded cluster state
      */
     public ClusterState load() {
-        String value = repository.query(NodePathGenerator.generatePath(new ClusterNodePath(), false));
+        String value = repository.query(NodePathGenerator.toPath(new ClusterNodePath(), false));
         return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
     }
 }
