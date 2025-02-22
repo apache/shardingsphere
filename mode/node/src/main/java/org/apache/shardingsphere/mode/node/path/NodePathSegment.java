@@ -33,7 +33,7 @@ public final class NodePathSegment {
     /**
      * Get segment literal.
      * 
-     * @param nodePath node path 
+     * @param nodePath node path
      * @return segment literal
      */
     public Optional<String> getLiteral(final NodePath nodePath) {
