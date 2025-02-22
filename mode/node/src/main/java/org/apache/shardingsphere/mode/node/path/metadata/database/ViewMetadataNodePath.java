@@ -38,12 +38,16 @@ public final class ViewMetadataNodePath implements NodePath {
     
     private final String viewName;
     
+    public ViewMetadataNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
     /**
      * Create view search criteria.
      *
      * @return created view search criteria
      */
     public static NodePathSearchCriteria createViewSearchCriteria() {
-        return new NodePathSearchCriteria(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true, 3);
+        return new NodePathSearchCriteria(new ViewMetadataNodePath(), false, true, 3);
     }
 }

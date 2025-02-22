@@ -25,8 +25,6 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetadataNodePath;
@@ -110,17 +108,14 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return NodePathSearcher.getVersion(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(key)
-                || NodePathSearcher.isMatchedPath(key,
-                new NodePathSearchCriteria(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true));
+        return NodePathSearcher.getVersion(new ViewMetadataNodePath()).isActiveVersionPath(key) || NodePathSearcher.isMatchedPath(key, ViewMetadataNodePath.createViewSearchCriteria());
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
-                && NodePathSearcher.getVersion(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
+                && NodePathSearcher.getVersion(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(),
-                new NodePathSearchCriteria(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true))) {
+        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
         }
     }

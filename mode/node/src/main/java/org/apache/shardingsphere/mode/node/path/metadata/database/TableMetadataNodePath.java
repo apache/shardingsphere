@@ -67,6 +67,6 @@ public final class TableMetadataNodePath implements NodePath {
      * @return created table search criteria
      */
     public static NodePathSearchCriteria createTableSearchCriteria() {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3);
+        return new NodePathSearchCriteria(new TableMetadataNodePath(), false, false, 3);
     }
 }

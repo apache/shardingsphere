@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +55,6 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertIsMatchedPath() {
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view",
-                new NodePathSearchCriteria(new ViewMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, true)));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()));
     }
 }
