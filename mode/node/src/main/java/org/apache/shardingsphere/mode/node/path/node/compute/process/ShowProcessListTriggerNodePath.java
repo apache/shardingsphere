@@ -25,12 +25,10 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 /**
  * Show process list trigger node path.
  */
-@NodePathEntity("/nodes/compute_nodes/show_process_list_trigger/${instanceId}:${taskId}")
+@NodePathEntity("/nodes/compute_nodes/show_process_list_trigger/${instanceProcess}")
 @RequiredArgsConstructor
 @Getter
 public final class ShowProcessListTriggerNodePath implements NodePath {
     
-    private final String instanceId;
-    
-    private final String taskId;
+    private final InstanceProcessNodeValue instanceProcess;
 }

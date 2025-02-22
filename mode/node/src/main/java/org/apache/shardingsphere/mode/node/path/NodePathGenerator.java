@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -36,8 +37,6 @@ public final class NodePathGenerator {
     private static final String PATH_DELIMITER = "/";
     
     private static final String VARIABLE_PREFIX = "${";
-    
-    private static final String VARIABLE_SUFFIX = "}";
     
     private static final String COLON_DELIMITER = ":";
     
@@ -59,8 +58,9 @@ public final class NodePathGenerator {
             if (each.contains(VARIABLE_PREFIX) || each.contains(COLON_DELIMITER)) {
                 Collection<String> nodeSegments = new LinkedList<>();
                 for (String eachSegment : COLON_SPLITTER.split(each)) {
-                    if (eachSegment.startsWith(VARIABLE_PREFIX) && eachSegment.endsWith(VARIABLE_SUFFIX)) {
-                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, eachSegment.substring(2, eachSegment.length() - 1)).orElse(null);
+                    Optional<String> variableName = new NodePathVariable(eachSegment).getVariableName();
+                    if (variableName.isPresent()) {
+                        Object fieldValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
                         // CHECKSTYLE:OFF
                         if (null == fieldValue) {
                             if (trimEmptyNode) {

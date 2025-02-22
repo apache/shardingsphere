@@ -25,12 +25,10 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 /**
  * Kill process trigger node path.
  */
-@NodePathEntity("/nodes/compute_nodes/kill_process_trigger/${instanceId}:${processId}")
+@NodePathEntity("/nodes/compute_nodes/kill_process_trigger/${instanceProcess}")
 @RequiredArgsConstructor
 @Getter
 public final class KillProcessTriggerNodePath implements NodePath {
     
-    private final String instanceId;
-    
-    private final String processId;
+    private final InstanceProcessNodeValue instanceProcess;
 }

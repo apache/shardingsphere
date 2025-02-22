@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.execution.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.node.compute.process.InstanceProcessNodeValue;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.KillProcessTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
@@ -66,7 +67,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null), false)).stream()
-                        .map(instanceId -> NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(instanceId, taskId), false)))
+                        .map(instanceId -> NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue(instanceId, taskId)), false)))
                 .collect(Collectors.toList());
     }
     
@@ -96,7 +97,7 @@ public final class ClusterProcessPersistService implements ProcessPersistService
     private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(each, null), false)).stream()
-                        .map(onlinePath -> NodePathGenerator.toPath(new KillProcessTriggerNodePath(onlinePath, processId), false)))
+                        .map(onlinePath -> NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue(onlinePath, processId)), false)))
                 .collect(Collectors.toList());
     }
     
