@@ -26,10 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Node path parser.
+ * Node path searcher.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NodePathParser {
+public final class NodePathSearcher {
     
     /**
      * Find node segment.
