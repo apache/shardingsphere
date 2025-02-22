@@ -34,8 +34,4 @@ public final class NodePathSearchCriteria {
     private final boolean containsChildPath;
     
     private final int searchSegmentIndex;
-    
-    public NodePathSearchCriteria(final NodePath nodePathExample, final boolean trimEmptyNode, final boolean containsChildPath) {
-        this(nodePathExample, trimEmptyNode, containsChildPath, 0);
-    }
 }
