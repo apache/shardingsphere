@@ -68,13 +68,12 @@ public final class MetaDataChangedHandler {
      */
     public boolean handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = NodePathSearcher.find(eventKey,
-                new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2));
+        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(false));
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return true;
         }
-        schemaName = NodePathSearcher.find(eventKey, new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2));
+        schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(true));
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return true;

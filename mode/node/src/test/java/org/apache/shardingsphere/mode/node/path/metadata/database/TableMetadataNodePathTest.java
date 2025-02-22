@@ -54,20 +54,19 @@ class TableMetadataNodePathTest {
         assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema",
                 new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1)), is(Optional.of("foo_db")));
         assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema", new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1)).isPresent());
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema",
-                        new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2)),
-                is(Optional.of("foo_schema")));
-        assertFalse(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables",
-                        new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, false, 2)).isPresent());
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables",
-                        new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2)), is(Optional.of("foo_schema")));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables",
-                new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, true, 2)).isPresent());
         assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl",
-                new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3)),
+                        new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3)),
                 is(Optional.of("foo_tbl")));
         assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl",
                 new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 3)).isPresent());
+    }
+    
+    @Test
+    void assertCreateSchemaSearchCriteria() {
+        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema", TableMetadataNodePath.createSchemaSearchCriteria(false)), is(Optional.of("foo_schema")));
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables", TableMetadataNodePath.createSchemaSearchCriteria(false)).isPresent());
+        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables", TableMetadataNodePath.createSchemaSearchCriteria(true)), is(Optional.of("foo_schema")));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables", TableMetadataNodePath.createSchemaSearchCriteria(true)).isPresent());
     }
     
     @Test
