@@ -48,7 +48,7 @@ public final class NodePathGenerator {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
         LinkedList<String> resolvedSegments = new LinkedList<>();
         for (String each : PATH_SPLITTER.split(templatePath)) {
-            Optional<String> variableName = new NodePathVariable(each).getVariableName();
+            Optional<String> variableName = new NodePathVariable(each).findVariableName();
             if (variableName.isPresent()) {
                 Object fieldValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
                 if (null == fieldValue) {

@@ -17,32 +17,26 @@
 
 package org.apache.shardingsphere.mode.node.path;
 
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-/**
- * Node path variable.
- */
-@RequiredArgsConstructor
-public final class NodePathVariable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class NodePathVariableTest {
     
-    private static final String PREFIX = "${";
-    
-    private static final String SUFFIX = "}";
-    
-    private final String input;
-    
-    /**
-     * Find variable name.
-     * 
-     * @return found variable name
-     */
-    public Optional<String> findVariableName() {
-        return isVariable() ? Optional.of(input.substring(PREFIX.length(), input.length() - SUFFIX.length())) : Optional.empty();
+    @Test
+    void assertFindVariableName() {
+        assertThat(new NodePathVariable("${foo_variable}").findVariableName(), is(Optional.of("foo_variable")));
     }
     
-    private boolean isVariable() {
-        return input.startsWith(PREFIX) && input.endsWith(SUFFIX);
+    @Test
+    void assertNotFindVariableName() {
+        assertFalse(new NodePathVariable("${foo_variable").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("foo_variable}").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("$foo_variable").findVariableName().isPresent());
+        assertFalse(new NodePathVariable("foo_variable").findVariableName().isPresent());
     }
 }
