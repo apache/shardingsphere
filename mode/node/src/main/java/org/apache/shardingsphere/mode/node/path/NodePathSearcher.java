@@ -35,28 +35,23 @@ public final class NodePathSearcher {
      * Find node segment.
      *
      * @param path to be searched path
-     * @param nodePathCriteria node path criteria
-     * @param trimEmptyNode null variable should trim parent node if true
-     * @param containsChildPath whether contains child path
-     * @param searchSegmentIndex search segment index, start from 1
+     * @param criteria node path search criteria
      * @return found node segment
      */
-    public static Optional<String> find(final String path, final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath, final int searchSegmentIndex) {
-        Matcher matcher = createPattern(nodePathCriteria, trimEmptyNode, containsChildPath).matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(searchSegmentIndex)) : Optional.empty();
+    public static Optional<String> find(final String path, final NodePathSearchCriteria criteria) {
+        Matcher matcher = createPattern(criteria.getNodePathExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(criteria.getSearchSegmentIndex())) : Optional.empty();
     }
     
     /**
      * Whether to matched path.
      *
      * @param path to be searched path
-     * @param nodePathCriteria node path criteria
-     * @param trimEmptyNode null variable should trim parent node if true
-     * @param containsChildPath whether contains child path
+     * @param criteria node path search criteria
      * @return is matched path or not
      */
-    public static boolean isMatchedPath(final String path, final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
-        return createPattern(nodePathCriteria, trimEmptyNode, containsChildPath).matcher(path).find();
+    public static boolean isMatchedPath(final String path, final NodePathSearchCriteria criteria) {
+        return createPattern(criteria.getNodePathExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
     }
     
     private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
