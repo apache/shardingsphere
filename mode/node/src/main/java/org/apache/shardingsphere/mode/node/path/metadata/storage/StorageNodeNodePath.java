@@ -42,7 +42,7 @@ public final class StorageNodeNodePath implements NodePath {
     
     /**
      * Create storage node search criteria.
-     * 
+     *
      * @return created search criteria
      */
     public static NodePathSearchCriteria createStorageNodeSearchCriteria() {
