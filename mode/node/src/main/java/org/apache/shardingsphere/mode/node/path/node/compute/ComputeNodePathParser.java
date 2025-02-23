@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.node.path.node.compute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -30,8 +31,6 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ComputeNodePathParser {
     
-    private static final String INSTANCE_ID_PATTERN = "([\\S]+)";
-    
     /**
      * Find instance ID by compute node path.
      *
@@ -39,7 +38,7 @@ public final class ComputeNodePathParser {
      * @return found instance ID
      */
     public static Optional<String> findInstanceId(final String computeNodePath) {
-        Pattern pattern = Pattern.compile("/nodes/compute_nodes/" + "(status|worker_id|labels)" + "/" + INSTANCE_ID_PATTERN + "$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("/nodes/compute_nodes/" + "(status|worker_id|labels)" + "/" + NodePathPattern.IDENTIFIER + "$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(computeNodePath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
