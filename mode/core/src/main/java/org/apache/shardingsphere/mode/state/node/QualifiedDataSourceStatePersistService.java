@@ -47,7 +47,7 @@ public final class QualifiedDataSourceStatePersistService {
      * @return loaded qualified data source states
      */
     public Map<String, QualifiedDataSourceState> load() {
-        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(null), false));
+        Collection<String> qualifiedDataSourceNodes = repository.getChildrenKeys(NodePathGenerator.toPath(new QualifiedDataSourceNodePath((String) null), false));
         Map<String, QualifiedDataSourceState> result = new HashMap<>(qualifiedDataSourceNodes.size(), 1F);
         qualifiedDataSourceNodes.forEach(each -> {
             String yamlContent = repository.query(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(new QualifiedDataSource(each)), false));
