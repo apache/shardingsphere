@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * Storage unit node path.
@@ -33,4 +35,26 @@ public final class StorageUnitNodePath implements NodePath {
     private final String databaseName;
     
     private final String storageUnitName;
+    
+    public StorageUnitNodePath() {
+        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+    }
+    
+    /**
+     * Create data source search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createDataSourceSearchCriteria() {
+        return new NodePathSearchCriteria(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, null), true, true, 1);
+    }
+    
+    /**
+     * Create storage unit search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createStorageUnitSearchCriteria() {
+        return new NodePathSearchCriteria(new StorageUnitNodePath(), false, false, 2);
+    }
 }
