@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * Show process list trigger node path.
@@ -31,4 +33,26 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 public final class ShowProcessListTriggerNodePath implements NodePath {
     
     private final InstanceProcessNodeValue instanceProcess;
+    
+    public ShowProcessListTriggerNodePath() {
+        this(new InstanceProcessNodeValue(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER));
+    }
+    
+    /**
+     * Create instance ID search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
+        return new NodePathSearchCriteria(new ShowProcessListTriggerNodePath(), false, false, 1);
+    }
+    
+    /**
+     * Create process ID search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createProcessIdSearchCriteria() {
+        return new NodePathSearchCriteria(new ShowProcessListTriggerNodePath(), false, false, 2);
+    }
 }

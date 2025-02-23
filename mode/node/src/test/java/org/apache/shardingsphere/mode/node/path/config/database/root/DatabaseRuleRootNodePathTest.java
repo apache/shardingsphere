@@ -30,7 +30,7 @@ class DatabaseRuleRootNodePathTest {
     
     @Test
     void assertGetRuleNodePrefix() {
-        assertThat(nodePath.getNodePrefix(), is("/metadata/([\\w\\-]+)/rules/foo/"));
+        assertThat(nodePath.getNodePrefix(), is("/metadata/([\\w-]+)/rules/foo/"));
     }
     
     @Test
