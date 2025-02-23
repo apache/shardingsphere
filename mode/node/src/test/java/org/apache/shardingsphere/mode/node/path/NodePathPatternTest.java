@@ -36,6 +36,7 @@ class NodePathPatternTest {
         assertFalse(pattern.matcher("foo.bar").matches());
         assertFalse(pattern.matcher("#foo").matches());
     }
+    
     @Test
     void assertQualifiedIdentifier() {
         Pattern pattern = Pattern.compile(NodePathPattern.QUALIFIED_IDENTIFIER);
