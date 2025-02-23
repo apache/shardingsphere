@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
@@ -41,7 +42,7 @@ public final class OnlineNodePath implements NodePath {
     
     public OnlineNodePath() {
         instanceType = "(jdbc|proxy)";
-        instanceId = "([\\S]+)";
+        instanceId = NodePathPattern.IDENTIFIER;
     }
     
     /**
