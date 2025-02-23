@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * Statistics data node path.
@@ -37,4 +39,43 @@ public final class StatisticsDataNodePath implements NodePath {
     private final String tableName;
     
     private final String uniqueKey;
+    
+    /**
+     * Create database search criteria.
+     *
+     * @param containsChildPath contains child path
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createDatabaseSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, null, null, null), true, containsChildPath, 1);
+    }
+    
+    /**
+     * Create schema search criteria.
+     *
+     * @param containsChildPath contains child path
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null, null), true, containsChildPath, 2);
+    }
+    
+    /**
+     * Create table search criteria.
+     *
+     * @param containsChildPath contains child path
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createTableSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), false, containsChildPath, 3);
+    }
+    
+    /**
+     * Create row unique key search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createRowUniqueKeySearchCriteria() {
+        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 4);
+    }
 }
