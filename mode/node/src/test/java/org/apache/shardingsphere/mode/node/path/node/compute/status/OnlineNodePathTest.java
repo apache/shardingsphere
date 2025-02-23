@@ -19,10 +19,15 @@ package org.apache.shardingsphere.mode.node.path.node.compute.status;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OnlineNodePathTest {
     
@@ -31,5 +36,19 @@ class OnlineNodePathTest {
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
         assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
+    }
+    
+    @Test
+    void assertCreateInstanceTypeSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/online/jdbc/foo_instance_id", OnlineNodePath.createInstanceTypeSearchCriteria()), is(Optional.of("jdbc")));
+        assertFalse(NodePathSearcher.find("/nodes/compute_nodes/online/jdbc", OnlineNodePath.createInstanceTypeSearchCriteria()).isPresent());
+    }
+    
+    @Test
+    void assertCreateInstanceIdSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/online/jdbc/foo_instance_id", OnlineNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
+        assertFalse(NodePathSearcher.find("/nodes/compute_nodes/online/jdbc", OnlineNodePath.createInstanceIdSearchCriteria()).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/online/proxy/foo_instance_id", OnlineNodePath.createInstanceIdSearchCriteria()));
+        assertFalse(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/online/proxy", OnlineNodePath.createInstanceIdSearchCriteria()));
     }
 }
