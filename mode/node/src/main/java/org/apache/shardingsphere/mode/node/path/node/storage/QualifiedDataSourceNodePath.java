@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
@@ -44,6 +45,6 @@ public final class QualifiedDataSourceNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createQualifiedDataSourceSearchCriteria() {
-        return new NodePathSearchCriteria(new QualifiedDataSourceNodePath("(\\S+)"), false, false, 1);
+        return new NodePathSearchCriteria(new QualifiedDataSourceNodePath(NodePathPattern.QUALIFIED_IDENTIFIER), false, false, 1);
     }
 }

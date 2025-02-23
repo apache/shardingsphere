@@ -29,5 +29,10 @@ public final class NodePathPattern {
     /**
      * Identifier pattern.
      */
-    public static final String IDENTIFIER = "([\\w\\-]+)";
+    public static final String IDENTIFIER = "([\\w-]+)";
+    
+    /**
+     * Qualified identifier pattern.
+     */
+    public static final String QUALIFIED_IDENTIFIER = "([\\w.-]+)";
 }
