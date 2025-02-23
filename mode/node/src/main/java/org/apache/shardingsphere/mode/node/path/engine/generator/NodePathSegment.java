@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.engine.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
-import org.apache.shardingsphere.mode.node.path.engine.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 import java.util.Optional;
 

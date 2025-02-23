@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.node.path.engine.generator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.engine.NodePath;
-import org.apache.shardingsphere.mode.node.path.engine.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
 import java.util.LinkedList;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.engine.searcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.engine.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
  * Node path search criteria.

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.node.path.type.config.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.engine.NodePath;
-import org.apache.shardingsphere.mode.node.path.engine.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
  * Global rule node path.

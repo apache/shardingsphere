@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.engine;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.apache.shardingsphere.mode.node.path;
 
 /**
- * Node path entity.
+ * Node path.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface NodePathEntity {
-    
-    /**
-     * Get repository node path.
-     *
-     * @return repository node path
-     */
-    String value();
+public interface NodePath {
 }
