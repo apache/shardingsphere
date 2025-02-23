@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.mode.node.path.metadata.storage;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageUnitNodePathTest {
     
@@ -29,5 +34,20 @@ class StorageUnitNodePathTest {
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", null), false), is("/metadata/foo_db/data_sources/units"));
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", "foo_storage_unit"), false), is("/metadata/foo_db/data_sources/units/foo_storage_unit"));
+    }
+    
+    @Test
+    void assertCreateDataSourceSearchCriteria() {
+        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()), is(Optional.of("foo_db")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources", StorageUnitNodePath.createDataSourceSearchCriteria()));
+        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db", StorageUnitNodePath.createDataSourceSearchCriteria()));
+    }
+    
+    @Test
+    void assertCreateStorageUnitSearchCriteria() {
+        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createStorageUnitSearchCriteria()), is(Optional.of("foo_ds")));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createStorageUnitSearchCriteria()).isPresent());
     }
 }

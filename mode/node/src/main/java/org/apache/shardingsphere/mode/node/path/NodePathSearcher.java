@@ -62,10 +62,10 @@ public final class NodePathSearcher {
     /**
      * Get version node path parser.
      *
-     * @param nodePathCriteria node path criteria
+     * @param searchExample search example
      * @return version node path parser
      */
-    public static VersionNodePathParser getVersion(final NodePath nodePathCriteria) {
-        return new VersionNodePathParser(NodePathGenerator.toPath(nodePathCriteria, false));
+    public static VersionNodePathParser getVersion(final NodePath searchExample) {
+        return new VersionNodePathParser(NodePathGenerator.toPath(searchExample, false));
     }
 }
