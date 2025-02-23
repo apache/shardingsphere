@@ -24,11 +24,11 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.compute.ComputeNodePathParser;
-import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.StatusNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.workerid.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.ComputeNodePathParser;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.label.LabelNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.status.StatusNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 
 import java.util.ArrayList;
 import java.util.Arrays;

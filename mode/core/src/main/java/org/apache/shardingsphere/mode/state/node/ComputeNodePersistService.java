@@ -29,11 +29,11 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeDataSwapper;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.node.compute.label.LabelNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.status.StatusNodePath;
-import org.apache.shardingsphere.mode.node.path.node.compute.workerid.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.label.LabelNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.status.OnlineNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.status.StatusNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Arrays;

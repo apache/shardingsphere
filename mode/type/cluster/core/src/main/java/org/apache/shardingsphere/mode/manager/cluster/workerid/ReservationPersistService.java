@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.workerid;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.reservation.WorkerIDReservationNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.reservation.WorkerIDReservationNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 

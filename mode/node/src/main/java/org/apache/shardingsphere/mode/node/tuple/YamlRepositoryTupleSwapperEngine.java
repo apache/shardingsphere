@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.config.global.GlobalRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
