@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.node.path.statistics;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,5 +39,38 @@ class StatisticsDataNodePathTest {
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl"));
         assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
+    }
+    
+    @Test
+    void assertCreateDatabaseSearchCriteria() {
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createDatabaseSearchCriteria(false)), is(Optional.of("foo_db")));
+        assertThat(NodePathSearcher.find("/statistics/databases", StatisticsDataNodePath.createDatabaseSearchCriteria(false)), is(Optional.empty()));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createDatabaseSearchCriteria(true)), is(Optional.of("foo_db")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/db_schema", StatisticsDataNodePath.createDatabaseSearchCriteria(true)), is(Optional.of("foo_db")));
+        assertThat(NodePathSearcher.find("/statistics/databases", StatisticsDataNodePath.createDatabaseSearchCriteria(true)), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertCreateSchemaSearchCriteria() {
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createSchemaSearchCriteria(false)), is(Optional.of("foo_schema")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createSchemaSearchCriteria(false)), is(Optional.empty()));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createSchemaSearchCriteria(true)), is(Optional.of("foo_schema")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", StatisticsDataNodePath.createSchemaSearchCriteria(true)), is(Optional.of("foo_schema")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createSchemaSearchCriteria(true)), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertCreateTableSearchCriteria() {
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createTableSearchCriteria(false)), is(Optional.of("tbl_name")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createTableSearchCriteria(false)), is(Optional.empty()));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createTableSearchCriteria(true)), is(Optional.of("tbl_name")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createTableSearchCriteria(true)), is(Optional.of("tbl_name")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables", StatisticsDataNodePath.createTableSearchCriteria(true)), is(Optional.empty()));
+    }
+    
+    @Test
+    void assertCreateRowUniqueKeySearchCriteria() {
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()), is(Optional.of("key")));
+        assertThat(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()), is(Optional.empty()));
     }
 }
