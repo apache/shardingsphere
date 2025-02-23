@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.type.config.database.root;
 
-import org.apache.shardingsphere.mode.node.path.type.config.database.root.DatabaseRuleRootNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

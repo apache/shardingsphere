@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

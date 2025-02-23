@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

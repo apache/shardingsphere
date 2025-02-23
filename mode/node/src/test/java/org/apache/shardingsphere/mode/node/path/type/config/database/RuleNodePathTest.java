@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.path.type.config.database;
 
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.junit.jupiter.api.BeforeEach;
