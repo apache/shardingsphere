@@ -33,9 +33,9 @@ public final class VersionNodePathParser {
     private final Pattern versionPattern;
     
     public VersionNodePathParser(final String regex) {
-        VersionNodePath generator = new VersionNodePath(regex);
-        activeVersionPattern = Pattern.compile(generator.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        versionPattern = Pattern.compile(String.join("/", generator.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
+        VersionNodePath versionNodePath = new VersionNodePath(regex);
+        activeVersionPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
+        versionPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
     }
     
     /**
