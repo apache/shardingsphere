@@ -24,12 +24,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.node.compute.process.ShowProcessListTriggerNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Show process list handler.
@@ -48,25 +47,17 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Matcher matcher = getShowProcessListTriggerMatcher(event);
-        if (matcher.find()) {
-            handle(contextManager, event, matcher);
+        if (!NodePathSearcher.isMatchedPath(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria())) {
+            return;
         }
-    }
-    
-    private void handle(final ContextManager contextManager, final DataChangedEvent event, final Matcher matcher) {
-        String instanceId = matcher.group(1);
-        String taskId = matcher.group(2);
+        String instanceId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()).orElse("");
+        String processId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()).orElse("");
         if (Type.ADDED == event.getType()) {
             if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, taskId);
+                new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
             }
         } else if (Type.DELETED == event.getType()) {
-            ProcessOperationLockRegistry.getInstance().notify(taskId);
+            ProcessOperationLockRegistry.getInstance().notify(processId);
         }
-    }
-    
-    private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false) + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

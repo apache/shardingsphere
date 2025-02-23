@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.mode.node.path.node.compute.process;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KillProcessTriggerNodePathTest {
     
@@ -30,5 +35,23 @@ class KillProcessTriggerNodePathTest {
         assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false), is("/nodes/compute_nodes/kill_process_trigger"));
         assertThat(NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id")), false),
                 is("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id"));
+    }
+    
+    @Test
+    void assertCreateInstanceIdSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id",
+                KillProcessTriggerNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
+        assertFalse(NodePathSearcher.find("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", KillProcessTriggerNodePath.createInstanceIdSearchCriteria()).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id", KillProcessTriggerNodePath.createInstanceIdSearchCriteria()));
+        assertFalse(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", KillProcessTriggerNodePath.createInstanceIdSearchCriteria()));
+    }
+    
+    @Test
+    void assertCreateProcessIdSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id",
+                KillProcessTriggerNodePath.createProcessIdSearchCriteria()), is(Optional.of("foo_process_id")));
+        assertFalse(NodePathSearcher.find("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", KillProcessTriggerNodePath.createProcessIdSearchCriteria()).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_process_id", KillProcessTriggerNodePath.createProcessIdSearchCriteria()));
+        assertFalse(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", KillProcessTriggerNodePath.createProcessIdSearchCriteria()));
     }
 }
