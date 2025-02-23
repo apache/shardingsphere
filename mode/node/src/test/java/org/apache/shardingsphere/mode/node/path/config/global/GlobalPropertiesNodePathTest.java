@@ -18,15 +18,25 @@
 package org.apache.shardingsphere.mode.node.path.config.global;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalPropertiesNodePathTest {
     
     @Test
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
+    }
+    
+    @Test
+    void assertGetVersion() {
+        VersionNodePathParser versionNodePathParser = NodePathSearcher.getVersion(new GlobalPropertiesNodePath());
+        assertTrue(versionNodePathParser.isActiveVersionPath("/props/active_version"));
+        assertTrue(versionNodePathParser.isVersionPath("/props/versions/0"));
     }
 }
