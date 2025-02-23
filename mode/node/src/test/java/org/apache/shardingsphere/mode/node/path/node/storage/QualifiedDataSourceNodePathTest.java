@@ -19,16 +19,28 @@ package org.apache.shardingsphere.mode.node.path.node.storage;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertToPath() {
+        assertThat(NodePathGenerator.toPath(new QualifiedDataSourceNodePath((String) null), false), is("/nodes/qualified_data_sources"));
         assertThat(NodePathGenerator.toPath(new QualifiedDataSourceNodePath(new QualifiedDataSource("foo_db.foo_group.foo_ds")), false),
                 is("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds"));
+    }
+    
+    @Test
+    void assertCreateQualifiedDataSourceSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()),
+                is(Optional.of("replica_query_db.readwrite_ds.replica_ds_0")));
+        assertFalse(NodePathSearcher.find("/nodes/xxx/", QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()).isPresent());
     }
 }
