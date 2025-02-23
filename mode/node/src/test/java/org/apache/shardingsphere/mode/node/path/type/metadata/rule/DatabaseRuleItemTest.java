@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.junit.jupiter.api.Test;
 
-/**
- * Database rule node path.
- */
-@NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseRuleNodePath implements NodePath {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class DatabaseRuleItemTest {
     
-    private final String databaseName;
+    @Test
+    void assertToStringWithItemName() {
+        assertThat(new DatabaseRuleItem("foo_type/foo_item").toString(), is("foo_type/foo_item"));
+    }
     
-    private final String ruleType;
-    
-    private final DatabaseRuleItem databaseRuleItem;
+    @Test
+    void assertToStringWithoutItemName() {
+        assertThat(new DatabaseRuleItem("foo_type").toString(), is("foo_type"));
+    }
 }

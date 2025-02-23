@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.config.database.item;
+package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
 /**
  * Database rule item.
