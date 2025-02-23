@@ -19,12 +19,13 @@ package org.apache.shardingsphere.mode.node.path.type.config.database.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.type.config.database.root.DatabaseRuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Named database rule item node path.
@@ -33,16 +34,15 @@ public final class NamedDatabaseRuleItemNodePath {
     
     private final String type;
     
-    private final Pattern itemPathPattern;
+    private final DatabaseRuleNodePath databaseRuleNodePath;
     
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public NamedDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath rootNodePath, final String type) {
+    public NamedDatabaseRuleItemNodePath(final String ruleType, final String type) {
         this.type = type;
-        String pattern = String.join("/", rootNodePath.getNodePrefix() + type, NodePathPattern.IDENTIFIER);
-        itemPathPattern = Pattern.compile(pattern + "$");
-        versionNodePathParser = new VersionNodePathParser(pattern);
+        databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type, NodePathPattern.IDENTIFIER));
+        versionNodePathParser = NodePathSearcher.getVersion(databaseRuleNodePath);
     }
     
     /**
@@ -62,7 +62,6 @@ public final class NamedDatabaseRuleItemNodePath {
      * @return found rule item name
      */
     public Optional<String> findNameByItemPath(final String itemPath) {
-        Matcher matcher = itemPathPattern.matcher(itemPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return NodePathSearcher.find(itemPath, new NodePathSearchCriteria(databaseRuleNodePath, false, false, 2));
     }
 }

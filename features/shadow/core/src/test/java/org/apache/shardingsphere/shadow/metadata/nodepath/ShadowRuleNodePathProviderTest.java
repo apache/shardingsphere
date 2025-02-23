@@ -40,6 +40,6 @@ class ShadowRuleNodePathProviderTest {
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.DATA_SOURCES));
         assertThat(actual.getUniqueItems().size(), is(1));
         assertTrue(actual.getUniqueItems().containsKey(ShadowRuleNodePathProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
-        assertThat(actual.getRoot().getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(ShadowRuleNodePathProvider.RULE_TYPE));
     }
 }

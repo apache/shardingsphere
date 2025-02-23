@@ -38,6 +38,6 @@ class MaskRuleNodePathProviderTest {
         assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.MASK_ALGORITHMS));
         assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRoot().getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));
     }
 }

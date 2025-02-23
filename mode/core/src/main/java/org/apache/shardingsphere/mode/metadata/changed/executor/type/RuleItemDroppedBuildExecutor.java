@@ -38,12 +38,12 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
         for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().findNameByItemPath(path);
             if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();
