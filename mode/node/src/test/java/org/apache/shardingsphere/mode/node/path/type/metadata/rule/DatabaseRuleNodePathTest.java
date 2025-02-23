@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
