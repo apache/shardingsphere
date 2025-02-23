@@ -110,8 +110,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         if (isIncludeLike(expression)) {
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
-            Collection<Projection> columnProjections =
-                    createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType);
+            Collection<Projection> columnProjections = createColumnProjections(likeQueryColumnItem.get().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType);
             return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
         }
         Collection<Projection> columnProjections = encryptColumn.getAssistedQuery()
@@ -122,10 +121,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     private boolean isIncludeLike(final ExpressionSegment expression) {
         return expression instanceof BinaryOperationExpression && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator());
-    }
-    
-    private boolean isContainsColumnSegment(final ExpressionSegment expressionSegment, final ColumnSegment targetColumnSegment) {
-        return expressionSegment.getStartIndex() <= targetColumnSegment.getStartIndex() && expressionSegment.getStopIndex() >= targetColumnSegment.getStopIndex();
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {
