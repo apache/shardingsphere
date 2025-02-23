@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.NodePathSearchCriteria;
 
 /**
  * Online node path.
@@ -36,5 +37,28 @@ public final class OnlineNodePath implements NodePath {
     public OnlineNodePath(final InstanceType instanceType, final String instanceId) {
         this.instanceType = null == instanceType ? null : instanceType.name().toLowerCase();
         this.instanceId = instanceId;
+    }
+    
+    public OnlineNodePath() {
+        instanceType = "(jdbc|proxy)";
+        instanceId = "([\\S]+)";
+    }
+    
+    /**
+     * Create instance type search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createInstanceTypeSearchCriteria() {
+        return new NodePathSearchCriteria(new OnlineNodePath(), false, false, 1);
+    }
+    
+    /**
+     * Create instance ID search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
+        return new NodePathSearchCriteria(new OnlineNodePath(), false, false, 2);
     }
 }

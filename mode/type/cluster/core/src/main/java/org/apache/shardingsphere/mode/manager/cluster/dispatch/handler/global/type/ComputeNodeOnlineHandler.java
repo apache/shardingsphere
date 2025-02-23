@@ -30,12 +30,11 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.node.compute.status.OnlineNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *  Compute node online handler.
@@ -54,20 +53,17 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Matcher matcher = getInstanceOnlinePathMatcher(event.getKey());
-        if (!matcher.find()) {
+        if (!NodePathSearcher.isMatchedPath(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria())) {
             return;
         }
+        InstanceType instanceType = InstanceType.valueOf(NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceTypeSearchCriteria()).orElse("").toUpperCase());
+        String instanceId = NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria()).orElse("");
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
-        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData);
+        InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);
         if (Type.ADDED == event.getType()) {
             contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
         } else if (Type.DELETED == event.getType()) {
             contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().delete(new ComputeNodeInstance(instanceMetaData));
         }
-    }
-    
-    private Matcher getInstanceOnlinePathMatcher(final String onlineInstancePath) {
-        return Pattern.compile(NodePathGenerator.toPath(new OnlineNodePath(null, null), false) + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }
