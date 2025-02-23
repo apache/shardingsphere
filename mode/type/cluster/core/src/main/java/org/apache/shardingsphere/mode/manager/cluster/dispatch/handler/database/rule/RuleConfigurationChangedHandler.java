@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
 import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 

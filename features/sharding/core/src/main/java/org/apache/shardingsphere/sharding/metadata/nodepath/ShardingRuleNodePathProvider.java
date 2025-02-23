@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 

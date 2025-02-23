@@ -25,11 +25,11 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
-import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.database.ViewMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageNodeNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageNodeNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
 
 import java.util.Optional;
 

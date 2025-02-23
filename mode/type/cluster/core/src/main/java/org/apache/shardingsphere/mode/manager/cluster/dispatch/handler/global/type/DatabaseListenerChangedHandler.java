@@ -26,10 +26,10 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type.Dat
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.metadata.database.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.state.DatabaseListenerCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.state.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;

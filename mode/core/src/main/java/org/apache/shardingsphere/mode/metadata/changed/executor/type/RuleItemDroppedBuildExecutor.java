@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.config.database.item.NamedDatabaseRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.config.database.item.UniqueDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;

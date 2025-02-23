@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.metadata.storage.StorageUnitNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;

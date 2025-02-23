@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.spi;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.node.path.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
 
 /**
  * Database rule node path provider.
