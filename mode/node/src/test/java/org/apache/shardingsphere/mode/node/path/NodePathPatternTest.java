@@ -46,5 +46,4 @@ class NodePathPatternTest {
         assertTrue(pattern.matcher("foo.bar").matches());
         assertFalse(pattern.matcher("#foo").matches());
     }
-    
 }
