@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.mode.node.path.config.global;
 
 import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
     
@@ -29,5 +32,12 @@ class GlobalRuleNodePathTest {
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false), is("/rules"));
         assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath("foo_rule"), false), is("/rules/foo_rule"));
+    }
+    
+    @Test
+    void assertGetVersion() {
+        VersionNodePathParser versionNodePathParser = NodePathSearcher.getVersion(new GlobalRuleNodePath("foo_rule"));
+        assertTrue(versionNodePathParser.isActiveVersionPath("/rules/foo_rule/active_version"));
+        assertTrue(versionNodePathParser.isVersionPath("/rules/foo_rule/versions/0"));
     }
 }
