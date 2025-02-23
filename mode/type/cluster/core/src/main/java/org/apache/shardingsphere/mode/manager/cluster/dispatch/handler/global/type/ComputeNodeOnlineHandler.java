@@ -53,7 +53,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (NodePathSearcher.isMatchedPath(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria())) {
+        if (!NodePathSearcher.isMatchedPath(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria())) {
             return;
         }
         InstanceType instanceType = InstanceType.valueOf(NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceTypeSearchCriteria()).orElse("").toUpperCase());

@@ -46,7 +46,7 @@ public final class OnlineNodePath implements NodePath {
     
     /**
      * Create instance type search criteria.
-     * 
+     *
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceTypeSearchCriteria() {
