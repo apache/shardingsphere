@@ -164,7 +164,10 @@ public final class YamlRepositoryTupleSwapperEngine {
         }
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         DatabaseRuleNodePath databaseRuleNodePath = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
-        for (RepositoryTuple each : repositoryTuples.stream().filter(each -> databaseRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList())) {
+        for (RepositoryTuple each : repositoryTuples.stream()
+                .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(
+                        databaseRuleNodePath.getRuleType())))
+                .collect(Collectors.toList())) {
             if (databaseRuleNodePath.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
@@ -177,7 +180,10 @@ public final class YamlRepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         DatabaseRuleNodePath databaseRuleNodePath = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
-        List<RepositoryTuple> validTuples = repositoryTuples.stream().filter(each -> databaseRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        List<RepositoryTuple> validTuples = repositoryTuples.stream()
+                .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(
+                        databaseRuleNodePath.getRuleType())))
+                .collect(Collectors.toList());
         if (validTuples.isEmpty()) {
             return Optional.empty();
         }

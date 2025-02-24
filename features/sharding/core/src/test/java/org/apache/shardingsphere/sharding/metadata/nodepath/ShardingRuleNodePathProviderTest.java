@@ -46,6 +46,6 @@ class ShardingRuleNodePathProviderTest {
                 ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY, ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN,
                 ShardingRuleNodePathProvider.SHARDING_CACHE);
         assertThat("Unique rule items equality without order", actual.getUniqueItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
-        assertThat(actual.getRoot().getRuleType(), is(ShardingRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(ShardingRuleNodePathProvider.RULE_TYPE));
     }
 }

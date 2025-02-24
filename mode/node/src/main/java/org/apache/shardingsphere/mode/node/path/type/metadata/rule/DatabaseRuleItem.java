@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Database rule item.
  */
+@RequiredArgsConstructor
 public final class DatabaseRuleItem {
     
     private final String itemType;

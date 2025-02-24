@@ -38,12 +38,12 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
         for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getVersionNodePathParser().findIdentifierByActiveVersionPath(path, 2);
             if (itemName.isPresent()) {
-                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
             }
         }
         for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
-                return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNodePath.getRoot().getRuleType() + "." + entry.getKey()));
+                return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();

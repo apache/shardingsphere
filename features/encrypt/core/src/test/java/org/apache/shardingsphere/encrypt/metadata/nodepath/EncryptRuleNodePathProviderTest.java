@@ -38,6 +38,6 @@ class EncryptRuleNodePathProviderTest {
         assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
         assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRoot().getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
     }
 }

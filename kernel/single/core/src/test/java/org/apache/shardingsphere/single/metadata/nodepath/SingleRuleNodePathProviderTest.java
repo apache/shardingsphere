@@ -38,6 +38,6 @@ class SingleRuleNodePathProviderTest {
         assertThat(actual.getUniqueItems().size(), is(2));
         assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
         assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
-        assertThat(actual.getRoot().getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
     }
 }

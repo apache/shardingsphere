@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.node.path.type.config.database.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.type.config.database.root.DatabaseRuleRootNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 /**
@@ -31,9 +34,9 @@ public final class UniqueDatabaseRuleItemNodePath {
     @Getter
     private final VersionNodePathParser versionNodePathParser;
     
-    public UniqueDatabaseRuleItemNodePath(final DatabaseRuleRootNodePath databaseRuleRootNodePath, final String type) {
+    public UniqueDatabaseRuleItemNodePath(final String ruleType, final String type) {
         this.type = type;
-        versionNodePathParser = new VersionNodePathParser(databaseRuleRootNodePath.getNodePrefix() + type);
+        versionNodePathParser = NodePathSearcher.getVersion(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type)));
     }
     
     /**

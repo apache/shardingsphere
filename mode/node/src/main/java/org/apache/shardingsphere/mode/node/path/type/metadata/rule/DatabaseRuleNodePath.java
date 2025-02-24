@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
  * Database rule node path.
@@ -35,4 +37,14 @@ public final class DatabaseRuleNodePath implements NodePath {
     private final String ruleType;
     
     private final DatabaseRuleItem databaseRuleItem;
+    
+    /**
+     * Create valid rule type search criteria.
+     *
+     * @param ruleType rule type
+     * @return create search criteria
+     */
+    public static NodePathSearchCriteria createValidRuleTypeSearchCriteria(final String ruleType) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, null), false, true, 1);
+    }
 }

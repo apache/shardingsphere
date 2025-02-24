@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.node.path.type.config.database;
 import lombok.Getter;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.type.config.database.root.DatabaseRuleRootNodePath;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,24 +31,24 @@ import java.util.stream.Collectors;
 @Getter
 public final class DatabaseRuleNodePath {
     
-    private final DatabaseRuleRootNodePath root;
+    private final String ruleType;
     
     private final Map<String, NamedDatabaseRuleItemNodePath> namedItems;
     
     private final Map<String, UniqueDatabaseRuleItemNodePath> uniqueItems;
     
     public DatabaseRuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
-        root = new DatabaseRuleRootNodePath(ruleType);
+        this.ruleType = ruleType;
         namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
         uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
     }
     
     private Map<String, NamedDatabaseRuleItemNodePath> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
-        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new NamedDatabaseRuleItemNodePath(root, each)));
+        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new NamedDatabaseRuleItemNodePath(ruleType, each)));
     }
     
     private Map<String, UniqueDatabaseRuleItemNodePath> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
-        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new UniqueDatabaseRuleItemNodePath(root, each)));
+        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new UniqueDatabaseRuleItemNodePath(ruleType, each)));
     }
     
     /**
