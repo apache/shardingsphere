@@ -27,24 +27,15 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathPars
 /**
  * Unique database rule item node path.
  */
+@Getter
 public final class UniqueDatabaseRuleItemNodePath {
     
     private final String type;
     
-    @Getter
     private final VersionNodePathParser versionNodePathParser;
     
     public UniqueDatabaseRuleItemNodePath(final String ruleType, final String type) {
         this.type = type;
         versionNodePathParser = NodePathSearcher.getVersion(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type)));
-    }
-    
-    /**
-     * Get path.
-     *
-     * @return path
-     */
-    public String getPath() {
-        return String.join("/", type);
     }
 }

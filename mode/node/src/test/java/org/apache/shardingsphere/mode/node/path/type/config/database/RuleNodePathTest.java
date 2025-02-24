@@ -43,14 +43,14 @@ class RuleNodePathTest {
     @Test
     void assertFindNameByVersion() {
         NamedDatabaseRuleItemNodePath namedRulePath = databaseRuleNodePath.getNamedItem("tables");
-        assertThat(namedRulePath.getPath("foo_tbl"), is("tables/foo_tbl"));
+        assertThat(namedRulePath.getType(), is("tables"));
     }
     
     @Test
     void assertGetUniqueItem() {
         UniqueDatabaseRuleItemNodePath uniqueRulePath = databaseRuleNodePath.getUniqueItem("tables");
-        assertThat(uniqueRulePath.getPath(), is("tables"));
+        assertThat(uniqueRulePath.getType(), is("tables"));
         UniqueDatabaseRuleItemNodePath uniqueRulePathWithType = databaseRuleNodePath.getUniqueItem("tables/type");
-        assertThat(uniqueRulePathWithType.getPath(), is("tables/type"));
+        assertThat(uniqueRulePathWithType.getType(), is("tables/type"));
     }
 }

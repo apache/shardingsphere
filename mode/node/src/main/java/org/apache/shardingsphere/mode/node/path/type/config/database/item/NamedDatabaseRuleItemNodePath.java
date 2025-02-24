@@ -30,29 +30,19 @@ import java.util.Optional;
 /**
  * Named database rule item node path.
  */
+@Getter
 public final class NamedDatabaseRuleItemNodePath {
     
     private final String type;
     
     private final DatabaseRuleNodePath databaseRuleNodePath;
     
-    @Getter
     private final VersionNodePathParser versionNodePathParser;
     
     public NamedDatabaseRuleItemNodePath(final String ruleType, final String type) {
         this.type = type;
         databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type, NodePathPattern.IDENTIFIER));
         versionNodePathParser = NodePathSearcher.getVersion(databaseRuleNodePath);
-    }
-    
-    /**
-     * Get rule item path.
-     *
-     * @param itemName item name
-     * @return rule item path
-     */
-    public String getPath(final String itemName) {
-        return String.join("/", type, itemName);
     }
     
     /**

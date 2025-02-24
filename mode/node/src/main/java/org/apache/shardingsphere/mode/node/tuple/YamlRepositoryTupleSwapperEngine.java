@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
@@ -94,34 +95,35 @@ public final class YamlRepositoryTupleSwapperEngine {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object value : (Collection) fieldValue) {
                 String tupleKeyName = tupleKeyListNameGenerator.value().getConstructor().newInstance().generate(value);
-                result.add(new RepositoryTuple(databaseRuleNodePath.getNamedItem(tupleName).getPath(tupleKeyName), value.toString()));
+                result.add(new RepositoryTuple(new DatabaseRuleItem(databaseRuleNodePath.getNamedItem(tupleName).getType(), tupleKeyName).toString(), value.toString()));
             }
             return result;
         }
         if (fieldValue instanceof Map) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object entry : ((Map) fieldValue).entrySet()) {
-                result.add(new RepositoryTuple(databaseRuleNodePath.getNamedItem(tupleName).getPath(((Entry) entry).getKey().toString()), YamlEngine.marshal(((Entry) entry).getValue())));
+                result.add(new RepositoryTuple(
+                        new DatabaseRuleItem(databaseRuleNodePath.getNamedItem(tupleName).getType(), ((Entry) entry).getKey().toString()).toString(), YamlEngine.marshal(((Entry) entry).getValue())));
             }
             return result;
         }
         if (fieldValue instanceof Collection) {
             return ((Collection) fieldValue).isEmpty()
                     ? Collections.emptyList()
-                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
+                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getType(), YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
             return ((String) fieldValue).isEmpty()
                     ? Collections.emptyList()
-                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+                    : Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getType(), fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
-            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), fieldValue.toString()));
+            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getType(), fieldValue.toString()));
         }
         if (fieldValue instanceof Enum) {
-            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), ((Enum) fieldValue).name()));
+            return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getType(), ((Enum) fieldValue).name()));
         }
-        return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getPath(), YamlEngine.marshal(fieldValue)));
+        return Collections.singleton(new RepositoryTuple(databaseRuleNodePath.getUniqueItem(tupleName).getType(), YamlEngine.marshal(fieldValue)));
     }
     
     private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
