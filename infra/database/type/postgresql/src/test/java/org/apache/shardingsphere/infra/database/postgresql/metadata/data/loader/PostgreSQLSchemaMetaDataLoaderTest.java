@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.postgresql.metadata.data.loader;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -35,7 +37,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -80,12 +81,12 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource, Collections.emptyList()), is(createSchemaTableNames()));
     }
-    
+
     private Map<String, Collection<String>> createSchemaTableNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("public", Arrays.asList("tbl", "partitioned_tbl"));
-        result.put("schema_1", Collections.emptyList());
-        result.put("schema_2", Collections.emptyList());
+        Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
+        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        result.put("schema_1", Collections.emptySet());
+        result.put("schema_2", Collections.emptySet());
         return result;
     }
     
