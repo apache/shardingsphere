@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.data.loader;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -76,7 +77,7 @@ class MySQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", Arrays.asList("tbl", "partitioned_tbl"));
+        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
