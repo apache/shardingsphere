@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class ReadwriteSplittingRuleNodePathProviderTest {
     
     @Test
     void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(2));
         assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS));
         assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS));

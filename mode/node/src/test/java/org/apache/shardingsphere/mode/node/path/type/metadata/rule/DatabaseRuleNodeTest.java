@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DatabaseRuleNodePathTest {
+class DatabaseRuleNodeTest {
     
     @Test
     void assertToPath() {

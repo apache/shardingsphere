@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
 import java.util.Collections;
@@ -33,10 +33,10 @@ public final class BroadcastRuleNodePathProvider implements DatabaseRuleNodePath
     
     public static final String TABLES = "tables";
     
-    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
+    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
     
     @Override
-    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

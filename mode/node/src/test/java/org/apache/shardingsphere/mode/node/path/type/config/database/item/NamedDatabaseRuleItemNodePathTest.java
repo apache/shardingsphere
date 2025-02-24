@@ -31,11 +31,6 @@ class NamedDatabaseRuleItemNodePathTest {
     private final NamedDatabaseRuleItemNodePath nodePath = new NamedDatabaseRuleItemNodePath("foo", "tables");
     
     @Test
-    void assertGetPath() {
-        assertThat(nodePath.getPath("foo_tbl"), is("tables/foo_tbl"));
-    }
-    
-    @Test
     void assertFindNameByItemPath() {
         Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
         assertTrue(actual.isPresent());

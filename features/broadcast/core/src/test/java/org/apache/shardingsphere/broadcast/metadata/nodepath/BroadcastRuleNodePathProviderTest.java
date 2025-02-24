@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class BroadcastRuleNodePathProviderTest {
     
     @Test
     void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(1));
         assertTrue(actual.getUniqueItems().containsKey(BroadcastRuleNodePathProvider.TABLES));

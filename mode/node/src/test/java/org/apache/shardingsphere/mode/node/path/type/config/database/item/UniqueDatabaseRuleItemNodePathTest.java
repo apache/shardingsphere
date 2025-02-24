@@ -27,6 +27,6 @@ class UniqueDatabaseRuleItemNodePathTest {
     @Test
     void assertPath() {
         UniqueDatabaseRuleItemNodePath uniqueDatabaseRuleItemNodePath = new UniqueDatabaseRuleItemNodePath("foo", "test_path");
-        assertThat(uniqueDatabaseRuleItemNodePath.getPath(), is("test_path"));
+        assertThat(uniqueDatabaseRuleItemNodePath.getType(), is("test_path"));
     }
 }

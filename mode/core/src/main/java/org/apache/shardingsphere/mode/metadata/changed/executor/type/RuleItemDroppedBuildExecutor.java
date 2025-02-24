@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -34,16 +34,16 @@ import java.util.Optional;
 public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
     
     @Override
-    public Optional<DropRuleItem> build(final DatabaseRuleNodePath databaseRuleNodePath, final String databaseName, final String path, final Integer activeVersion) {
-        for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getNamedItems().entrySet()) {
+    public Optional<DropRuleItem> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final Integer activeVersion) {
+        for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNode.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().findNameByItemPath(path);
             if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNode.getRuleType() + "." + entry.getKey()));
             }
         }
-        for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNodePath.getUniqueItems().entrySet()) {
+        for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNode.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNodePath.getRuleType() + "." + entry.getKey()));
+                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNode.getRuleType() + "." + entry.getKey()));
             }
         }
         return Optional.empty();

@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Database rule node path.
+ * Database rule node.
  */
 @Getter
-public final class DatabaseRuleNodePath {
+public final class DatabaseRuleNode {
     
     private final String ruleType;
     
@@ -37,7 +37,7 @@ public final class DatabaseRuleNodePath {
     
     private final Map<String, UniqueDatabaseRuleItemNodePath> uniqueItems;
     
-    public DatabaseRuleNodePath(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
+    public DatabaseRuleNode(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
         this.ruleType = ruleType;
         namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
         uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);

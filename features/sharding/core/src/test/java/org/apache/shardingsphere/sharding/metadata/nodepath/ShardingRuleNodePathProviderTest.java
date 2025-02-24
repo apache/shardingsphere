@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
@@ -36,7 +36,7 @@ class ShardingRuleNodePathProviderTest {
     
     @Test
     void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodePathProvider.TABLES, ShardingRuleNodePathProvider.AUTO_TABLES, ShardingRuleNodePathProvider.BINDING_TABLES,
                 ShardingRuleNodePathProvider.SHARDING_ALGORITHMS, ShardingRuleNodePathProvider.KEY_GENERATORS, ShardingRuleNodePathProvider.AUDITORS);
