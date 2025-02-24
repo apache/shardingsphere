@@ -278,10 +278,15 @@
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
     <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
+    <sql-case id="select_last_insert_id" value="SELECT LAST_INSERT_ID()" db-types="MySQL" />
+    <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
+    <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
+    <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />
+    <sql-case id="select_lpad" value="SELECT LPAD('hi',4,'??')" db-types="MySQL" />
     <sql-case id="select_prediction_cost" value="SELECT cust_id FROM mining_data_apply_v WHERE country_name = 'Italy' ORDER BY PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" db-types="Oracle" />
     <sql-case id="select_name_const" value="SELECT NAME_CONST('myname',14)" db-types="MySQL" />
     <sql-case id="select_not_in" value="SELECT (3,4) NOT IN ((1,2), (3,4))" db-types="MySQL" />

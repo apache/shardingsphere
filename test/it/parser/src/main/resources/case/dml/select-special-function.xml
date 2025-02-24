@@ -4822,7 +4822,37 @@
                 </expr>
             </expression-projection>
         </projections>
-    </select>  
+    </select>
+
+    <select sql-case-id="select_last_insert_id">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="LAST_INSERT_ID()">
+                <expr>
+                    <function start-index="7" stop-index="22" function-name="LAST_INSERT_ID" text="LAST_INSERT_ID()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_last_value">
+        <projections start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+            <expression-projection text="LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+                <literalText>LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+                        <parameter>
+                            <column name="AGE" start-index="18" stop-index="20" literal-start-index="18" literal-stop-index="20" />
+                        </parameter>
+                        <literalText>LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST" start-index="65" stop-index="68" literal-start-index="65" literal-stop-index="68" />
+        </from>
+    </select>
+
     <select sql-case-id="select_lcase_function">
         <projections start-index="7" stop-index="28">
             <expression-projection start-index="7" stop-index="28" text="LCASE('QUADRATICALLY')">
@@ -4875,6 +4905,46 @@
                         </parameter>
                         <parameter>
                             <literal-expression  value="foobarbar" start-index="20" stop-index="30"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_localtime">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="LOCALTIME()">
+                <expr>
+                    <function start-index="7" stop-index="17" function-name="LOCALTIME" text="LOCALTIME()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_localtimestamp">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="LOCALTIMESTAMP()">
+                <expr>
+                    <function start-index="7" stop-index="22" function-name="LOCALTIMESTAMP" text="LOCALTIMESTAMP()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_lpad">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="LPAD('hi',4,'??')">
+                <expr>
+                    <function start-index="7" stop-index="23" function-name="LPAD" text="LPAD('hi',4,'??')">
+                        <parameter>
+                            <literal-expression  value="hi" start-index="12" stop-index="15"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression  value="4" start-index="17" stop-index="17"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression  value="??" start-index="19" stop-index="22"/>
                         </parameter>
                     </function>
                 </expr>
