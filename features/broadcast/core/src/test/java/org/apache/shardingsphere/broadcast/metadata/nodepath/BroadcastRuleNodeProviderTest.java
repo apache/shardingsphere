@@ -36,7 +36,7 @@ class BroadcastRuleNodeProviderTest {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(1));
-        assertTrue(actual.getUniqueItems().containsKey(BroadcastRuleNodeProvider.TABLES));
+        assertTrue(actual.getUniqueItems().contains(BroadcastRuleNodeProvider.TABLES));
         assertThat(actual.getRuleType(), is(BroadcastRuleNodeProvider.RULE_TYPE));
     }
 }
