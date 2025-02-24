@@ -47,4 +47,15 @@ public final class DatabaseRuleNodePath implements NodePath {
     public static NodePathSearchCriteria createValidRuleTypeSearchCriteria(final String ruleType) {
         return new NodePathSearchCriteria(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, null), false, true, 1);
     }
+    
+    /**
+     * Create rule item name search criteria.
+     *
+     * @param ruleType rule type
+     * @param ruleItemType rule item type
+     * @return create search criteria
+     */
+    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String ruleType, final String ruleItemType) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.IDENTIFIER)), false, false, 2);
+    }
 }

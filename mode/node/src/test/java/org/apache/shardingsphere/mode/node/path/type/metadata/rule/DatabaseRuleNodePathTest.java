@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DatabaseRuleNodeTest {
+class DatabaseRuleNodePathTest {
     
     @Test
     void assertToPath() {
@@ -42,5 +47,22 @@ class DatabaseRuleNodeTest {
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions/0"));
+    }
+    
+    @Test
+    void asserCreateValidRuleTypeSearchCriteria() {
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/unique_rule_item/versions/0", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
+        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/bar_rule/unique_rule_item/", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
+    }
+    
+    @Test
+    void asserCreateRuleItemNameSearchCriteria() {
+        assertThat(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")), is(Optional.of("item_value")));
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item", DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value", DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")).isPresent());
     }
 }
