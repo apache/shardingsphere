@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
@@ -106,7 +107,7 @@ public final class SchemaMetaDataLoader {
     }
     
     private static Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new CaseInsensitiveSet<>();
         try (
                 ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null,
                         new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})) {
