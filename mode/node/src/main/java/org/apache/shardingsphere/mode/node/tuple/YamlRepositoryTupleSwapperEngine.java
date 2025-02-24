@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfi
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalRuleNodePath;
@@ -169,7 +170,8 @@ public final class YamlRepositoryTupleSwapperEngine {
         DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNode();
         for (RepositoryTuple each : repositoryTuples.stream()
                 .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList())) {
-            if (databaseRuleNode.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleEntity.value()));
+            if (NodePathSearcher.getVersion(databaseRuleNodePath).isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
@@ -211,17 +213,23 @@ public final class YamlRepositoryTupleSwapperEngine {
         String tupleName = getTupleName(field);
         RepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
-            databaseRuleNode.getNamedItem(tupleName).getVersionNodePathParser()
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
+                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(databaseRuleNode.getNamedItem(tupleName).getType(), NodePathPattern.IDENTIFIER));
+            NodePathSearcher.getVersion(databaseRuleNodePath)
                     .findIdentifierByVersionsPath(repositoryTuple.getKey(), 2).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            databaseRuleNode.getNamedItem(tupleName).getVersionNodePathParser().findIdentifierByVersionsPath(repositoryTuple.getKey(), 2)
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
+                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(databaseRuleNode.getNamedItem(tupleName).getType(), NodePathPattern.IDENTIFIER));
+            NodePathSearcher.getVersion(databaseRuleNodePath).findIdentifierByVersionsPath(repositoryTuple.getKey(), 2)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
-        if (!databaseRuleNode.getUniqueItem(tupleName).getVersionNodePathParser().isVersionPath(repositoryTuple.getKey())) {
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
+                NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(databaseRuleNode.getUniqueItem(tupleName).getType()));
+        if (!NodePathSearcher.getVersion(databaseRuleNodePath).isVersionPath(repositoryTuple.getKey())) {
             return;
         }
         if (fieldValue instanceof Collection) {

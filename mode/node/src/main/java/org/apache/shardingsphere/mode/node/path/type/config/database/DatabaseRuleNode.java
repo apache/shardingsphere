@@ -44,11 +44,11 @@ public final class DatabaseRuleNode {
     }
     
     private Map<String, NamedDatabaseRuleItemNode> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
-        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new NamedDatabaseRuleItemNode(ruleType, each)));
+        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, NamedDatabaseRuleItemNode::new));
     }
     
     private Map<String, UniqueDatabaseRuleItemNode> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
-        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new UniqueDatabaseRuleItemNode(ruleType, each)));
+        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, UniqueDatabaseRuleItemNode::new));
     }
     
     /**
