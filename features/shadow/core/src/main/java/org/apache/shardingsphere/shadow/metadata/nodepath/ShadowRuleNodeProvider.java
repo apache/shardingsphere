@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Shadow rule node path provider.
+ * Shadow rule node provider.
  */
 public final class ShadowRuleNodeProvider implements DatabaseRuleNodeProvider {
     

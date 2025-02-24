@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Readwrite-splitting rule node path provider.
+ * Readwrite-splitting rule node provider.
  */
 public final class ReadwriteSplittingRuleNodeProvider implements DatabaseRuleNodeProvider {
     

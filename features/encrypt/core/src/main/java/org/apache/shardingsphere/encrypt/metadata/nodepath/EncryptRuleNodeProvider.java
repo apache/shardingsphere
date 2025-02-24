@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Encrypt rule node path provider.
+ * Encrypt rule node provider.
  */
 public final class EncryptRuleNodeProvider implements DatabaseRuleNodeProvider {
     
