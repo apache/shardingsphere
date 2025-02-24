@@ -81,7 +81,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource, Collections.emptyList()), is(createSchemaTableNames()));
     }
-
+    
     private Map<String, Collection<String>> createSchemaTableNames() {
         Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
         result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
