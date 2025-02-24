@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import java.util.Collections;
 
 /**
- * Broadcast rule node path provider.
+ * Broadcast rule node provider.
  */
 public final class BroadcastRuleNodeProvider implements DatabaseRuleNodeProvider {
     

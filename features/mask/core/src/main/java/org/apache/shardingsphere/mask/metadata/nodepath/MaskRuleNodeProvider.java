@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Mask rule node path provider.
+ * Mask rule node provider.
  */
 public final class MaskRuleNodeProvider implements DatabaseRuleNodeProvider {
     

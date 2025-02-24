@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import java.util.Arrays;
 
 /**
- * Sharding rule node path provider.
+ * Sharding rule node provider.
  */
 public final class ShardingRuleNodeProvider implements DatabaseRuleNodeProvider {
     

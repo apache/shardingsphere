@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.metadata.nodepath;
+package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
+import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MaskRuleNodePathProviderTest {
+class ReadwriteSplittingRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, MaskRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ReadwriteSplittingRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.MASK_ALGORITHMS));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.TABLES));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.DATA_SOURCE_GROUPS));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.LOAD_BALANCERS));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRuleType(), is(MaskRuleNodeProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(ReadwriteSplittingRuleNodeProvider.RULE_TYPE));
     }
 }

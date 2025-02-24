@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Single rule node path provider.
+ * Single rule node provider.
  */
 public final class SingleRuleNodeProvider implements DatabaseRuleNodeProvider {
     

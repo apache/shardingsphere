@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.nodepath;
+package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
+import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
-import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SingleRuleNodePathProviderTest {
+class BroadcastRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, SingleRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, BroadcastRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertTrue(actual.getNamedItems().isEmpty());
-        assertThat(actual.getUniqueItems().size(), is(2));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.TABLES));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.DEFAULT_DATA_SOURCE));
-        assertThat(actual.getRuleType(), is(SingleRuleNodeProvider.RULE_TYPE));
+        assertThat(actual.getUniqueItems().size(), is(1));
+        assertTrue(actual.getUniqueItems().containsKey(BroadcastRuleNodeProvider.TABLES));
+        assertThat(actual.getRuleType(), is(BroadcastRuleNodeProvider.RULE_TYPE));
     }
 }

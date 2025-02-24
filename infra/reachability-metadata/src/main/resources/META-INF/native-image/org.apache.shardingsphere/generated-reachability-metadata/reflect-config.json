@@ -927,7 +927,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"},
@@ -1190,7 +1190,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
@@ -2046,7 +2046,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.mask.metadata.nodepath.MaskRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
@@ -2478,7 +2478,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.readwritesplitting.metadata.nodepath.ReadwriteSplittingRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"},
@@ -2617,7 +2617,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"},
@@ -2909,7 +2909,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
@@ -3184,7 +3184,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-  "name":"org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider"
+  "name":"org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodeProvider"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
