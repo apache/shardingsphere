@@ -30,14 +30,11 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathPars
 @Getter
 public final class NamedDatabaseRuleItemNode {
     
-    private final String ruleType;
-    
     private final String type;
     
     private final VersionNodePathParser versionNodePathParser;
     
     public NamedDatabaseRuleItemNode(final String ruleType, final String type) {
-        this.ruleType = ruleType;
         this.type = type;
         versionNodePathParser = NodePathSearcher.getVersion(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type, NodePathPattern.IDENTIFIER)));
     }
