@@ -35,8 +35,8 @@ class EncryptRuleNodeProviderTest {
     void assertGetDatabaseRuleNode() {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.ENCRYPTORS));
-        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.TABLES));
+        assertTrue(actual.getNamedItems().contains(EncryptRuleNodeProvider.ENCRYPTORS));
+        assertTrue(actual.getNamedItems().contains(EncryptRuleNodeProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
         assertThat(actual.getRuleType(), is(EncryptRuleNodeProvider.RULE_TYPE));
     }

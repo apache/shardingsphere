@@ -35,8 +35,8 @@ class ReadwriteSplittingRuleNodeProviderTest {
     void assertGetDatabaseRuleNode() {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.DATA_SOURCE_GROUPS));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.LOAD_BALANCERS));
+        assertTrue(actual.getNamedItems().contains(ReadwriteSplittingRuleNodeProvider.DATA_SOURCE_GROUPS));
+        assertTrue(actual.getNamedItems().contains(ReadwriteSplittingRuleNodeProvider.LOAD_BALANCERS));
         assertTrue(actual.getUniqueItems().isEmpty());
         assertThat(actual.getRuleType(), is(ReadwriteSplittingRuleNodeProvider.RULE_TYPE));
     }

@@ -35,11 +35,11 @@ class ShadowRuleNodeProviderTest {
     void assertGetDatabaseRuleNode() {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(3));
-        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodeProvider.SHADOW_ALGORITHMS));
-        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodeProvider.TABLES));
-        assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodeProvider.DATA_SOURCES));
+        assertTrue(actual.getNamedItems().contains(ShadowRuleNodeProvider.SHADOW_ALGORITHMS));
+        assertTrue(actual.getNamedItems().contains(ShadowRuleNodeProvider.TABLES));
+        assertTrue(actual.getNamedItems().contains(ShadowRuleNodeProvider.DATA_SOURCES));
         assertThat(actual.getUniqueItems().size(), is(1));
-        assertTrue(actual.getUniqueItems().containsKey(ShadowRuleNodeProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
+        assertTrue(actual.getUniqueItems().contains(ShadowRuleNodeProvider.DEFAULT_SHADOW_ALGORITHM_NAME));
         assertThat(actual.getRuleType(), is(ShadowRuleNodeProvider.RULE_TYPE));
     }
 }
