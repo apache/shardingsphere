@@ -30,13 +30,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShardingRuleNodePathProviderTest {
+class ShardingRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ShardingRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ShardingRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodeProvider.TABLES, ShardingRuleNodeProvider.AUTO_TABLES, ShardingRuleNodeProvider.BINDING_TABLES,
                 ShardingRuleNodeProvider.SHARDING_ALGORITHMS, ShardingRuleNodeProvider.KEY_GENERATORS, ShardingRuleNodeProvider.AUDITORS);

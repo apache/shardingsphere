@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.nodepath;
+package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
-import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
@@ -27,16 +27,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BroadcastRuleNodePathProviderTest {
+class EncryptRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, BroadcastRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, EncryptRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
-        assertTrue(actual.getNamedItems().isEmpty());
-        assertThat(actual.getUniqueItems().size(), is(1));
-        assertTrue(actual.getUniqueItems().containsKey(BroadcastRuleNodeProvider.TABLES));
-        assertThat(actual.getRuleType(), is(BroadcastRuleNodeProvider.RULE_TYPE));
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
+        assertThat(actual.getNamedItems().size(), is(2));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.ENCRYPTORS));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.TABLES));
+        assertTrue(actual.getUniqueItems().isEmpty());
+        assertThat(actual.getRuleType(), is(EncryptRuleNodeProvider.RULE_TYPE));
     }
 }

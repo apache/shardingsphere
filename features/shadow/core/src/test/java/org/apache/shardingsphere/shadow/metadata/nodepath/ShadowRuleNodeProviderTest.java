@@ -27,13 +27,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShadowRuleNodePathProviderTest {
+class ShadowRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ShadowRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ShadowRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(3));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodeProvider.SHADOW_ALGORITHMS));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodeProvider.TABLES));

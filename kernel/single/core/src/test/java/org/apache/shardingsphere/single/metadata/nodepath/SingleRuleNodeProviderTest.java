@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
+package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
-import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ReadwriteSplittingRuleNodePathProviderTest {
+class SingleRuleNodeProviderTest {
     
-    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ReadwriteSplittingRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider provider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, SingleRuleConfiguration.class);
     
     @Test
     void assertGetDatabaseRuleNode() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
-        assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.DATA_SOURCE_GROUPS));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.LOAD_BALANCERS));
-        assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRuleType(), is(ReadwriteSplittingRuleNodeProvider.RULE_TYPE));
+        DatabaseRuleNode actual = provider.getDatabaseRuleNode();
+        assertTrue(actual.getNamedItems().isEmpty());
+        assertThat(actual.getUniqueItems().size(), is(2));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.TABLES));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.DEFAULT_DATA_SOURCE));
+        assertThat(actual.getRuleType(), is(SingleRuleNodeProvider.RULE_TYPE));
     }
 }
