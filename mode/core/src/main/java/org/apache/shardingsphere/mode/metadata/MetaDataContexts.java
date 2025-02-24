@@ -64,7 +64,9 @@ public final class MetaDataContexts {
      * @param newMetaDataContexts new meta data contexts
      */
     public void update(final MetaDataContexts newMetaDataContexts) {
+        ShardingSphereMetaData originalMetaData = getMetaData();
         this.metaData.set(newMetaDataContexts.getMetaData());
+        originalMetaData.close();
         this.statistics.set(newMetaDataContexts.getStatistics());
     }
     
@@ -75,7 +77,9 @@ public final class MetaDataContexts {
      * @param metaDataPersistFacade meta data persist facade
      */
     public void update(final ShardingSphereMetaData metaData, final MetaDataPersistFacade metaDataPersistFacade) {
+        ShardingSphereMetaData originalMetaData = getMetaData();
         this.metaData.set(metaData);
+        originalMetaData.close();
         this.statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
     }
 }
