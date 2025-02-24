@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 
 import java.util.Arrays;
@@ -36,10 +36,10 @@ public final class EncryptRuleNodePathProvider implements DatabaseRuleNodePathPr
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     @Override
-    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     

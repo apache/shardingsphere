@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class ShadowRuleNodePathProviderTest {
     
     @Test
     void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNodePath actual = pathProvider.getDatabaseRuleNodePath();
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
         assertThat(actual.getNamedItems().size(), is(3));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.SHADOW_ALGORITHMS));
         assertTrue(actual.getNamedItems().containsKey(ShadowRuleNodePathProvider.TABLES));

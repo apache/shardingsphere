@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
@@ -55,12 +55,12 @@ public final class ShardingRuleNodePathProvider implements DatabaseRuleNodePathP
     
     public static final String SHARDING_CACHE = "sharding_cache";
     
-    private static final DatabaseRuleNodePath INSTANCE = new DatabaseRuleNodePath(RULE_TYPE,
+    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE,
             Arrays.asList(TABLES, AUTO_TABLES, BINDING_TABLES, SHARDING_ALGORITHMS, KEY_GENERATORS, AUDITORS),
             Arrays.asList(DEFAULT_DATABASE_STRATEGY, DEFAULT_TABLE_STRATEGY, DEFAULT_KEY_GENERATE_STRATEGY, DEFAULT_AUDIT_STRATEGY, DEFAULT_SHARDING_COLUMN, SHARDING_CACHE));
     
     @Override
-    public DatabaseRuleNodePath getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNodePath() {
         return INSTANCE;
     }
     
