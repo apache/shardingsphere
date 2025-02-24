@@ -25,23 +25,23 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class DatabaseRuleItem {
     
-    private final String itemType;
+    private final String type;
     
-    private final String itemName;
+    private final String name;
     
     public DatabaseRuleItem(final String value) {
         String[] values = value.split("/");
         if (1 == values.length) {
-            itemType = values[0];
-            itemName = null;
+            type = values[0];
+            name = null;
         } else {
-            itemType = values[0];
-            itemName = values[1];
+            type = values[0];
+            name = values[1];
         }
     }
     
     @Override
     public String toString() {
-        return null == itemName ? itemType : String.join("/", itemType, itemName);
+        return null == name ? type : String.join("/", type, name);
     }
 }
