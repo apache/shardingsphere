@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.rule.changed;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodeProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Map;
@@ -46,6 +46,6 @@ public final class ShadowAlgorithmChangedProcessor extends AlgorithmChangedProce
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.SHADOW_ALGORITHMS;
+        return ShadowRuleNodeProvider.RULE_TYPE + "." + ShadowRuleNodeProvider.SHADOW_ALGORITHMS;
     }
 }

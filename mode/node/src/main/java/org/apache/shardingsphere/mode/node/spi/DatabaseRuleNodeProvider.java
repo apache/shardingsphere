@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.nodepath;
+package org.apache.shardingsphere.mode.node.spi;
 
-import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
-
-import java.util.Collections;
 
 /**
- * Broadcast rule node path provider.
+ * Database rule node provider.
  */
-public final class BroadcastRuleNodePathProvider implements DatabaseRuleNodePathProvider {
+@SingletonSPI
+public interface DatabaseRuleNodeProvider extends TypedSPI {
     
-    public static final String RULE_TYPE = "broadcast";
-    
-    public static final String TABLES = "tables";
-    
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
-    
-    @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
-        return INSTANCE;
-    }
+    /**
+     * Get database rule node.
+     *
+     * @return got database rule node
+     */
+    DatabaseRuleNode getDatabaseRuleNode();
     
     @Override
-    public Class<? extends RuleConfiguration> getType() {
-        return BroadcastRuleConfiguration.class;
-    }
+    Class<? extends RuleConfiguration> getType();
 }

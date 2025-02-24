@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRul
 import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleKeyListNameGenerator;
@@ -73,7 +73,7 @@ public final class YamlRepositoryTupleSwapperEngine {
             return Collections.singleton(new RepositoryTuple(tupleEntity.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
-        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
+        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNode();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
@@ -166,7 +166,7 @@ public final class YamlRepositoryTupleSwapperEngine {
             return Optional.empty();
         }
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
+        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNode();
         for (RepositoryTuple each : repositoryTuples.stream()
                 .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList())) {
             if (databaseRuleNode.getUniqueItem(tupleEntity.value()).getVersionNodePathParser().isVersionPath(each.getKey())) {
@@ -180,7 +180,7 @@ public final class YamlRepositoryTupleSwapperEngine {
     private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RepositoryTuple> repositoryTuples,
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNodePath();
+        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNode();
         List<RepositoryTuple> validTuples = repositoryTuples.stream()
                 .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList());
         if (validTuples.isEmpty()) {

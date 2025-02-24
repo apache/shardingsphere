@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule.changed;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodePathProvider;
+import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodeProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
@@ -63,6 +63,6 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return EncryptRuleNodePathProvider.RULE_TYPE + "." + EncryptRuleNodePathProvider.TABLES;
+        return EncryptRuleNodeProvider.RULE_TYPE + "." + EncryptRuleNodeProvider.TABLES;
     }
 }

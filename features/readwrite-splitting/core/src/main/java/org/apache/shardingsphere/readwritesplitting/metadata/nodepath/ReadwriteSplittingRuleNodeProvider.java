@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Readwrite-splitting rule node path provider.
  */
-public final class ReadwriteSplittingRuleNodePathProvider implements DatabaseRuleNodePathProvider {
+public final class ReadwriteSplittingRuleNodeProvider implements DatabaseRuleNodeProvider {
     
     public static final String RULE_TYPE = "readwrite_splitting";
     
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingRuleNodePathProvider implements DatabaseRul
     private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
     
     @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNode() {
         return INSTANCE;
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -29,15 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleRuleNodePathProviderTest {
     
-    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, SingleRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, SingleRuleConfiguration.class);
     
     @Test
-    void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
+    void assertGetDatabaseRuleNode() {
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(2));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.TABLES));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodePathProvider.DEFAULT_DATA_SOURCE));
-        assertThat(actual.getRuleType(), is(SingleRuleNodePathProvider.RULE_TYPE));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.TABLES));
+        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.DEFAULT_DATA_SOURCE));
+        assertThat(actual.getRuleType(), is(SingleRuleNodeProvider.RULE_TYPE));
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodeProvider;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.LinkedHashSet;
@@ -57,6 +57,6 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return SingleRuleNodePathProvider.RULE_TYPE + "." + SingleRuleNodePathProvider.TABLES;
+        return SingleRuleNodeProvider.RULE_TYPE + "." + SingleRuleNodeProvider.TABLES;
     }
 }

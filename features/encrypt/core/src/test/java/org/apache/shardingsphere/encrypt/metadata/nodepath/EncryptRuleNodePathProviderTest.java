@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata.nodepath;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,15 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleNodePathProviderTest {
     
-    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, EncryptRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, EncryptRuleConfiguration.class);
     
     @Test
-    void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
+    void assertGetDatabaseRuleNode() {
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.ENCRYPTORS));
-        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodePathProvider.TABLES));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.ENCRYPTORS));
+        assertTrue(actual.getNamedItems().containsKey(EncryptRuleNodeProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRuleType(), is(EncryptRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(EncryptRuleNodeProvider.RULE_TYPE));
     }
 }

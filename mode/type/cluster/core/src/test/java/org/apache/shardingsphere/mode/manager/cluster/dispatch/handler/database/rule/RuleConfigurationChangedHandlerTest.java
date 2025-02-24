@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -57,9 +57,9 @@ class RuleConfigurationChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = new RuleConfigurationChangedHandler(contextManager);
-        DatabaseRuleNodePathProvider databaseRuleNodePathProvider = mock(DatabaseRuleNodePathProvider.class, RETURNS_DEEP_STUBS);
-        when(databaseRuleNodePathProvider.getDatabaseRuleNodePath()).thenReturn(new DatabaseRuleNode("foo_rule", Collections.singleton("named"), Collections.singleton("unique")));
-        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseRuleNodePathProvider.class)).thenReturn(Collections.singleton(databaseRuleNodePathProvider));
+        DatabaseRuleNodeProvider databaseRuleNodeProvider = mock(DatabaseRuleNodeProvider.class, RETURNS_DEEP_STUBS);
+        when(databaseRuleNodeProvider.getDatabaseRuleNode()).thenReturn(new DatabaseRuleNode("foo_rule", Collections.singleton("named"), Collections.singleton("unique")));
+        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseRuleNodeProvider.class)).thenReturn(Collections.singleton(databaseRuleNodeProvider));
     }
     
     @Test
