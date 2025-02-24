@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.node.path.type.config.database;
 
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNode;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,15 +42,15 @@ class RuleNodePathTest {
     
     @Test
     void assertFindNameByVersion() {
-        NamedDatabaseRuleItemNodePath namedRulePath = databaseRuleNode.getNamedItem("tables");
+        NamedDatabaseRuleItemNode namedRulePath = databaseRuleNode.getNamedItem("tables");
         assertThat(namedRulePath.getType(), is("tables"));
     }
     
     @Test
     void assertGetUniqueItem() {
-        UniqueDatabaseRuleItemNodePath uniqueRulePath = databaseRuleNode.getUniqueItem("tables");
+        UniqueDatabaseRuleItemNode uniqueRulePath = databaseRuleNode.getUniqueItem("tables");
         assertThat(uniqueRulePath.getType(), is("tables"));
-        UniqueDatabaseRuleItemNodePath uniqueRulePathWithType = databaseRuleNode.getUniqueItem("tables/type");
+        UniqueDatabaseRuleItemNode uniqueRulePathWithType = databaseRuleNode.getUniqueItem("tables/type");
         assertThat(uniqueRulePathWithType.getType(), is("tables/type"));
     }
 }

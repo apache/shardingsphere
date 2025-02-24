@@ -17,29 +17,25 @@
 
 package org.apache.shardingsphere.mode.node.path.type.config.database.item;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class NamedDatabaseRuleItemNodePathTest {
+/**
+ * Unique database rule item node.
+ */
+@Getter
+public final class UniqueDatabaseRuleItemNode {
     
-    private final NamedDatabaseRuleItemNodePath nodePath = new NamedDatabaseRuleItemNodePath("foo", "tables");
+    private final String type;
     
-    @Test
-    void assertFindNameByItemPath() {
-        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("foo_tbl"));
-    }
+    private final VersionNodePathParser versionNodePathParser;
     
-    @Test
-    void assertNotFindNameByItemPath() {
-        Optional<String> actual = nodePath.findNameByItemPath("/metadata/foo_db/rules/foo/tables/foo_tbl/xxx-xxx");
-        assertFalse(actual.isPresent());
+    public UniqueDatabaseRuleItemNode(final String ruleType, final String type) {
+        this.type = type;
+        versionNodePathParser = NodePathSearcher.getVersion(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(type)));
     }
 }

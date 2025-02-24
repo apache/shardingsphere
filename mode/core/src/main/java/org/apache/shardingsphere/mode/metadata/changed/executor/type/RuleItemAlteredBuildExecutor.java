@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNodePath;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNode;
+import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNode;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
@@ -35,13 +35,13 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     
     @Override
     public Optional<AlterRuleItem> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final Integer activeVersion) {
-        for (Entry<String, NamedDatabaseRuleItemNodePath> entry : databaseRuleNode.getNamedItems().entrySet()) {
+        for (Entry<String, NamedDatabaseRuleItemNode> entry : databaseRuleNode.getNamedItems().entrySet()) {
             Optional<String> itemName = entry.getValue().getVersionNodePathParser().findIdentifierByActiveVersionPath(path, 2);
             if (itemName.isPresent()) {
                 return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNode.getRuleType() + "." + entry.getKey()));
             }
         }
-        for (Entry<String, UniqueDatabaseRuleItemNodePath> entry : databaseRuleNode.getUniqueItems().entrySet()) {
+        for (Entry<String, UniqueDatabaseRuleItemNode> entry : databaseRuleNode.getUniqueItems().entrySet()) {
             if (entry.getValue().getVersionNodePathParser().isActiveVersionPath(path)) {
                 return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNode.getRuleType() + "." + entry.getKey()));
             }
