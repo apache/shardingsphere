@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.metadata.nodepath;
+package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Mask rule node path provider.
+ * Single rule node path provider.
  */
-public final class MaskRuleNodePathProvider implements DatabaseRuleNodePathProvider {
+public final class SingleRuleNodeProvider implements DatabaseRuleNodeProvider {
     
-    public static final String RULE_TYPE = "mask";
+    public static final String RULE_TYPE = "single";
     
     public static final String TABLES = "tables";
     
-    public static final String MASK_ALGORITHMS = "mask_algorithms";
+    public static final String DEFAULT_DATA_SOURCE = "default_data_source";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(TABLES, MASK_ALGORITHMS), Collections.emptyList());
+    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
     
     @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNode() {
         return INSTANCE;
     }
     
     @Override
     public Class<? extends RuleConfiguration> getType() {
-        return MaskRuleConfiguration.class;
+        return SingleRuleConfiguration.class;
     }
 }

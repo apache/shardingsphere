@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * Sharding rule node path provider.
  */
-public final class ShardingRuleNodePathProvider implements DatabaseRuleNodePathProvider {
+public final class ShardingRuleNodeProvider implements DatabaseRuleNodeProvider {
     
     public static final String RULE_TYPE = "sharding";
     
@@ -60,7 +60,7 @@ public final class ShardingRuleNodePathProvider implements DatabaseRuleNodePathP
             Arrays.asList(DEFAULT_DATABASE_STRATEGY, DEFAULT_TABLE_STRATEGY, DEFAULT_KEY_GENERATE_STRATEGY, DEFAULT_AUDIT_STRATEGY, DEFAULT_SHARDING_COLUMN, SHARDING_CACHE));
     
     @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNode() {
         return INSTANCE;
     }
     

@@ -15,41 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.metadata.nodepath;
+package org.apache.shardingsphere.mode.node.tuple.fixture.node;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
-import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 
 import java.util.Arrays;
-import java.util.Collections;
 
-/**
- * Shadow rule node path provider.
- */
-public final class ShadowRuleNodePathProvider implements DatabaseRuleNodePathProvider {
-    
-    public static final String RULE_TYPE = "shadow";
-    
-    public static final String DATA_SOURCES = "data_sources";
-    
-    public static final String TABLES = "tables";
-    
-    public static final String SHADOW_ALGORITHMS = "shadow_algorithms";
-    
-    public static final String DEFAULT_SHADOW_ALGORITHM_NAME = "default_shadow_algorithm_name";
-    
-    private static final DatabaseRuleNode INSTANCE =
-            new DatabaseRuleNode(RULE_TYPE, Arrays.asList(DATA_SOURCES, TABLES, SHADOW_ALGORITHMS), Collections.singleton(DEFAULT_SHADOW_ALGORITHM_NAME));
+public final class RuleNodeProviderFixture implements DatabaseRuleNodeProvider {
     
     @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
-        return INSTANCE;
+    public DatabaseRuleNode getDatabaseRuleNode() {
+        return new DatabaseRuleNode("node", Arrays.asList("map_value", "gens"),
+                Arrays.asList("collection_value", "string_value", "boolean_value", "integer_value", "long_value", "enum_value", "gen", "leaf"));
     }
     
     @Override
     public Class<? extends RuleConfiguration> getType() {
-        return ShadowRuleConfiguration.class;
+        return RuleConfiguration.class;
     }
 }

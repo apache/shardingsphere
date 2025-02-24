@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -29,15 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingRuleNodePathProviderTest {
     
-    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, ReadwriteSplittingRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, ReadwriteSplittingRuleConfiguration.class);
     
     @Test
-    void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
+    void assertGetDatabaseRuleNode() {
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.DATA_SOURCE_GROUPS));
-        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodePathProvider.LOAD_BALANCERS));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.DATA_SOURCE_GROUPS));
+        assertTrue(actual.getNamedItems().containsKey(ReadwriteSplittingRuleNodeProvider.LOAD_BALANCERS));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRuleType(), is(ReadwriteSplittingRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(ReadwriteSplittingRuleNodeProvider.RULE_TYPE));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodeProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
@@ -57,6 +57,6 @@ public final class ShardingTableReferenceChangedProcessor implements RuleItemCon
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.BINDING_TABLES;
+        return ShardingRuleNodeProvider.RULE_TYPE + "." + ShardingRuleNodeProvider.BINDING_TABLES;
     }
 }

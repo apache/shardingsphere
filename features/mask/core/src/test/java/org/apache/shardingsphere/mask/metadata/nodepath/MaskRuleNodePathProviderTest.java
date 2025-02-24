@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mask.metadata.nodepath;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,15 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaskRuleNodePathProviderTest {
     
-    private final DatabaseRuleNodePathProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodePathProvider.class, MaskRuleConfiguration.class);
+    private final DatabaseRuleNodeProvider pathProvider = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, MaskRuleConfiguration.class);
     
     @Test
-    void assertGetDatabaseRuleNodePath() {
-        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNodePath();
+    void assertGetDatabaseRuleNode() {
+        DatabaseRuleNode actual = pathProvider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.MASK_ALGORITHMS));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodePathProvider.TABLES));
+        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.MASK_ALGORITHMS));
+        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
-        assertThat(actual.getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));
+        assertThat(actual.getRuleType(), is(MaskRuleNodeProvider.RULE_TYPE));
     }
 }

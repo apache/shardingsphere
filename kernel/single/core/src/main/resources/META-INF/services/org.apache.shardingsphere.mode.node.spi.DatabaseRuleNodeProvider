@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.node.tuple.fixture.node.RuleNodePathProviderFixture
+org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodeProvider

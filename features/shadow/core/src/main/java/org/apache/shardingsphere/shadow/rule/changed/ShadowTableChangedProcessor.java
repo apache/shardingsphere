@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodeProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
@@ -58,6 +58,6 @@ public final class ShadowTableChangedProcessor implements RuleItemConfigurationC
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.TABLES;
+        return ShadowRuleNodeProvider.RULE_TYPE + "." + ShadowRuleNodeProvider.TABLES;
     }
 }

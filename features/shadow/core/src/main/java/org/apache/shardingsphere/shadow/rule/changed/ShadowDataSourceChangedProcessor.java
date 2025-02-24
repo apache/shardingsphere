@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
+import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodeProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 
@@ -60,6 +60,6 @@ public final class ShadowDataSourceChangedProcessor implements RuleItemConfigura
     
     @Override
     public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.DATA_SOURCES;
+        return ShadowRuleNodeProvider.RULE_TYPE + "." + ShadowRuleNodeProvider.DATA_SOURCES;
     }
 }

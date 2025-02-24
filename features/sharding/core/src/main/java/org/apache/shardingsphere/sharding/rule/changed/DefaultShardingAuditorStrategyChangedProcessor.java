@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodeProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
@@ -56,6 +56,6 @@ public final class DefaultShardingAuditorStrategyChangedProcessor implements Rul
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_AUDIT_STRATEGY;
+        return ShardingRuleNodeProvider.RULE_TYPE + "." + ShardingRuleNodeProvider.DEFAULT_AUDIT_STRATEGY;
     }
 }

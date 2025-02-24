@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.metadata.nodepath;
+package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
+import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodePathProvider;
-import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Single rule node path provider.
+ * Encrypt rule node path provider.
  */
-public final class SingleRuleNodePathProvider implements DatabaseRuleNodePathProvider {
+public final class EncryptRuleNodeProvider implements DatabaseRuleNodeProvider {
     
-    public static final String RULE_TYPE = "single";
+    public static final String RULE_TYPE = "encrypt";
     
     public static final String TABLES = "tables";
     
-    public static final String DEFAULT_DATA_SOURCE = "default_data_source";
+    public static final String ENCRYPTORS = "encryptors";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
+    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
     
     @Override
-    public DatabaseRuleNode getDatabaseRuleNodePath() {
+    public DatabaseRuleNode getDatabaseRuleNode() {
         return INSTANCE;
     }
     
     @Override
     public Class<? extends RuleConfiguration> getType() {
-        return SingleRuleConfiguration.class;
+        return EncryptRuleConfiguration.class;
     }
 }
