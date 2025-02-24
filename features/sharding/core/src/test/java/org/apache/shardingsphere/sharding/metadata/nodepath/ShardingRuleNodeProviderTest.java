@@ -40,12 +40,12 @@ class ShardingRuleNodeProviderTest {
         assertThat(actual.getNamedItems().size(), is(6));
         List<String> namedRuleItems = Arrays.asList(ShardingRuleNodeProvider.TABLES, ShardingRuleNodeProvider.AUTO_TABLES, ShardingRuleNodeProvider.BINDING_TABLES,
                 ShardingRuleNodeProvider.SHARDING_ALGORITHMS, ShardingRuleNodeProvider.KEY_GENERATORS, ShardingRuleNodeProvider.AUDITORS);
-        assertThat("Named rule items equality without order", actual.getNamedItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(namedRuleItems.toArray()));
+        assertThat("Named rule items equality without order", actual.getNamedItems(), IsIterableContainingInAnyOrder.containsInAnyOrder(namedRuleItems.toArray()));
         assertThat(actual.getUniqueItems().size(), is(6));
         List<String> uniqueRuleItems = Arrays.asList(ShardingRuleNodeProvider.DEFAULT_DATABASE_STRATEGY, ShardingRuleNodeProvider.DEFAULT_TABLE_STRATEGY,
                 ShardingRuleNodeProvider.DEFAULT_KEY_GENERATE_STRATEGY, ShardingRuleNodeProvider.DEFAULT_AUDIT_STRATEGY, ShardingRuleNodeProvider.DEFAULT_SHARDING_COLUMN,
                 ShardingRuleNodeProvider.SHARDING_CACHE);
-        assertThat("Unique rule items equality without order", actual.getUniqueItems().keySet(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
+        assertThat("Unique rule items equality without order", actual.getUniqueItems(), IsIterableContainingInAnyOrder.containsInAnyOrder(uniqueRuleItems.toArray()));
         assertThat(actual.getRuleType(), is(ShardingRuleNodeProvider.RULE_TYPE));
     }
 }
