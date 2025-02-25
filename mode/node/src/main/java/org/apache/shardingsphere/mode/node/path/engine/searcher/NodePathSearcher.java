@@ -68,6 +68,6 @@ public final class NodePathSearcher {
      * @return version node path parser
      */
     public static VersionNodePathParser getVersion(final NodePath searchExample) {
-        return new VersionNodePathParser(NodePathGenerator.toPath(searchExample, false));
+        return new VersionNodePathParser(searchExample);
     }
 }

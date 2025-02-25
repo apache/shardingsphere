@@ -72,6 +72,6 @@ public final class NodePathGenerator {
      * @return version node path
      */
     public static VersionNodePath toVersionPath(final NodePath nodePath) {
-        return new VersionNodePath(toPath(nodePath, false));
+        return new VersionNodePath(nodePath);
     }
 }

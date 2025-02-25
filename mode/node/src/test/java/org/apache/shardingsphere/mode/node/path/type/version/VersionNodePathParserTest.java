@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
+import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathParserTest {
     
-    private final VersionNodePathParser parser = new VersionNodePathParser("/metadata/([\\w\\-]+)/schemas/([\\w\\-]+)/tables/([\\w\\-]+)");
+    private final VersionNodePathParser parser = new VersionNodePathParser(new TableMetadataNodePath());
     
     @Test
     void assertIsActiveVersionPath() {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
+import org.apache.shardingsphere.mode.node.path.NodePath;
+
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,8 +34,8 @@ public final class VersionNodePathParser {
     
     private final Pattern versionPattern;
     
-    public VersionNodePathParser(final String regex) {
-        VersionNodePath versionNodePath = new VersionNodePath(regex);
+    public VersionNodePathParser(final NodePath nodePath) {
+        VersionNodePath versionNodePath = new VersionNodePath(nodePath);
         activeVersionPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
         versionPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
     }
