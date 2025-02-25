@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodeProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
@@ -56,6 +56,6 @@ public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleIte
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY;
+        return ShardingRuleNodeProvider.RULE_TYPE + "." + ShardingRuleNodeProvider.DEFAULT_KEY_GENERATE_STRATEGY;
     }
 }

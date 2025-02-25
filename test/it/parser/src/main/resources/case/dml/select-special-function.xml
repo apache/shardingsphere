@@ -4822,7 +4822,37 @@
                 </expr>
             </expression-projection>
         </projections>
-    </select>  
+    </select>
+
+    <select sql-case-id="select_last_insert_id">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="LAST_INSERT_ID()">
+                <expr>
+                    <function start-index="7" stop-index="22" function-name="LAST_INSERT_ID" text="LAST_INSERT_ID()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_last_value">
+        <projections start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+            <expression-projection text="LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+                <literalText>LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                <expr>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="58" literal-start-index="7" literal-stop-index="58">
+                        <parameter>
+                            <column name="AGE" start-index="18" stop-index="20" literal-start-index="18" literal-stop-index="20" />
+                        </parameter>
+                        <literalText>LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST" start-index="65" stop-index="68" literal-start-index="65" literal-stop-index="68" />
+        </from>
+    </select>
+
     <select sql-case-id="select_lcase_function">
         <projections start-index="7" stop-index="28">
             <expression-projection start-index="7" stop-index="28" text="LCASE('QUADRATICALLY')">
@@ -4880,6 +4910,75 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_localtime">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="LOCALTIME()">
+                <expr>
+                    <function start-index="7" stop-index="17" function-name="LOCALTIME" text="LOCALTIME()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_localtimestamp">
+        <projections start-index="7" stop-index="22">
+            <expression-projection start-index="7" stop-index="22" text="LOCALTIMESTAMP()">
+                <expr>
+                    <function start-index="7" stop-index="22" function-name="LOCALTIMESTAMP" text="LOCALTIMESTAMP()"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_lpad">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="LPAD('hi',4,'??')">
+                <expr>
+                    <function start-index="7" stop-index="23" function-name="LPAD" text="LPAD('hi',4,'??')">
+                        <parameter>
+                            <literal-expression  value="hi" start-index="12" stop-index="15"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression  value="4" start-index="17" stop-index="17"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression  value="??" start-index="19" stop-index="22"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_prediction_cost">
+        <projections distinct-row="false" start-index="7" stop-index="13">
+            <column-projection name="cust_id" start-delimiter="" end-delimiter="" start-index="7" stop-index="13"/>
+        </projections>
+        <from start-delimiter="" end-delimiter="" start-index="20" stop-index="38">
+            <simple-table name="mining_data_apply_v" start-delimiter="" end-delimiter="" start-index="20" stop-index="38"/>
+        </from>
+        <where start-index="40" stop-index="67">
+            <expr start-index="46" stop-index="67">
+                <binary-operation-expression start-index="46" stop-index="67">
+                    <left start-index="46" stop-index="57">
+                        <column name="country_name" start-delimiter="" end-delimiter="" start-index="46" stop-index="57"/>
+                    </left>
+                    <operator>=</operator>
+                    <right start-index="61" stop-index="67">
+                        <literal-expression value="Italy" start-index="61" stop-index="67"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by start-index="69" stop-index="133">
+            <expression-item expression="PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" order-direction="ASC" start-delimiter="" end-delimiter="" start-index="78" stop-index="133">
+                <expr start-index="78" stop-index="133">
+                    <function function-name="PREDICTION_COST" text="PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" start-index="78" stop-index="133"/>
+                </expr>
+            </expression-item>
+        </order-by>
     </select>
 
     <select sql-case-id="select_name_const">

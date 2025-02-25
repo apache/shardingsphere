@@ -59,6 +59,7 @@ public final class InExpression implements ExpressionSegment {
     
     @Override
     public String getText() {
-        return left.getText() + right.getText();
+        String operator = not ? " NOT IN " : " IN ";
+        return left.getText() + operator + right.getText();
     }
 }

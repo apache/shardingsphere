@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
+import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodeProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
@@ -52,6 +52,6 @@ public final class DefaultShardingColumnChangedProcessor implements RuleItemConf
     
     @Override
     public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_SHARDING_COLUMN;
+        return ShardingRuleNodeProvider.RULE_TYPE + "." + ShardingRuleNodeProvider.DEFAULT_SHARDING_COLUMN;
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.data.loader;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -82,9 +83,9 @@ class OpenGaussSchemaMetaDataLoaderTest {
     
     private Map<String, Collection<String>> createSchemaTableNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("public", Arrays.asList("tbl", "partitioned_tbl"));
-        result.put("schema_1", Collections.emptyList());
-        result.put("schema_2", Collections.emptyList());
+        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        result.put("schema_1", Collections.emptySet());
+        result.put("schema_2", Collections.emptySet());
         return result;
     }
     

@@ -29,8 +29,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -45,7 +43,7 @@ class ComputeNodeStateChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes")).findFirst().orElse(null);
+                .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes/status")).findFirst().orElse(null);
     }
     
     @Test
@@ -58,17 +56,5 @@ class ComputeNodeStateChangedHandlerTest {
     void assertHandleWithComputeNodeInstanceStateChangedEvent() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "OK", Type.ADDED));
         verify(contextManager.getComputeNodeInstanceContext()).updateStatus("foo_instance_id", "OK");
-    }
-    
-    @Test
-    void assertHandleWithLabelsEvent() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id", "", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext()).updateLabels("foo_instance_id", Collections.emptyList());
-    }
-    
-    @Test
-    void assertHandleWithWorkerIdEvent() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/worker_id/foo_instance_id", "1", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext()).updateWorkerId("foo_instance_id", 1);
     }
 }

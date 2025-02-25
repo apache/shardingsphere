@@ -25,8 +25,9 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.metadata.manager.statistics.StatisticsManager;
-import org.apache.shardingsphere.mode.node.path.statistics.database.StatisticsDatabaseNodePath;
-import org.apache.shardingsphere.mode.node.path.statistics.StatisticsNodePathParser;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.statistics.StatisticsDataNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +40,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public String getSubscribedKey() {
-        return new StatisticsDatabaseNodePath().getRootPath();
+        return NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false);
     }
     
     @Override
@@ -50,34 +51,34 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getStatisticsManager();
-        Optional<String> databaseName = StatisticsNodePathParser.findDatabaseName(event.getKey(), false);
+        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createDatabaseSearchCriteria(false));
         if (databaseName.isPresent()) {
             handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
             return;
         }
-        databaseName = StatisticsNodePathParser.findDatabaseName(event.getKey(), true);
+        databaseName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createDatabaseSearchCriteria(true));
         if (!databaseName.isPresent()) {
             return;
         }
-        Optional<String> schemaName = StatisticsNodePathParser.findSchemaName(event.getKey(), false);
+        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createSchemaSearchCriteria(false));
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get());
             return;
         }
-        schemaName = StatisticsNodePathParser.findSchemaName(event.getKey(), true);
+        schemaName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createSchemaSearchCriteria(true));
         if (!schemaName.isPresent()) {
             return;
         }
-        Optional<String> tableName = StatisticsNodePathParser.findTableName(event.getKey(), false);
+        Optional<String> tableName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createTableSearchCriteria(false));
         if (tableName.isPresent()) {
             handleTableChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get(), tableName.get());
             return;
         }
-        tableName = StatisticsNodePathParser.findTableName(event.getKey(), true);
+        tableName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createTableSearchCriteria(true));
         if (!tableName.isPresent()) {
             return;
         }
-        Optional<String> uniqueKey = StatisticsNodePathParser.findRowUniqueKey(event.getKey());
+        Optional<String> uniqueKey = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createRowUniqueKeySearchCriteria());
         if (uniqueKey.isPresent()) {
             handleRowDataChanged(databaseManager, event.getType(), event.getValue(), databaseName.get(), schemaName.get(), tableName.get(), uniqueKey.get());
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,26 +49,26 @@ class MetaDataVersionPersistServiceTest {
     
     @Test
     void assertPersistWithNewMetaData() {
-        assertThat(persistService.persist(new VersionNodePath("foo_db"), "foo_metadata"), is(0));
-        verify(repository).persist("foo_db/versions/0", "foo_metadata");
-        verify(repository).persist("foo_db/active_version", "0");
+        assertThat(persistService.persist(new VersionNodePath(new MetaDataVersionNodePathFixture()), "foo_metadata"), is(0));
+        verify(repository).persist("/foo/versions/0", "foo_metadata");
+        verify(repository).persist("/foo/active_version", "0");
         verify(repository, times(0)).delete(any());
     }
     
     @Test
     void assertPersistWithExistedMetaData() {
-        when(repository.getChildrenKeys("foo_db/versions")).thenReturn(Arrays.asList("2", "1", "0"));
-        assertThat(persistService.persist(new VersionNodePath("foo_db"), "foo_metadata"), is(3));
-        verify(repository).persist("foo_db/versions/3", "foo_metadata");
-        verify(repository).persist("foo_db/active_version", "3");
-        verify(repository).delete("foo_db/versions/0");
-        verify(repository).delete("foo_db/versions/1");
-        verify(repository).delete("foo_db/versions/2");
+        when(repository.getChildrenKeys("/foo/versions")).thenReturn(Arrays.asList("2", "1", "0"));
+        assertThat(persistService.persist(new VersionNodePath(new MetaDataVersionNodePathFixture()), "foo_metadata"), is(3));
+        verify(repository).persist("/foo/versions/3", "foo_metadata");
+        verify(repository).persist("/foo/active_version", "3");
+        verify(repository).delete("/foo/versions/0");
+        verify(repository).delete("/foo/versions/1");
+        verify(repository).delete("/foo/versions/2");
     }
     
     @Test
     void assertLoadContent() {
-        when(repository.query("foo_db/versions/1")).thenReturn("foo_path");
-        assertThat(persistService.loadContent("foo_db/active_version", 1), is("foo_path"));
+        when(repository.query("/foo/versions/1")).thenReturn("foo_path");
+        assertThat(persistService.loadContent("/foo/active_version", 1), is("foo_path"));
     }
 }

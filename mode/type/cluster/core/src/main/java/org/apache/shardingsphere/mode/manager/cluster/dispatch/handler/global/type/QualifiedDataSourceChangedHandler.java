@@ -30,8 +30,9 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.QualifiedDataSourceNodePathParser;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.node.storage.QualifiedDataSourceNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +45,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
     
     @Override
     public String getSubscribedKey() {
-        return QualifiedDataSourceNodePathGenerator.getRootPath();
+        return NodePathGenerator.toPath(new QualifiedDataSourceNodePath((String) null), false);
     }
     
     @Override
@@ -57,7 +58,7 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
         if (Strings.isNullOrEmpty(event.getValue())) {
             return;
         }
-        Optional<QualifiedDataSource> qualifiedDataSource = QualifiedDataSourceNodePathParser.findQualifiedDataSource(event.getKey());
+        Optional<QualifiedDataSource> qualifiedDataSource = NodePathSearcher.find(event.getKey(), QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()).map(QualifiedDataSource::new);
         if (!qualifiedDataSource.isPresent()) {
             return;
         }

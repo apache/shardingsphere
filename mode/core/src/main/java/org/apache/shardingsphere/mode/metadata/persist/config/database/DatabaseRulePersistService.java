@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.config.database.item.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.metadata.rule.DatabaseRuleItemNodePath;
-import org.apache.shardingsphere.mode.node.path.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
 import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
@@ -68,7 +68,8 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(repositoryTuplePersistService.load(new DatabaseRuleNodePath(databaseName).getRootPath()));
+        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(
+                repositoryTuplePersistService.load(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false)));
     }
     
     /**
@@ -91,11 +92,11 @@ public final class DatabaseRulePersistService {
     
     private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        NodePathGenerator nodePathGenerator = new NodePathGenerator(new DatabaseRuleItemNodePath(databaseName, ruleType));
         for (RepositoryTuple each : repositoryTuples) {
             DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
-            int nextVersion = metaDataVersionPersistService.persist(nodePathGenerator.getVersion(databaseRuleItem), each.getValue());
-            result.add(new MetaDataVersion(nodePathGenerator.getPath(databaseRuleItem), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, databaseRuleItem);
+            int nextVersion = metaDataVersionPersistService.persist(new VersionNodePath(databaseRuleNodePath), each.getValue());
+            result.add(new MetaDataVersion(NodePathGenerator.toPath(databaseRuleNodePath, false), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
         }
         return result;
     }
@@ -107,7 +108,7 @@ public final class DatabaseRulePersistService {
      * @param ruleType rule type
      */
     public void delete(final String databaseName, final String ruleType) {
-        repository.delete(new NodePathGenerator(new DatabaseRuleNodePath(databaseName)).getPath(ruleType));
+        repository.delete(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, null), false));
     }
     
     /**
@@ -133,7 +134,7 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RepositoryTuple each : repositoryTuples) {
-            String toBeDeletedKey = new NodePathGenerator(new DatabaseRuleItemNodePath(databaseName, ruleType)).getPath(new DatabaseRuleItem(each.getKey()));
+            String toBeDeletedKey = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each.getKey())), false);
             repository.delete(toBeDeletedKey);
             result.add(new MetaDataVersion(toBeDeletedKey));
         }

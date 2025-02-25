@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -43,6 +44,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -132,7 +134,30 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
         try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY,user_id INT,status VARCHAR(32), c_datetime DATETIME(6),c_date DATE,c_time TIME,"
                     + "c_bytea BLOB,c_decimal DECIMAL(10,2))");
-            connection.createStatement().execute("TRUNCATE TABLE t_order");
+            if (waitForTableExistence(connection, "t_order")) {
+                connection.createStatement().execute("TRUNCATE TABLE t_order");
+            } else {
+                throw new SQLException("Table t_order does not exist");
+            }
+        }
+    }
+    
+    @SneakyThrows
+    private static boolean waitForTableExistence(final Connection connection, final String tableName) {
+        int elapsedTime = 0;
+        while (elapsedTime < 60) {
+            if (tableExists(connection, tableName)) {
+                return true;
+            }
+            Thread.sleep(3 * 1000L);
+            elapsedTime += 3;
+        }
+        return false;
+    }
+    
+    private static boolean tableExists(final Connection connection, final String tableName) throws SQLException {
+        try (ResultSet rs = connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"})) {
+            return rs.next();
         }
     }
     

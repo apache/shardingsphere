@@ -69,11 +69,8 @@ public final class ColumnExtractor {
         if (expression instanceof BinaryOperationExpression) {
             extractColumnsInBinaryOperationExpression((BinaryOperationExpression) expression, result);
         }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            result.add((ColumnSegment) ((InExpression) expression).getLeft());
-        }
-        if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof RowExpression) {
-            extractColumnsInRowExpression((InExpression) expression, result);
+        if (expression instanceof InExpression) {
+            extractColumnsInInExpression((InExpression) expression, result);
         }
         if (expression instanceof BetweenExpression) {
             extractColumnsInBetweenExpression((BetweenExpression) expression, result);
@@ -85,6 +82,19 @@ public final class ColumnExtractor {
             extractColumnsInFunctionSegment((FunctionSegment) expression, result);
         }
         return result;
+    }
+    
+    private static void extractColumnsInInExpression(final InExpression expression, final Collection<ColumnSegment> result) {
+        if (expression.getLeft() instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression.getLeft());
+        }
+        if (expression.getLeft() instanceof RowExpression) {
+            extractColumnsInRowExpression((RowExpression) expression.getLeft(), result);
+        }
+        if (expression.getLeft() instanceof FunctionSegment) {
+            extractColumnsInFunctionSegment((FunctionSegment) expression.getLeft(), result);
+        }
+        result.addAll(extract(expression.getRight()));
     }
     
     private static void extractColumnsInBinaryOperationExpression(final BinaryOperationExpression expression, final Collection<ColumnSegment> result) {
@@ -119,8 +129,8 @@ public final class ColumnExtractor {
         result.addAll(extract(expression.getAndExpr()));
     }
     
-    private static void extractColumnsInRowExpression(final InExpression expression, final Collection<ColumnSegment> result) {
-        for (ExpressionSegment each : ((RowExpression) expression.getLeft()).getItems()) {
+    private static void extractColumnsInRowExpression(final RowExpression expression, final Collection<ColumnSegment> result) {
+        for (ExpressionSegment each : expression.getItems()) {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
             }

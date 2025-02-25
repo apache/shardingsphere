@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
@@ -65,9 +66,10 @@ public final class DatabaseRuleConfigurationManager {
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
             return;
         }
-        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
+        rules.removeAll(toBeRemovedRules);
         rules.add(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-        refreshMetadata(databaseName, rules);
+        refreshMetadata(databaseName, rules, toBeRemovedRules);
     }
     
     /**
@@ -86,16 +88,27 @@ public final class DatabaseRuleConfigurationManager {
             ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
             return;
         }
-        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
+        rules.removeAll(toBeRemovedRules);
         if (!TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) ruleConfig)) {
             rules.add(DatabaseRulesBuilder.build(
                     databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }
-        refreshMetadata(databaseName, rules);
+        refreshMetadata(databaseName, rules, toBeRemovedRules);
     }
     
-    private void refreshMetadata(final String databaseName, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private void refreshMetadata(final String databaseName, final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereRule> toBeRemovedRules) throws SQLException {
         Collection<RuleConfiguration> ruleConfigs = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
         metaDataContexts.update(new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createByAlterRule(databaseName, false, ruleConfigs, metaDataContexts));
+        closeOriginalRules(toBeRemovedRules);
+    }
+    
+    @SneakyThrows(Exception.class)
+    private void closeOriginalRules(final Collection<ShardingSphereRule> toBeRemovedRules) {
+        for (ShardingSphereRule each : toBeRemovedRules) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
     }
 }

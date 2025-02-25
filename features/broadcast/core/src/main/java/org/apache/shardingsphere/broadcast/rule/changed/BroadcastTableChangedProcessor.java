@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.rule.changed;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
+import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodeProvider;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -58,6 +58,6 @@ public final class BroadcastTableChangedProcessor implements RuleItemConfigurati
     
     @Override
     public String getType() {
-        return BroadcastRuleNodePathProvider.RULE_TYPE + "." + BroadcastRuleNodePathProvider.TABLES;
+        return BroadcastRuleNodeProvider.RULE_TYPE + "." + BroadcastRuleNodeProvider.TABLES;
     }
 }

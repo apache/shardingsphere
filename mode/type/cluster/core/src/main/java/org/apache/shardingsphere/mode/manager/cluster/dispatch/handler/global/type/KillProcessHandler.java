@@ -20,18 +20,18 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.state.ComputeNodePathGenerator;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.process.KillProcessTriggerNodePath;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Kill process handler.
@@ -40,7 +40,7 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return ComputeNodePathGenerator.getKillProcessTriggerRootPath();
+        return NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false);
     }
     
     @Override
@@ -50,12 +50,11 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Matcher matcher = getKillProcessTriggerMatcher(event);
-        if (!matcher.find()) {
+        if (!NodePathSearcher.isMatchedPath(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria())) {
             return;
         }
-        String instanceId = matcher.group(1);
-        String processId = matcher.group(2);
+        String instanceId = NodePathSearcher.find(event.getKey(), KillProcessTriggerNodePath.createInstanceIdSearchCriteria()).orElse("");
+        String processId = NodePathSearcher.find(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria()).orElse("");
         if (Type.ADDED == event.getType()) {
             if (!instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
                 return;
@@ -69,9 +68,5 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
         } else if (Type.DELETED == event.getType()) {
             ProcessOperationLockRegistry.getInstance().notify(processId);
         }
-    }
-    
-    private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
-        return Pattern.compile(ComputeNodePathGenerator.getKillProcessTriggerRootPath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
 }

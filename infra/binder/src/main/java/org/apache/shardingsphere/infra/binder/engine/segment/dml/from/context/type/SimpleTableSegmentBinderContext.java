@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
@@ -31,9 +33,13 @@ import java.util.Optional;
  * Simple table segment binder context.
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public final class SimpleTableSegmentBinderContext implements TableSegmentBinderContext {
     
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
+    
+    private boolean fromWithSegment;
     
     public SimpleTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
         columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);

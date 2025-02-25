@@ -35,7 +35,7 @@ public final class ShardingSphereDataSourceContextHolder {
     /**
      * Put.
      *
-     * @param instanceId instance Id
+     * @param instanceId instance ID
      * @param dataSourceContext sharding sphere data source context
      */
     public static void put(final String instanceId, final ShardingSphereDataSourceContext dataSourceContext) {
@@ -45,7 +45,7 @@ public final class ShardingSphereDataSourceContextHolder {
     /**
      * Remove.
      *
-     * @param instanceId instance id
+     * @param instanceId instance ID
      */
     public static void remove(final String instanceId) {
         DATA_SOURCE_CONTEXTS.remove(instanceId);

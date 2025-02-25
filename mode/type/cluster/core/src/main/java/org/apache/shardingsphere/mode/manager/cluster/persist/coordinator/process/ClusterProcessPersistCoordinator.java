@@ -22,8 +22,11 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.node.path.state.ComputeNodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.state.ProcessNodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.execution.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.process.InstanceProcessNodeValue;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.process.KillProcessTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.process.ShowProcessListTriggerNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -47,9 +50,9 @@ public final class ClusterProcessPersistCoordinator {
     public void reportLocalProcesses(final String instanceId, final String taskId) {
         Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
-            repository.persist(ProcessNodePathGenerator.getInstanceProcessList(taskId, instanceId), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
+            repository.persist(NodePathGenerator.toPath(new ProcessNodePath(taskId, instanceId), false), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        repository.delete(ComputeNodePathGenerator.getShowProcessListTriggerPath(instanceId, taskId));
+        repository.delete(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue(instanceId, taskId)), false));
     }
     
     /**
@@ -59,6 +62,6 @@ public final class ClusterProcessPersistCoordinator {
      * @param processId process ID
      */
     public void cleanProcess(final String instanceId, final String processId) {
-        repository.delete(ComputeNodePathGenerator.getKillProcessTriggerPath(instanceId, processId));
+        repository.delete(NodePathGenerator.toPath(new KillProcessTriggerNodePath(new InstanceProcessNodeValue(instanceId, processId)), false));
     }
 }

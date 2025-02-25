@@ -123,7 +123,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             if (!SingleTableConstants.ASTERISK.equals(tableName)) {
                 String storageUnitName = each.getStorageUnitName();
                 ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(storageUnitName) && actualTableNodes.get(storageUnitName).get(defaultSchemaName).contains(tableName),
-                        () -> new TableNotFoundException(storageUnitName, tableName));
+                        () -> new TableNotFoundException(tableName, storageUnitName));
             }
         }
     }

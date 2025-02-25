@@ -21,9 +21,8 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.path.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.config.global.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Optional;
@@ -46,12 +45,12 @@ public final class PropertiesPersistService {
      */
     public Properties load() {
         return loadActiveVersion()
-                .map(optional -> YamlEngine.unmarshal(repository.query(new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null).getVersionPath(optional)), Properties.class))
+                .map(optional -> YamlEngine.unmarshal(repository.query(new VersionNodePath(new GlobalPropertiesNodePath()).getVersionPath(optional)), Properties.class))
                 .orElse(new Properties());
     }
     
     private Optional<Integer> loadActiveVersion() {
-        String value = repository.query(new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null).getActiveVersionPath());
+        String value = repository.query(new VersionNodePath(new GlobalPropertiesNodePath()).getActiveVersionPath());
         return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(Integer.parseInt(value));
     }
     
@@ -61,7 +60,7 @@ public final class PropertiesPersistService {
      * @param props properties
      */
     public void persist(final Properties props) {
-        VersionNodePath versionNodePath = new NodePathGenerator(new GlobalPropertiesNodePath()).getVersion(null);
+        VersionNodePath versionNodePath = new VersionNodePath(new GlobalPropertiesNodePath());
         metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(props));
     }
 }

@@ -32,6 +32,8 @@ import java.util.Properties;
  */
 public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
+    private static final String SALT_KEY = "salt";
+    
     @Getter
     private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
     
@@ -57,7 +59,9 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public AlgorithmConfiguration toConfiguration() {
-        return new AlgorithmConfiguration(getType(), props);
+        Properties properties = new Properties();
+        properties.setProperty(SALT_KEY, props.getProperty(SALT_KEY, ""));
+        return new AlgorithmConfiguration(getType(), properties);
     }
     
     @Override
