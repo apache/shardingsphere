@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.config.global;
+package org.apache.shardingsphere.mode.node.path.type.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

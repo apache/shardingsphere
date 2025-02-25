@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVer
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalPropertiesNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.GlobalPropertiesNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
