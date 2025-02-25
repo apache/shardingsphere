@@ -104,20 +104,15 @@ public final class YamlRepositoryTupleSwapperEngine {
         if (fieldValue instanceof Map) {
             Collection<RepositoryTuple> result = new LinkedList<>();
             for (Object entry : ((Map) fieldValue).entrySet()) {
-                result.add(new RepositoryTuple(
-                        new DatabaseRuleItem(tupleName, ((Entry) entry).getKey().toString()).toString(), YamlEngine.marshal(((Entry) entry).getValue())));
+                result.add(new RepositoryTuple(new DatabaseRuleItem(tupleName, ((Entry) entry).getKey().toString()).toString(), YamlEngine.marshal(((Entry) entry).getValue())));
             }
             return result;
         }
         if (fieldValue instanceof Collection) {
-            return ((Collection) fieldValue).isEmpty()
-                    ? Collections.emptyList()
-                    : Collections.singleton(new RepositoryTuple(tupleName, YamlEngine.marshal(fieldValue)));
+            return ((Collection) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(tupleName, YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
-            return ((String) fieldValue).isEmpty()
-                    ? Collections.emptyList()
-                    : Collections.singleton(new RepositoryTuple(tupleName, fieldValue.toString()));
+            return ((String) fieldValue).isEmpty() ? Collections.emptyList() : Collections.singleton(new RepositoryTuple(tupleName, fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
             return Collections.singleton(new RepositoryTuple(tupleName, fieldValue.toString()));
