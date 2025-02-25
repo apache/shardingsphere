@@ -54,7 +54,7 @@ class DatabaseRulePersistServiceTest {
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         persistService = new DatabaseRulePersistService(repository);
-        Plugins.getMemberAccessor().set(DatabaseRulePersistService.class.getDeclaredField("repositoryTuplePersistService"), persistService, ruleRepositoryTuplePersistService);
+        Plugins.getMemberAccessor().set(DatabaseRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), persistService, ruleRepositoryTuplePersistService);
     }
     
     @Test
