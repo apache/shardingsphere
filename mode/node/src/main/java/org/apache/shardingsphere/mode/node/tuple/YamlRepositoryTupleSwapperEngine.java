@@ -74,11 +74,10 @@ public final class YamlRepositoryTupleSwapperEngine {
             return Collections.singleton(new RepositoryTuple(tupleEntity.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RepositoryTuple> result = new LinkedList<>();
-        DatabaseRuleNode databaseRuleNode = TypedSPILoader.getService(DatabaseRuleNodeProvider.class, yamlRuleConfig.getRuleConfigurationType()).getDatabaseRuleNode();
         for (Field each : getFields(yamlRuleConfig.getClass())) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            result.addAll(swapToRepositoryTuples(yamlRuleConfig, databaseRuleNode, each));
+            result.addAll(swapToRepositoryTuples(yamlRuleConfig, each));
             each.setAccessible(isAccessible);
         }
         return result;
@@ -86,7 +85,7 @@ public final class YamlRepositoryTupleSwapperEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
-    private Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig, final DatabaseRuleNode databaseRuleNode, final Field field) {
+    private Collection<RepositoryTuple> swapToRepositoryTuples(final YamlRuleConfiguration yamlRuleConfig, final Field field) {
         Object fieldValue = field.get(yamlRuleConfig);
         if (null == fieldValue) {
             return Collections.emptyList();
