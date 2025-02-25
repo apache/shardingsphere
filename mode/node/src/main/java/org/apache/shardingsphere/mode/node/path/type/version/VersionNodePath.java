@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 
 /**
  * Version node path.
  */
-@RequiredArgsConstructor
 public final class VersionNodePath {
     
     private static final String ACTIVE_VERSION = "active_version";
@@ -30,6 +30,10 @@ public final class VersionNodePath {
     private static final String VERSIONS = "versions";
     
     private final String path;
+    
+    public VersionNodePath(final NodePath nodePath) {
+        path = NodePathGenerator.toPath(nodePath, false);
+    }
     
     /**
      * Get active version path.

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMeta
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageNodeNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Optional;
 
@@ -95,11 +96,11 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isTableMetaDataChanged(final String key) {
-        return NodePathSearcher.isMatchedPath(key, TableMetadataNodePath.createTableSearchCriteria()) || NodePathSearcher.getVersion(new TableMetadataNodePath()).isActiveVersionPath(key);
+        return NodePathSearcher.isMatchedPath(key, TableMetadataNodePath.createTableSearchCriteria()) || new VersionNodePathParser(new TableMetadataNodePath()).isActiveVersionPath(key);
     }
     
     private void handleTableChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && NodePathSearcher.getVersion(new TableMetadataNodePath()).isActiveVersionPath(event.getKey())) {
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && new VersionNodePathParser(new TableMetadataNodePath()).isActiveVersionPath(event.getKey())) {
             tableChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createTableSearchCriteria())) {
             tableChangedHandler.handleDropped(databaseName, schemaName, event);
@@ -107,12 +108,12 @@ public final class MetaDataChangedHandler {
     }
     
     private boolean isViewMetaDataChanged(final String key) {
-        return NodePathSearcher.getVersion(new ViewMetadataNodePath()).isActiveVersionPath(key) || NodePathSearcher.isMatchedPath(key, ViewMetadataNodePath.createViewSearchCriteria());
+        return new VersionNodePathParser(new ViewMetadataNodePath()).isActiveVersionPath(key) || NodePathSearcher.isMatchedPath(key, ViewMetadataNodePath.createViewSearchCriteria());
     }
     
     private void handleViewChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
-                && NodePathSearcher.getVersion(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())) {
+                && new VersionNodePathParser(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())) {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
@@ -120,7 +121,7 @@ public final class MetaDataChangedHandler {
     }
     
     private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = NodePathSearcher.getVersion(new StorageUnitNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageUnitName = new VersionNodePathParser(new StorageUnitNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
             storageUnitName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
@@ -130,7 +131,7 @@ public final class MetaDataChangedHandler {
             handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
             return;
         }
-        Optional<String> storageNodeName = NodePathSearcher.getVersion(new StorageNodeNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
+        Optional<String> storageNodeName = new VersionNodePathParser(new StorageNodeNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
         isActiveVersion = true;
         if (!storageNodeName.isPresent()) {
             storageNodeName = NodePathSearcher.find(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria());

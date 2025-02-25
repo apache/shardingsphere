@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -44,7 +45,7 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
-            if (NodePathSearcher.getVersion(databaseRuleNodePath).isActiveVersionPath(path)) {
+            if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNode.getRuleType() + "." + each));
             }
         }

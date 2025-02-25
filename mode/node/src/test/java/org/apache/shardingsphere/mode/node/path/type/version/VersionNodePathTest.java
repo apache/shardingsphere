@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
+import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,17 +29,17 @@ class VersionNodePathTest {
     
     @Test
     void assertGetActiveVersionPath() {
-        assertThat(new VersionNodePath("foo").getActiveVersionPath(), is("foo/active_version"));
+        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new VersionNodePath("foo").getVersionsPath(), is("foo/versions"));
+        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
     }
     
     @Test
     void assertGetVersionPath() {
-        assertThat(new VersionNodePath("foo").getVersionPath(0), is("foo/versions/0"));
+        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
     
     @Test
