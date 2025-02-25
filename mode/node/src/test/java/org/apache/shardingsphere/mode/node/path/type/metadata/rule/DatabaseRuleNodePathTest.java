@@ -50,14 +50,14 @@ class DatabaseRuleNodePathTest {
     }
     
     @Test
-    void asserCreateValidRuleTypeSearchCriteria() {
+    void assertCreateValidRuleTypeSearchCriteria() {
         assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
         assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/unique_rule_item/versions/0", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
         assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/bar_rule/unique_rule_item/", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
     }
     
     @Test
-    void asserCreateRuleItemNameSearchCriteria() {
+    void assertCreateRuleItemNameSearchCriteria() {
         assertThat(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
                 DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")), is(Optional.of("item_value")));
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item", DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_rule", "foo_rule_item")).isPresent());
