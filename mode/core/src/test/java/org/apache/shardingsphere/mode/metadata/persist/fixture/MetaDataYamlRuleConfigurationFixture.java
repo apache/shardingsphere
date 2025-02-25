@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.metadata.persist.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-@RepositoryTupleEntity(value = "fixture", leaf = true)
+@RuleRepositoryTupleEntity(value = "fixture", leaf = true)
 @Getter
 @Setter
 public final class MetaDataYamlRuleConfigurationFixture implements YamlRuleConfiguration {

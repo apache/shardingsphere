@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

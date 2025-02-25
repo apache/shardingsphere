@@ -22,9 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,12 +32,12 @@ import java.util.LinkedList;
 /**
  * Broadcast rule configuration for YAML.
  */
-@RepositoryTupleEntity("broadcast")
+@RuleRepositoryTupleEntity("broadcast")
 @Getter
 @Setter
 public final class YamlBroadcastRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleField(type = Type.TABLE)
     private Collection<String> tables = new LinkedList<>();
     
     @Override

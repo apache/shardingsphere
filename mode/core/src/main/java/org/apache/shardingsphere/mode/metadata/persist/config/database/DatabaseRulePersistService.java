@@ -21,15 +21,15 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
-import org.apache.shardingsphere.mode.node.tuple.YamlRepositoryTupleSwapperEngine;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -45,19 +45,19 @@ public final class DatabaseRulePersistService {
     
     private final PersistRepository repository;
     
-    private final RepositoryTuplePersistService repositoryTuplePersistService;
+    private final RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
-    private final YamlRepositoryTupleSwapperEngine yamlRepositoryTupleSwapperEngine;
+    private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
     
     private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
     
     public DatabaseRulePersistService(final PersistRepository repository) {
         this.repository = repository;
-        repositoryTuplePersistService = new RepositoryTuplePersistService(repository);
+        ruleRepositoryTuplePersistService = new RuleRepositoryTuplePersistService(repository);
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
-        yamlRepositoryTupleSwapperEngine = new YamlRepositoryTupleSwapperEngine();
+        yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
     
@@ -68,8 +68,8 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRepositoryTupleSwapperEngine.swapToRuleConfigurations(
-                repositoryTuplePersistService.load(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false)));
+        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(
+                ruleRepositoryTuplePersistService.load(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false)));
     }
     
     /**
@@ -82,17 +82,17 @@ public final class DatabaseRulePersistService {
     public Collection<MetaDataVersion> persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(configs)) {
-            Collection<RepositoryTuple> repositoryTuples = yamlRepositoryTupleSwapperEngine.swapToRepositoryTuples(each);
-            if (!repositoryTuples.isEmpty()) {
-                result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
+            Collection<RuleRepositoryTuple> tuples = yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each);
+            if (!tuples.isEmpty()) {
+                result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value(), tuples));
             }
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (RepositoryTuple each : repositoryTuples) {
+        for (RuleRepositoryTuple each : tuples) {
             DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, databaseRuleItem);
             int nextVersion = metaDataVersionPersistService.persist(new VersionNodePath(databaseRuleNodePath), each.getValue());
@@ -121,19 +121,19 @@ public final class DatabaseRulePersistService {
     public Collection<MetaDataVersion> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(configs)) {
-            List<RepositoryTuple> repositoryTuples = new LinkedList<>(yamlRepositoryTupleSwapperEngine.swapToRepositoryTuples(each));
-            if (repositoryTuples.isEmpty()) {
+            List<RuleRepositoryTuple> tuples = new LinkedList<>(yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each));
+            if (tuples.isEmpty()) {
                 continue;
             }
-            Collections.reverse(repositoryTuples);
-            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RepositoryTupleEntity.class)).value(), repositoryTuples));
+            Collections.reverse(tuples);
+            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value(), tuples));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RepositoryTuple> repositoryTuples) {
+    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (RepositoryTuple each : repositoryTuples) {
+        for (RuleRepositoryTuple each : tuples) {
             String toBeDeletedKey = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each.getKey())), false);
             repository.delete(toBeDeletedKey);
             result.add(new MetaDataVersion(toBeDeletedKey));

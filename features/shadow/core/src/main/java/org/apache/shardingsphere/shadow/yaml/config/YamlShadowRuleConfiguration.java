@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
@@ -34,21 +34,21 @@ import java.util.Map;
 /**
  * Shadow rule configuration.
  */
-@RepositoryTupleEntity("shadow")
+@RuleRepositoryTupleEntity("shadow")
 @Getter
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.DATA_SOURCE)
+    @RuleRepositoryTupleField(type = Type.DATA_SOURCE)
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.DEFAULT_ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.DEFAULT_ALGORITHM)
     private String defaultShadowAlgorithmName;
     
     @Override

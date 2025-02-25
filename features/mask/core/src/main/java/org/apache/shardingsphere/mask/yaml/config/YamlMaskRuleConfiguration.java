@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 
@@ -33,15 +33,15 @@ import java.util.Map;
 /**
  * Mask rule configuration for YAML.
  */
-@RepositoryTupleEntity("mask")
+@RuleRepositoryTupleEntity("mask")
 @Getter
 @Setter
 public final class YamlMaskRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>();
     
     @Override

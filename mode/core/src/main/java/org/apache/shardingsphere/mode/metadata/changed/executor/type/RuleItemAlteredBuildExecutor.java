@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
