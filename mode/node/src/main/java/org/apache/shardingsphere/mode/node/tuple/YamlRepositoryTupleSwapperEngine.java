@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
@@ -159,7 +160,7 @@ public final class YamlRepositoryTupleSwapperEngine {
                                                                         final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RepositoryTupleEntity tupleEntity) {
         if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
             for (RepositoryTuple each : repositoryTuples) {
-                if (NodePathSearcher.getVersion(new GlobalRuleNodePath(tupleEntity.value())).isVersionPath(each.getKey())) {
+                if (new VersionNodePathParser(new GlobalRuleNodePath(tupleEntity.value())).isVersionPath(each.getKey())) {
                     return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
                 }
             }
@@ -170,7 +171,7 @@ public final class YamlRepositoryTupleSwapperEngine {
         for (RepositoryTuple each : repositoryTuples.stream()
                 .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList())) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleEntity.value()));
-            if (NodePathSearcher.getVersion(databaseRuleNodePath).isVersionPath(each.getKey())) {
+            if (new VersionNodePathParser(databaseRuleNodePath).isVersionPath(each.getKey())) {
                 return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
             }
         }
@@ -214,20 +215,19 @@ public final class YamlRepositoryTupleSwapperEngine {
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
                     NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.IDENTIFIER));
-            NodePathSearcher.getVersion(databaseRuleNodePath)
-                    .findIdentifierByVersionsPath(repositoryTuple.getKey(), 2).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
+            new VersionNodePathParser(databaseRuleNodePath).findIdentifierByVersionsPath(repositoryTuple.getKey(), 2).ifPresent(optional -> ((Collection) fieldValue).add(repositoryTuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
                     NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.IDENTIFIER));
-            NodePathSearcher.getVersion(databaseRuleNodePath).findIdentifierByVersionsPath(repositoryTuple.getKey(), 2)
+            new VersionNodePathParser(databaseRuleNodePath).findIdentifierByVersionsPath(repositoryTuple.getKey(), 2)
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(repositoryTuple.getValue(), valueClass)));
             return;
         }
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName));
-        if (!NodePathSearcher.getVersion(databaseRuleNodePath).isVersionPath(repositoryTuple.getKey())) {
+        if (!new VersionNodePathParser(databaseRuleNodePath).isVersionPath(repositoryTuple.getKey())) {
             return;
         }
         if (fieldValue instanceof Collection) {

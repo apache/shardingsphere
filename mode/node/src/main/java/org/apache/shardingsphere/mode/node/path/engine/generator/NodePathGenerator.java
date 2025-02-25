@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
 import java.util.LinkedList;
 import java.util.Objects;
@@ -63,15 +62,5 @@ public final class NodePathGenerator {
         if (!nodeSegments.isEmpty()) {
             nodeSegments.removeLast();
         }
-    }
-    
-    /**
-     * Generate to version node path.
-     *
-     * @param nodePath node path
-     * @return version node path
-     */
-    public static VersionNodePath toVersionPath(final NodePath nodePath) {
-        return new VersionNodePath(toPath(nodePath, false));
     }
 }

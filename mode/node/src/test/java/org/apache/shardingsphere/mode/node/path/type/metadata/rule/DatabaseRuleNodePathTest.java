@@ -43,7 +43,7 @@ class DatabaseRuleNodePathTest {
     
     @Test
     void assertToVersionPath() {
-        VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")));
+        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/rules/foo_rule/named_rule_item/item/versions/0"));

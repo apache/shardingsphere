@@ -64,7 +64,7 @@ public final class ViewMetaDataPersistService {
      * @return loaded view
      */
     public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
-        VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new ViewMetadataNodePath(databaseName, schemaName, viewName));
+        VersionNodePath versionNodePath = new VersionNodePath(new ViewMetadataNodePath(databaseName, schemaName, viewName));
         int activeVersion = Integer.parseInt(repository.query(versionNodePath.getActiveVersionPath()));
         String view = repository.query(versionNodePath.getVersionPath(activeVersion));
         return swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
@@ -80,7 +80,7 @@ public final class ViewMetaDataPersistService {
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereView> views) {
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
-            VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new ViewMetadataNodePath(databaseName, schemaName, viewName));
+            VersionNodePath versionNodePath = new VersionNodePath(new ViewMetadataNodePath(databaseName, schemaName, viewName));
             metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
