@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.changed.executor;
 
-import org.apache.shardingsphere.mode.node.path.type.config.database.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 import java.util.Optional;
