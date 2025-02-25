@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
-    void assertSwapToRepositoryTuplesWithoutTupleEntityAnnotation() {
+    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
         assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new NoneYamlRuleConfiguration()).isEmpty());
     }
     
