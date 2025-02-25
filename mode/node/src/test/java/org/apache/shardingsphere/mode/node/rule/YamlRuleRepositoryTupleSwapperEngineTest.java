@@ -106,7 +106,8 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithoutGlobalLeafYamlRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("invalid", "")), GlobalLeafYamlRuleConfiguration.class).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("invalid", "")), GlobalLeafYamlRuleConfiguration.class)
+                .isPresent());
     }
     
     @Test
@@ -120,7 +121,8 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithInvalidLeafYamlRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class).isPresent());
+        assertFalse(
+                new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class).isPresent());
     }
     
     @Test
