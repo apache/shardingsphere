@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.yaml;
 
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +28,16 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowRuleConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
+class ShadowRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
     
-    ShadowRuleConfigurationYamlRepositoryTupleSwapperEngineIT() {
+    ShadowRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
         super("yaml/shadow-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(9));
-        List<RepositoryTuple> actual = new ArrayList<>(actualRepositoryTuples);
+    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+        assertThat(actualTuples.size(), is(9));
+        List<RuleRepositoryTuple> actual = new ArrayList<>(actualTuples);
         assertRepositoryTuple(actual.get(0),
                 "shadow_algorithms/user-id-insert-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-insert-match-algorithm"));
         assertRepositoryTuple(actual.get(1),

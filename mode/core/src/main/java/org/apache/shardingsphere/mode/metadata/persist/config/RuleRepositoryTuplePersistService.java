@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -28,21 +28,21 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
- * Repository tuple persist service.
+ * Rule repository tuple persist service.
  */
 @RequiredArgsConstructor
-public final class RepositoryTuplePersistService {
+public final class RuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Load repository tuples.
+     * Load rule repository tuples.
      *
      * @param rootNode root node
-     * @return loaded repository tuples
+     * @return loaded tuples
      */
-    public Collection<RepositoryTuple> load(final String rootNode) {
-        return loadNodes(rootNode).stream().filter(VersionNodePath::isActiveVersionPath).map(this::createRepositoryTuple).collect(Collectors.toList());
+    public Collection<RuleRepositoryTuple> load(final String rootNode) {
+        return loadNodes(rootNode).stream().filter(VersionNodePath::isActiveVersionPath).map(this::createTuple).collect(Collectors.toList());
     }
     
     private Collection<String> loadNodes(final String rootNode) {
@@ -58,8 +58,8 @@ public final class RepositoryTuplePersistService {
         }
     }
     
-    private RepositoryTuple createRepositoryTuple(final String activeVersionPath) {
+    private RuleRepositoryTuple createTuple(final String activeVersionPath) {
         String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RepositoryTuple(activeVersionKey, repository.query(activeVersionKey));
+        return new RuleRepositoryTuple(activeVersionKey, repository.query(activeVersionKey));
     }
 }

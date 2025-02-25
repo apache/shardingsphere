@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleEntity;
 
-@RepositoryTupleEntity(value = "leaf", leaf = true)
+@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

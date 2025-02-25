@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.mask.yaml;
 
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MaskConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
+class MaskConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
     
-    MaskConfigurationYamlRepositoryTupleSwapperEngineIT() {
+    MaskConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
         super("yaml/mask-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(3));
-        assertRepositoryTuple(actualRepositoryTuples.get(0),
+    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+        assertThat(actualTuples.size(), is(3));
+        assertRepositoryTuple(actualTuples.get(0),
                 "mask_algorithms/keep_first_n_last_m_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("keep_first_n_last_m_mask"));
-        assertRepositoryTuple(actualRepositoryTuples.get(1), "mask_algorithms/md5_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("md5_mask"));
-        assertRepositoryTuple(actualRepositoryTuples.get(2), "tables/t_user", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
+        assertRepositoryTuple(actualTuples.get(1), "mask_algorithms/md5_mask", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getMaskAlgorithms().get("md5_mask"));
+        assertRepositoryTuple(actualTuples.get(2), "tables/t_user", ((YamlMaskRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
     }
 }

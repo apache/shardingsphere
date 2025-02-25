@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.annotation;
+package org.apache.shardingsphere.mode.node.tuple;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Repository tuple field.
+ * Rule repository tuple.
  */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleField {
+@RequiredArgsConstructor
+@Getter
+public final class RuleRepositoryTuple {
     
-    /**
-     * Get type.
-     *
-     * @return type
-     */
-    Type type();
+    private final String key;
     
-    @RequiredArgsConstructor
-    enum Type {
-        
-        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
-    }
+    private final String value;
 }

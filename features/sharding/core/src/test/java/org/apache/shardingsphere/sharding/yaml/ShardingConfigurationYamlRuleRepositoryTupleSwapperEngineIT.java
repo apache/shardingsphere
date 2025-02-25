@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.yaml;
 
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,51 +28,51 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShardingConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
+class ShardingConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
     
-    ShardingConfigurationYamlRepositoryTupleSwapperEngineIT() {
+    ShardingConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
         super("yaml/sharding-rule-for-tuple.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(19));
-        assertRepositoryTuple(actualRepositoryTuples.get(0),
+    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+        assertThat(actualTuples.size(), is(19));
+        assertRepositoryTuple(actualTuples.get(0),
                 "sharding_algorithms/core_standard_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_standard_fixture"));
-        assertRepositoryTuple(actualRepositoryTuples.get(1),
+        assertRepositoryTuple(actualTuples.get(1),
                 "sharding_algorithms/core_complex_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_complex_fixture"));
-        assertRepositoryTuple(actualRepositoryTuples.get(2),
+        assertRepositoryTuple(actualTuples.get(2),
                 "sharding_algorithms/core_hint_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_hint_fixture"));
-        assertRepositoryTuple(actualRepositoryTuples.get(3),
+        assertRepositoryTuple(actualTuples.get(3),
                 "sharding_algorithms/database_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("database_inline"));
-        assertRepositoryTuple(actualRepositoryTuples.get(4),
+        assertRepositoryTuple(actualTuples.get(4),
                 "sharding_algorithms/table_inline", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("table_inline"));
-        assertRepositoryTuple(actualRepositoryTuples.get(5), "key_generators/snowflake", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getKeyGenerators().get("snowflake"));
-        assertRepositoryTuple(actualRepositoryTuples.get(6),
+        assertRepositoryTuple(actualTuples.get(5), "key_generators/snowflake", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getKeyGenerators().get("snowflake"));
+        assertRepositoryTuple(actualTuples.get(6),
                 "auditors/sharding_key_required_auditor", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getAuditors().get("sharding_key_required_auditor"));
-        assertRepositoryTuple(actualRepositoryTuples.get(7),
+        assertRepositoryTuple(actualTuples.get(7),
                 "default_database_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultDatabaseStrategy());
-        assertRepositoryTuple(actualRepositoryTuples.get(8),
+        assertRepositoryTuple(actualTuples.get(8),
                 "default_table_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultTableStrategy());
-        assertRepositoryTuple(actualRepositoryTuples.get(9),
+        assertRepositoryTuple(actualTuples.get(9),
                 "default_key_generate_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultKeyGenerateStrategy());
-        assertRepositoryTuple(actualRepositoryTuples.get(10),
+        assertRepositoryTuple(actualTuples.get(10),
                 "default_audit_strategy", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultAuditStrategy());
-        assertRepositoryTuple(actualRepositoryTuples.get(11),
+        assertRepositoryTuple(actualTuples.get(11),
                 "tables/t_user", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
-        assertRepositoryTuple(actualRepositoryTuples.get(12),
+        assertRepositoryTuple(actualTuples.get(12),
                 "tables/t_stock", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_stock"));
-        assertRepositoryTuple(actualRepositoryTuples.get(13),
+        assertRepositoryTuple(actualTuples.get(13),
                 "tables/t_order", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order"));
-        assertRepositoryTuple(actualRepositoryTuples.get(14),
+        assertRepositoryTuple(actualTuples.get(14),
                 "tables/t_order_item", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order_item"));
-        assertRepositoryTuple(actualRepositoryTuples.get(15),
-                "binding_tables" + actualRepositoryTuples.get(15).getKey().substring(actualRepositoryTuples.get(15).getKey().indexOf("/")),
+        assertRepositoryTuple(actualTuples.get(15),
+                "binding_tables" + actualTuples.get(15).getKey().substring(actualTuples.get(15).getKey().indexOf("/")),
                 new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(0));
-        assertRepositoryTuple(actualRepositoryTuples.get(16), "binding_tables/foo", new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(1));
-        assertRepositoryTuple(actualRepositoryTuples.get(17),
+        assertRepositoryTuple(actualTuples.get(16), "binding_tables/foo", new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(1));
+        assertRepositoryTuple(actualTuples.get(17),
                 "default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());
-        assertRepositoryTuple(actualRepositoryTuples.get(18),
+        assertRepositoryTuple(actualTuples.get(18),
                 "sharding_cache", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingCache());
     }
 }

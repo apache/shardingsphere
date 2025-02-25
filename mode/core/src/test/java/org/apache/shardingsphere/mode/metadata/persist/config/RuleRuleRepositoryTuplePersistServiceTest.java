@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,16 +34,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RepositoryTuplePersistServiceTest {
+class RuleRuleRepositoryTuplePersistServiceTest {
     
-    private RepositoryTuplePersistService persistService;
+    private RuleRepositoryTuplePersistService persistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        persistService = new RepositoryTuplePersistService(repository);
+        persistService = new RuleRepositoryTuplePersistService(repository);
     }
     
     @Test
@@ -51,7 +51,7 @@ class RepositoryTuplePersistServiceTest {
         when(repository.getChildrenKeys("root")).thenReturn(Collections.singletonList("foo/active_version"));
         when(repository.query("root/foo/active_version")).thenReturn("0");
         when(repository.query("root/foo/versions/0")).thenReturn("foo_content");
-        Collection<RepositoryTuple> actual = persistService.load("root");
+        Collection<RuleRepositoryTuple> actual = persistService.load("root");
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getKey(), is("root/foo/versions/0"));
         assertThat(actual.iterator().next().getValue(), is("foo_content"));
@@ -60,7 +60,7 @@ class RepositoryTuplePersistServiceTest {
     @Test
     void assertLoadWithoutChildrenPath() {
         when(repository.getChildrenKeys("root")).thenReturn(Collections.emptyList());
-        Collection<RepositoryTuple> actual = persistService.load("root");
+        Collection<RuleRepositoryTuple> actual = persistService.load("root");
         assertTrue(actual.isEmpty());
     }
 }

@@ -23,27 +23,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Repository tuple key list name generator.
+ * Rule repository tuple entity.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RepositoryTupleKeyListNameGenerator {
+public @interface RuleRepositoryTupleEntity {
     
     /**
-     * Get repository tuple key list name generator class.
+     * Get rule type name.
      *
-     * @return repository tuple key list name generator class
+     * @return rule type name
      */
-    Class<? extends Generator> value();
+    String value();
     
-    interface Generator {
-        
-        /**
-         * Generate name of tuple key.
-         * 
-         * @param tupleValue tuple value
-         * @return generated name
-         */
-        String generate(Object tupleValue);
-    }
+    /**
+     * Whether leaf node.
+     *
+     * @return is leaf node or not
+     */
+    boolean leaf() default false;
 }

@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml;
+package org.apache.shardingsphere.logging.yaml;
 
-import org.apache.shardingsphere.mode.node.tuple.RepositoryTuple;
+import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationYamlRepositoryTupleSwapperEngineIT extends YamlRepositoryTupleSwapperEngineIT {
+class LoggingRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
     
-    SingleRuleConfigurationYamlRepositoryTupleSwapperEngineIT() {
-        super("yaml/single-rule.yaml");
+    LoggingRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
+        super("yaml/logging-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RepositoryTuple> actualRepositoryTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualRepositoryTuples.size(), is(2));
-        assertRepositoryTuple(actualRepositoryTuples.get(0), "tables", ((YamlSingleRuleConfiguration) expectedYamlRuleConfig).getTables());
-        assertRepositoryTuple(actualRepositoryTuples.get(1), "default_data_source", ((YamlSingleRuleConfiguration) expectedYamlRuleConfig).getDefaultDataSource());
+    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+        assertThat(actualTuples.size(), is(1));
+        assertRepositoryTuple(actualTuples.get(0), "logging", expectedYamlRuleConfig);
     }
 }

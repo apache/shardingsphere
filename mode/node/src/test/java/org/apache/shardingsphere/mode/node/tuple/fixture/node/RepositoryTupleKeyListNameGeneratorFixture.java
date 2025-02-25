@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.node.tuple.fixture.node;
 
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 
-public final class RepositoryTupleKeyListNameGeneratorFixture implements RepositoryTupleKeyListNameGenerator.Generator {
+public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
     
     @Override
     public String generate(final Object tupleValue) {
