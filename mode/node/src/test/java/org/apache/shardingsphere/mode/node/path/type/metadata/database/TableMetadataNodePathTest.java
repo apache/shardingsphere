@@ -41,7 +41,7 @@ class TableMetadataNodePathTest {
     
     @Test
     void assertToVersionPath() {
-        VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"));
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));

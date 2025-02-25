@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVer
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 /**
  * View changed handler.
@@ -47,7 +48,7 @@ public final class ViewChangedHandler {
      * @param event data changed event
      */
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.getVersion(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
+        String viewName = new VersionNodePathParser(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
                 .orElseThrow(() -> new IllegalStateException("View name not found."));
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.path.type.global;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +34,7 @@ class GlobalPropertiesNodePathTest {
     
     @Test
     void assertGetVersion() {
-        VersionNodePathParser versionNodePathParser = NodePathSearcher.getVersion(new GlobalPropertiesNodePath());
+        VersionNodePathParser versionNodePathParser = new VersionNodePathParser(new GlobalPropertiesNodePath());
         assertTrue(versionNodePathParser.isActiveVersionPath("/props/active_version"));
         assertTrue(versionNodePathParser.isVersionPath("/props/versions/0"));
     }

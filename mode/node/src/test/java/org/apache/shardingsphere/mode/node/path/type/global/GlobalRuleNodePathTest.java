@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.path.type.global;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +35,7 @@ class GlobalRuleNodePathTest {
     
     @Test
     void assertGetVersion() {
-        VersionNodePathParser versionNodePathParser = NodePathSearcher.getVersion(new GlobalRuleNodePath("foo_rule"));
+        VersionNodePathParser versionNodePathParser = new VersionNodePathParser(new GlobalRuleNodePath("foo_rule"));
         assertTrue(versionNodePathParser.isActiveVersionPath("/rules/foo_rule/active_version"));
         assertTrue(versionNodePathParser.isVersionPath("/rules/foo_rule/versions/0"));
     }

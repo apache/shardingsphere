@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVer
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Optional<String> ruleType = NodePathSearcher.getVersion(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).findIdentifierByActiveVersionPath(event.getKey(), 1);
+        Optional<String> ruleType = new VersionNodePathParser(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).findIdentifierByActiveVersionPath(event.getKey(), 1);
         if (!ruleType.isPresent()) {
             return;
         }

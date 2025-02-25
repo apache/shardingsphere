@@ -41,7 +41,7 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertToVersionPath() {
-        VersionNodePath versionNodePath = NodePathGenerator.toVersionPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
+        VersionNodePath versionNodePath = new VersionNodePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
