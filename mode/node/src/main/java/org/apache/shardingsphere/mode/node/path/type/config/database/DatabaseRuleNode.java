@@ -18,56 +18,20 @@
 package org.apache.shardingsphere.mode.node.path.type.config.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.NamedDatabaseRuleItemNode;
-import org.apache.shardingsphere.mode.node.path.type.config.database.item.UniqueDatabaseRuleItemNode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Database rule node.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseRuleNode {
     
     private final String ruleType;
     
-    private final Map<String, NamedDatabaseRuleItemNode> namedItems;
+    private final Collection<String> namedItems;
     
-    private final Map<String, UniqueDatabaseRuleItemNode> uniqueItems;
-    
-    public DatabaseRuleNode(final String ruleType, final Collection<String> namedRuleItemNodePathTypes, final Collection<String> uniqueRuleItemNodePathTypes) {
-        this.ruleType = ruleType;
-        namedItems = getNamedRuleItemNodePathMap(namedRuleItemNodePathTypes);
-        uniqueItems = getUniqueRuleItemNodePathMap(uniqueRuleItemNodePathTypes);
-    }
-    
-    private Map<String, NamedDatabaseRuleItemNode> getNamedRuleItemNodePathMap(final Collection<String> namedRuleItemNodePathTypes) {
-        return namedRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new NamedDatabaseRuleItemNode(ruleType, each)));
-    }
-    
-    private Map<String, UniqueDatabaseRuleItemNode> getUniqueRuleItemNodePathMap(final Collection<String> uniqueRuleItemNodePathTypes) {
-        return uniqueRuleItemNodePathTypes.stream().collect(Collectors.toMap(each -> each, each -> new UniqueDatabaseRuleItemNode(ruleType, each)));
-    }
-    
-    /**
-     * Get named rule item node path.
-     *
-     * @param itemType item type
-     * @return named rule item node path
-     */
-    public NamedDatabaseRuleItemNode getNamedItem(final String itemType) {
-        return namedItems.get(itemType);
-    }
-    
-    /**
-     * Get unique rule item node path.
-     *
-     * @param itemType item type
-     * @return unique rule item node path
-     */
-    public UniqueDatabaseRuleItemNode getUniqueItem(final String itemType) {
-        return uniqueItems.get(itemType);
-    }
+    private final Collection<String> uniqueItems;
 }

@@ -36,8 +36,8 @@ class SingleRuleNodeProviderTest {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertTrue(actual.getNamedItems().isEmpty());
         assertThat(actual.getUniqueItems().size(), is(2));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.TABLES));
-        assertTrue(actual.getUniqueItems().containsKey(SingleRuleNodeProvider.DEFAULT_DATA_SOURCE));
+        assertTrue(actual.getUniqueItems().contains(SingleRuleNodeProvider.TABLES));
+        assertTrue(actual.getUniqueItems().contains(SingleRuleNodeProvider.DEFAULT_DATA_SOURCE));
         assertThat(actual.getRuleType(), is(SingleRuleNodeProvider.RULE_TYPE));
     }
 }

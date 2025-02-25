@@ -35,8 +35,8 @@ class MaskRuleNodeProviderTest {
     void assertGetDatabaseRuleNode() {
         DatabaseRuleNode actual = provider.getDatabaseRuleNode();
         assertThat(actual.getNamedItems().size(), is(2));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.MASK_ALGORITHMS));
-        assertTrue(actual.getNamedItems().containsKey(MaskRuleNodeProvider.TABLES));
+        assertTrue(actual.getNamedItems().contains(MaskRuleNodeProvider.MASK_ALGORITHMS));
+        assertTrue(actual.getNamedItems().contains(MaskRuleNodeProvider.TABLES));
         assertTrue(actual.getUniqueItems().isEmpty());
         assertThat(actual.getRuleType(), is(MaskRuleNodeProvider.RULE_TYPE));
     }
