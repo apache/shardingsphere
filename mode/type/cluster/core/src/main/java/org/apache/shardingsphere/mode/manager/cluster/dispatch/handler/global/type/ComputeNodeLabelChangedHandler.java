@@ -17,26 +17,29 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.status.StatusNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.label.LabelNodePath;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Compute node state changed handler.
+ * Compute node label changed handler.
  */
-public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeLabelChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new StatusNodePath(null), false);
+        return NodePathGenerator.toPath(new LabelNodePath(null), false);
     }
     
     @Override
@@ -46,11 +49,13 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        NodePathSearcher.find(event.getKey(), StatusNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
+        NodePathSearcher.find(event.getKey(), LabelNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
     }
     
+    @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
+        // TODO labels may be empty
+        computeNodeInstanceContext.updateLabels(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
     }
 }
