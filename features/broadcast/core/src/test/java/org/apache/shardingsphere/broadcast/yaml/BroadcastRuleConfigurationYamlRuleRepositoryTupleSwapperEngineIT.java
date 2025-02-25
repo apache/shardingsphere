@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.yaml;
 
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
 

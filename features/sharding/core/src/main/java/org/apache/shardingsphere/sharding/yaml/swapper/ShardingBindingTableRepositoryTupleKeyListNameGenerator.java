@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 /**

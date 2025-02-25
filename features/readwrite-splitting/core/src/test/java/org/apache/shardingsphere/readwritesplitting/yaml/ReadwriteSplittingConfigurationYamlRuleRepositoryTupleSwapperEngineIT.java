@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml;
 
-import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;

@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.spi;
+package org.apache.shardingsphere.mode.node.rule.fixture.leaf;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-/**
- * Database rule node provider.
- */
-@SingletonSPI
-public interface DatabaseRuleNodeProvider extends TypedSPI {
+@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public final class GlobalLeafYamlRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    /**
-     * Get database rule node.
-     *
-     * @return got database rule node
-     */
-    DatabaseRuleNode getDatabaseRuleNode();
+    private String value;
     
     @Override
-    Class<? extends RuleConfiguration> getType();
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
+    }
 }

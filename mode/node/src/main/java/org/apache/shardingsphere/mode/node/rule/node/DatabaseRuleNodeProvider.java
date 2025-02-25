@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.node;
 
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
+/**
+ * Database rule node provider.
+ */
+@SingletonSPI
+public interface DatabaseRuleNodeProvider extends TypedSPI {
+    
+    /**
+     * Get database rule node.
+     *
+     * @return got database rule node
+     */
+    DatabaseRuleNode getDatabaseRuleNode();
     
     @Override
-    public String generate(final Object tupleValue) {
-        return String.format("gen: %s", tupleValue);
-    }
+    Class<? extends RuleConfiguration> getType();
 }

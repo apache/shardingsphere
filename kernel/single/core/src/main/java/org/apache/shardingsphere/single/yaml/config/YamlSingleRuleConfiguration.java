@@ -20,8 +20,8 @@ package org.apache.shardingsphere.single.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 import java.util.Collection;

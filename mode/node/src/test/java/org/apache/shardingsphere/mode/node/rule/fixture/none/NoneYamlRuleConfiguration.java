@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple;
+package org.apache.shardingsphere.mode.node.rule.fixture.none;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
-/**
- * Rule repository tuple.
- */
-@RequiredArgsConstructor
-@Getter
-public final class RuleRepositoryTuple {
+public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
     
-    private final String key;
-    
-    private final String value;
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
+    }
 }

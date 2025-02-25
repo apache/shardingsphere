@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.fixture.node;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleField.Type;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
-import org.apache.shardingsphere.mode.node.tuple.fixture.leaf.LeafYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.fixture.leaf.LeafYamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;

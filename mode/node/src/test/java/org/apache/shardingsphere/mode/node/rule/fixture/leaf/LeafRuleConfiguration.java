@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.spi;
+package org.apache.shardingsphere.mode.node.rule.fixture.leaf;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
-import java.util.Collection;
-
-/**
- * Database rule node.
- */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseRuleNode {
+public final class LeafRuleConfiguration implements RuleConfiguration {
     
-    private final String ruleType;
-    
-    private final Collection<String> namedItems;
-    
-    private final Collection<String> uniqueItems;
+    private final String value;
 }

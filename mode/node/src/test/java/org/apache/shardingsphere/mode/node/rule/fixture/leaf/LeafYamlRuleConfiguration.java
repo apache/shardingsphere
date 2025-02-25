@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.annotation;
+package org.apache.shardingsphere.mode.node.rule.fixture.leaf;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-/**
- * Rule repository tuple key list name generator.
- */
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RuleRepositoryTupleKeyListNameGenerator {
+@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public final class LeafYamlRuleConfiguration implements YamlRuleConfiguration {
     
-    /**
-     * Get repository tuple key list name generator class.
-     *
-     * @return repository tuple key list name generator class
-     */
-    Class<? extends Generator> value();
+    private String value;
     
-    interface Generator {
-        
-        /**
-         * Generate name of tuple key.
-         * 
-         * @param tupleValue tuple value
-         * @return generated name
-         */
-        String generate(Object tupleValue);
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
     }
 }

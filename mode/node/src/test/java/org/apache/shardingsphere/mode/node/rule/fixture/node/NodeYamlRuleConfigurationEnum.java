@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.none;
+package org.apache.shardingsphere.mode.node.rule.fixture.node;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-
-public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
+public enum NodeYamlRuleConfigurationEnum {
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return RuleConfiguration.class;
-    }
+    FOO
 }

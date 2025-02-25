@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.leaf;
+package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RuleRepositoryTupleEntity;
+import lombok.RequiredArgsConstructor;
 
-@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public final class LeafYamlRuleConfiguration implements YamlRuleConfiguration {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Rule repository tuple field.
+ */
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuleRepositoryTupleField {
     
-    private String value;
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    Type type();
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return RuleConfiguration.class;
+    @RequiredArgsConstructor
+    enum Type {
+        
+        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
     }
 }

@@ -15,15 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.leaf;
+package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@RequiredArgsConstructor
-@Getter
-public final class LeafRuleConfiguration implements RuleConfiguration {
+/**
+ * Rule repository tuple entity.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuleRepositoryTupleEntity {
     
-    private final String value;
+    /**
+     * Get rule type name.
+     *
+     * @return rule type name
+     */
+    String value();
+    
+    /**
+     * Whether leaf node.
+     *
+     * @return is leaf node or not
+     */
+    boolean leaf() default false;
 }

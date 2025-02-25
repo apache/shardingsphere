@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.annotation;
-
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,22 +23,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Rule repository tuple field.
+ * Rule repository tuple key list name generator.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RuleRepositoryTupleField {
+public @interface RuleRepositoryTupleKeyListNameGenerator {
     
     /**
-     * Get type.
+     * Get repository tuple key list name generator class.
      *
-     * @return type
+     * @return repository tuple key list name generator class
      */
-    Type type();
+    Class<? extends Generator> value();
     
-    @RequiredArgsConstructor
-    enum Type {
+    interface Generator {
         
-        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
+        /**
+         * Generate name of tuple key.
+         * 
+         * @param tupleValue tuple value
+         * @return generated name
+         */
+        String generate(Object tupleValue);
     }
 }

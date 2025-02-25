@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.spi.DatabaseRuleNodeProvider;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 import java.util.Optional;

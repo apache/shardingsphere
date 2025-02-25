@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPe
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
-import org.apache.shardingsphere.mode.node.tuple.YamlRuleRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;

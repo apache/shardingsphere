@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
-import org.apache.shardingsphere.mode.node.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

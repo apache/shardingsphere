@@ -15,9 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple;
 
-public enum NodeYamlRuleConfigurationEnum {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Rule repository tuple.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class RuleRepositoryTuple {
     
-    FOO
+    private final String key;
+    
+    private final String value;
 }

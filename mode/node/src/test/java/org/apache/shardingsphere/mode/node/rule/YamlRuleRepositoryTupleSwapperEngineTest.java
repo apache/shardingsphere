@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.tuple;
+package org.apache.shardingsphere.mode.node.rule;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.fixture.leaf.LeafYamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.fixture.node.NodeYamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
-import org.apache.shardingsphere.mode.node.tuple.fixture.none.NoneYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.rule.fixture.leaf.GlobalLeafYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.fixture.leaf.LeafYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.fixture.node.NodeYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.fixture.node.NodeYamlRuleConfigurationEnum;
+import org.apache.shardingsphere.mode.node.rule.fixture.none.NoneYamlRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
