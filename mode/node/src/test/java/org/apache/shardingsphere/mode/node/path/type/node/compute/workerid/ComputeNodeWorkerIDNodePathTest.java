@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.node.path.type.node.compute.workerid;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,5 +31,10 @@ class ComputeNodeWorkerIDNodePathTest {
     @Test
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/worker_id/foo_instance_id"));
+    }
+    
+    @Test
+    void assertCreateInstanceIdSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/worker_id/foo_instance_id", ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
     }
 }

@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.node.path.type.node.compute.status;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,5 +32,10 @@ class StatusNodePathTest {
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StatusNodePath(null), false), is("/nodes/compute_nodes/status"));
         assertThat(NodePathGenerator.toPath(new StatusNodePath("foo_instance_id"), false), is("/nodes/compute_nodes/status/foo_instance_id"));
+    }
+    
+    @Test
+    void assertCreateInstanceIdSearchCriteria() {
+        assertThat(NodePathSearcher.find("/nodes/compute_nodes/status/foo_instance_id", StatusNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
     }
 }

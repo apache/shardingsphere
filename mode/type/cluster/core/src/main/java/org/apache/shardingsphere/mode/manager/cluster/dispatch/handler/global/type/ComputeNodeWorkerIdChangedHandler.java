@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -24,33 +25,33 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.status.StatusNodePath;
+import org.apache.shardingsphere.mode.node.path.type.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Compute node state changed handler.
+ * Compute node work ID changed handler.
  */
-public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeWorkerIdChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new StatusNodePath(null), false);
+        return NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath(null), false);
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        NodePathSearcher.find(event.getKey(), StatusNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
+        NodePathSearcher.find(event.getKey(), ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
     }
     
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
         ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
+        computeNodeInstanceContext.updateWorkerId(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue()));
     }
 }
