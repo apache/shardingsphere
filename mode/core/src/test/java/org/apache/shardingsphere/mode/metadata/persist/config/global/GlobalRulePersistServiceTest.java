@@ -61,7 +61,7 @@ class GlobalRulePersistServiceTest {
     void setUp() throws ReflectiveOperationException {
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         globalRulePersistService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("repositoryTuplePersistService"), globalRulePersistService, ruleRepositoryTuplePersistService);
+        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), globalRulePersistService, ruleRepositoryTuplePersistService);
     }
     
     @Test
