@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.Gl
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.config.global.GlobalRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
