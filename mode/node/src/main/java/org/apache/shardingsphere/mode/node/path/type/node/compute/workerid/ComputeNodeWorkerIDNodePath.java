@@ -36,7 +36,7 @@ public final class ComputeNodeWorkerIDNodePath implements NodePath {
     
     /**
      * Create instance ID search criteria.
-     * 
+     *
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
