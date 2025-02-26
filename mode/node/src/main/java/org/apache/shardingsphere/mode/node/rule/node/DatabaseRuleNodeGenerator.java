@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.mode.node.rule.node;
 
-import com.google.common.base.CaseFormat;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleConfigurationFieldUtil;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Database rule node generator.
@@ -51,26 +48,17 @@ public final class DatabaseRuleNodeGenerator {
         Preconditions.checkNotNull(tupleEntity, "Can not find @RuleRepositoryTupleEntity on class: ", yamlRuleConfigurationClass.getName());
         Collection<String> namedItems = new LinkedList<>();
         Collection<String> uniqueItems = new LinkedList<>();
-        for (Field each : getFields(yamlRuleConfigurationClass)) {
+        for (Field each : YamlRuleConfigurationFieldUtil.getFields(yamlRuleConfigurationClass)) {
             if (null == each.getAnnotation(RuleRepositoryTupleField.class)) {
                 continue;
             }
+            String tupleName = YamlRuleConfigurationFieldUtil.getTupleName(each);
             if (each.getType().equals(Map.class) || each.getType().equals(Collection.class) && null != each.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class)) {
-                namedItems.add(getPersistTupleName(each));
+                namedItems.add(tupleName);
             } else {
-                uniqueItems.add(getPersistTupleName(each));
+                uniqueItems.add(tupleName);
             }
         }
         return new DatabaseRuleNode(tupleEntity.value(), namedItems, uniqueItems);
-    }
-    
-    private static Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
-        return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
-                .filter(each -> null != each.getAnnotation(RuleRepositoryTupleField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RuleRepositoryTupleField.class).type().ordinal())).collect(Collectors.toList());
-    }
-    
-    private static String getPersistTupleName(final Field field) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
 }
