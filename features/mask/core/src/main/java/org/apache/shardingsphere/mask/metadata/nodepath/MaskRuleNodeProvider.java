@@ -19,11 +19,10 @@ package org.apache.shardingsphere.mask.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Mask rule node provider.
@@ -36,7 +35,7 @@ public final class MaskRuleNodeProvider implements DatabaseRuleNodeProvider {
     
     public static final String MASK_ALGORITHMS = "mask_algorithms";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(TABLES, MASK_ALGORITHMS), Collections.emptyList());
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlMaskRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {

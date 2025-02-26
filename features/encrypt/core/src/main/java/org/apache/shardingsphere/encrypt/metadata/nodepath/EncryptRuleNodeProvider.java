@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.encrypt.metadata.nodepath;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Encrypt rule node provider.
@@ -36,7 +35,7 @@ public final class EncryptRuleNodeProvider implements DatabaseRuleNodeProvider {
     
     public static final String ENCRYPTORS = "encryptors";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(TABLES, ENCRYPTORS), Collections.emptyList());
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlEncryptRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {

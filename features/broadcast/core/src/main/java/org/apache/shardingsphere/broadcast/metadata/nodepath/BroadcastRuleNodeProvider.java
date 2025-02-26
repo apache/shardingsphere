@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.broadcast.metadata.nodepath;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
-
-import java.util.Collections;
 
 /**
  * Broadcast rule node provider.
@@ -33,7 +33,7 @@ public final class BroadcastRuleNodeProvider implements DatabaseRuleNodeProvider
     
     public static final String TABLES = "tables";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Collections.singleton(TABLES));
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlBroadcastRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {

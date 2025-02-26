@@ -19,11 +19,10 @@ package org.apache.shardingsphere.single.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-
-import java.util.Arrays;
-import java.util.Collections;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 
 /**
  * Single rule node provider.
@@ -36,7 +35,7 @@ public final class SingleRuleNodeProvider implements DatabaseRuleNodeProvider {
     
     public static final String DEFAULT_DATA_SOURCE = "default_data_source";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Collections.emptyList(), Arrays.asList(TABLES, DEFAULT_DATA_SOURCE));
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlSingleRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {

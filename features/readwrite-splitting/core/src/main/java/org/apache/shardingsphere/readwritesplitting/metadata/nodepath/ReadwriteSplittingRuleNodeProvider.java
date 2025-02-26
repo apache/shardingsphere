@@ -19,11 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
-
-import java.util.Arrays;
-import java.util.Collections;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 
 /**
  * Readwrite-splitting rule node provider.
@@ -36,7 +35,7 @@ public final class ReadwriteSplittingRuleNodeProvider implements DatabaseRuleNod
     
     public static final String LOAD_BALANCERS = "load_balancers";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE, Arrays.asList(DATA_SOURCE_GROUPS, LOAD_BALANCERS), Collections.emptyList());
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlReadwriteSplittingRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {

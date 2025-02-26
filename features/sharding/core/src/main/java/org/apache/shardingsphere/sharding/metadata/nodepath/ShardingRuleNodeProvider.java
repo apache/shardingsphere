@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.metadata.nodepath;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-
-import java.util.Arrays;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 /**
  * Sharding rule node provider.
@@ -55,9 +55,7 @@ public final class ShardingRuleNodeProvider implements DatabaseRuleNodeProvider 
     
     public static final String SHARDING_CACHE = "sharding_cache";
     
-    private static final DatabaseRuleNode INSTANCE = new DatabaseRuleNode(RULE_TYPE,
-            Arrays.asList(TABLES, AUTO_TABLES, BINDING_TABLES, SHARDING_ALGORITHMS, KEY_GENERATORS, AUDITORS),
-            Arrays.asList(DEFAULT_DATABASE_STRATEGY, DEFAULT_TABLE_STRATEGY, DEFAULT_KEY_GENERATE_STRATEGY, DEFAULT_AUDIT_STRATEGY, DEFAULT_SHARDING_COLUMN, SHARDING_CACHE));
+    private static final DatabaseRuleNode INSTANCE = DatabaseRuleNodeGenerator.generate(YamlShardingRuleConfiguration.class);
     
     @Override
     public DatabaseRuleNode getDatabaseRuleNode() {
