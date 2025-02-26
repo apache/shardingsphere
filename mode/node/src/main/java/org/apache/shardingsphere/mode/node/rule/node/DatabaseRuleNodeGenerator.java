@@ -42,7 +42,7 @@ public final class DatabaseRuleNodeGenerator {
     
     /**
      * Generate database rule node.
-     * 
+     *
      * @param yamlRuleConfigurationClass YAML rule configuration class
      * @return generated database rule node
      */
