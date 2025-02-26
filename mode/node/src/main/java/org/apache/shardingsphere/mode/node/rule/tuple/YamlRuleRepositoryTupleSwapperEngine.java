@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
-import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -36,15 +35,12 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleN
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +69,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
             return Collections.singleton(new RuleRepositoryTuple(entity.value(), YamlEngine.marshal(yamlRuleConfig)));
         }
         Collection<RuleRepositoryTuple> result = new LinkedList<>();
-        for (Field each : getFields(yamlRuleConfig.getClass())) {
+        for (Field each : YamlRuleConfigurationFieldUtil.getFields(yamlRuleConfig.getClass())) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
             result.addAll(swapToTuples(yamlRuleConfig, each));
@@ -89,7 +85,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         if (null == fieldValue) {
             return Collections.emptyList();
         }
-        String tupleName = getTupleName(field);
+        String tupleName = YamlRuleConfigurationFieldUtil.getTupleName(field);
         RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             Collection<RuleRepositoryTuple> result = new LinkedList<>();
@@ -121,16 +117,6 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         return Collections.singleton(new RuleRepositoryTuple(tupleName, YamlEngine.marshal(fieldValue)));
     }
     
-    private Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
-        return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
-                .filter(each -> null != each.getAnnotation(RuleRepositoryTupleField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RuleRepositoryTupleField.class).type().ordinal())).collect(Collectors.toList());
-    }
-    
-    private String getTupleName(final Field field) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
-    }
-    
     /**
      * Swap from rule repository tuple to YAML rule configurations.
      *
@@ -143,7 +129,8 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         if (null == entity) {
             return Optional.empty();
         }
-        return entity.leaf() ? swapToYamlRuleConfiguration(tuples, toBeSwappedType, entity) : swapToYamlRuleConfiguration(tuples, toBeSwappedType, getFields(toBeSwappedType));
+        return entity.leaf() ? swapToYamlRuleConfiguration(tuples, toBeSwappedType, entity)
+                : swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -200,7 +187,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final String ruleType, final RuleRepositoryTuple tuple) {
         Object fieldValue = field.get(yamlRuleConfig);
-        String tupleName = getTupleName(field);
+        String tupleName = YamlRuleConfigurationFieldUtil.getTupleName(field);
         RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
