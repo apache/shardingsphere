@@ -34,5 +34,5 @@ public final class NodePathPattern {
     /**
      * Qualified identifier pattern.
      */
-    public static final String QUALIFIED_IDENTIFIER = "([\\w-.]+)";
+    public static final String QUALIFIED_IDENTIFIER = "([\\w-]+(?:[:.][\\w-]+)*)";
 }
