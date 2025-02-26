@@ -181,42 +181,40 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         }
         for (RuleRepositoryTuple each : validTuples) {
             if (!Strings.isNullOrEmpty(each.getValue())) {
-                setFieldValue(yamlRuleConfig, fields, databaseRuleNode, each);
+                setFieldValue(yamlRuleConfig, fields, databaseRuleNode.getRuleType(), each);
             }
         }
         return Optional.of(yamlRuleConfig);
     }
     
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final DatabaseRuleNode databaseRuleNode, final RuleRepositoryTuple tuple) {
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final String ruleType, final RuleRepositoryTuple tuple) {
         for (Field each : fields) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            setFieldValue(yamlRuleConfig, each, databaseRuleNode, tuple);
+            setFieldValue(yamlRuleConfig, each, ruleType, tuple);
             each.setAccessible(isAccessible);
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final DatabaseRuleNode databaseRuleNode, final RuleRepositoryTuple tuple) {
+    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final String ruleType, final RuleRepositoryTuple tuple) {
         Object fieldValue = field.get(yamlRuleConfig);
         String tupleName = getTupleName(field);
         RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
-                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
             NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2)).ifPresent(optional -> ((Collection) fieldValue).add(tuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
-                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
             NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2))
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(tuple.getValue(), valueClass)));
             return;
         }
-        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName));
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName));
         if (!NodePathSearcher.isMatchedPath(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
             return;
         }
