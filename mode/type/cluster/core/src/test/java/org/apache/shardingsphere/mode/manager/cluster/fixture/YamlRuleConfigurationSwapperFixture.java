@@ -29,14 +29,16 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     @Override
     public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
         YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
-        result.setName(data.getName());
+        result.setUnique(data.getUnique());
+        result.setNamed(data.getNamed());
         return result;
     }
     
     @Override
     public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
         RuleConfigurationFixture result = new RuleConfigurationFixture();
-        result.setName(yamlConfig.getName());
+        result.setUnique(yamlConfig.getUnique());
+        result.setNamed(yamlConfig.getNamed());
         return result;
     }
     
