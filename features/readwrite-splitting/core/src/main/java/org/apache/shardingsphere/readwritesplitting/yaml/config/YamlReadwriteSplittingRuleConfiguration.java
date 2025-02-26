@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
 
@@ -33,15 +33,15 @@ import java.util.Map;
 /**
  * Readwrite-splitting rule configuration for YAML.
  */
-@RepositoryTupleEntity("readwrite_splitting")
+@RuleRepositoryTupleEntity("readwrite_splitting")
 @Getter
 @Setter
 public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.DATA_SOURCE)
+    @RuleRepositoryTupleField(type = Type.DATA_SOURCE)
     private Map<String, YamlReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     
     @Override

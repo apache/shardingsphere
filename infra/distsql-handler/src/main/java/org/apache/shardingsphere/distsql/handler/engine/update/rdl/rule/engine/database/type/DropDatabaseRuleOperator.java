@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -67,7 +67,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         if (null != toBeAlteredRuleConfig
                 && TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
-            metaDataManagerPersistService.removeRuleConfiguration(database, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RepositoryTupleEntity.class)).value());
+            metaDataManagerPersistService.removeRuleConfiguration(database, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value());
         } else {
             metaDataManagerPersistService.alterRuleConfiguration(database, toBeAlteredRuleConfig);
         }

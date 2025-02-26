@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 
 /**
  * Sharding binding table repository tuple key list name generator.
  */
-public final class ShardingBindingTableRepositoryTupleKeyListNameGenerator implements RepositoryTupleKeyListNameGenerator.Generator {
+public final class ShardingBindingTableRepositoryTupleKeyListNameGenerator implements RuleRepositoryTupleKeyListNameGenerator.Generator {
     
     @Override
     public String generate(final Object tupleValue) {

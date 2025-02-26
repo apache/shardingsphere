@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataYamlRuleConfigurationFixture;
-import org.apache.shardingsphere.mode.metadata.persist.config.RepositoryTuplePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -55,25 +55,25 @@ class GlobalRulePersistServiceTest {
     private MetaDataVersionPersistService metaDataVersionPersistService;
     
     @Mock
-    private RepositoryTuplePersistService repositoryTuplePersistService;
+    private RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         globalRulePersistService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("repositoryTuplePersistService"), globalRulePersistService, repositoryTuplePersistService);
+        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), globalRulePersistService, ruleRepositoryTuplePersistService);
     }
     
     @Test
     void assertLoad() {
         assertTrue(globalRulePersistService.load().isEmpty());
-        verify(repositoryTuplePersistService).load("/rules");
+        verify(ruleRepositoryTuplePersistService).load("/rules");
     }
     
     @Test
     void assertLoadWithRuleType() {
         assertFalse(globalRulePersistService.load("foo_rule").isPresent());
-        verify(repositoryTuplePersistService).load("/rules/foo_rule");
+        verify(ruleRepositoryTuplePersistService).load("/rules/foo_rule");
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

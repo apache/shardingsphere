@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleField.Type;
-import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
@@ -42,46 +42,46 @@ import java.util.Map;
 /**
  * Sharding rule configuration for YAML.
  */
-@RepositoryTupleEntity("sharding")
+@RuleRepositoryTupleEntity("sharding")
 @Getter
 @Setter
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleField(type = Type.TABLE)
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.TABLE)
-    @RepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
+    @RuleRepositoryTupleField(type = Type.TABLE)
+    @RuleRepositoryTupleKeyListNameGenerator(ShardingBindingTableRepositoryTupleKeyListNameGenerator.class)
     private Collection<String> bindingTables = new LinkedList<>();
     
-    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
+    @RuleRepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
-    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
+    @RuleRepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
+    @RuleRepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    @RepositoryTupleField(type = Type.DEFAULT_STRATEGY)
+    @RuleRepositoryTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.ALGORITHM)
+    @RuleRepositoryTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
-    @RepositoryTupleField(type = Type.OTHER)
+    @RuleRepositoryTupleField(type = Type.OTHER)
     private String defaultShardingColumn;
     
-    @RepositoryTupleField(type = Type.OTHER)
+    @RuleRepositoryTupleField(type = Type.OTHER)
     private YamlShardingCacheConfiguration shardingCache;
     
     @Override
