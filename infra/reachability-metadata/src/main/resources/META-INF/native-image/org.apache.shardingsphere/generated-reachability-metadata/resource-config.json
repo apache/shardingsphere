@@ -331,9 +331,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.node.spi.RuleNodeProvider\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder\\E"
   }, {
