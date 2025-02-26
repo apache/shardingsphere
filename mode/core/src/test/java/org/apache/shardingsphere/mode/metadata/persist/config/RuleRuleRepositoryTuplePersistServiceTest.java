@@ -53,7 +53,7 @@ class RuleRuleRepositoryTuplePersistServiceTest {
         when(repository.query("root/foo/versions/0")).thenReturn("foo_content");
         Collection<RuleRepositoryTuple> actual = persistService.load("root");
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("root/foo/versions/0"));
+        assertThat(actual.iterator().next().getKey(), is("root/foo"));
         assertThat(actual.iterator().next().getValue(), is("foo_content"));
     }
     

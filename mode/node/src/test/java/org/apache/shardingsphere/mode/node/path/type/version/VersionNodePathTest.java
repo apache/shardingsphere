@@ -48,6 +48,11 @@ class VersionNodePathTest {
     }
     
     @Test
+    void assertGetOriginalPath() {
+        assertThat(VersionNodePath.getOriginalPath("foo_rule/active_version"), is("foo_rule"));
+    }
+    
+    @Test
     void assertIsActiveVersionPath() {
         assertTrue(VersionNodePath.isActiveVersionPath("foo/active_version"));
         assertFalse(VersionNodePath.isActiveVersionPath("foo/versions"));

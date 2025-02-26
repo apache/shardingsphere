@@ -60,6 +60,6 @@ public final class RuleRepositoryTuplePersistService {
     
     private RuleRepositoryTuple createTuple(final String activeVersionPath) {
         String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RuleRepositoryTuple(activeVersionKey, repository.query(activeVersionKey));
+        return new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(activeVersionKey));
     }
 }
