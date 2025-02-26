@@ -17,36 +17,27 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeProvider;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShardingSphereServiceLoader.class)
+@ExtendWith(MockitoExtension.class)
 class RuleConfigurationChangedHandlerTest {
     
     private RuleConfigurationChangedHandler handler;
@@ -57,9 +48,6 @@ class RuleConfigurationChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = new RuleConfigurationChangedHandler(contextManager);
-        DatabaseRuleNodeProvider databaseRuleNodeProvider = mock(DatabaseRuleNodeProvider.class, RETURNS_DEEP_STUBS);
-        when(databaseRuleNodeProvider.getDatabaseRuleNode()).thenReturn(new DatabaseRuleNode("foo_rule", Collections.singleton("named"), Collections.singleton("unique")));
-        when(ShardingSphereServiceLoader.getServiceInstances(DatabaseRuleNodeProvider.class)).thenReturn(Collections.singleton(databaseRuleNodeProvider));
     }
     
     @Test
