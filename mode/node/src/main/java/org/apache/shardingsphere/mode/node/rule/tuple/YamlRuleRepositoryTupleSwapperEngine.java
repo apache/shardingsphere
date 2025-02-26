@@ -206,14 +206,14 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class);
         if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
-                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.IDENTIFIER));
+                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
             NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2)).ifPresent(optional -> ((Collection) fieldValue).add(tuple.getValue()));
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(
-                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.IDENTIFIER));
+                    NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
             NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2))
                     .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(tuple.getValue(), valueClass)));
             return;

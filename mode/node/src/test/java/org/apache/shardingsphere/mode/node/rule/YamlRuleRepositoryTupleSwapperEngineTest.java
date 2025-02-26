@@ -145,6 +145,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k:qualified", "k:qualified"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "str"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value", "true"),
@@ -153,8 +154,9 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")), NodeYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
-        assertThat(actualYamlConfig.getMapValue().size(), is(1));
+        assertThat(actualYamlConfig.getMapValue().size(), is(2));
         assertThat(actualYamlConfig.getMapValue().get("k").getValue(), is("v"));
+        assertThat(actualYamlConfig.getMapValue().get("k:qualified").getValue(), is("k:qualified"));
         assertThat(actualYamlConfig.getCollectionValue().size(), is(1));
         assertThat(actualYamlConfig.getCollectionValue().iterator().next().getValue(), is("foo"));
         assertThat(actualYamlConfig.getStringValue(), is("str"));
