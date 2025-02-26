@@ -113,7 +113,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     @Test
     void assertSwapToYamlRuleConfigurationWithGlobalLeafYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RuleRepositoryTuple("/rules/leaf/versions/0", "value: foo")), GlobalLeafYamlRuleConfiguration.class);
+                Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo")), GlobalLeafYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         GlobalLeafYamlRuleConfiguration actualYamlConfig = (GlobalLeafYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getValue(), is("foo"));
@@ -135,7 +135,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "")), NodeYamlRuleConfiguration.class);
+                Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")), NodeYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getStringValue(), is(""));
@@ -144,13 +144,13 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     @Test
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k/versions/0", "v"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value/versions/0", "- !LEAF" + System.lineSeparator() + "  value: foo"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value/versions/0", "str"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value/versions/0", "true"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/integer_value/versions/0", "1"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/long_value/versions/0", "10"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value/versions/0", "FOO")), NodeYamlRuleConfiguration.class);
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "str"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value", "true"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/integer_value", "1"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/long_value", "10"),
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")), NodeYamlRuleConfiguration.class);
         assertTrue(actual.isPresent());
         NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
         assertThat(actualYamlConfig.getMapValue().size(), is(1));
@@ -171,7 +171,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToRuleConfigurations() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.singleton(new RuleRepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isEmpty());
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isEmpty());
     }
     
     @Test
@@ -181,11 +181,11 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToNotFoundRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("invalid", Collections.singleton(new RuleRepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("invalid", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
     }
     
     @Test
     void assertSwapToRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.singleton(new RuleRepositoryTuple("/rules/leaf/versions/0", "value: foo"))).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
     }
 }
