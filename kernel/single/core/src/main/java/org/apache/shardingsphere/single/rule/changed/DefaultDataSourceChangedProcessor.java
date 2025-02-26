@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.single.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodeProvider;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 /**
@@ -52,6 +51,6 @@ public final class DefaultDataSourceChangedProcessor implements RuleItemConfigur
     
     @Override
     public String getType() {
-        return SingleRuleNodeProvider.RULE_TYPE + "." + SingleRuleNodeProvider.DEFAULT_DATA_SOURCE;
+        return "single.default_data_source";
     }
 }

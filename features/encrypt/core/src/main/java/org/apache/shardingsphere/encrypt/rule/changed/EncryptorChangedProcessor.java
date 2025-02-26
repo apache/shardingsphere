@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rule.changed;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodeProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
@@ -48,6 +47,6 @@ public final class EncryptorChangedProcessor extends AlgorithmChangedProcessor<E
     
     @Override
     public String getType() {
-        return EncryptRuleNodeProvider.RULE_TYPE + "." + EncryptRuleNodeProvider.ENCRYPTORS;
+        return "encrypt.encryptors";
     }
 }
