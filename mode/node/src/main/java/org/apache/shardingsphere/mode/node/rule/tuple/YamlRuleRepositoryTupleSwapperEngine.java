@@ -129,7 +129,8 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         if (null == entity) {
             return Optional.empty();
         }
-        return entity.leaf() ? swapToYamlRuleConfiguration(tuples, toBeSwappedType, entity) : swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
+        return entity.leaf() ? swapToYamlRuleConfiguration(tuples, toBeSwappedType, entity)
+                : swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

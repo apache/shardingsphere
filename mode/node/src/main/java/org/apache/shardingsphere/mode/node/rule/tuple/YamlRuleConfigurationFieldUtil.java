@@ -37,7 +37,7 @@ public final class YamlRuleConfigurationFieldUtil {
     
     /**
      * Get fields from YAML rule configuration.
-     * 
+     *
      * @param yamlRuleConfigurationClass YAML rule configuration class
      * @return got fields
      */
@@ -49,7 +49,7 @@ public final class YamlRuleConfigurationFieldUtil {
     
     /**
      * Get persist tuple name.
-     * 
+     *
      * @param field field from YAML rule configuration
      * @return persist tuple name
      */
