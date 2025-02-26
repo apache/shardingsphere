@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mode.node.rule.fixture.none;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
+@RuleRepositoryTupleEntity("none")
 public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @Override

@@ -49,7 +49,6 @@ public final class DatabaseRuleNodeGenerator {
     public static DatabaseRuleNode generate(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
         RuleRepositoryTupleEntity tupleEntity = yamlRuleConfigurationClass.getAnnotation(RuleRepositoryTupleEntity.class);
         Preconditions.checkNotNull(tupleEntity, "Can not find @RuleRepositoryTupleEntity on class: ", yamlRuleConfigurationClass.getName());
-        Preconditions.checkArgument(!tupleEntity.leaf(), "@RuleRepositoryTupleEntity can not be leaf on class: ", yamlRuleConfigurationClass.getName());
         Collection<String> namedItems = new LinkedList<>();
         Collection<String> uniqueItems = new LinkedList<>();
         for (Field each : getFields(yamlRuleConfigurationClass)) {
