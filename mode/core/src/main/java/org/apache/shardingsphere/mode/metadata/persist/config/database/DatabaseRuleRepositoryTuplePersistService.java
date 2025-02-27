@@ -60,16 +60,23 @@ public final class DatabaseRuleRepositoryTuplePersistService {
     }
     
     private Collection<RuleRepositoryTuple> load(final String databaseName, final String ruleType) {
-        Collection<String> activeVersionPaths = new LinkedList<>();
+        Collection<DatabaseRuleNodePath> nodePaths = new LinkedList<>();
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType);
-        for (String each : databaseRuleNode.getUniqueItems()) {
-            activeVersionPaths.add(new VersionNodePath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each))).getActiveVersionPath());
-        }
-        for (String each : databaseRuleNode.getNamedItems()) {
-            for (String child : repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each)), false))) {
-                activeVersionPaths.add(new VersionNodePath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each, child))).getActiveVersionPath());
-            }
-        }
-        return activeVersionPaths.stream().map(tuplePersistService::load).collect(Collectors.toList());
+        nodePaths.addAll(getUniqueItemNodePaths(databaseName, ruleType, databaseRuleNode.getUniqueItems()));
+        nodePaths.addAll(getNamedItemNodePaths(databaseName, ruleType, databaseRuleNode.getNamedItems()));
+        return nodePaths.stream().map(each -> new VersionNodePath(each).getActiveVersionPath()).map(tuplePersistService::load).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {
+        return uniqueItems.stream().map(each -> new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each))).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getNamedItemNodePaths(final String databaseName, final String ruleType, final Collection<String> namedItems) {
+        return namedItems.stream().flatMap(each -> getNamedItemNodePaths(databaseName, ruleType, each).stream()).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getNamedItemNodePaths(final String databaseName, final String ruleType, final String namedItem) {
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(namedItem)), false)).stream()
+                .map(each -> new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(namedItem, each))).collect(Collectors.toList());
     }
 }
