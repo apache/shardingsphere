@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,18 +57,19 @@ class RuleDatabaseRuleRepositoryTuplePersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/named")).thenReturn(Collections.singletonList("rule_item"));
         when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/active_version")).thenReturn("0");
         when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/versions/0")).thenReturn("named_content");
-        List<RuleRepositoryTuple> actual = new ArrayList<>(persistService.load("foo_db"));
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getKey(), is("/metadata/foo_db/rules/fixture/unique"));
-        assertThat(actual.get(0).getValue(), is("unique_content"));
-        assertThat(actual.get(1).getKey(), is("/metadata/foo_db/rules/fixture/named/rule_item"));
-        assertThat(actual.get(1).getValue(), is("named_content"));
+        Map<String, Collection<RuleRepositoryTuple>> actual = persistService.load("foo_db");
+        assertThat(actual.size(), is(1));
+        List<RuleRepositoryTuple> actualTuples = new ArrayList<>(actual.get("fixture"));
+        assertThat(actualTuples.size(), is(2));
+        assertThat(actualTuples.get(0).getKey(), is("/metadata/foo_db/rules/fixture/unique"));
+        assertThat(actualTuples.get(0).getValue(), is("unique_content"));
+        assertThat(actualTuples.get(1).getKey(), is("/metadata/foo_db/rules/fixture/named/rule_item"));
+        assertThat(actualTuples.get(1).getValue(), is("named_content"));
     }
     
     @Test
     void assertLoadWithoutChildrenPath() {
         when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.emptyList());
-        Collection<RuleRepositoryTuple> actual = persistService.load("foo_db");
-        assertTrue(actual.isEmpty());
+        assertTrue(persistService.load("foo_db").isEmpty());
     }
 }

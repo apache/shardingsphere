@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -166,12 +167,13 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToEmptyRuleConfigurations() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.emptyList()).isEmpty());
+        Map<String, Collection<RuleRepositoryTuple>> tuples = Collections.emptyMap();
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToDatabaseRuleConfigurations(tuples).isEmpty());
     }
     
     @Test
     void assertSwapToRuleConfigurations() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfigurations(Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isEmpty());
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfigurations(Collections.singletonMap("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isEmpty());
     }
     
     @Test

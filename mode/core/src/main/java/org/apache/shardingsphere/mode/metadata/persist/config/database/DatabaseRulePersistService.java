@@ -67,7 +67,7 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName));
+        return yamlRuleRepositoryTupleSwapperEngine.swapToDatabaseRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName));
     }
     
     /**

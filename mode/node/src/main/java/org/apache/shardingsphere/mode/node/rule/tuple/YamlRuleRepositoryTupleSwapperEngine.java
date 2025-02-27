@@ -227,7 +227,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @return global rule configurations
      */
     @SuppressWarnings("rawtypes")
-    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<RuleRepositoryTuple> tuples) {
+    public Collection<RuleConfiguration> swapToGlobalRuleConfigurations(final Map<String, RuleRepositoryTuple> tuples) {
         if (tuples.isEmpty()) {
             return Collections.emptyList();
         }
@@ -235,7 +235,29 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            swapToYamlRuleConfiguration(tuples, yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
+            swapToYamlRuleConfiguration(tuples.values(), yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
+        }
+        return result;
+    }
+    
+    /**
+     * Swap to database rule configurations.
+     *
+     * @param tuples rule repository tuples
+     * @return global rule configurations
+     */
+    @SuppressWarnings("rawtypes")
+    public Collection<RuleConfiguration> swapToDatabaseRuleConfigurations(final Map<String, Collection<RuleRepositoryTuple>> tuples) {
+        if (tuples.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
+            Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
+            Collection<RuleRepositoryTuple> flatTuples = new LinkedList<>();
+            tuples.values().forEach(flatTuples::addAll);
+            swapToYamlRuleConfiguration(flatTuples, yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
         }
         return result;
     }
