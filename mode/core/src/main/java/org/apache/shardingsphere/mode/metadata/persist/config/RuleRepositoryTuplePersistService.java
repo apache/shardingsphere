@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
+import java.util.Optional;
+
 /**
  * Rule repository tuple persist service.
  */
@@ -36,8 +38,12 @@ public final class RuleRepositoryTuplePersistService {
      * @param activeVersionPath active version path
      * @return loaded tuple
      */
-    public RuleRepositoryTuple load(final String activeVersionPath) {
-        String versionPath = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(versionPath));
+    public Optional<RuleRepositoryTuple> load(final String activeVersionPath) {
+        String version = repository.query(activeVersionPath);
+        if (null == version) {
+            return Optional.empty();
+        }
+        String versionPath = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(version));
+        return Optional.of(new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(versionPath)));
     }
 }

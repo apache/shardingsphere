@@ -61,6 +61,7 @@ public final class GlobalRuleRepositoryTuplePersistService {
      * @return loaded tuple
      */
     public RuleRepositoryTuple load(final String ruleType) {
-        return tuplePersistService.load(new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath());
+        return tuplePersistService.load(new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath())
+                .orElseThrow(() -> new IllegalStateException(String.format("Can not load rule type: %s", ruleType)));
     }
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +65,8 @@ public final class DatabaseRuleRepositoryTuplePersistService {
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType);
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, ruleType, databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, ruleType, databaseRuleNode.getNamedItems()));
-        return nodePaths.stream().map(each -> new VersionNodePath(each).getActiveVersionPath()).map(tuplePersistService::load).collect(Collectors.toList());
+        return nodePaths.stream().map(each -> new VersionNodePath(each).getActiveVersionPath()).map(tuplePersistService::load)
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
     private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {
