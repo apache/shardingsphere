@@ -20,16 +20,21 @@ package org.apache.shardingsphere.mode.node.rule.node;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleConfigurationFieldUtil;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database rule node generator.
@@ -60,5 +65,39 @@ public final class DatabaseRuleNodeGenerator {
             }
         }
         return new DatabaseRuleNode(tupleEntity.value(), namedItems, uniqueItems);
+    }
+    
+    /**
+     * Generate database rule node.
+     *
+     * @param ruleType rule type
+     * @return generated database rule node
+     */
+    public static DatabaseRuleNode generate(final String ruleType) {
+        return findYamlRuleConfigurationClass(ruleType).map(DatabaseRuleNodeGenerator::generate).orElseThrow(() -> new IllegalArgumentException(ruleType));
+    }
+    
+    private static Optional<Class<? extends YamlRuleConfiguration>> findYamlRuleConfigurationClass(final String ruleType) {
+        for (YamlRuleConfigurationSwapper<?, ?> each : ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)) {
+            Optional<Class<? extends YamlRuleConfiguration>> yamlRuleConfigurationClass = findYamlRuleConfigurationClass(each.getClass());
+            if (!yamlRuleConfigurationClass.isPresent()) {
+                continue;
+            }
+            RuleRepositoryTupleEntity entity = yamlRuleConfigurationClass.get().getAnnotation(RuleRepositoryTupleEntity.class);
+            if (null != entity && entity.value().equals(ruleType)) {
+                return yamlRuleConfigurationClass;
+            }
+        }
+        return Optional.empty();
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static Optional<Class<? extends YamlRuleConfiguration>> findYamlRuleConfigurationClass(final Class<? extends YamlRuleConfigurationSwapper> swapperClass) {
+        for (Type each : swapperClass.getGenericInterfaces()) {
+            if (each instanceof ParameterizedType) {
+                return Optional.of((Class<? extends YamlRuleConfiguration>) ((ParameterizedType) each).getActualTypeArguments()[0]);
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -19,14 +19,15 @@ package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -53,21 +54,17 @@ public final class DatabaseRuleRepositoryTuplePersistService {
     }
     
     private Collection<RuleRepositoryTuple> load(final String databaseName, final String ruleType) {
-        return loadNodes(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, null), false)).stream()
-                .filter(VersionNodePath::isActiveVersionPath).map(this::createTuple).collect(Collectors.toList());
-    }
-    
-    private Collection<String> loadNodes(final String rootNode) {
-        Collection<String> result = new LinkedHashSet<>();
-        loadNodes(rootNode, result);
-        return 1 == result.size() ? Collections.emptyList() : result;
-    }
-    
-    private void loadNodes(final String toBeLoadedNode, final Collection<String> loadedNodes) {
-        loadedNodes.add(toBeLoadedNode);
-        for (String each : repository.getChildrenKeys(toBeLoadedNode)) {
-            loadNodes(String.join("/", toBeLoadedNode, each), loadedNodes);
+        Collection<String> activeVersionPaths = new LinkedList<>();
+        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType);
+        for (String each : databaseRuleNode.getUniqueItems()) {
+            activeVersionPaths.add(new VersionNodePath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each))).getActiveVersionPath());
         }
+        for (String each : databaseRuleNode.getNamedItems()) {
+            for (String child : repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each)), false))) {
+                activeVersionPaths.add(new VersionNodePath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each, child))).getActiveVersionPath());
+            }
+        }
+        return activeVersionPaths.stream().map(this::createTuple).collect(Collectors.toList());
     }
     
     private RuleRepositoryTuple createTuple(final String activeVersionPath) {
