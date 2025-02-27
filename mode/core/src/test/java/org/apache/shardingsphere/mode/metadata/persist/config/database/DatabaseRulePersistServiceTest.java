@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config.database;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataRuleConfigurationFixture;
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.DatabaseRuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class DatabaseRulePersistServiceTest {
     private PersistRepository repository;
     
     @Mock
-    private RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {

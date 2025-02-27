@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -25,24 +27,34 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Rule repository tuple persist service.
+ * Database rule repository tuple persist service.
  */
 @RequiredArgsConstructor
-public final class RuleRepositoryTuplePersistService {
+public final class DatabaseRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
     /**
      * Load rule repository tuples.
      *
-     * @param rootNode root node
+     * @param databaseName database name
      * @return loaded tuples
      */
-    public Collection<RuleRepositoryTuple> load(final String rootNode) {
-        return loadNodes(rootNode).stream().filter(VersionNodePath::isActiveVersionPath).map(this::createTuple).collect(Collectors.toList());
+    public Collection<RuleRepositoryTuple> load(final String databaseName) {
+        Collection<RuleRepositoryTuple> result = new LinkedList<>();
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false))) {
+            result.addAll(load(databaseName, each));
+        }
+        return result;
+    }
+    
+    private Collection<RuleRepositoryTuple> load(final String databaseName, final String ruleType) {
+        return loadNodes(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, null), false)).stream()
+                .filter(VersionNodePath::isActiveVersionPath).map(this::createTuple).collect(Collectors.toList());
     }
     
     private Collection<String> loadNodes(final String rootNode) {
