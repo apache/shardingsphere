@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.none;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
+@RuleRepositoryTupleEntity("none")
+public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @Override
-    public String generate(final Object tupleValue) {
-        return String.format("gen: %s", tupleValue);
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
     }
 }

@@ -15,9 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
-public enum NodeYamlRuleConfigurationEnum {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+
+@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public final class GlobalLeafYamlRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    FOO
+    private String value;
+    
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
+    }
 }
