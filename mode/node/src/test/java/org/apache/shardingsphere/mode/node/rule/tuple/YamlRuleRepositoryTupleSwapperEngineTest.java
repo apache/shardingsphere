@@ -104,12 +104,6 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     }
     
     @Test
-    void assertSwapToYamlRuleConfigurationWithoutGlobalLeafYamlRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("invalid", "")), GlobalLeafYamlRuleConfiguration.class)
-                .isPresent());
-    }
-    
-    @Test
     void assertSwapToYamlRuleConfigurationWithGlobalLeafYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
                 Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo")), GlobalLeafYamlRuleConfiguration.class);
@@ -178,16 +172,16 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToEmptyRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.emptyList()).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", Collections.emptyList()).isPresent());
     }
     
     @Test
     void assertSwapToNotFoundRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("invalid", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("invalid", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
     }
     
     @Test
     void assertSwapToRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToRuleConfiguration("leaf", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
+        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
     }
 }

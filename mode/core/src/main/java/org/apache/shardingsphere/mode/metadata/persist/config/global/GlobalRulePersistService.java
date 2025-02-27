@@ -67,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, Collections.singleton(ruleRepositoryTuplePersistService.load(ruleType)));
+        return yamlRuleRepositoryTupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, Collections.singleton(ruleRepositoryTuplePersistService.load(ruleType)));
     }
     
     /**
