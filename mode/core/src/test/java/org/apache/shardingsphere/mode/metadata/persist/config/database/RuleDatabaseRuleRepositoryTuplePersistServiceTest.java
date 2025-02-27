@@ -50,17 +50,17 @@ class RuleDatabaseRuleRepositoryTuplePersistServiceTest {
     
     @Test
     void assertLoadWithChildrenPath() {
-        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.singletonList("database_rule_fixture"));
-        when(repository.query("/metadata/foo_db/rules/database_rule_fixture/unique/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/rules/database_rule_fixture/unique/versions/0")).thenReturn("unique_content");
-        when(repository.getChildrenKeys("/metadata/foo_db/rules/database_rule_fixture/named")).thenReturn(Collections.singletonList("rule_item"));
-        when(repository.query("/metadata/foo_db/rules/database_rule_fixture/named/rule_item/active_version")).thenReturn("0");
-        when(repository.query("/metadata/foo_db/rules/database_rule_fixture/named/rule_item/versions/0")).thenReturn("named_content");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.singletonList("fixture"));
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/versions/0")).thenReturn("unique_content");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/named")).thenReturn(Collections.singletonList("rule_item"));
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/versions/0")).thenReturn("named_content");
         List<RuleRepositoryTuple> actual = new ArrayList<>(persistService.load("foo_db"));
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getKey(), is("/metadata/foo_db/rules/database_rule_fixture/unique"));
+        assertThat(actual.get(0).getKey(), is("/metadata/foo_db/rules/fixture/unique"));
         assertThat(actual.get(0).getValue(), is("unique_content"));
-        assertThat(actual.get(1).getKey(), is("/metadata/foo_db/rules/database_rule_fixture/named/rule_item"));
+        assertThat(actual.get(1).getKey(), is("/metadata/foo_db/rules/fixture/named/rule_item"));
         assertThat(actual.get(1).getValue(), is("named_content"));
     }
     

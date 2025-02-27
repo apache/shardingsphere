@@ -50,6 +50,6 @@ public final class MockedYamlRuleConfigurationSwapper implements YamlRuleConfigu
     
     @Override
     public int getOrder() {
-        return -1;
+        return -10000;
     }
 }

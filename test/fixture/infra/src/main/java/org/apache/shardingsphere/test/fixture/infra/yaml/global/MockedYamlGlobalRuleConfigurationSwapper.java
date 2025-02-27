@@ -15,36 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.test.fixture.infra.yaml.global;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
 
-public final class MetaDataYamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<MetaDataYamlRuleConfigurationFixture, MetaDataRuleConfigurationFixture> {
+/**
+ * Mocked YAML global rule configuration swapper.
+ */
+public final class MockedYamlGlobalRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<MockedYamlGlobalRuleConfiguration, MockedGlobalRuleConfiguration> {
     
     @Override
-    public MetaDataYamlRuleConfigurationFixture swapToYamlConfiguration(final MetaDataRuleConfigurationFixture data) {
-        MetaDataYamlRuleConfigurationFixture result = new MetaDataYamlRuleConfigurationFixture();
+    public Class<MockedGlobalRuleConfiguration> getTypeClass() {
+        return MockedGlobalRuleConfiguration.class;
+    }
+    
+    @Override
+    public MockedYamlGlobalRuleConfiguration swapToYamlConfiguration(final MockedGlobalRuleConfiguration data) {
+        MockedYamlGlobalRuleConfiguration result = new MockedYamlGlobalRuleConfiguration();
         result.setName(data.getName());
         return result;
     }
     
     @Override
-    public MetaDataRuleConfigurationFixture swapToObject(final MetaDataYamlRuleConfigurationFixture yamlConfig) {
-        return new MetaDataRuleConfigurationFixture(yamlConfig.getName());
+    public MockedGlobalRuleConfiguration swapToObject(final MockedYamlGlobalRuleConfiguration yamlConfig) {
+        return new MockedGlobalRuleConfiguration(yamlConfig.getName());
     }
     
     @Override
     public String getRuleTagName() {
-        return "METADATA.FIXTURE";
+        return "GLOBAL_FIXTURE";
     }
     
     @Override
     public int getOrder() {
-        return -400;
-    }
-    
-    @Override
-    public Class<MetaDataRuleConfigurationFixture> getTypeClass() {
-        return MetaDataRuleConfigurationFixture.class;
+        return -20000;
     }
 }
