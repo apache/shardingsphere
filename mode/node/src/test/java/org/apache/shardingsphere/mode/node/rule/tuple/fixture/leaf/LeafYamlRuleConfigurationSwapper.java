@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.leaf;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
