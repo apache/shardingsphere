@@ -250,9 +250,8 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            Collection<RuleRepositoryTuple> flatTuples = new LinkedList<>();
-            tuples.values().forEach(flatTuples::addAll);
-            swapToYamlRuleConfiguration(flatTuples, yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
+            swapToYamlRuleConfiguration(tuples.get(yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class).value()), yamlRuleConfigClass)
+                    .ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
         }
         return result;
     }
