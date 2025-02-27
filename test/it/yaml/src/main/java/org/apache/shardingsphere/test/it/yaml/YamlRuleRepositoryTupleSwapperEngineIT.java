@@ -105,7 +105,7 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
     }
     
     private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleType, final RuleRepositoryTuple tuple) {
-        return isGlobalRule ? String.format("/metadata/rules/%s/versions/0", ruleType) : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleType, tuple.getKey());
+        return isGlobalRule ? String.format("/rules/%s/versions/0", ruleType) : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleType, tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {
