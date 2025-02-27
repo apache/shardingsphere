@@ -34,7 +34,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -71,7 +70,7 @@ class GlobalRulePersistServiceTest {
     
     @Test
     void assertLoadWithRuleType() {
-        assertFalse(globalRulePersistService.load("foo_rule").isPresent());
+        globalRulePersistService.load("foo_rule");
         verify(ruleRepositoryTuplePersistService).load("foo_rule");
     }
     

@@ -43,6 +43,6 @@ public final class LeafYamlRuleConfigurationSwapper implements YamlRuleConfigura
     
     @Override
     public Class<LeafRuleConfiguration> getTypeClass() {
-        return null;
+        return LeafRuleConfiguration.class;
     }
 }

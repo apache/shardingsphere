@@ -28,8 +28,6 @@ import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwa
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Global rule persist service.
@@ -66,8 +64,8 @@ public final class GlobalRulePersistService {
      * @param ruleType rule type to be loaded
      * @return global rule configuration
      */
-    public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, Collections.singleton(ruleRepositoryTuplePersistService.load(ruleType)));
+    public RuleConfiguration load(final String ruleType) {
+        return yamlRuleRepositoryTupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(ruleType));
     }
     
     /**

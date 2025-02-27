@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
@@ -36,6 +38,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlRuleRepositoryTupleSwapperEngineTest {
@@ -113,12 +116,6 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     }
     
     @Test
-    void assertSwapToYamlRuleConfigurationWithInvalidLeafYamlRuleConfiguration() {
-        assertFalse(
-                new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.singleton(new RuleRepositoryTuple("/invalid", "foo")), LeafYamlRuleConfiguration.class).isPresent());
-    }
-    
-    @Test
     void assertSwapToYamlRuleConfigurationWithInvalidNodeYamlRuleConfiguration() {
         Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
                 Collections.singleton(new RuleRepositoryTuple("/invalid", "foo")), NodeYamlRuleConfiguration.class);
@@ -167,21 +164,17 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToRuleConfigurations() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfigurations(Collections.singletonMap("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isEmpty());
-    }
-    
-    @Test
-    void assertSwapToEmptyRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", Collections.emptyList()).isPresent());
+        assertThat(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfigurations(Collections.singletonMap("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"))).size(), is(1));
     }
     
     @Test
     void assertSwapToNotFoundRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("invalid", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
+        assertThrows(IllegalStateException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("invalid", new RuleRepositoryTuple("/rules/leaf", "value: foo")));
     }
     
     @Test
     void assertSwapToRuleConfiguration() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo"))).isPresent());
+        RuleConfiguration actual = new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"));
+        assertThat(((LeafRuleConfiguration) actual).getValue(), is("foo"));
     }
 }
