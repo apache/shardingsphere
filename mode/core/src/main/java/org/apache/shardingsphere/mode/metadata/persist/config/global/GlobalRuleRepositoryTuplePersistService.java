@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
@@ -30,10 +30,16 @@ import java.util.LinkedList;
 /**
  * Global rule repository tuple persist service.
  */
-@RequiredArgsConstructor
 public final class GlobalRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
+    
+    private final RuleRepositoryTuplePersistService tuplePersistService;
+    
+    public GlobalRuleRepositoryTuplePersistService(final PersistRepository repository) {
+        this.repository = repository;
+        tuplePersistService = new RuleRepositoryTuplePersistService(repository);
+    }
     
     /**
      * Load rule repository tuples.
@@ -56,11 +62,6 @@ public final class GlobalRuleRepositoryTuplePersistService {
      */
     public RuleRepositoryTuple load(final String ruleType) {
         String activeVersionPath = new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath();
-        return createTuple(activeVersionPath);
-    }
-    
-    private RuleRepositoryTuple createTuple(final String activeVersionPath) {
-        String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(activeVersionKey));
+        return tuplePersistService.load(activeVersionPath);
     }
 }

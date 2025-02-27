@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -34,10 +34,16 @@ import java.util.stream.Collectors;
 /**
  * Database rule repository tuple persist service.
  */
-@RequiredArgsConstructor
 public final class DatabaseRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
+    
+    private final RuleRepositoryTuplePersistService tuplePersistService;
+    
+    public DatabaseRuleRepositoryTuplePersistService(final PersistRepository repository) {
+        this.repository = repository;
+        tuplePersistService = new RuleRepositoryTuplePersistService(repository);
+    }
     
     /**
      * Load rule repository tuples.
@@ -64,11 +70,6 @@ public final class DatabaseRuleRepositoryTuplePersistService {
                 activeVersionPaths.add(new VersionNodePath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each, child))).getActiveVersionPath());
             }
         }
-        return activeVersionPaths.stream().map(this::createTuple).collect(Collectors.toList());
-    }
-    
-    private RuleRepositoryTuple createTuple(final String activeVersionPath) {
-        String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(activeVersionKey));
+        return activeVersionPaths.stream().map(tuplePersistService::load).collect(Collectors.toList());
     }
 }
