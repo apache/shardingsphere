@@ -52,10 +52,11 @@ public final class DatabaseRuleConfigurationManager {
      *
      * @param databaseName database name
      * @param ruleConfig rule configurations
+     * @param reBuildRules is need to rebuild rules
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized void refresh(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
+    public synchronized void refresh(final String databaseName, final RuleConfiguration ruleConfig, final boolean reBuildRules) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
@@ -65,8 +66,10 @@ public final class DatabaseRuleConfigurationManager {
         }
         Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
         rules.removeAll(toBeRemovedRules);
-        rules.add(DatabaseRulesBuilder.build(
-                databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        if (reBuildRules) {
+            rules.add(DatabaseRulesBuilder.build(
+                    databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
+        }
         refreshMetadata(databaseName, rules, toBeRemovedRules);
     }
     
