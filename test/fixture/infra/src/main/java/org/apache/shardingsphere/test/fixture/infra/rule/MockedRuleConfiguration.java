@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Mocked rule configuration.
  */
@@ -28,5 +31,11 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 @Getter
 public final class MockedRuleConfiguration implements RuleConfiguration {
     
-    private final String name;
+    private final String unique;
+    
+    private final Map<String, String> named;
+    
+    public MockedRuleConfiguration(final String unique) {
+        this(unique, Collections.emptyMap());
+    }
 }

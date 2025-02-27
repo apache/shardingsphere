@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.config.database.fixture;
+package org.apache.shardingsphere.test.fixture.infra.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
 import java.util.Map;
 
-@RuleRepositoryTupleEntity("database_rule_fixture")
+/**
+ * Mocked YAML rule configuration.
+ */
+@RuleRepositoryTupleEntity("fixture")
 @Getter
 @Setter
-public final class DatabaseYamlRuleConfigurationFixture implements YamlRuleConfiguration {
+public final class MockedYamlRuleConfiguration implements YamlRuleConfiguration {
     
     @RuleRepositoryTupleField(type = Type.OTHER)
     private String unique;
@@ -38,7 +43,7 @@ public final class DatabaseYamlRuleConfigurationFixture implements YamlRuleConfi
     private Map<String, String> named;
     
     @Override
-    public Class<DatabaseRuleConfigurationFixture> getRuleConfigurationType() {
-        return DatabaseRuleConfigurationFixture.class;
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return MockedRuleConfiguration.class;
     }
 }

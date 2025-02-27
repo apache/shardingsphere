@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.config.database.fixture;
+package org.apache.shardingsphere.test.fixture.infra.yaml.global;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
 
-import java.util.Map;
-
-@RequiredArgsConstructor
+/**
+ * Mocked YAML rule configuration.
+ */
+@RuleRepositoryTupleEntity(value = "global_fixture", leaf = true)
 @Getter
-public final class DatabaseRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+@Setter
+public final class MockedYamlGlobalRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    private final String unique;
+    private String name;
     
-    private final Map<String, String> named;
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return MockedGlobalRuleConfiguration.class;
+    }
 }
