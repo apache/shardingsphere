@@ -57,7 +57,7 @@ public final class DatabaseRuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
-            databaseRuleConfigManager.alter(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.refresh(databaseName, currentRuleConfig);
         }
     }
     
@@ -75,7 +75,7 @@ public final class DatabaseRuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
-            databaseRuleConfigManager.drop(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.refresh(databaseName, currentRuleConfig);
         }
     }
 }
