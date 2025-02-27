@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.fixture;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.fixture.infra.yaml.MockedYamlRuleConfiguration;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<MockedYamlRuleConfiguration, RuleConfigurationFixture> {
     
     @Override
     public Class<RuleConfigurationFixture> getTypeClass() {
@@ -27,15 +28,15 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
+    public MockedYamlRuleConfiguration swapToYamlConfiguration(final RuleConfigurationFixture data) {
+        MockedYamlRuleConfiguration result = new MockedYamlRuleConfiguration();
         result.setUnique(data.getUnique());
         result.setNamed(data.getNamed());
         return result;
     }
     
     @Override
-    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
+    public RuleConfigurationFixture swapToObject(final MockedYamlRuleConfiguration yamlConfig) {
         RuleConfigurationFixture result = new RuleConfigurationFixture();
         result.setUnique(yamlConfig.getUnique());
         result.setNamed(yamlConfig.getNamed());
