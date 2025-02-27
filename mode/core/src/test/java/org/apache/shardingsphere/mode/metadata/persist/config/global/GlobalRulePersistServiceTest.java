@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataYamlRuleConfigurationFixture;
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -55,7 +54,7 @@ class GlobalRulePersistServiceTest {
     private MetaDataVersionPersistService metaDataVersionPersistService;
     
     @Mock
-    private RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private GlobalRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
@@ -67,13 +66,13 @@ class GlobalRulePersistServiceTest {
     @Test
     void assertLoad() {
         assertTrue(globalRulePersistService.load().isEmpty());
-        verify(ruleRepositoryTuplePersistService).load("/rules");
+        verify(ruleRepositoryTuplePersistService).load();
     }
     
     @Test
     void assertLoadWithRuleType() {
         assertFalse(globalRulePersistService.load("foo_rule").isPresent());
-        verify(ruleRepositoryTuplePersistService).load("/rules/foo_rule");
+        verify(ruleRepositoryTuplePersistService).load("foo_rule");
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
