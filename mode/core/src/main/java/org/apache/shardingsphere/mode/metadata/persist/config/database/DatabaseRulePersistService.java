@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
@@ -45,7 +44,7 @@ public final class DatabaseRulePersistService {
     
     private final PersistRepository repository;
     
-    private final RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private final DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
@@ -55,7 +54,7 @@ public final class DatabaseRulePersistService {
     
     public DatabaseRulePersistService(final PersistRepository repository) {
         this.repository = repository;
-        ruleRepositoryTuplePersistService = new RuleRepositoryTuplePersistService(repository);
+        ruleRepositoryTuplePersistService = new DatabaseRuleRepositoryTuplePersistService(repository);
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
@@ -68,8 +67,7 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(
-                ruleRepositoryTuplePersistService.load(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false)));
+        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName));
     }
     
     /**

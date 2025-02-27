@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.config;
+package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -25,8 +25,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,33 +36,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RuleRuleRepositoryTuplePersistServiceTest {
+class RuleDatabaseRuleRepositoryTuplePersistServiceTest {
     
-    private RuleRepositoryTuplePersistService persistService;
+    private DatabaseRuleRepositoryTuplePersistService persistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        persistService = new RuleRepositoryTuplePersistService(repository);
+        persistService = new DatabaseRuleRepositoryTuplePersistService(repository);
     }
     
     @Test
     void assertLoadWithChildrenPath() {
-        when(repository.getChildrenKeys("root")).thenReturn(Collections.singletonList("foo/active_version"));
-        when(repository.query("root/foo/active_version")).thenReturn("0");
-        when(repository.query("root/foo/versions/0")).thenReturn("foo_content");
-        Collection<RuleRepositoryTuple> actual = persistService.load("root");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getKey(), is("root/foo"));
-        assertThat(actual.iterator().next().getValue(), is("foo_content"));
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.singletonList("fixture"));
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/versions/0")).thenReturn("unique_content");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/named")).thenReturn(Collections.singletonList("rule_item"));
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/versions/0")).thenReturn("named_content");
+        List<RuleRepositoryTuple> actual = new ArrayList<>(persistService.load("foo_db"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getKey(), is("/metadata/foo_db/rules/fixture/unique"));
+        assertThat(actual.get(0).getValue(), is("unique_content"));
+        assertThat(actual.get(1).getKey(), is("/metadata/foo_db/rules/fixture/named/rule_item"));
+        assertThat(actual.get(1).getValue(), is("named_content"));
     }
     
     @Test
     void assertLoadWithoutChildrenPath() {
-        when(repository.getChildrenKeys("root")).thenReturn(Collections.emptyList());
-        Collection<RuleRepositoryTuple> actual = persistService.load("root");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.emptyList());
+        Collection<RuleRepositoryTuple> actual = persistService.load("foo_db");
         assertTrue(actual.isEmpty());
     }
 }
