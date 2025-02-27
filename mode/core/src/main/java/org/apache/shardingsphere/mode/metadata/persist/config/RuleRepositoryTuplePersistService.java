@@ -22,10 +22,7 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Rule repository tuple persist service.
@@ -36,30 +33,17 @@ public final class RuleRepositoryTuplePersistService {
     private final PersistRepository repository;
     
     /**
-     * Load rule repository tuples.
+     * Load rule repository tuple.
      *
-     * @param rootNode root node
-     * @return loaded tuples
+     * @param activeVersionPath active version path
+     * @return loaded tuple
      */
-    public Collection<RuleRepositoryTuple> load(final String rootNode) {
-        return loadNodes(rootNode).stream().filter(VersionNodePath::isActiveVersionPath).map(this::createTuple).collect(Collectors.toList());
-    }
-    
-    private Collection<String> loadNodes(final String rootNode) {
-        Collection<String> result = new LinkedHashSet<>();
-        loadNodes(rootNode, result);
-        return 1 == result.size() ? Collections.emptyList() : result;
-    }
-    
-    private void loadNodes(final String toBeLoadedNode, final Collection<String> loadedNodes) {
-        loadedNodes.add(toBeLoadedNode);
-        for (String each : repository.getChildrenKeys(toBeLoadedNode)) {
-            loadNodes(String.join("/", toBeLoadedNode, each), loadedNodes);
+    public Optional<RuleRepositoryTuple> load(final String activeVersionPath) {
+        String version = repository.query(activeVersionPath);
+        if (null == version) {
+            return Optional.empty();
         }
-    }
-    
-    private RuleRepositoryTuple createTuple(final String activeVersionPath) {
-        String activeVersionKey = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(repository.query(activeVersionPath)));
-        return new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(activeVersionKey));
+        String versionPath = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(version));
+        return Optional.of(new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(versionPath)));
     }
 }
