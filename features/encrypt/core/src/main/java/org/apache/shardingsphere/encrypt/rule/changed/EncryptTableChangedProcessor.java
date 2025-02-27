@@ -19,16 +19,15 @@ package org.apache.shardingsphere.encrypt.rule.changed;
 
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.metadata.nodepath.EncryptRuleNodeProvider;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -63,6 +62,6 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     
     @Override
     public String getType() {
-        return EncryptRuleNodeProvider.RULE_TYPE + "." + EncryptRuleNodeProvider.TABLES;
+        return "encrypt.tables";
     }
 }

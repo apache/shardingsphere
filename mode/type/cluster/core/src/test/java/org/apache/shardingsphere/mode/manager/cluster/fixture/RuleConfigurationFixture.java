@@ -22,9 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
+import java.util.Map;
+
 @Getter
 @Setter
 public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
     
-    private String name;
+    private String unique;
+    
+    private Map<String, String> named;
 }

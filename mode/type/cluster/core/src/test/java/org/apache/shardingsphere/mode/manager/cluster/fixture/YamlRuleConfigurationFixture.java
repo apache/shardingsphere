@@ -20,12 +20,22 @@ package org.apache.shardingsphere.mode.manager.cluster.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
+
+import java.util.Map;
 
 @Getter
 @Setter
+@RuleRepositoryTupleEntity("foo_rule")
 public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    private String name;
+    @RuleRepositoryTupleField(type = Type.OTHER)
+    private String unique;
+    
+    @RuleRepositoryTupleField(type = Type.OTHER)
+    private Map<String, String> named;
     
     @Override
     public Class<RuleConfigurationFixture> getRuleConfigurationType() {

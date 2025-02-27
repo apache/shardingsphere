@@ -15,4 +15,24 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodeProvider
+rules:
+  - !SHARDING
+    tables:
+      t_order:
+        actualDataNodes: ds_${0..1}.t_order_${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_inline
+        auditStrategy:
+          auditorNames:
+            - sharding_key_required_auditor
+          allowHintDisable: true
+    defaultAuditStrategy:
+      auditorNames:
+        - sharding_key_required_auditor
+      allowHintDisable: true
+
+    auditors:
+      sharding_key_required_auditor:
+        type: DML_SHARDING_CONDITIONS

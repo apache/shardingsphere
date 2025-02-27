@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodeProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
@@ -52,6 +51,6 @@ public final class DefaultShadowAlgorithmNameChangedProcessor implements RuleIte
     
     @Override
     public String getType() {
-        return ShadowRuleNodeProvider.RULE_TYPE + "." + ShadowRuleNodeProvider.DEFAULT_SHADOW_ALGORITHM_NAME;
+        return "shadow.default_shadow_algorithm_name";
     }
 }
