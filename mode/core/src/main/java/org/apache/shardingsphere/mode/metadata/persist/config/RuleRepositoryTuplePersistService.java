@@ -34,7 +34,7 @@ public final class RuleRepositoryTuplePersistService {
     
     /**
      * Load rule repository tuple.
-     * 
+     *
      * @param activeVersionPath active version path
      * @return loaded tuple
      */
