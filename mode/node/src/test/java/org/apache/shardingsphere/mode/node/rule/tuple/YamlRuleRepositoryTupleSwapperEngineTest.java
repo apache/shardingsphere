@@ -163,17 +163,12 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     }
     
     @Test
-    void assertSwapToRuleConfigurations() {
-        assertThat(new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfigurations(Collections.singletonMap("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"))).size(), is(1));
-    }
-    
-    @Test
-    void assertSwapToNotFoundRuleConfiguration() {
+    void assertSwapToNotFoundGlobalRuleConfiguration() {
         assertThrows(IllegalStateException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("invalid", new RuleRepositoryTuple("/rules/leaf", "value: foo")));
     }
     
     @Test
-    void assertSwapToRuleConfiguration() {
+    void assertSwapToGlobalRuleConfiguration() {
         RuleConfiguration actual = new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"));
         assertThat(((LeafRuleConfiguration) actual).getValue(), is("foo"));
     }

@@ -216,16 +216,6 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     }
     
     /**
-     * Swap to rule configurations.
-     *
-     * @param tuples rule repository tuples
-     * @return global rule configurations
-     */
-    public Collection<RuleConfiguration> swapToGlobalRuleConfigurations(final Map<String, RuleRepositoryTuple> tuples) {
-        return tuples.entrySet().stream().map(entry -> swapToGlobalRuleConfiguration(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-    }
-    
-    /**
      * Swap to global rule configuration.
      *
      * @param ruleType rule type

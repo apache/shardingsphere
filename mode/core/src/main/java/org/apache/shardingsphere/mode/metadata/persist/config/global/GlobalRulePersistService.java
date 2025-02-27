@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwa
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Global rule persist service.
@@ -38,14 +39,14 @@ public final class GlobalRulePersistService {
     
     private final GlobalRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
-    private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
+    private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
     
     private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
     
     public GlobalRulePersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.metaDataVersionPersistService = metaDataVersionPersistService;
         ruleRepositoryTuplePersistService = new GlobalRuleRepositoryTuplePersistService(repository);
-        yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
+        tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
     
@@ -55,7 +56,8 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToGlobalRuleConfigurations(ruleRepositoryTuplePersistService.load());
+        return ruleRepositoryTuplePersistService.load().entrySet().stream()
+                .map(entry -> tupleSwapperEngine.swapToGlobalRuleConfiguration(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
     /**
@@ -65,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public RuleConfiguration load(final String ruleType) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(ruleType));
+        return tupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(ruleType));
     }
     
     /**
@@ -75,7 +77,7 @@ public final class GlobalRulePersistService {
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
-            persistTuples(yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each));
+            persistTuples(tupleSwapperEngine.swapToTuples(each));
         }
     }
     
