@@ -61,7 +61,6 @@ public final class GlobalRuleRepositoryTuplePersistService {
      * @return loaded tuple
      */
     public RuleRepositoryTuple load(final String ruleType) {
-        String activeVersionPath = new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath();
-        return tuplePersistService.load(activeVersionPath);
+        return tuplePersistService.load(new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath());
     }
 }
