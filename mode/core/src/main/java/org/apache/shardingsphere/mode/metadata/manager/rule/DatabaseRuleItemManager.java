@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -57,7 +59,7 @@ public final class DatabaseRuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
-            databaseRuleConfigManager.alter(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
         }
     }
     
@@ -75,7 +77,8 @@ public final class DatabaseRuleItemManager {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
             processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
-            databaseRuleConfigManager.drop(databaseName, currentRuleConfig);
+            databaseRuleConfigManager.refresh(databaseName, currentRuleConfig,
+                    !TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, currentRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) currentRuleConfig));
         }
     }
 }

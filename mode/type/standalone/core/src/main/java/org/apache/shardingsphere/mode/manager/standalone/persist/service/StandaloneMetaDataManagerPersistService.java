@@ -197,7 +197,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleMetaData ruleMetaData) throws SQLException {
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(singleRuleConfig));
-        metaDataContextManager.getDatabaseRuleConfigurationManager().alter(database.getName(), singleRuleConfig);
+        metaDataContextManager.getDatabaseRuleConfigurationManager().refresh(database.getName(), singleRuleConfig, true);
         clearServiceCache();
     }
     
