@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +68,8 @@ public final class DatabaseRuleRepositoryTuplePersistService {
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, ruleType, databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, ruleType, databaseRuleNode.getNamedItems()));
         return nodePaths.stream().map(VersionNodePath::new)
-                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.load(each))).collect(Collectors.toList());
+                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.load(each))).filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
     
     private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {

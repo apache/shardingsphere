@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -38,7 +37,6 @@ public final class VersionPersistService {
      */
     public String load(final VersionNodePath versionNodePath) {
         String version = repository.query(versionNodePath.getActiveVersionPath());
-        Preconditions.checkNotNull(version, "Can not load active version from path: %s", versionNodePath.getActiveVersionPath());
-        return repository.query(versionNodePath.getVersionPath(Integer.parseInt(version)));
+        return null == version ? null : repository.query(versionNodePath.getVersionPath(Integer.parseInt(version)));
     }
 }
