@@ -28,7 +28,9 @@ import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,12 +52,12 @@ public final class DatabaseRuleRepositoryTuplePersistService {
      * Load rule repository tuples.
      *
      * @param databaseName database name
-     * @return loaded tuples
+     * @return loaded tuple map, key is rule type
      */
-    public Collection<RuleRepositoryTuple> load(final String databaseName) {
-        Collection<RuleRepositoryTuple> result = new LinkedList<>();
+    public Map<String, Collection<RuleRepositoryTuple>> load(final String databaseName) {
+        Map<String, Collection<RuleRepositoryTuple>> result = new HashMap<>();
         for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false))) {
-            result.addAll(load(databaseName, each));
+            result.put(each, load(databaseName, each));
         }
         return result;
     }

@@ -48,12 +48,12 @@ public final class YamlRuleConfigurationFieldUtil {
     }
     
     /**
-     * Get persist tuple name.
+     * Get tuple item name.
      *
      * @param field field from YAML rule configuration
-     * @return persist tuple name
+     * @return tuple item name
      */
-    public static String getTupleName(final Field field) {
+    public static String getTupleItemName(final Field field) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
     }
 }
