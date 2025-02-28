@@ -36,6 +36,7 @@ import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDro
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
@@ -128,8 +129,11 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
+    public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) throws SQLException {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+        if (TableRefreshUtils.isSingleTable(table.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, table.getName())) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
         metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, table);
     }
     
