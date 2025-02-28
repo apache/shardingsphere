@@ -116,7 +116,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     }
     
     /**
-     * Swap to global rule configuration.
+     * Swap to YAML global rule configuration.
      *
      * @param ruleType rule type
      * @param tuple rule repository tuple
@@ -124,16 +124,50 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @throws IllegalStateException if it can not find rule configuration with name
      */
     @SuppressWarnings("rawtypes")
-    public RuleConfiguration swapToGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+    public YamlRuleConfiguration swapToYamlGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
             RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
             if (null != entity && ruleType.equals(entity.value())) {
-                return swapperEngine.swapToRuleConfiguration(YamlEngine.unmarshal(tuple.getValue(), yamlRuleConfigClass));
+                return YamlEngine.unmarshal(tuple.getValue(), yamlRuleConfigClass);
             }
         }
         throw new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType));
+    }
+    
+    /**
+     * Swap to global rule configuration.
+     *
+     * @param ruleType rule type
+     * @param tuple rule repository tuple
+     * @return global rule configuration
+     * @throws IllegalStateException if it can not find rule configuration with name
+     */
+    public RuleConfiguration swapToGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        return swapperEngine.swapToRuleConfiguration(swapToYamlGlobalRuleConfiguration(ruleType, tuple));
+    }
+    
+    /**
+     * Swap to YAML database rule configurations.
+     *
+     * @param tuples rule repository tuples
+     * @return global rule configurations
+     */
+    @SuppressWarnings("rawtypes")
+    public Collection<YamlRuleConfiguration> swapToYamlDatabaseRuleConfigurations(final Map<String, Collection<RuleRepositoryTuple>> tuples) {
+        if (tuples.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<YamlRuleConfiguration> result = new LinkedList<>();
+        for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
+            Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
+            RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
+            if (null != entity && tuples.containsKey(entity.value())) {
+                swapToYamlRuleConfiguration(tuples.get(entity.value()), yamlRuleConfigClass).ifPresent(result::add);
+            }
+        }
+        return result;
     }
     
     /**
@@ -142,21 +176,9 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @param tuples rule repository tuples
      * @return global rule configurations
      */
-    @SuppressWarnings("rawtypes")
     public Collection<RuleConfiguration> swapToDatabaseRuleConfigurations(final Map<String, Collection<RuleRepositoryTuple>> tuples) {
-        if (tuples.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Collection<RuleConfiguration> result = new LinkedList<>();
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
-            Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
-            if (null != entity && tuples.containsKey(entity.value())) {
-                swapToYamlRuleConfiguration(tuples.get(entity.value()), yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
-            }
-        }
-        return result;
+        return swapToYamlDatabaseRuleConfigurations(tuples).stream().map(swapperEngine::swapToRuleConfiguration).collect(Collectors.toList());
     }
     
     /**

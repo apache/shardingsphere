@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.test.it.yaml;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
@@ -98,11 +96,11 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         String ruleType = Objects.requireNonNull(entity).value();
         Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig).stream()
                 .map(each -> new RuleRepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
-        RuleConfiguration actualRuleConfig = entity.leaf()
-                ? engine.swapToGlobalRuleConfiguration(ruleType, tuples.iterator().next())
-                : engine.swapToDatabaseRuleConfigurations(Collections.singletonMap(ruleType, tuples)).iterator().next();
+        YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
+                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next())
+                : engine.swapToYamlDatabaseRuleConfigurations(Collections.singletonMap(ruleType, tuples)).iterator().next();
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
-        yamlRootConfig.setRules(Collections.singletonList(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(actualRuleConfig)));
+        yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
         return YamlEngine.marshal(yamlRootConfig);
     }
     
