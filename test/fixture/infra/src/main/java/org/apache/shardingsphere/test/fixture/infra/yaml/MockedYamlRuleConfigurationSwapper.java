@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.fixture;
+package org.apache.shardingsphere.test.fixture.infra.yaml;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+/**
+ * Mocked YAML rule configuration swapper.
+ */
+public final class MockedYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<MockedYamlRuleConfiguration, MockedRuleConfiguration> {
     
     @Override
-    public Class<RuleConfigurationFixture> getTypeClass() {
-        return RuleConfigurationFixture.class;
+    public Class<MockedRuleConfiguration> getTypeClass() {
+        return MockedRuleConfiguration.class;
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
+    public MockedYamlRuleConfiguration swapToYamlConfiguration(final MockedRuleConfiguration data) {
+        MockedYamlRuleConfiguration result = new MockedYamlRuleConfiguration();
         result.setUnique(data.getUnique());
         result.setNamed(data.getNamed());
         return result;
     }
     
     @Override
-    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        RuleConfigurationFixture result = new RuleConfigurationFixture();
-        result.setUnique(yamlConfig.getUnique());
-        result.setNamed(yamlConfig.getNamed());
-        return result;
+    public MockedRuleConfiguration swapToObject(final MockedYamlRuleConfiguration yamlConfig) {
+        return new MockedRuleConfiguration(yamlConfig.getUnique(), yamlConfig.getNamed());
     }
     
     @Override
@@ -49,6 +50,6 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return 3;
+        return -10000;
     }
 }

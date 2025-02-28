@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataYamlRuleConfigurationSwapperFixture
 org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleYamlRuleConfigurationSwapperFixture
-org.apache.shardingsphere.mode.metadata.persist.config.database.fixture.DatabaseYamlRuleConfigurationSwapperFixture

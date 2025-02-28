@@ -15,37 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, MockedRuleConfiguration> {
+public final class LeafYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<LeafYamlRuleConfiguration, LeafRuleConfiguration> {
     
     @Override
-    public Class<MockedRuleConfiguration> getTypeClass() {
-        return MockedRuleConfiguration.class;
+    public LeafYamlRuleConfiguration swapToYamlConfiguration(final LeafRuleConfiguration data) {
+        return new LeafYamlRuleConfiguration(data.getValue());
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final MockedRuleConfiguration data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
-        result.setName(data.getName());
-        return result;
-    }
-    
-    @Override
-    public MockedRuleConfiguration swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        return new MockedRuleConfiguration(yamlConfig.getName());
+    public LeafRuleConfiguration swapToObject(final LeafYamlRuleConfiguration yamlConfig) {
+        return new LeafRuleConfiguration(yamlConfig.getValue());
     }
     
     @Override
     public String getRuleTagName() {
-        return "FIXTURE";
+        return "LEAF";
     }
     
     @Override
     public int getOrder() {
-        return -1;
+        return 10000;
+    }
+    
+    @Override
+    public Class<LeafRuleConfiguration> getTypeClass() {
+        return null;
     }
 }

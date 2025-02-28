@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.config.database.fixture;
+package org.apache.shardingsphere.test.fixture.infra.rule.global;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
-import java.util.Map;
-
+/**
+ * Mocked global rule configuration.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class MockedGlobalRuleConfiguration implements GlobalRuleConfiguration {
     
-    private final String unique;
-    
-    private final Map<String, String> named;
+    private final String name;
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -113,6 +114,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+        if (TableRefreshUtils.isSingleTable(table.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, table.getName())) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
     }
     
     @Override

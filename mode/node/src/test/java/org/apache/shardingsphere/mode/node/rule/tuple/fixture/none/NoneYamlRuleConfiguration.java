@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.none;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-import java.util.Map;
-
-@Getter
-@Setter
-public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+@RuleRepositoryTupleEntity("none")
+public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
     
-    private String unique;
-    
-    private Map<String, String> named;
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfiguration.class;
+    }
 }

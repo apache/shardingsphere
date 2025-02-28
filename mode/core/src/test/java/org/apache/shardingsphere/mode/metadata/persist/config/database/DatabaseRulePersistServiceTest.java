@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
-import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,15 +63,15 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertPersistWithoutActiveVersion() {
-        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
+        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MockedRuleConfiguration("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getActiveVersion(), is(0));
     }
     
     @Test
     void assertPersistWithActiveVersion() {
-        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/fixture/versions")).thenReturn(Collections.singletonList("10"));
-        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MetaDataRuleConfigurationFixture("test")));
+        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/unique/versions")).thenReturn(Collections.singletonList("10"));
+        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getActiveVersion(), is(10));
     }
@@ -84,7 +84,7 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertDeleteWithRuleConfigurations() {
-        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MetaDataRuleConfigurationFixture("test"), new NoTupleRuleConfigurationFixture("test")));
+        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MockedRuleConfiguration("test"), new NoTupleRuleConfigurationFixture("test")));
         assertThat(actual.size(), is(1));
         assertNull(actual.iterator().next().getActiveVersion());
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.leaf;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

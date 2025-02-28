@@ -34,6 +34,6 @@ public final class MockedRule implements ShardingSphereRule {
     
     @Override
     public int getOrder() {
-        return 0;
+        return -10000;
     }
 }

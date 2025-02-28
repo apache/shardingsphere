@@ -15,22 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
-
-@Getter
-@Setter
-public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
+public enum NodeYamlRuleConfigurationEnum {
     
-    private String name;
-    
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return MockedRuleConfiguration.class;
-    }
+    FOO
 }

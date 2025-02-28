@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.fixture.MetaDataYamlRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.test.fixture.infra.yaml.global.MockedYamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,12 +81,12 @@ class GlobalRulePersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
         when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new MetaDataYamlRuleConfigurationFixture();
+        YamlRuleConfiguration yamlRuleConfig = new MockedYamlGlobalRuleConfiguration();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
-        when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.singletonList("10"));
+        when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.singletonList("10"));
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
-        verify(repository).persist("/rules/fixture/versions/11", "{}" + System.lineSeparator());
-        verify(repository, times(0)).persist("/rules/fixture/active_version", "0");
+        verify(repository).persist("/rules/global_fixture/versions/11", "{}" + System.lineSeparator());
+        verify(repository, times(0)).persist("/rules/global_fixture/active_version", "0");
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -95,11 +95,11 @@ class GlobalRulePersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
         when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new MetaDataYamlRuleConfigurationFixture();
+        YamlRuleConfiguration yamlRuleConfig = new MockedYamlGlobalRuleConfiguration();
         when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
-        when(repository.getChildrenKeys("/rules/fixture/versions")).thenReturn(Collections.emptyList());
+        when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.emptyList());
         globalRulePersistService.persist(Collections.singleton(ruleConfig));
-        verify(repository).persist("/rules/fixture/versions/0", "{}" + System.lineSeparator());
-        verify(repository).persist("/rules/fixture/active_version", "0");
+        verify(repository).persist("/rules/global_fixture/versions/0", "{}" + System.lineSeparator());
+        verify(repository).persist("/rules/global_fixture/active_version", "0");
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 

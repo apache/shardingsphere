@@ -20,14 +20,11 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -51,14 +48,15 @@ public final class DatabaseRuleConfigurationManager {
     private final MetaDataPersistFacade metaDataPersistFacade;
     
     /**
-     * Alter rule configuration.
+     * Refresh rule configuration.
      *
      * @param databaseName database name
      * @param ruleConfig rule configurations
+     * @param reBuildRules is need to rebuild rules
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized void alter(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
+    public synchronized void refresh(final String databaseName, final RuleConfiguration ruleConfig, final boolean reBuildRules) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
         Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
@@ -68,29 +66,7 @@ public final class DatabaseRuleConfigurationManager {
         }
         Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
         rules.removeAll(toBeRemovedRules);
-        rules.add(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
-        refreshMetadata(databaseName, rules, toBeRemovedRules);
-    }
-    
-    /**
-     * Drop rule configuration.
-     *
-     * @param databaseName database name
-     * @param ruleConfig rule configurations
-     * @throws SQLException SQL Exception
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized void drop(final String databaseName, final RuleConfiguration ruleConfig) throws SQLException {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
-        Optional<ShardingSphereRule> toBeChangedRule = rules.stream().filter(each -> each.getConfiguration().getClass().equals(ruleConfig.getClass())).findFirst();
-        if (toBeChangedRule.isPresent() && toBeChangedRule.get() instanceof PartialRuleUpdateSupported && ((PartialRuleUpdateSupported) toBeChangedRule.get()).partialUpdate(ruleConfig)) {
-            ((PartialRuleUpdateSupported) toBeChangedRule.get()).updateConfiguration(ruleConfig);
-            return;
-        }
-        Collection<ShardingSphereRule> toBeRemovedRules = rules.stream().filter(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())).collect(Collectors.toList());
-        rules.removeAll(toBeRemovedRules);
-        if (!TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) ruleConfig)) {
+        if (reBuildRules) {
             rules.add(DatabaseRulesBuilder.build(
                     databaseName, database.getProtocolType(), database.getRuleMetaData().getRules(), ruleConfig, computeNodeInstanceContext, database.getResourceMetaData()));
         }

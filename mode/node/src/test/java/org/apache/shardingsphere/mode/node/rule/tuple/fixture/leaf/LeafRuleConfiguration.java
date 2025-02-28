@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class LeafRuleConfiguration implements RuleConfiguration {
     
-    private final String name;
+    private final String value;
 }
