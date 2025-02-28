@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.config;
+package org.apache.shardingsphere.mode.metadata.persist.version;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
