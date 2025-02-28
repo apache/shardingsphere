@@ -182,24 +182,39 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final String ruleType, final RuleRepositoryTuple tuple) {
         Object fieldValue = field.get(yamlRuleConfig);
         String tupleName = YamlRuleConfigurationFieldUtil.getTupleName(field);
-        RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class);
-        if (null != tupleKeyListNameGenerator && fieldValue instanceof Collection) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
-            NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2)).ifPresent(optional -> ((Collection) fieldValue).add(tuple.getValue()));
+        if (isNamedItem(fieldValue, field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class))) {
+            setNamedItemFieldValue(ruleType, tuple, tupleName, field, fieldValue);
+        } else {
+            setUniqueItemFieldValue(yamlRuleConfig, ruleType, tuple, tupleName, field, fieldValue);
+        }
+    }
+    
+    private boolean isNamedItem(final Object fieldValue, final RuleRepositoryTupleKeyListNameGenerator tupleKeyListNameGenerator) {
+        return fieldValue instanceof Map || null != tupleKeyListNameGenerator && fieldValue instanceof Collection;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void setNamedItemFieldValue(final String ruleType, final RuleRepositoryTuple tuple, final String tupleName, final Field field, final Object fieldValue) {
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
+        Optional<String> itemValue = NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2));
+        if (!itemValue.isPresent()) {
             return;
         }
         if (fieldValue instanceof Map) {
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName, NodePathPattern.QUALIFIED_IDENTIFIER));
-            NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 2))
-                    .ifPresent(optional -> ((Map) fieldValue).put(optional, YamlEngine.unmarshal(tuple.getValue(), valueClass)));
-            return;
+            ((Map) fieldValue).put(itemValue.get(), YamlEngine.unmarshal(tuple.getValue(), valueClass));
+        } else {
+            ((Collection) fieldValue).add(tuple.getValue());
         }
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setUniqueItemFieldValue(final YamlRuleConfiguration yamlRuleConfig,
+                                         final String ruleType, final RuleRepositoryTuple tuple, final String tupleName, final Field field, final Object fieldValue) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(tupleName));
         if (!NodePathSearcher.isMatchedPath(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
             return;
