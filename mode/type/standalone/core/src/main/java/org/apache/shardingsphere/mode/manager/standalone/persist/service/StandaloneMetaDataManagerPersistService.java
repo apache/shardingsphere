@@ -131,10 +131,10 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) throws SQLException {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+        metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, table);
         if (TableRefreshUtils.isSingleTable(table.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, table.getName())) {
             alterSingleRuleConfiguration(database, database.getRuleMetaData());
         }
-        metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, table);
     }
     
     @Override
