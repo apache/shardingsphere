@@ -92,8 +92,9 @@ public interface MetaDataManagerPersistService {
      * @param database database
      * @param schemaName schema name
      * @param table table
+     * @throws SQLException SQL exception
      */
-    void createTable(ShardingSphereDatabase database, String schemaName, ShardingSphereTable table);
+    void createTable(ShardingSphereDatabase database, String schemaName, ShardingSphereTable table) throws SQLException;
     
     /**
      * Drop tables.
