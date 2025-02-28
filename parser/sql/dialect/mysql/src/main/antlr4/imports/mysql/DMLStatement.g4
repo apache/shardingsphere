@@ -105,7 +105,7 @@ blobValue
     ;
 
 delete
-    : DELETE deleteSpecification (singleTableClause | multipleTablesClause) whereClause? orderByClause? limitClause? returningClause?
+    : withClause? DELETE deleteSpecification (singleTableClause | multipleTablesClause) whereClause? orderByClause? limitClause? returningClause?
     ;
 
 deleteSpecification
