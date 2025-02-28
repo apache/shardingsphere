@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -43,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * YAML rule repository tuple swapper engine.
@@ -162,29 +160,12 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @param toBeSwappedType to be swapped type YAML rule configuration class type
      * @return swapped YAML rule configurations
      */
-    public Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RuleRepositoryTuple> tuples, final Class<? extends YamlRuleConfiguration> toBeSwappedType) {
-        RuleRepositoryTupleEntity entity = toBeSwappedType.getAnnotation(RuleRepositoryTupleEntity.class);
-        if (null == entity) {
-            return Optional.empty();
-        }
-        if (entity.leaf()) {
-            Preconditions.checkArgument(1 == tuples.size());
-            return Optional.of(YamlEngine.unmarshal(tuples.iterator().next().getValue(), toBeSwappedType));
-        }
-        return swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RuleRepositoryTuple> tuples,
-                                                                        final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<Field> fields) {
+    public Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RuleRepositoryTuple> tuples, final Class<? extends YamlRuleConfiguration> toBeSwappedType) {
+        Collection<Field> fields = YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType);
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(yamlRuleConfig.getClass());
-        List<RuleRepositoryTuple> validTuples = tuples.stream()
-                .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList());
-        if (validTuples.isEmpty()) {
-            return Optional.empty();
-        }
-        for (RuleRepositoryTuple each : validTuples) {
+        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(toBeSwappedType);
+        for (RuleRepositoryTuple each : tuples) {
             if (!Strings.isNullOrEmpty(each.getValue())) {
                 setFieldValue(yamlRuleConfig, fields, databaseRuleNode.getRuleType(), each);
             }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
@@ -35,7 +34,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -97,27 +95,6 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         assertThat(actual.get(8).getValue(), is("value"));
         assertThat(actual.get(9).getKey(), is("gen"));
         assertThat(actual.get(9).getValue(), is("single_gen"));
-    }
-    
-    @Test
-    void assertSwapToYamlRuleConfigurationWithoutRepositoryTupleEntityAnnotation() {
-        assertFalse(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Collections.emptyList(), NoneYamlRuleConfiguration.class).isPresent());
-    }
-    
-    @Test
-    void assertSwapToYamlRuleConfigurationWithGlobalLeafYamlRuleConfiguration() {
-        Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RuleRepositoryTuple("/rules/leaf", "value: foo")), GlobalLeafYamlRuleConfiguration.class);
-        assertTrue(actual.isPresent());
-        GlobalLeafYamlRuleConfiguration actualYamlConfig = (GlobalLeafYamlRuleConfiguration) actual.get();
-        assertThat(actualYamlConfig.getValue(), is("foo"));
-    }
-    
-    @Test
-    void assertSwapToYamlRuleConfigurationWithInvalidNodeYamlRuleConfiguration() {
-        Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RuleRepositoryTuple("/invalid", "foo")), NodeYamlRuleConfiguration.class);
-        assertFalse(actual.isPresent());
     }
     
     @Test
