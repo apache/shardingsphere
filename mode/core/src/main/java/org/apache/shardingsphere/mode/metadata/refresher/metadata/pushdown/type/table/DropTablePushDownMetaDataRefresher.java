@@ -21,13 +21,12 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Drop table push down meta data refresher.
@@ -37,15 +36,8 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        boolean needRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
-        boolean isRefreshed = false;
-        for (SimpleTableSegment each : sqlStatement.getTables()) {
-            metaDataManagerPersistService.dropTable(database, schemaName, each.getTableName().getIdentifier().getValue());
-            if (!isRefreshed && needRefresh && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
-                metaDataManagerPersistService.alterSingleRuleConfiguration(database, database.getRuleMetaData());
-                isRefreshed = true;
-            }
-        }
+        Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        metaDataManagerPersistService.dropTables(database, schemaName, tableNames);
     }
     
     @Override

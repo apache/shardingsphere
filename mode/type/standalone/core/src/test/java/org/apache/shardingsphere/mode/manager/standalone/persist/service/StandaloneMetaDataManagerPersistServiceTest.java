@@ -230,8 +230,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertDropTable() {
-        metaDataManagerPersistService.dropTable(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", "foo_tbl");
+    void assertDropTables() throws SQLException {
+        metaDataManagerPersistService.dropTables(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(),
+                Collections.emptyList()), "foo_schema", Collections.singleton("foo_tbl"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
     }
     
