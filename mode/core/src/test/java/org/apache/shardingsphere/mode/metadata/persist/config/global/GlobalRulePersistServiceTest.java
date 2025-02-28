@@ -25,14 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,41 +41,43 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GlobalRulePersistServiceTest {
     
-    private GlobalRulePersistService globalRulePersistService;
-    
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private MetaDataVersionPersistService metaDataVersionPersistService;
-    
-    @Mock
-    private GlobalRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private GlobalRulePersistService globalRulePersistService;
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
-        globalRulePersistService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), globalRulePersistService, ruleRepositoryTuplePersistService);
+    void setUp() {
+        globalRulePersistService = new GlobalRulePersistService(repository, new MetaDataVersionPersistService(repository));
+    }
+    
+    @Test
+    void assertLoadAll() {
+        when(repository.getChildrenKeys("/rules")).thenReturn(Collections.singletonList("global_fixture"));
+        when(repository.query("/rules/global_fixture/active_version")).thenReturn("0");
+        when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: foo_value");
+        List<RuleConfiguration> actual = new ArrayList<>(globalRulePersistService.load());
+        assertThat(actual.size(), is(1));
+        assertThat(((MockedGlobalRuleConfiguration) actual.get(0)).getName(), is("foo_value"));
     }
     
     @Test
     void assertLoad() {
-        assertTrue(globalRulePersistService.load().isEmpty());
-        verify(ruleRepositoryTuplePersistService).load();
+        when(repository.query("/rules/global_fixture/active_version")).thenReturn("0");
+        when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: foo_value");
+        RuleConfiguration actual = globalRulePersistService.load("global_fixture");
+        assertThat(((MockedGlobalRuleConfiguration) actual).getName(), is("foo_value"));
     }
     
     @Test
-    void assertLoadWithRuleType() {
-        when(ruleRepositoryTuplePersistService.load("global_fixture")).thenReturn("name: foo_value");
-        assertThat(((MockedGlobalRuleConfiguration) globalRulePersistService.load("global_fixture")).getName(), is("foo_value"));
+    void assertLoadWithoutVersions() {
+        assertThrows(NullPointerException.class, () -> globalRulePersistService.load("global_fixture"));
     }
     
     @Test
     void assertPersistWithVersions() {
-        RuleConfiguration ruleConfig = new MockedGlobalRuleConfiguration("foo_value");
         when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.singletonList("10"));
-        globalRulePersistService.persist(Collections.singleton(ruleConfig));
+        globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
         verify(repository).persist("/rules/global_fixture/versions/11", "name: foo_value" + System.lineSeparator());
         verify(repository, times(0)).persist("/rules/global_fixture/active_version", "0");
     }
