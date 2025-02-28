@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +66,7 @@ class GlobalRulePersistServiceTest {
     
     @Test
     void assertLoadWithRuleType() {
-        when(ruleRepositoryTuplePersistService.load("global_fixture")).thenReturn(new RuleRepositoryTuple("/rules/global_fixture", "name: foo_value"));
+        when(ruleRepositoryTuplePersistService.load("global_fixture")).thenReturn("name: foo_value");
         assertThat(((MockedGlobalRuleConfiguration) globalRulePersistService.load("global_fixture")).getName(), is("foo_value"));
     }
     

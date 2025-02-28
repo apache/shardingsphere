@@ -97,7 +97,7 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig).stream()
                 .map(each -> new RuleRepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
         YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
-                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next())
+                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next().getValue())
                 : engine.swapToYamlDatabaseRuleConfigurations(Collections.singletonMap(ruleType, tuples)).iterator().next();
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
