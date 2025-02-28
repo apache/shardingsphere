@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -170,27 +169,11 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         if (null == entity) {
             return Optional.empty();
         }
-        return entity.leaf() ? swapToYamlRuleConfiguration(tuples, toBeSwappedType, entity)
-                : swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RuleRepositoryTuple> tuples,
-                                                                        final Class<? extends YamlRuleConfiguration> toBeSwappedType, final RuleRepositoryTupleEntity entity) {
-        if (YamlGlobalRuleConfiguration.class.isAssignableFrom(toBeSwappedType)) {
+        if (entity.leaf()) {
             Preconditions.checkArgument(1 == tuples.size());
             return Optional.of(YamlEngine.unmarshal(tuples.iterator().next().getValue(), toBeSwappedType));
         }
-        YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
-        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(yamlRuleConfig.getClass());
-        for (RuleRepositoryTuple each : tuples.stream()
-                .filter(each -> NodePathSearcher.isMatchedPath(each.getKey(), DatabaseRuleNodePath.createValidRuleTypeSearchCriteria(databaseRuleNode.getRuleType()))).collect(Collectors.toList())) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(entity.value()));
-            if (NodePathSearcher.isMatchedPath(each.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
-                return Optional.of(YamlEngine.unmarshal(each.getValue(), toBeSwappedType));
-            }
-        }
-        return Optional.empty();
+        return swapToYamlRuleConfiguration(tuples, toBeSwappedType, YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
