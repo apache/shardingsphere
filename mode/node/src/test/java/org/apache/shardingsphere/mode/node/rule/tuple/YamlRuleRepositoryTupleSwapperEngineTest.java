@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.GlobalLeafYamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
@@ -157,19 +155,19 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     }
     
     @Test
-    void assertSwapToEmptyRuleConfigurations() {
+    void assertSwapToEmptyYamlRuleConfigurations() {
         Map<String, Collection<RuleRepositoryTuple>> tuples = Collections.emptyMap();
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToDatabaseRuleConfigurations(tuples).isEmpty());
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfigurations(tuples).isEmpty());
     }
     
     @Test
-    void assertSwapToNotFoundGlobalRuleConfiguration() {
-        assertThrows(IllegalStateException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("invalid", new RuleRepositoryTuple("/rules/leaf", "value: foo")));
+    void assertSwapToNotFoundYamlGlobalRuleConfiguration() {
+        assertThrows(IllegalStateException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToYamlGlobalRuleConfiguration("invalid", new RuleRepositoryTuple("/rules/leaf", "value: foo")));
     }
     
     @Test
-    void assertSwapToGlobalRuleConfiguration() {
-        RuleConfiguration actual = new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalRuleConfiguration("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"));
-        assertThat(((LeafRuleConfiguration) actual).getValue(), is("foo"));
+    void assertSwapToYamlGlobalRuleConfiguration() {
+        YamlRuleConfiguration actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlGlobalRuleConfiguration("leaf", new RuleRepositoryTuple("/rules/leaf", "value: foo"));
+        assertThat(((LeafYamlRuleConfiguration) actual).getValue(), is("foo"));
     }
 }

@@ -56,8 +56,9 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
+        YamlRuleConfigurationSwapperEngine yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         return ruleRepositoryTuplePersistService.load().entrySet().stream()
-                .map(entry -> tupleSwapperEngine.swapToGlobalRuleConfiguration(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+                .map(entry -> yamlSwapperEngine.swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(entry.getKey(), entry.getValue()))).collect(Collectors.toList());
     }
     
     /**
@@ -67,7 +68,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public RuleConfiguration load(final String ruleType) {
-        return tupleSwapperEngine.swapToGlobalRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(ruleType));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(ruleType)));
     }
     
     /**

@@ -20,12 +20,10 @@ package org.apache.shardingsphere.mode.node.rule.tuple;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -136,19 +134,6 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     }
     
     /**
-     * Swap to global rule configuration.
-     *
-     * @param ruleType rule type
-     * @param tuple rule repository tuple
-     * @return global rule configuration
-     * @throws IllegalStateException if it can not find rule configuration with name
-     */
-    public RuleConfiguration swapToGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return swapperEngine.swapToRuleConfiguration(swapToYamlGlobalRuleConfiguration(ruleType, tuple));
-    }
-    
-    /**
      * Swap to YAML database rule configurations.
      *
      * @param tuples rule repository tuples
@@ -168,17 +153,6 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
             }
         }
         return result;
-    }
-    
-    /**
-     * Swap to database rule configurations.
-     *
-     * @param tuples rule repository tuples
-     * @return global rule configurations
-     */
-    public Collection<RuleConfiguration> swapToDatabaseRuleConfigurations(final Map<String, Collection<RuleRepositoryTuple>> tuples) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return swapToYamlDatabaseRuleConfigurations(tuples).stream().map(swapperEngine::swapToRuleConfiguration).collect(Collectors.toList());
     }
     
     /**
