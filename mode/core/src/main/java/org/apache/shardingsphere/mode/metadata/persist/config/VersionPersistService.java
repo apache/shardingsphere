@@ -19,31 +19,24 @@ package org.apache.shardingsphere.mode.metadata.persist.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Optional;
-
 /**
- * Rule repository tuple persist service.
+ * Version persist service.
  */
 @RequiredArgsConstructor
-public final class RuleRepositoryTuplePersistService {
+public final class VersionPersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Load rule repository tuple.
+     * Load content.
      *
-     * @param activeVersionPath active version path
-     * @return loaded tuple
+     * @param versionNodePath version node path
+     * @return loaded content
      */
-    public Optional<RuleRepositoryTuple> load(final String activeVersionPath) {
-        String version = repository.query(activeVersionPath);
-        if (null == version) {
-            return Optional.empty();
-        }
-        String versionPath = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(version));
-        return Optional.of(new RuleRepositoryTuple(VersionNodePath.getOriginalPath(activeVersionPath), repository.query(versionPath)));
+    public String load(final VersionNodePath versionNodePath) {
+        String version = repository.query(versionNodePath.getActiveVersionPath());
+        return null == version ? null : repository.query(versionNodePath.getVersionPath(Integer.parseInt(version)));
     }
 }

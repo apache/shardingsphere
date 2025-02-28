@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.config.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -41,18 +41,18 @@ public final class DatabaseRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
-    private final RuleRepositoryTuplePersistService tuplePersistService;
+    private final VersionPersistService versionPersistService;
     
     public DatabaseRuleRepositoryTuplePersistService(final PersistRepository repository) {
         this.repository = repository;
-        tuplePersistService = new RuleRepositoryTuplePersistService(repository);
+        versionPersistService = new VersionPersistService(repository);
     }
     
     /**
      * Load rule repository tuples.
      *
      * @param databaseName database name
-     * @return loaded tuple map, key is rule type
+     * @return loaded tuples, key is rule type
      */
     public Map<String, Collection<RuleRepositoryTuple>> load(final String databaseName) {
         Map<String, Collection<RuleRepositoryTuple>> result = new HashMap<>();
@@ -67,8 +67,9 @@ public final class DatabaseRuleRepositoryTuplePersistService {
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType);
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, ruleType, databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, ruleType, databaseRuleNode.getNamedItems()));
-        return nodePaths.stream().map(each -> new VersionNodePath(each).getActiveVersionPath()).map(tuplePersistService::load)
-                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        return nodePaths.stream().map(VersionNodePath::new)
+                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.load(each))).filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
     
     private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {
