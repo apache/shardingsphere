@@ -17,47 +17,50 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Global rule repository tuple persist service.
  */
+@RequiredArgsConstructor
 public final class GlobalRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
-    private final RuleRepositoryTuplePersistService tuplePersistService;
-    
-    public GlobalRuleRepositoryTuplePersistService(final PersistRepository repository) {
-        this.repository = repository;
-        tuplePersistService = new RuleRepositoryTuplePersistService(repository);
-    }
-    
     /**
-     * Load rule repository tuples.
+     * Load rule contents.
      *
-     * @return loaded tuple map, key is rule type
+     * @return loaded content map, key is rule type
      */
-    public Map<String, RuleRepositoryTuple> load() {
+    public Map<String, String> load() {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false)).stream().collect(Collectors.toMap(each -> each, this::load));
     }
     
     /**
-     * Load rule repository tuple.
+     * Load rule content.
      *
      * @param ruleType rule type
-     * @return loaded tuple
+     * @return loaded content
      */
-    public RuleRepositoryTuple load(final String ruleType) {
-        return tuplePersistService.load(new VersionNodePath(new GlobalRuleNodePath(ruleType)).getActiveVersionPath())
-                .orElseThrow(() -> new IllegalStateException(String.format("Can not load rule type: %s", ruleType)));
+    public String load(final String ruleType) {
+        return load(new VersionNodePath(new GlobalRuleNodePath(ruleType))).orElseThrow(() -> new IllegalStateException(String.format("Can not load rule type: %s", ruleType)));
+    }
+    
+    private Optional<String> load(final VersionNodePath versionNodePath) {
+        String activeVersionPath = versionNodePath.getActiveVersionPath();
+        String version = repository.query(activeVersionPath);
+        if (null == version) {
+            return Optional.empty();
+        }
+        String versionPath = VersionNodePath.getVersionPath(activeVersionPath, Integer.parseInt(version));
+        return Optional.of(repository.query(versionPath));
     }
 }

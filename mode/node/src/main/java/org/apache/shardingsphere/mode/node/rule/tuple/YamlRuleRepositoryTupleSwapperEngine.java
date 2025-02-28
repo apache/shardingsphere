@@ -115,17 +115,17 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * Swap to YAML global rule configuration.
      *
      * @param ruleType rule type
-     * @param tuple rule repository tuple
+     * @param ruleContent rule content
      * @return global rule configuration
      * @throws IllegalStateException if it can not find rule configuration with name
      */
     @SuppressWarnings("rawtypes")
-    public YamlRuleConfiguration swapToYamlGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
+    public YamlRuleConfiguration swapToYamlGlobalRuleConfiguration(final String ruleType, final String ruleContent) {
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
             RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
             if (null != entity && ruleType.equals(entity.value())) {
-                return YamlEngine.unmarshal(tuple.getValue(), yamlRuleConfigClass);
+                return YamlEngine.unmarshal(ruleContent, yamlRuleConfigClass);
             }
         }
         throw new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType));
