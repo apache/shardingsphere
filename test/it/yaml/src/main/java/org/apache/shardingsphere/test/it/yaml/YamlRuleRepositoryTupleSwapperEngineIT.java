@@ -38,13 +38,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
@@ -94,13 +92,15 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
     
     private String getActualYamlContent() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
-        String ruleType = Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value();
+        RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
+        String ruleType = Objects.requireNonNull(entity).value();
         Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig).stream()
                 .map(each -> new RuleRepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
-        Optional<YamlRuleConfiguration> actualYamlRuleConfig = engine.swapToYamlRuleConfiguration(tuples, yamlRuleConfig.getClass());
-        assertTrue(actualYamlRuleConfig.isPresent());
+        YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
+                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next())
+                : engine.swapToYamlDatabaseRuleConfigurations(Collections.singletonMap(ruleType, tuples)).iterator().next();
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
-        yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig.get()));
+        yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
         return YamlEngine.marshal(yamlRootConfig);
     }
     

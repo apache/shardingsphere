@@ -57,7 +57,7 @@ public final class DatabaseRuleNodeGenerator {
             if (null == each.getAnnotation(RuleRepositoryTupleField.class)) {
                 continue;
             }
-            String tupleName = YamlRuleConfigurationFieldUtil.getTupleName(each);
+            String tupleName = YamlRuleConfigurationFieldUtil.getTupleItemName(each);
             if (each.getType().equals(Map.class) || each.getType().equals(Collection.class) && null != each.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class)) {
                 namedItems.add(tupleName);
             } else {

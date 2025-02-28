@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Global rule repository tuple persist service.
@@ -44,14 +44,10 @@ public final class GlobalRuleRepositoryTuplePersistService {
     /**
      * Load rule repository tuples.
      *
-     * @return loaded tuples
+     * @return loaded tuple map, key is rule type
      */
-    public Collection<RuleRepositoryTuple> load() {
-        Collection<RuleRepositoryTuple> result = new LinkedList<>();
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false))) {
-            result.add(load(each));
-        }
-        return result;
+    public Map<String, RuleRepositoryTuple> load() {
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false)).stream().collect(Collectors.toMap(each -> each, this::load));
     }
     
     /**

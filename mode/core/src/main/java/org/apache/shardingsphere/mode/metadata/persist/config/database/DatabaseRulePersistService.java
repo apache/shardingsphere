@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Database rule persist service.
@@ -67,7 +68,9 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName));
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
+        return yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName)).stream()
+                .map(swapperEngine::swapToRuleConfiguration).collect(Collectors.toList());
     }
     
     /**

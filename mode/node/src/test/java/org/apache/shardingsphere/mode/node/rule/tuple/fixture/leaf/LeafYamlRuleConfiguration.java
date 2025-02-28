@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
 @RuleRepositoryTupleEntity(value = "leaf", leaf = true)
@@ -30,12 +30,12 @@ import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryT
 @NoArgsConstructor
 @Getter
 @Setter
-public final class LeafYamlRuleConfiguration implements YamlRuleConfiguration {
+public final class LeafYamlRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private String value;
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return RuleConfiguration.class;
+        return LeafRuleConfiguration.class;
     }
 }
