@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.parser.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.parser.cache.hook.SPISQLStatementParserCacheHook;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -33,12 +34,23 @@ public final class SQLStatementCacheLoader implements CacheLoader<String, SQLSta
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
     public SQLStatementCacheLoader(final DatabaseType databaseType, final CacheOption parseTreeCacheOption) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption);
+        this.sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption);
     }
     
     @ParametersAreNonnullByDefault
     @Override
     public SQLStatement load(final String sql) {
-        return sqlStatementParserExecutor.parse(sql);
+        SPISQLStatementParserCacheHook spisqlStatementParserCacheHook = new SPISQLStatementParserCacheHook();
+        spisqlStatementParserCacheHook.start(sql);
+        try {
+            SQLStatement sqlStatement = sqlStatementParserExecutor.parse(sql);
+            spisqlStatementParserCacheHook.finishSuccess(sql, sqlStatement);
+            return sqlStatement;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            spisqlStatementParserCacheHook.finishFailure(sql, ex);
+            throw ex;
+        }
     }
 }
