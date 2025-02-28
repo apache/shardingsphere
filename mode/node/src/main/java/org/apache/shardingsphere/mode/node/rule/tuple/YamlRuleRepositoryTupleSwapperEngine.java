@@ -221,6 +221,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @param ruleType rule type
      * @param tuple rule repository tuple
      * @return global rule configuration
+     * @throws IllegalStateException if can not find rule configuration with name
      */
     @SuppressWarnings("rawtypes")
     public RuleConfiguration swapToGlobalRuleConfiguration(final String ruleType, final RuleRepositoryTuple tuple) {
