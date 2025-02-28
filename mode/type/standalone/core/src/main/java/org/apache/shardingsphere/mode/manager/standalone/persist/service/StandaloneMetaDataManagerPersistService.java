@@ -138,9 +138,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void dropTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, tableName);
-        metaDataContextManager.getDatabaseMetaDataManager().dropTable(database.getName(), schemaName, tableName);
+    public void dropTables(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tableNames) throws SQLException {
+        tableNames.forEach(each -> {
+            metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each);
+            metaDataContextManager.getDatabaseMetaDataManager().dropTable(database.getName(), schemaName, each);
+        });
+        if (TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, tableNames) && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
     }
     
     @Override
