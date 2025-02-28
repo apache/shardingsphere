@@ -128,9 +128,9 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            if (ruleType.equals(yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class).value())) {
-                return swapToYamlRuleConfiguration(Collections.singleton(tuple), yamlRuleConfigClass).map(swapperEngine::swapToRuleConfiguration)
-                        .orElseThrow(() -> new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType)));
+            RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
+            if (null != entity && ruleType.equals(entity.value())) {
+                return swapperEngine.swapToRuleConfiguration(YamlEngine.unmarshal(tuple.getValue(), yamlRuleConfigClass));
             }
         }
         throw new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType));
@@ -151,8 +151,10 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
-            swapToYamlRuleConfiguration(tuples.get(yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class).value()), yamlRuleConfigClass)
-                    .ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
+            RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
+            if (null != entity && tuples.containsKey(entity.value())) {
+                swapToYamlRuleConfiguration(tuples.get(entity.value()), yamlRuleConfigClass).ifPresent(optional -> result.add(swapperEngine.swapToRuleConfiguration(optional)));
+            }
         }
         return result;
     }
