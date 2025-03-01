@@ -72,8 +72,8 @@ public final class DatabaseRulePersistService {
     }
     
     private RuleConfiguration load(final String databaseName, final String ruleType) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfigurations(
-                Collections.singletonMap(ruleType, load(databaseName, DatabaseRuleNodeGenerator.generate(ruleType)))).iterator().next());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(
+                yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfiguration(ruleType, load(databaseName, DatabaseRuleNodeGenerator.generate(ruleType))));
     }
     
     private Collection<RuleRepositoryTuple> load(final String databaseName, final DatabaseRuleNode databaseRuleNode) {

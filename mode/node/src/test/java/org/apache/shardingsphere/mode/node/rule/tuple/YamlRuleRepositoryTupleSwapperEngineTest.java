@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -129,12 +128,6 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         assertThat(actualYamlConfig.getIntegerValue(), is(1));
         assertThat(actualYamlConfig.getLongValue(), is(10L));
         assertThat(actualYamlConfig.getEnumValue(), is(NodeYamlRuleConfigurationEnum.FOO));
-    }
-    
-    @Test
-    void assertSwapToEmptyYamlRuleConfigurations() {
-        Map<String, Collection<RuleRepositoryTuple>> tuples = Collections.emptyMap();
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfigurations(tuples).isEmpty());
     }
     
     @Test
