@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Table segment binder context.
+ * Column segment input info.
  */
-public interface TableSegmentBinderContext {
+@RequiredArgsConstructor
+@Getter
+public final class ColumnSegmentInputInfo {
+    
+    private final ColumnSegment inputColumnSegment;
+    
+    private final TableSourceType tableSourceType;
+    
+    public ColumnSegmentInputInfo(final ColumnSegment inputColumnSegment) {
+        this.inputColumnSegment = inputColumnSegment;
+        tableSourceType = TableSourceType.TEMPORARY_TABLE;
+    }
     
     /**
-     * Find projection segment by column label.
+     * Get input column segment.
      *
-     * @param columnLabel column label
-     * @return projection segment
+     * @return input column segment
      */
-    Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(String columnLabel);
-    
-    /**
-     * Get projection segments.
-     *
-     * @return projection segments
-     */
-    Collection<ProjectionSegment> getProjectionSegments();
-    
-    /**
-     * Get table source type.
-     *
-     * @return table source type
-     */
-    TableSourceType getTableSourceType();
+    public Optional<ColumnSegment> getInputColumnSegment() {
+        return Optional.ofNullable(inputColumnSegment);
+    }
 }

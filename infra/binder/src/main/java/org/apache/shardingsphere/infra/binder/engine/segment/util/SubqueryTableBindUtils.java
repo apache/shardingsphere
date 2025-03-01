@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -51,15 +52,17 @@ public final class SubqueryTableBindUtils {
      * @param projections projections
      * @param subqueryTableName subquery table name
      * @param databaseType database type
+     * @param tableSourceType table source type
      * @return subquery projections
      */
-    public static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
+    public static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName,
+                                                                          final DatabaseType databaseType, final TableSourceType tableSourceType) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections) {
             if (each instanceof ColumnProjectionSegment) {
-                result.add(createColumnProjection((ColumnProjectionSegment) each, subqueryTableName));
+                result.add(createColumnProjection((ColumnProjectionSegment) each, subqueryTableName, tableSourceType));
             } else if (each instanceof ShorthandProjectionSegment) {
-                result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName, databaseType));
+                result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName, databaseType, tableSourceType));
             } else if (each instanceof ExpressionProjectionSegment) {
                 result.add(createColumnProjection((ExpressionProjectionSegment) each, subqueryTableName, databaseType));
             } else if (each instanceof AggregationProjectionSegment) {
@@ -71,14 +74,16 @@ public final class SubqueryTableBindUtils {
         return result;
     }
     
-    private static ColumnProjectionSegment createColumnProjection(final ColumnProjectionSegment originalColumn, final IdentifierValue subqueryTableName) {
+    private static ColumnProjectionSegment createColumnProjection(final ColumnProjectionSegment originalColumn, final IdentifierValue subqueryTableName, final TableSourceType tableSourceType) {
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0, originalColumn.getAlias().orElseGet(() -> originalColumn.getColumn().getIdentifier()));
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
-        ColumnSegmentBoundInfo columnBoundInfo = originalColumn.getColumn().getColumnBoundInfo();
-        newColumnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(columnBoundInfo.getOriginalDatabase(), columnBoundInfo.getOriginalSchema()),
-                columnBoundInfo.getOriginalTable(), columnBoundInfo.getOriginalColumn()));
+        ColumnSegmentBoundInfo inputColumnBoundInfo = originalColumn.getColumn().getColumnBoundInfo();
+        TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(inputColumnBoundInfo.getOriginalDatabase(), inputColumnBoundInfo.getOriginalSchema());
+        // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
+        TableSourceType columnTableSourceType = TableSourceType.MIXED_TABLE == tableSourceType ? getTableSourceTypeFromInputColumn(inputColumnBoundInfo) : tableSourceType;
+        newColumnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableBoundInfo, inputColumnBoundInfo.getOriginalTable(), inputColumnBoundInfo.getOriginalColumn(), columnTableSourceType));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(originalColumn.isVisible());
         return result;
@@ -93,6 +98,10 @@ public final class SubqueryTableBindUtils {
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(true);
         return result;
+    }
+    
+    private static TableSourceType getTableSourceTypeFromInputColumn(final ColumnSegmentBoundInfo inputColumnBoundInfo) {
+        return null == inputColumnBoundInfo ? TableSourceType.TEMPORARY_TABLE : inputColumnBoundInfo.getTableSourceType();
     }
     
     private static String getColumnNameFromExpression(final ExpressionSegment expressionSegment, final DatabaseType databaseType) {

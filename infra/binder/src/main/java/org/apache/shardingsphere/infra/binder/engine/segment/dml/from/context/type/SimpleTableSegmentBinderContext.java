@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 
@@ -37,13 +39,17 @@ import java.util.Optional;
 @Setter
 public final class SimpleTableSegmentBinderContext implements TableSegmentBinderContext {
     
+    @Getter(AccessLevel.NONE)
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
+    
+    private final TableSourceType tableSourceType;
     
     private boolean fromWithSegment;
     
-    public SimpleTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
+    public SimpleTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments, final TableSourceType tableSourceType) {
         columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
         projectionSegments.forEach(each -> putColumnLabelProjectionSegments(each, columnLabelProjectionSegments));
+        this.tableSourceType = tableSourceType;
     }
     
     private void putColumnLabelProjectionSegments(final ProjectionSegment projectionSegment, final Map<String, ProjectionSegment> columnLabelProjectionSegments) {
