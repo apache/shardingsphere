@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -47,7 +47,7 @@ public final class DatabaseRulePersistService {
     
     private final DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final VersionPersistService versionPersistService;
     
     private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
     
@@ -56,7 +56,7 @@ public final class DatabaseRulePersistService {
     public DatabaseRulePersistService(final PersistRepository repository) {
         this.repository = repository;
         ruleRepositoryTuplePersistService = new DatabaseRuleRepositoryTuplePersistService(repository);
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        versionPersistService = new VersionPersistService(repository);
         yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
@@ -96,7 +96,7 @@ public final class DatabaseRulePersistService {
         for (RuleRepositoryTuple each : tuples) {
             DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, databaseRuleItem);
-            int nextVersion = metaDataVersionPersistService.persist(new VersionNodePath(databaseRuleNodePath), each.getValue());
+            int nextVersion = versionPersistService.persist(new VersionNodePath(databaseRuleNodePath), each.getValue());
             result.add(new MetaDataVersion(NodePathGenerator.toPath(databaseRuleNodePath, false), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
         }
         return result;

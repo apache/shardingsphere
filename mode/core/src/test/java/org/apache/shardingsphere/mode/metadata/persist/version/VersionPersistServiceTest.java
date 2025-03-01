@@ -37,16 +37,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MetaDataVersionPersistServiceTest {
+class VersionPersistServiceTest {
     
-    private MetaDataVersionPersistService persistService;
+    private VersionPersistService persistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        persistService = new MetaDataVersionPersistService(repository);
+        persistService = new VersionPersistService(repository);
     }
     
     @Test

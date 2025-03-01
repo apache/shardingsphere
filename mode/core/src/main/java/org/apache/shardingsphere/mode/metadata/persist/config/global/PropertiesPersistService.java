@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config.global;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalPropertiesNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -36,7 +36,7 @@ public final class PropertiesPersistService {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final VersionPersistService versionPersistService;
     
     /**
      * Load properties.
@@ -61,6 +61,6 @@ public final class PropertiesPersistService {
      */
     public void persist(final Properties props) {
         VersionNodePath versionNodePath = new VersionNodePath(new GlobalPropertiesNodePath());
-        metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(props));
+        versionPersistService.persist(versionNodePath, YamlEngine.marshal(props));
     }
 }

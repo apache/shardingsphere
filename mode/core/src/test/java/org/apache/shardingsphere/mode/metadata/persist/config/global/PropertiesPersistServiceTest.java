@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -46,8 +46,8 @@ class PropertiesPersistServiceTest {
     
     @BeforeEach
     void setUp() {
-        MetaDataVersionPersistService metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
-        persistService = new PropertiesPersistService(repository, metaDataVersionPersistService);
+        VersionPersistService versionPersistService = new VersionPersistService(repository);
+        persistService = new PropertiesPersistService(repository, versionPersistService);
     }
     
     @Test
