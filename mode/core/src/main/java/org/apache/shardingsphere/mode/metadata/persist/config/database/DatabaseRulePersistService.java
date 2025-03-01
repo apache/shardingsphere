@@ -26,6 +26,8 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
@@ -45,8 +47,6 @@ public final class DatabaseRulePersistService {
     
     private final PersistRepository repository;
     
-    private final DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
-    
     private final VersionPersistService versionPersistService;
     
     private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
@@ -55,7 +55,6 @@ public final class DatabaseRulePersistService {
     
     public DatabaseRulePersistService(final PersistRepository repository) {
         this.repository = repository;
-        ruleRepositoryTuplePersistService = new DatabaseRuleRepositoryTuplePersistService(repository);
         versionPersistService = new VersionPersistService(repository);
         yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
@@ -68,9 +67,35 @@ public final class DatabaseRulePersistService {
      * @return configurations
      */
     public Collection<RuleConfiguration> load(final String databaseName) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfigurations(ruleRepositoryTuplePersistService.load(databaseName)).stream()
-                .map(swapperEngine::swapToRuleConfiguration).collect(Collectors.toList());
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, null, null), false)).stream()
+                .map(each -> load(databaseName, each)).collect(Collectors.toList());
+    }
+    
+    private RuleConfiguration load(final String databaseName, final String ruleType) {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfigurations(
+                Collections.singletonMap(ruleType, load(databaseName, DatabaseRuleNodeGenerator.generate(ruleType)))).iterator().next());
+    }
+    
+    private Collection<RuleRepositoryTuple> load(final String databaseName, final DatabaseRuleNode databaseRuleNode) {
+        Collection<DatabaseRuleNodePath> nodePaths = new LinkedList<>();
+        nodePaths.addAll(getUniqueItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getUniqueItems()));
+        nodePaths.addAll(getNamedItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getNamedItems()));
+        return nodePaths.stream().map(VersionNodePath::new)
+                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.loadContent(each))).filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getUniqueItemNodePaths(final String databaseName, final String ruleType, final Collection<String> uniqueItems) {
+        return uniqueItems.stream().map(each -> new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each))).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getNamedItemNodePaths(final String databaseName, final String ruleType, final Collection<String> namedItems) {
+        return namedItems.stream().flatMap(each -> getNamedItemNodePaths(databaseName, ruleType, each).stream()).collect(Collectors.toList());
+    }
+    
+    private Collection<DatabaseRuleNodePath> getNamedItemNodePaths(final String databaseName, final String ruleType, final String namedItem) {
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(namedItem)), false)).stream()
+                .map(each -> new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(namedItem, each))).collect(Collectors.toList());
     }
     
     /**
