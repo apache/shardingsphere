@@ -64,16 +64,6 @@ public final class VersionNodePath {
     }
     
     /**
-     * Get original path.
-     *
-     * @param activeVersionPath active version path
-     * @return original path
-     */
-    public static String getOriginalPath(final String activeVersionPath) {
-        return activeVersionPath.substring(0, activeVersionPath.lastIndexOf(ACTIVE_VERSION) - 1);
-    }
-    
-    /**
      *  Is active version path.
      *
      * @param path path

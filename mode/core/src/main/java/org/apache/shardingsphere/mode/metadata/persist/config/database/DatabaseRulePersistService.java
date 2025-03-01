@@ -80,8 +80,8 @@ public final class DatabaseRulePersistService {
         Collection<DatabaseRuleNodePath> nodePaths = new LinkedList<>();
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, databaseRuleNode.getRuleType(), databaseRuleNode.getNamedItems()));
-        return nodePaths.stream().map(VersionNodePath::new)
-                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.loadContent(each))).filter(Objects::nonNull)
+        return nodePaths.stream()
+                .map(each -> new RuleRepositoryTuple(NodePathGenerator.toPath(each, false), versionPersistService.loadContent(new VersionNodePath(each)))).filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
     
