@@ -105,14 +105,14 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     @Test
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
         NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node", Arrays.asList(
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k:qualified", "k:qualified"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "str"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value", "true"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/integer_value", "1"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/long_value", "10"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")));
+                new RuleRepositoryTuple("map_value/k", "v"),
+                new RuleRepositoryTuple("map_value/k:qualified", "k:qualified"),
+                new RuleRepositoryTuple("collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
+                new RuleRepositoryTuple("string_value", "str"),
+                new RuleRepositoryTuple("boolean_value", "true"),
+                new RuleRepositoryTuple("integer_value", "1"),
+                new RuleRepositoryTuple("long_value", "10"),
+                new RuleRepositoryTuple("enum_value", "FOO")));
         assertThat(actual.getMapValue().size(), is(2));
         assertThat(actual.getMapValue().get("k").getValue(), is("v"));
         assertThat(actual.getMapValue().get("k:qualified").getValue(), is("k:qualified"));
