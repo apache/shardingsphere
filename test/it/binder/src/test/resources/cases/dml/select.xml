@@ -28,6 +28,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -37,6 +38,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -46,6 +48,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -55,6 +58,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -64,6 +68,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -73,6 +78,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column-projection>
                 </actual-projections>
@@ -96,6 +102,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column-projection>
             <aggregation-projection type="COUNT" expression="COUNT(1)" start-index="17" stop-index="24" alias="count">
@@ -119,6 +126,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column-item>
         </group-by>
@@ -142,6 +150,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column-item>
         </order-by>
@@ -162,6 +171,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -171,6 +181,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -180,6 +191,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -189,6 +201,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -198,6 +211,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -207,6 +221,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                 </actual-projections>
@@ -234,6 +249,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -243,6 +259,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -252,6 +269,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -261,6 +279,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -270,6 +289,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                     <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -279,6 +299,7 @@
                             <original-schema name="foo_db_1" />
                             <original-table name="t_order" />
                             <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="TEMPORARY_TABLE"/>
                         </column-bound>
                     </column-projection>
                 </actual-projections>
@@ -314,6 +335,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order" />
                                     <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="user_id" start-index="46" stop-index="52" >
@@ -322,6 +344,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order" />
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                         </projections>
@@ -333,6 +356,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="user_id" start-index="18" stop-index="24" >
@@ -341,6 +365,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
             </common-table-expression>
@@ -362,6 +387,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order_item" />
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="item_id" start-index="114" stop-index="120" >
@@ -370,6 +396,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order_item" />
                                     <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                         </projections>
@@ -381,6 +408,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order_item" />
                         <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="item_id" start-index="85" stop-index="91" >
@@ -389,10 +417,40 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order_item" />
                         <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
             </common-table-expression>
         </with>
+        <projections start-index="150" stop-index="173">
+            <column-projection name="status" start-index="150" stop-index="155">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="TEMPORARY_TABLE"/>
+                </column-bound>
+            </column-projection>
+            <column-projection name="user_id" start-index="158" stop-index="164">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order_item" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="TEMPORARY_TABLE"/>
+                </column-bound>
+            </column-projection>
+            <column-projection name="item_id" start-index="167" stop-index="173">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order_item" />
+                    <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="TEMPORARY_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
         <from start-index="180" stop-index="230">
             <join-table join-type="INNER">
                 <left>
@@ -420,6 +478,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order" />
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="TEMPORARY_TABLE"/>
                                 </column-bound>
                                 <owner name="cte1" start-index="204" stop-index="207" >
                                     <table-bound>
@@ -437,6 +496,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order_item" />
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="TEMPORARY_TABLE"/>
                                 </column-bound>
                                 <owner name="cte2" start-index="219" stop-index="222" >
                                     <table-bound>
@@ -450,32 +510,6 @@
                 </on-condition>
             </join-table>
         </from>
-        <projections start-index="150" stop-index="173">
-            <column-projection name="status" start-index="150" stop-index="155">
-                <column-bound>
-                    <original-database name="foo_db_1" />
-                    <original-schema name="foo_db_1" />
-                    <original-table name="t_order" />
-                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
-                </column-bound>
-            </column-projection>
-            <column-projection name="user_id" start-index="158" stop-index="164">
-                <column-bound>
-                    <original-database name="foo_db_1" />
-                    <original-schema name="foo_db_1" />
-                    <original-table name="t_order_item" />
-                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
-                </column-bound>
-            </column-projection>
-            <column-projection name="item_id" start-index="167" stop-index="173">
-                <column-bound>
-                    <original-database name="foo_db_1" />
-                    <original-schema name="foo_db_1" />
-                    <original-table name="t_order_item" />
-                    <original-column name="item_id" start-delimiter="`" end-delimiter="`" />
-                </column-bound>
-            </column-projection>
-        </projections>
     </select>
 
     <select sql-case-id="select_with_with_clause_with_column_definition">
@@ -493,6 +527,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -502,6 +537,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -511,6 +547,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -520,6 +557,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -529,6 +567,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                     <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`">
@@ -538,6 +577,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column-projection>
                                 </actual-projections>
@@ -559,6 +599,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="col2" start-index="24" stop-index="27">
@@ -567,6 +608,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="col3" start-index="30" stop-index="33">
@@ -575,6 +617,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="col4" start-index="36" stop-index="39">
@@ -583,6 +626,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="col5" start-index="42" stop-index="45">
@@ -591,6 +635,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
                 <column name="col6" start-index="48" stop-index="51">
@@ -599,6 +644,7 @@
                         <original-schema name="foo_db_1" />
                         <original-table name="t_order" />
                         <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="TEMPORARY_TABLE"/>
                     </column-bound>
                 </column>
             </common-table-expression>
@@ -610,6 +656,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="TEMPORARY_TABLE"/>
                 </column-bound>
             </column-projection>
         </projections>
@@ -631,6 +678,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column-projection>
             <subquery-projection start-index="28" stop-index="43" alias="tempOrderId" text="(SELECT orderId)">
@@ -643,6 +691,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order" />
                                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="TEMPORARY_TABLE"/>
                                 </column-bound>
                             </column-projection>
                         </projections>

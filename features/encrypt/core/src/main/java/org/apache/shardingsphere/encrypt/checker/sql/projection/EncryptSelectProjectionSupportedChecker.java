@@ -94,7 +94,8 @@ public final class EncryptSelectProjectionSupportedChecker implements SupportedS
     
     private ColumnSegmentBoundInfo getColumnSegmentBoundInfo(final Projection projection) {
         return projection instanceof ColumnProjection
-                ? new ColumnSegmentBoundInfo(null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                ? new ColumnSegmentBoundInfo(null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn(),
+                        ((ColumnProjection) projection).getColumnBoundInfo().getTableSourceType())
                 : new ColumnSegmentBoundInfo(new IdentifierValue(projection.getColumnLabel()));
     }
     

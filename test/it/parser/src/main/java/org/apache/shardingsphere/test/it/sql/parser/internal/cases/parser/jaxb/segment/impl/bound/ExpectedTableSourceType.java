@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * projections segment.
+ * Expected table source type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ProjectionsSegment implements SQLSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final List<ProjectionSegment> projections = new LinkedList<>();
-    
-    @Setter
-    private boolean distinctRow;
+public final class ExpectedTableSourceType extends AbstractExpectedIdentifierSQLSegment {
 }

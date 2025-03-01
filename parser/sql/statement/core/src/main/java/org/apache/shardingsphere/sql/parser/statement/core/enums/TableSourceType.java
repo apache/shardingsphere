@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-
-import java.util.LinkedList;
-import java.util.List;
+package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * projections segment.
+ * Table source type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ProjectionsSegment implements SQLSegment {
+public enum TableSourceType {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final List<ProjectionSegment> projections = new LinkedList<>();
-    
-    @Setter
-    private boolean distinctRow;
+    TEMPORARY_TABLE, PHYSICAL_TABLE, MIXED_TABLE
 }

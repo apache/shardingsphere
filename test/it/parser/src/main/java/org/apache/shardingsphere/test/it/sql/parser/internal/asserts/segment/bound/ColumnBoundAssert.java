@@ -19,10 +19,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bo
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedColumnBoundInfo;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedTableSourceType;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Column bound assert.
@@ -45,5 +52,17 @@ public final class ColumnBoundAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getOriginalSchema(), expected.getOriginalSchema(), "Bound Schema");
         IdentifierValueAssert.assertIs(assertContext, actual.getOriginalTable(), expected.getOriginalTable(), "Bound Table");
         IdentifierValueAssert.assertIs(assertContext, actual.getOriginalColumn(), expected.getOriginalColumn(), "Bound Column");
+        assertTableSourceType(assertContext, actual, expected);
+    }
+    
+    private static void assertTableSourceType(final SQLCaseAssertContext assertContext, final ColumnSegmentBoundInfo actual, final ExpectedColumnBoundInfo expected) {
+        ExpectedTableSourceType expectedTableSourceType = expected.getTableSourceType();
+        TableSourceType actualTableSourceType = actual.getTableSourceType();
+        if (null == expectedTableSourceType) {
+            assertNull(actualTableSourceType, assertContext.getText("Actual table source type should not exist."));
+        } else {
+            assertNotNull(actualTableSourceType, assertContext.getText("Actual table source type should exist."));
+            assertThat(assertContext.getText(String.format("%s name assertion error: ", "Table Source Type")), actualTableSourceType.name(), is(expectedTableSourceType.getName()));
+        }
     }
 }
