@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.yaml;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
@@ -94,18 +93,13 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
         String ruleType = Objects.requireNonNull(entity).value();
-        Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig).stream()
-                .map(each -> new RuleRepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
+        Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig);
         YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
                 ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next().getValue())
                 : engine.swapToYamlDatabaseRuleConfiguration(ruleType, tuples);
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
         return YamlEngine.marshal(yamlRootConfig);
-    }
-    
-    private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleType, final RuleRepositoryTuple tuple) {
-        return isGlobalRule ? String.format("/rules/%s/versions/0", ruleType) : String.format("/metadata/foo_db/rules/%s/%s/versions/0", ruleType, tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {
