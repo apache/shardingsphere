@@ -35,6 +35,10 @@ public final class VersionNodePath {
         path = NodePathGenerator.toPath(nodePath, false);
     }
     
+    public VersionNodePath(final String path) {
+        this.path = path;
+    }
+    
     /**
      * Get active version path.
      *

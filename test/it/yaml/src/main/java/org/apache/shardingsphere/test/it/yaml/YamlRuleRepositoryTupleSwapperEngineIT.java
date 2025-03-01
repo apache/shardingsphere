@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.yaml;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
@@ -40,6 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,7 +55,7 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
-        engine = new YamlRuleRepositoryTupleSwapperEngine();
+        engine = new YamlRuleRepositoryTupleSwapperEngine("foo_db");
     }
     
     @Test
@@ -73,7 +73,7 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
     protected abstract void assertRepositoryTuples(List<RuleRepositoryTuple> actualTuples, YamlRuleConfiguration expectedYamlRuleConfig);
     
     protected void assertRepositoryTuple(final RuleRepositoryTuple actual, final String expectedKey, final Object expectedValue) {
-        assertThat(actual.getKey(), is(expectedKey));
+        assertThat(actual.getKey(), containsString(expectedKey));
         assertThat(actual.getValue(), is(isSimpleObject(expectedValue) ? expectedValue : YamlEngine.marshal(expectedValue)));
     }
     
@@ -94,18 +94,13 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
         String ruleType = Objects.requireNonNull(entity).value();
-        Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig).stream()
-                .map(each -> new RuleRepositoryTuple(getRepositoryTupleKey(yamlRuleConfig instanceof YamlGlobalRuleConfiguration, ruleType, each), each.getValue())).collect(Collectors.toList());
+        Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig);
         YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
                 ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next().getValue())
                 : engine.swapToYamlDatabaseRuleConfiguration(ruleType, tuples);
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
         return YamlEngine.marshal(yamlRootConfig);
-    }
-    
-    private String getRepositoryTupleKey(final boolean isGlobalRule, final String ruleType, final RuleRepositoryTuple tuple) {
-        return isGlobalRule ? String.format("/rules/%s", ruleType) : String.format("/metadata/foo_db/rules/%s/%s", ruleType, tuple.getKey());
     }
     
     private String getExpectedYamlContent() throws IOException {
