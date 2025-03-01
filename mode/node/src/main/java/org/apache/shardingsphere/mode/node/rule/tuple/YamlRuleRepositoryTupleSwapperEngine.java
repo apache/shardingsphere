@@ -118,7 +118,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @param ruleType rule type
      * @param ruleContent rule content
      * @return global rule configuration
-     * @throws IllegalStateException if it can not find rule configuration with name
+     * @throws IllegalArgumentException throw if rule configuration not found
      */
     @SuppressWarnings("rawtypes")
     public YamlRuleConfiguration swapToYamlGlobalRuleConfiguration(final String ruleType, final String ruleContent) {
@@ -129,7 +129,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
                 return YamlEngine.unmarshal(ruleContent, yamlRuleConfigClass);
             }
         }
-        throw new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType));
+        throw new IllegalArgumentException(String.format("Can not find rule configuration with type: %s", ruleType));
     }
     
     /**
@@ -146,22 +146,15 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
             RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
             if (null != entity && entity.value().equals(ruleType)) {
-                return swapToYamlRuleConfiguration(tuples, yamlRuleConfigClass)
+                return swapToYamlDatabaseRuleConfiguration(yamlRuleConfigClass, tuples)
                         .orElseThrow(() -> new IllegalArgumentException(String.format("Can not find rule configuration with type: %s", ruleType)));
             }
         }
         throw new IllegalArgumentException(String.format("Can not find rule configuration with type: %s", ruleType));
     }
     
-    /**
-     * Swap from rule repository tuple to YAML rule configurations.
-     *
-     * @param tuples rule repository tuples
-     * @param toBeSwappedType to be swapped type YAML rule configuration class type
-     * @return swapped YAML rule configurations
-     */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Optional<YamlRuleConfiguration> swapToYamlRuleConfiguration(final Collection<RuleRepositoryTuple> tuples, final Class<? extends YamlRuleConfiguration> toBeSwappedType) {
+    private Optional<YamlRuleConfiguration> swapToYamlDatabaseRuleConfiguration(final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<RuleRepositoryTuple> tuples) {
         Collection<Field> fields = YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType);
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(toBeSwappedType);

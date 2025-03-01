@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,16 +97,14 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
-        Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(
-                Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")), NodeYamlRuleConfiguration.class);
-        assertTrue(actual.isPresent());
-        NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
-        assertThat(actualYamlConfig.getStringValue(), is(""));
+        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node",
+                Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")));
+        assertThat(actual.getStringValue(), is(""));
     }
     
     @Test
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
-        Optional<YamlRuleConfiguration> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToYamlRuleConfiguration(Arrays.asList(
+        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node", Arrays.asList(
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k:qualified", "k:qualified"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
@@ -115,24 +112,22 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value", "true"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/integer_value", "1"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/long_value", "10"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")), NodeYamlRuleConfiguration.class);
-        assertTrue(actual.isPresent());
-        NodeYamlRuleConfiguration actualYamlConfig = (NodeYamlRuleConfiguration) actual.get();
-        assertThat(actualYamlConfig.getMapValue().size(), is(2));
-        assertThat(actualYamlConfig.getMapValue().get("k").getValue(), is("v"));
-        assertThat(actualYamlConfig.getMapValue().get("k:qualified").getValue(), is("k:qualified"));
-        assertThat(actualYamlConfig.getCollectionValue().size(), is(1));
-        assertThat(actualYamlConfig.getCollectionValue().iterator().next().getValue(), is("foo"));
-        assertThat(actualYamlConfig.getStringValue(), is("str"));
-        assertTrue(actualYamlConfig.getBooleanValue());
-        assertThat(actualYamlConfig.getIntegerValue(), is(1));
-        assertThat(actualYamlConfig.getLongValue(), is(10L));
-        assertThat(actualYamlConfig.getEnumValue(), is(NodeYamlRuleConfigurationEnum.FOO));
+                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")));
+        assertThat(actual.getMapValue().size(), is(2));
+        assertThat(actual.getMapValue().get("k").getValue(), is("v"));
+        assertThat(actual.getMapValue().get("k:qualified").getValue(), is("k:qualified"));
+        assertThat(actual.getCollectionValue().size(), is(1));
+        assertThat(actual.getCollectionValue().iterator().next().getValue(), is("foo"));
+        assertThat(actual.getStringValue(), is("str"));
+        assertTrue(actual.getBooleanValue());
+        assertThat(actual.getIntegerValue(), is(1));
+        assertThat(actual.getLongValue(), is(10L));
+        assertThat(actual.getEnumValue(), is(NodeYamlRuleConfigurationEnum.FOO));
     }
     
     @Test
     void assertSwapToNotFoundYamlGlobalRuleConfiguration() {
-        assertThrows(IllegalStateException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToYamlGlobalRuleConfiguration("invalid", "value: foo"));
+        assertThrows(IllegalArgumentException.class, () -> new YamlRuleRepositoryTupleSwapperEngine().swapToYamlGlobalRuleConfiguration("invalid", "value: foo"));
     }
     
     @Test
