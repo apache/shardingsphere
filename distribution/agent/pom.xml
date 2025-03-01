@@ -33,21 +33,25 @@
     </properties>
     
     <dependencies>
+        <!-- Core Agent Dependency -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Prometheus Metrics Plugin -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- File Logging Plugin -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-logging-file</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- OpenTelemetry Tracing Plugin -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-tracing-opentelemetry</artifactId>
@@ -56,6 +60,7 @@
     </dependencies>
     
     <profiles>
+        <!-- Release Profile -->
         <profile>
             <id>release</id>
             <properties>
@@ -85,27 +90,13 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>net.nicoulaj.maven.plugins</groupId>
-                        <artifactId>checksum-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
                         <artifactId>maven-source-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.smallrye</groupId>
-                        <artifactId>jandex-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>make-index</id>
-                                <goals>
-                                    <goal>jandex</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+        
+        <!-- Docker Build Profile -->
         <profile>
             <id>docker</id>
             <build>
@@ -113,7 +104,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>build</id>
@@ -134,83 +124,6 @@
                                         <argument>${agent.image.repository}:${agent.image.tag}</argument>
                                         <argument>-t</argument>
                                         <argument>${agent.image.repository}:latest</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>docker.buildx.push</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>${exec-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>create builder</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>create</argument>
-                                        <argument>--driver</argument>
-                                        <argument>docker-container</argument>
-                                        <argument>--name</argument>
-                                        <argument>shardingsphere-builder</argument>
-                                        <argument>--platform</argument>
-                                        <argument>linux/amd64,linux/arm64</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>build and push</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>build</argument>
-                                        <argument>--push</argument>
-                                        <argument>--builder</argument>
-                                        <argument>shardingsphere-builder</argument>
-                                        <argument>--platform</argument>
-                                        <argument>linux/amd64,linux/arm64</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>DIRECTORY_NAME=apache-shardingsphere-${project.version}-shardingsphere-agent-bin</argument>
-                                        <argument>--build-arg</argument>
-                                        <argument>JAR_NAME=shardingsphere-agent-${project.version}.jar</argument>
-                                        <argument>.</argument>
-                                        <argument>-t</argument>
-                                        <argument>${agent.image.repository}:${agent.image.tag}</argument>
-                                        <argument>-t</argument>
-                                        <argument>${agent.image.repository}:latest</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>cleanup builder</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>rm</argument>
-                                        <argument>shardingsphere-builder</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
