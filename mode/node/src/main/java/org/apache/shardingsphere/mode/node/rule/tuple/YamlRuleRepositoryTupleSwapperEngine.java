@@ -118,7 +118,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      * @param ruleType rule type
      * @param ruleContent rule content
      * @return global rule configuration
-     * @throws IllegalStateException if it can not find rule configuration with name
+     * @throws IllegalArgumentException throw if rule configuration not found
      */
     @SuppressWarnings("rawtypes")
     public YamlRuleConfiguration swapToYamlGlobalRuleConfiguration(final String ruleType, final String ruleContent) {
@@ -129,7 +129,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
                 return YamlEngine.unmarshal(ruleContent, yamlRuleConfigClass);
             }
         }
-        throw new IllegalStateException(String.format("Can not find rule configuration with name: %s", ruleType));
+        throw new IllegalArgumentException(String.format("Can not find rule configuration with type: %s", ruleType));
     }
     
     /**
