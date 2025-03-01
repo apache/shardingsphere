@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -49,15 +48,9 @@ public final class DatabaseRulePersistService {
     
     private final VersionPersistService versionPersistService;
     
-    private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
-    
-    private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
-    
     public DatabaseRulePersistService(final PersistRepository repository) {
         this.repository = repository;
         versionPersistService = new VersionPersistService(repository);
-        yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
-        yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
     
     /**
@@ -73,7 +66,7 @@ public final class DatabaseRulePersistService {
     
     private RuleConfiguration load(final String databaseName, final String ruleType) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfiguration(
-                yamlRuleRepositoryTupleSwapperEngine.swapToYamlDatabaseRuleConfiguration(ruleType, load(databaseName, DatabaseRuleNodeGenerator.generate(ruleType))));
+                new YamlRuleRepositoryTupleSwapperEngine(databaseName).swapToYamlDatabaseRuleConfiguration(ruleType, load(databaseName, DatabaseRuleNodeGenerator.generate(ruleType))));
     }
     
     private Collection<RuleRepositoryTuple> load(final String databaseName, final DatabaseRuleNode databaseRuleNode) {
@@ -107,24 +100,16 @@ public final class DatabaseRulePersistService {
      */
     public Collection<MetaDataVersion> persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(configs)) {
-            Collection<RuleRepositoryTuple> tuples = yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each);
-            if (!tuples.isEmpty()) {
-                result.addAll(persistDataNodes(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value(), tuples));
-            }
+        YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine(databaseName);
+        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
+            result.addAll(persistTuples(tupleSwapperEngine.swapToTuples(each)));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> persistDataNodes(final String databaseName, final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
-        Collection<MetaDataVersion> result = new LinkedList<>();
-        for (RuleRepositoryTuple each : tuples) {
-            DatabaseRuleItem databaseRuleItem = new DatabaseRuleItem(each.getKey());
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, databaseRuleItem);
-            int nextVersion = versionPersistService.persist(new VersionNodePath(databaseRuleNodePath), each.getValue());
-            result.add(new MetaDataVersion(NodePathGenerator.toPath(databaseRuleNodePath, false), Math.max(MetaDataVersion.INIT_VERSION, nextVersion - 1)));
-        }
-        return result;
+    private Collection<MetaDataVersion> persistTuples(final Collection<RuleRepositoryTuple> tuples) {
+        return tuples.stream().map(each -> new MetaDataVersion(
+                each.getKey(), Math.max(MetaDataVersion.INIT_VERSION, versionPersistService.persist(new VersionNodePath(each.getKey()), each.getValue()) - 1))).collect(Collectors.toList());
     }
     
     /**
@@ -146,23 +131,23 @@ public final class DatabaseRulePersistService {
      */
     public Collection<MetaDataVersion> delete(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(configs)) {
-            List<RuleRepositoryTuple> tuples = new LinkedList<>(yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each));
+        YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine(databaseName);
+        for (YamlRuleConfiguration each : new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs)) {
+            List<RuleRepositoryTuple> tuples = new LinkedList<>(tupleSwapperEngine.swapToTuples(each));
             if (tuples.isEmpty()) {
                 continue;
             }
             Collections.reverse(tuples);
-            result.addAll(delete(databaseName, Objects.requireNonNull(each.getClass().getAnnotation(RuleRepositoryTupleEntity.class)).value(), tuples));
+            result.addAll(deleteTuples(tuples));
         }
         return result;
     }
     
-    private Collection<MetaDataVersion> delete(final String databaseName, final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
+    private Collection<MetaDataVersion> deleteTuples(final Collection<RuleRepositoryTuple> tuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RuleRepositoryTuple each : tuples) {
-            String toBeDeletedKey = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(each.getKey())), false);
-            repository.delete(toBeDeletedKey);
-            result.add(new MetaDataVersion(toBeDeletedKey));
+            repository.delete(each.getKey());
+            result.add(new MetaDataVersion(each.getKey()));
         }
         return result;
     }

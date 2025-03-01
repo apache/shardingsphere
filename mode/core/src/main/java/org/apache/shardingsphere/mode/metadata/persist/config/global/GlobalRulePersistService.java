@@ -42,13 +42,13 @@ public final class GlobalRulePersistService {
     
     private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
     
-    private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
+    private final YamlRuleConfigurationSwapperEngine yamlSwapperEngine;
     
     public GlobalRulePersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
         this.repository = repository;
         this.versionPersistService = versionPersistService;
         tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
-        yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
     
     /**
@@ -68,7 +68,7 @@ public final class GlobalRulePersistService {
      */
     public RuleConfiguration load(final String ruleType) {
         String ruleContent = versionPersistService.loadContent(new VersionNodePath(new GlobalRuleNodePath(ruleType)));
-        return yamlRuleConfigurationSwapperEngine.swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(ruleType, ruleContent));
+        return yamlSwapperEngine.swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(ruleType, ruleContent));
     }
     
     /**
@@ -77,12 +77,12 @@ public final class GlobalRulePersistService {
      * @param globalRuleConfigs global rule configurations
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
+        for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
             persistTuples(tupleSwapperEngine.swapToTuples(each));
         }
     }
     
     private void persistTuples(final Collection<RuleRepositoryTuple> tuples) {
-        tuples.forEach(each -> versionPersistService.persist(new VersionNodePath(new GlobalRuleNodePath(each.getKey())), each.getValue()));
+        tuples.forEach(each -> versionPersistService.persist(new VersionNodePath(each.getKey()), each.getValue()));
     }
 }
