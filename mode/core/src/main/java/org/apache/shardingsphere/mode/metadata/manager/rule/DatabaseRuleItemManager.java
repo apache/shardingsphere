@@ -25,7 +25,11 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
@@ -54,7 +58,11 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(alterRuleItem.getActiveVersionKey(), alterRuleItem.getActiveVersion());
+        DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
+                ? new DatabaseRuleItem(alterRuleItem.getType(), ((AlterNamedRuleItem) alterRuleItem).getItemName())
+                : new DatabaseRuleItem(alterRuleItem.getType());
+        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), alterRuleItem.getType(), databaseRuleItem));
+        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         synchronized (this) {
