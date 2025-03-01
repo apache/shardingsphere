@@ -97,7 +97,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
-        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node", 
+        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node",
                 Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")));
         assertThat(actual.getStringValue(), is(""));
     }
