@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -41,11 +41,11 @@ public final class DatabaseRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
-    private final VersionPersistService versionPersistService;
+    private final MetaDataVersionPersistService versionPersistService;
     
     public DatabaseRuleRepositoryTuplePersistService(final PersistRepository repository) {
         this.repository = repository;
-        versionPersistService = new VersionPersistService(repository);
+        versionPersistService = new MetaDataVersionPersistService(repository);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class DatabaseRuleRepositoryTuplePersistService {
         nodePaths.addAll(getUniqueItemNodePaths(databaseName, ruleType, databaseRuleNode.getUniqueItems()));
         nodePaths.addAll(getNamedItemNodePaths(databaseName, ruleType, databaseRuleNode.getNamedItems()));
         return nodePaths.stream().map(VersionNodePath::new)
-                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.load(each))).filter(Objects::nonNull)
+                .map(each -> new RuleRepositoryTuple(VersionNodePath.getOriginalPath(each.getActiveVersionPath()), versionPersistService.loadContent(each))).filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
     

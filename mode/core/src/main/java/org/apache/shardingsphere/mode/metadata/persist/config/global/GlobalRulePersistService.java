@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.persist.config.global;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
@@ -41,8 +40,6 @@ public final class GlobalRulePersistService {
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
-    private final VersionPersistService versionPersistService;
-    
     private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
     
     private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
@@ -50,7 +47,6 @@ public final class GlobalRulePersistService {
     public GlobalRulePersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
         this.metaDataVersionPersistService = metaDataVersionPersistService;
-        versionPersistService = new VersionPersistService(repository);
         tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     }
@@ -71,7 +67,7 @@ public final class GlobalRulePersistService {
      * @return global rule configuration
      */
     public RuleConfiguration load(final String ruleType) {
-        String ruleContent = versionPersistService.load(new VersionNodePath(new GlobalRuleNodePath(ruleType)));
+        String ruleContent = metaDataVersionPersistService.loadContent(new VersionNodePath(new GlobalRuleNodePath(ruleType)));
         return yamlRuleConfigurationSwapperEngine.swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(ruleType, ruleContent));
     }
     

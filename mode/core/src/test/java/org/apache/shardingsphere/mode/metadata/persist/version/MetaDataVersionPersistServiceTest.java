@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.version;
 
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,8 +69,10 @@ class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    void assertLoadContent() {
-        when(repository.query("/foo/versions/1")).thenReturn("foo_path");
-        assertThat(persistService.loadContent("/foo/active_version", 1), is("foo_path"));
+    void assertLoadContentContent() {
+        when(repository.query("/metadata/foo_db/rules/fixture/foo_item/active_version")).thenReturn("1");
+        when(repository.query("/metadata/foo_db/rules/fixture/foo_item/versions/1")).thenReturn("foo_value");
+        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("foo_item")));
+        assertThat(persistService.loadContent(versionNodePath), is("foo_value"));
     }
 }

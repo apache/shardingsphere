@@ -81,11 +81,11 @@ public final class MetaDataVersionPersistService {
     /**
      * Load content.
      *
-     * @param activeVersionPath active version path
-     * @param activeVersion active version
+     * @param versionNodePath version node path
      * @return loaded content
      */
-    public String loadContent(final String activeVersionPath, final int activeVersion) {
-        return repository.query(VersionNodePath.getVersionPath(activeVersionPath, activeVersion));
+    public String loadContent(final VersionNodePath versionNodePath) {
+        String version = repository.query(versionNodePath.getActiveVersionPath());
+        return null == version ? null : repository.query(versionNodePath.getVersionPath(Integer.parseInt(version)));
     }
 }
