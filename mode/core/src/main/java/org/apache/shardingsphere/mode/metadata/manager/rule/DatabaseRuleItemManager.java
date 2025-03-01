@@ -58,10 +58,12 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
+        String ruleType = alterRuleItem.getType().split("\\.")[0];
+        String itemType = alterRuleItem.getType().split("\\.")[1];
         DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
-                ? new DatabaseRuleItem(alterRuleItem.getType(), ((AlterNamedRuleItem) alterRuleItem).getItemName())
-                : new DatabaseRuleItem(alterRuleItem.getType());
-        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), alterRuleItem.getType(), databaseRuleItem));
+                ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
+                : new DatabaseRuleItem(itemType);
+        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem));
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
