@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -41,11 +41,11 @@ public final class DatabaseRuleRepositoryTuplePersistService {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService versionPersistService;
+    private final VersionPersistService versionPersistService;
     
     public DatabaseRuleRepositoryTuplePersistService(final PersistRepository repository) {
         this.repository = repository;
-        versionPersistService = new MetaDataVersionPersistService(repository);
+        versionPersistService = new VersionPersistService(repository);
     }
     
     /**

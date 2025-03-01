@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ class GlobalRulePersistServiceTest {
     
     @BeforeEach
     void setUp() {
-        globalRulePersistService = new GlobalRulePersistService(repository, new MetaDataVersionPersistService(repository));
+        globalRulePersistService = new GlobalRulePersistService(repository, new VersionPersistService(repository));
     }
     
     @Test

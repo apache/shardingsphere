@@ -28,20 +28,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Meta data version persist service.
+ * Version persist service.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MetaDataVersionPersistService {
+public final class VersionPersistService {
     
     private final PersistRepository repository;
     
     /**
-     * Persist meta data.
+     * Persist.
      *
-     * @param versionNodePath version node path generator
+     * @param versionNodePath version node path
      * @param content to be persisted content
-     * @return persisted meta data version
+     * @return version of persisted content
      */
     public int persist(final VersionNodePath versionNodePath, final String content) {
         int nextVersion = getNextVersion(versionNodePath.getVersionsPath());

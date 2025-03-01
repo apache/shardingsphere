@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.metadata.persist.metadata.service.Database
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
@@ -39,10 +39,10 @@ public final class DatabaseMetaDataPersistFacade {
     
     private final ViewMetaDataPersistService view;
     
-    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
+    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final VersionPersistService versionPersistService) {
         database = new DatabaseMetaDataPersistService(repository);
-        schema = new SchemaMetaDataPersistService(repository, metaDataVersionPersistService);
-        table = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
-        view = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
+        schema = new SchemaMetaDataPersistService(repository, versionPersistService);
+        table = new TableMetaDataPersistService(repository, versionPersistService);
+        view = new ViewMetaDataPersistService(repository, versionPersistService);
     }
 }
