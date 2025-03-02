@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class RuleRepositoryTuple {
     
-    private final String key;
+    private final String path;
     
-    private final String value;
+    private final String content;
 }
