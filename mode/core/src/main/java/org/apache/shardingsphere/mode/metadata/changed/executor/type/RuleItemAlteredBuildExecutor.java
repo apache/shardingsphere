@@ -37,15 +37,14 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<AlterRuleItem> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final Integer activeVersion) {
         for (String each : databaseRuleNode.getNamedItems()) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(),
-                    new DatabaseRuleItem(each, NodePathPattern.QUALIFIED_IDENTIFIER));
-            Optional<String> itemName = new VersionNodePathParser(databaseRuleNodePath).findIdentifierByActiveVersionPath(path, 2);
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, NodePathPattern.QUALIFIED_IDENTIFIER));
+            Optional<String> itemName = new VersionNodePathParser(databaseRuleNodePath).findIdentifierByActiveVersionPath(path, 1);
             if (itemName.isPresent()) {
                 return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNode.getRuleType() + "." + each));
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNode.getRuleType() + "." + each));
             }
