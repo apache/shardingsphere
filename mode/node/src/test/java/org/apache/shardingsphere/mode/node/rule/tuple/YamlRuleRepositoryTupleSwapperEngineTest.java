@@ -47,8 +47,8 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         Collection<RuleRepositoryTuple> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new LeafYamlRuleConfiguration("foo"));
         assertThat(actual.size(), is(1));
         RuleRepositoryTuple actualTuple = actual.iterator().next();
-        assertThat(actualTuple.getKey(), is("/rules/leaf"));
-        assertThat(actualTuple.getValue(), is("value: foo" + System.lineSeparator()));
+        assertThat(actualTuple.getPath(), is("/rules/leaf"));
+        assertThat(actualTuple.getContent(), is("value: foo" + System.lineSeparator()));
     }
     
     @Test
@@ -73,26 +73,26 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         yamlRuleConfig.setGen("single_gen");
         List<RuleRepositoryTuple> actual = new ArrayList<>(new YamlRuleRepositoryTupleSwapperEngine("foo_db").swapToTuples(yamlRuleConfig));
         assertThat(actual.size(), is(10));
-        assertThat(actual.get(0).getKey(), is("/metadata/foo_db/rules/node/map_value/k"));
-        assertThat(actual.get(0).getValue(), is("value: v" + System.lineSeparator()));
-        assertThat(actual.get(1).getKey(), is("/metadata/foo_db/rules/node/collection_value"));
-        assertThat(actual.get(1).getValue(), is("- !LEAF" + System.lineSeparator() + "  value: foo" + System.lineSeparator()));
-        assertThat(actual.get(2).getKey(), is("/metadata/foo_db/rules/node/string_value"));
-        assertThat(actual.get(2).getValue(), is("str"));
-        assertThat(actual.get(3).getKey(), is("/metadata/foo_db/rules/node/boolean_value"));
-        assertThat(actual.get(3).getValue(), is("true"));
-        assertThat(actual.get(4).getKey(), is("/metadata/foo_db/rules/node/integer_value"));
-        assertThat(actual.get(4).getValue(), is("1"));
-        assertThat(actual.get(5).getKey(), is("/metadata/foo_db/rules/node/long_value"));
-        assertThat(actual.get(5).getValue(), is("10"));
-        assertThat(actual.get(6).getKey(), is("/metadata/foo_db/rules/node/enum_value"));
-        assertThat(actual.get(6).getValue(), is("FOO"));
-        assertThat(actual.get(7).getKey(), is("/metadata/foo_db/rules/node/leaf"));
-        assertThat(actual.get(7).getValue(), is("value: leaf" + System.lineSeparator()));
-        assertThat(actual.get(8).getKey(), is("/metadata/foo_db/rules/node/gens/gen: value"));
-        assertThat(actual.get(8).getValue(), is("value"));
-        assertThat(actual.get(9).getKey(), is("/metadata/foo_db/rules/node/gen"));
-        assertThat(actual.get(9).getValue(), is("single_gen"));
+        assertThat(actual.get(0).getPath(), is("/metadata/foo_db/rules/node/map_value/k"));
+        assertThat(actual.get(0).getContent(), is("value: v" + System.lineSeparator()));
+        assertThat(actual.get(1).getPath(), is("/metadata/foo_db/rules/node/collection_value"));
+        assertThat(actual.get(1).getContent(), is("- !LEAF" + System.lineSeparator() + "  value: foo" + System.lineSeparator()));
+        assertThat(actual.get(2).getPath(), is("/metadata/foo_db/rules/node/string_value"));
+        assertThat(actual.get(2).getContent(), is("str"));
+        assertThat(actual.get(3).getPath(), is("/metadata/foo_db/rules/node/boolean_value"));
+        assertThat(actual.get(3).getContent(), is("true"));
+        assertThat(actual.get(4).getPath(), is("/metadata/foo_db/rules/node/integer_value"));
+        assertThat(actual.get(4).getContent(), is("1"));
+        assertThat(actual.get(5).getPath(), is("/metadata/foo_db/rules/node/long_value"));
+        assertThat(actual.get(5).getContent(), is("10"));
+        assertThat(actual.get(6).getPath(), is("/metadata/foo_db/rules/node/enum_value"));
+        assertThat(actual.get(6).getContent(), is("FOO"));
+        assertThat(actual.get(7).getPath(), is("/metadata/foo_db/rules/node/leaf"));
+        assertThat(actual.get(7).getContent(), is("value: leaf" + System.lineSeparator()));
+        assertThat(actual.get(8).getPath(), is("/metadata/foo_db/rules/node/gens/gen: value"));
+        assertThat(actual.get(8).getContent(), is("value"));
+        assertThat(actual.get(9).getPath(), is("/metadata/foo_db/rules/node/gen"));
+        assertThat(actual.get(9).getContent(), is("single_gen"));
     }
     
     @Test

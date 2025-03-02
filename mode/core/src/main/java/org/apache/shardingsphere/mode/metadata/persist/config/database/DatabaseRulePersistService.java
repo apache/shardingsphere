@@ -109,7 +109,7 @@ public final class DatabaseRulePersistService {
     
     private Collection<MetaDataVersion> persistTuples(final Collection<RuleRepositoryTuple> tuples) {
         return tuples.stream().map(each -> new MetaDataVersion(
-                each.getKey(), Math.max(MetaDataVersion.INIT_VERSION, versionPersistService.persist(new VersionNodePath(each.getKey()), each.getValue()) - 1))).collect(Collectors.toList());
+                each.getPath(), Math.max(MetaDataVersion.INIT_VERSION, versionPersistService.persist(new VersionNodePath(each.getPath()), each.getContent()) - 1))).collect(Collectors.toList());
     }
     
     /**
@@ -146,8 +146,8 @@ public final class DatabaseRulePersistService {
     private Collection<MetaDataVersion> deleteTuples(final Collection<RuleRepositoryTuple> tuples) {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (RuleRepositoryTuple each : tuples) {
-            repository.delete(each.getKey());
-            result.add(new MetaDataVersion(each.getKey()));
+            repository.delete(each.getPath());
+            result.add(new MetaDataVersion(each.getPath()));
         }
         return result;
     }

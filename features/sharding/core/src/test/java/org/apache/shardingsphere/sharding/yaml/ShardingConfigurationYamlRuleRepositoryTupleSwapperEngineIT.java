@@ -55,7 +55,7 @@ class ShardingConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRu
         assertRepositoryTuple(actualTuples.get(12), "tables/t_stock", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_stock"));
         assertRepositoryTuple(actualTuples.get(13), "tables/t_order", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order"));
         assertRepositoryTuple(actualTuples.get(14), "tables/t_order_item", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order_item"));
-        assertRepositoryTuple(actualTuples.get(15), "binding_tables" + actualTuples.get(15).getKey().substring(actualTuples.get(15).getKey().lastIndexOf("/")),
+        assertRepositoryTuple(actualTuples.get(15), "binding_tables" + actualTuples.get(15).getPath().substring(actualTuples.get(15).getPath().lastIndexOf("/")),
                 new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(0));
         assertRepositoryTuple(actualTuples.get(16), "binding_tables/foo", new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(1));
         assertRepositoryTuple(actualTuples.get(17), "default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());

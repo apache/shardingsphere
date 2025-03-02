@@ -73,8 +73,8 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
     protected abstract void assertRepositoryTuples(List<RuleRepositoryTuple> actualTuples, YamlRuleConfiguration expectedYamlRuleConfig);
     
     protected void assertRepositoryTuple(final RuleRepositoryTuple actual, final String expectedKey, final Object expectedValue) {
-        assertThat(actual.getKey(), containsString(expectedKey));
-        assertThat(actual.getValue(), is(isSimpleObject(expectedValue) ? expectedValue : YamlEngine.marshal(expectedValue)));
+        assertThat(actual.getPath(), containsString(expectedKey));
+        assertThat(actual.getContent(), is(isSimpleObject(expectedValue) ? expectedValue : YamlEngine.marshal(expectedValue)));
     }
     
     private boolean isSimpleObject(final Object expectedValue) {
@@ -96,7 +96,7 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         String ruleType = Objects.requireNonNull(entity).value();
         Collection<RuleRepositoryTuple> tuples = engine.swapToTuples(yamlRuleConfig);
         YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
-                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next().getValue())
+                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, tuples.iterator().next().getContent())
                 : engine.swapToYamlDatabaseRuleConfiguration(ruleType, tuples);
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));

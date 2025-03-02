@@ -83,6 +83,6 @@ public final class GlobalRulePersistService {
     }
     
     private void persistTuples(final Collection<RuleRepositoryTuple> tuples) {
-        tuples.forEach(each -> versionPersistService.persist(new VersionNodePath(each.getKey()), each.getValue()));
+        tuples.forEach(each -> versionPersistService.persist(new VersionNodePath(each.getPath()), each.getContent()));
     }
 }

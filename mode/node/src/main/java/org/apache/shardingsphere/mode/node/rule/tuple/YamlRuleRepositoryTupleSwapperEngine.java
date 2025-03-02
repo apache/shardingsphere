@@ -173,7 +173,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(toBeSwappedType);
         for (RuleRepositoryTuple each : tuples) {
-            if (!Strings.isNullOrEmpty(each.getValue())) {
+            if (!Strings.isNullOrEmpty(each.getContent())) {
                 setFieldValue(yamlRuleConfig, fields, databaseRuleNode.getRuleType(), each);
             }
         }
@@ -206,7 +206,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void setNamedItemFieldValue(final YamlRuleConfiguration yamlRuleConfig, final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType, NodePathPattern.QUALIFIED_IDENTIFIER));
-        Optional<String> itemValue = NodePathSearcher.find(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1));
+        Optional<String> itemValue = NodePathSearcher.find(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1));
         if (!itemValue.isPresent()) {
             return;
         }
@@ -217,34 +217,34 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
             }
             fieldValue = field.get(yamlRuleConfig);
             Class<?> valueClass = (Class) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1];
-            ((Map) fieldValue).put(itemValue.get(), YamlEngine.unmarshal(tuple.getValue(), valueClass));
+            ((Map) fieldValue).put(itemValue.get(), YamlEngine.unmarshal(tuple.getContent(), valueClass));
         } else {
             if (null == fieldValue) {
                 field.set(yamlRuleConfig, new LinkedList<>());
             }
             fieldValue = field.get(yamlRuleConfig);
-            ((Collection) fieldValue).add(tuple.getValue());
+            ((Collection) fieldValue).add(tuple.getContent());
         }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setUniqueItemFieldValue(final YamlRuleConfiguration yamlRuleConfig, final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType));
-        if (!NodePathSearcher.isMatchedPath(tuple.getKey(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
+        if (!NodePathSearcher.isMatchedPath(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
             return;
         }
         if (field.getType().equals(Collection.class)) {
-            field.set(yamlRuleConfig, YamlEngine.unmarshal(tuple.getValue(), List.class));
+            field.set(yamlRuleConfig, YamlEngine.unmarshal(tuple.getContent(), List.class));
         } else if (field.getType().equals(String.class)) {
-            field.set(yamlRuleConfig, tuple.getValue());
+            field.set(yamlRuleConfig, tuple.getContent());
         } else if (field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
-            field.set(yamlRuleConfig, Boolean.parseBoolean(tuple.getValue()));
+            field.set(yamlRuleConfig, Boolean.parseBoolean(tuple.getContent()));
         } else if (field.getType().equals(int.class) || field.getType().equals(Integer.class)) {
-            field.set(yamlRuleConfig, Integer.parseInt(tuple.getValue()));
+            field.set(yamlRuleConfig, Integer.parseInt(tuple.getContent()));
         } else if (field.getType().equals(long.class) || field.getType().equals(Long.class)) {
-            field.set(yamlRuleConfig, Long.parseLong(tuple.getValue()));
+            field.set(yamlRuleConfig, Long.parseLong(tuple.getContent()));
         } else {
-            field.set(yamlRuleConfig, YamlEngine.unmarshal(tuple.getValue(), field.getType()));
+            field.set(yamlRuleConfig, YamlEngine.unmarshal(tuple.getContent(), field.getType()));
         }
     }
     
