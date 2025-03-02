@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -55,7 +56,7 @@ public final class SingleTableChangedProcessor implements RuleItemConfigurationC
     }
     
     @Override
-    public String getType() {
-        return "single.tables";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("single", "tables");
     }
 }

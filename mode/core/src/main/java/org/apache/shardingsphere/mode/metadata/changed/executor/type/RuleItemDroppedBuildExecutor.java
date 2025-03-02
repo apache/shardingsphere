@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathPars
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
@@ -40,13 +41,13 @@ public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildE
         for (String each : databaseRuleNode.getNamedItems()) {
             Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseRuleNode.getRuleType(), each));
             if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), databaseRuleNode.getRuleType() + "." + each));
+                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, databaseRuleNode.getRuleType() + "." + each));
+                return Optional.of(new DropUniqueRuleItem(databaseName, new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
             }
         }
         return Optional.empty();

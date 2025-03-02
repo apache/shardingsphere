@@ -58,8 +58,8 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
                 "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String ruleType = alterRuleItem.getType().split("\\.")[0];
-        String itemType = alterRuleItem.getType().split("\\.")[1];
+        String ruleType = alterRuleItem.getType().getRuleType();
+        String itemType = alterRuleItem.getType().getRuleItemType();
         DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
                 ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
                 : new DatabaseRuleItem(itemType);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -58,7 +59,7 @@ public final class ShadowDataSourceChangedProcessor implements RuleItemConfigura
     }
     
     @Override
-    public String getType() {
-        return "shadow.data_sources";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("shadow", "data_sources");
     }
 }
