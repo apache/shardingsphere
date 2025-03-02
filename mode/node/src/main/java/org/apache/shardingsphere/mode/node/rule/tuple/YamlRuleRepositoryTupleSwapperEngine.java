@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
@@ -50,35 +51,40 @@ import java.util.Optional;
 /**
  * YAML rule repository tuple swapper engine.
  */
-@RequiredArgsConstructor
 public final class YamlRuleRepositoryTupleSwapperEngine {
     
-    private final String databaseName;
-    
-    public YamlRuleRepositoryTupleSwapperEngine() {
-        this(NodePathPattern.IDENTIFIER);
+    /**
+     * Swap to rule repository tuple.
+     *
+     * @param yamlGlobalRuleConfig global YAML rule configuration to be swapped
+     * @return rule repository tuple
+     */
+    public RuleRepositoryTuple swapToTuple(final YamlGlobalRuleConfiguration yamlGlobalRuleConfig) {
+        RuleRepositoryTupleEntity entity = yamlGlobalRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
+        Preconditions.checkNotNull(entity);
+        Preconditions.checkArgument(entity.leaf());
+        return new RuleRepositoryTuple(NodePathGenerator.toPath(new GlobalRuleNodePath(entity.value()), false), YamlEngine.marshal(yamlGlobalRuleConfig));
     }
     
     /**
      * Swap to rule repository tuples.
      *
+     * @param databaseName database name
      * @param yamlRuleConfig YAML rule configuration to be swapped
      * @return rule repository tuples
      */
-    public Collection<RuleRepositoryTuple> swapToTuples(final YamlRuleConfiguration yamlRuleConfig) {
+    public Collection<RuleRepositoryTuple> swapToTuples(final String databaseName, final YamlRuleConfiguration yamlRuleConfig) {
         RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
         if (null == entity) {
             return Collections.emptyList();
         }
+        Preconditions.checkArgument(!entity.leaf());
         String ruleType = entity.value();
-        if (entity.leaf()) {
-            return Collections.singleton(new RuleRepositoryTuple(NodePathGenerator.toPath(new GlobalRuleNodePath(ruleType), false), YamlEngine.marshal(yamlRuleConfig)));
-        }
         Collection<RuleRepositoryTuple> result = new LinkedList<>();
         for (Field each : YamlRuleConfigurationFieldUtil.getFields(yamlRuleConfig.getClass())) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            result.addAll(swapToTuples(ruleType, yamlRuleConfig, each));
+            result.addAll(swapToTuples(databaseName, ruleType, yamlRuleConfig, each));
             each.setAccessible(isAccessible);
         }
         return result;
@@ -86,7 +92,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
-    private Collection<RuleRepositoryTuple> swapToTuples(final String ruleType, final YamlRuleConfiguration yamlRuleConfig, final Field field) {
+    private Collection<RuleRepositoryTuple> swapToTuples(final String databaseName, final String ruleType, final YamlRuleConfiguration yamlRuleConfig, final Field field) {
         Object fieldValue = field.get(yamlRuleConfig);
         if (null == fieldValue) {
             return Collections.emptyList();
@@ -149,18 +155,19 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     /**
      * Swap to YAML database rule configuration.
      *
+     * @param databaseName database name
      * @param ruleType rule type
      * @param tuples rule repository tuples
      * @return database rule configuration
      * @throws IllegalArgumentException throw if rule configuration not found
      */
     @SuppressWarnings("rawtypes")
-    public YamlRuleConfiguration swapToYamlDatabaseRuleConfiguration(final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
+    public YamlRuleConfiguration swapToYamlDatabaseRuleConfiguration(final String databaseName, final String ruleType, final Collection<RuleRepositoryTuple> tuples) {
         for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
             Class<? extends YamlRuleConfiguration> yamlRuleConfigClass = getYamlRuleConfigurationClass(each);
             RuleRepositoryTupleEntity entity = yamlRuleConfigClass.getAnnotation(RuleRepositoryTupleEntity.class);
             if (null != entity && entity.value().equals(ruleType)) {
-                return swapToYamlDatabaseRuleConfiguration(yamlRuleConfigClass, tuples)
+                return swapToYamlDatabaseRuleConfiguration(databaseName, yamlRuleConfigClass, tuples)
                         .orElseThrow(() -> new IllegalArgumentException(String.format("Can not find rule configuration with type: %s", ruleType)));
             }
         }
@@ -168,33 +175,35 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Optional<YamlRuleConfiguration> swapToYamlDatabaseRuleConfiguration(final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<RuleRepositoryTuple> tuples) {
+    private Optional<YamlRuleConfiguration> swapToYamlDatabaseRuleConfiguration(final String databaseName,
+                                                                                final Class<? extends YamlRuleConfiguration> toBeSwappedType, final Collection<RuleRepositoryTuple> tuples) {
         Collection<Field> fields = YamlRuleConfigurationFieldUtil.getFields(toBeSwappedType);
         YamlRuleConfiguration yamlRuleConfig = toBeSwappedType.getConstructor().newInstance();
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(toBeSwappedType);
         for (RuleRepositoryTuple each : tuples) {
             if (!Strings.isNullOrEmpty(each.getContent())) {
-                setFieldValue(yamlRuleConfig, fields, databaseRuleNode.getRuleType(), each);
+                setFieldValue(databaseName, yamlRuleConfig, fields, databaseRuleNode.getRuleType(), each);
             }
         }
         return Optional.of(yamlRuleConfig);
     }
     
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final String ruleType, final RuleRepositoryTuple tuple) {
+    private void setFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig, final Collection<Field> fields, final String ruleType, final RuleRepositoryTuple tuple) {
         for (Field each : fields) {
             boolean isAccessible = each.isAccessible();
             each.setAccessible(true);
-            setFieldValue(yamlRuleConfig, each, ruleType, tuple);
+            setFieldValue(databaseName, yamlRuleConfig, each, ruleType, tuple);
             each.setAccessible(isAccessible);
         }
     }
     
-    private void setFieldValue(final YamlRuleConfiguration yamlRuleConfig, final Field field, final String ruleType, final RuleRepositoryTuple tuple) {
+    private void setFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig,
+                               final Field field, final String ruleType, final RuleRepositoryTuple tuple) {
         String itemType = YamlRuleConfigurationFieldUtil.getTupleItemName(field);
         if (isNamedItem(field, field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class))) {
-            setNamedItemFieldValue(yamlRuleConfig, ruleType, tuple, itemType, field);
+            setNamedItemFieldValue(databaseName, yamlRuleConfig, ruleType, tuple, itemType, field);
         } else {
-            setUniqueItemFieldValue(yamlRuleConfig, ruleType, tuple, itemType, field);
+            setUniqueItemFieldValue(databaseName, yamlRuleConfig, ruleType, tuple, itemType, field);
         }
     }
     
@@ -204,7 +213,8 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setNamedItemFieldValue(final YamlRuleConfiguration yamlRuleConfig, final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
+    private void setNamedItemFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig,
+                                        final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType, NodePathPattern.QUALIFIED_IDENTIFIER));
         Optional<String> itemValue = NodePathSearcher.find(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1));
         if (!itemValue.isPresent()) {
@@ -228,7 +238,8 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setUniqueItemFieldValue(final YamlRuleConfiguration yamlRuleConfig, final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
+    private void setUniqueItemFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig,
+                                         final String ruleType, final RuleRepositoryTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType));
         if (!NodePathSearcher.isMatchedPath(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
             return;

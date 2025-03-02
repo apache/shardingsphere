@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,22 +37,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
-    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new NoneYamlRuleConfiguration()).isEmpty());
+    void assertSwapToTuple() {
+        RuleRepositoryTuple actual = new YamlRuleRepositoryTupleSwapperEngine().swapToTuple(new LeafYamlRuleConfiguration("foo"));
+        assertThat(actual.getPath(), is("/rules/leaf"));
+        assertThat(actual.getContent(), is("value: foo" + System.lineSeparator()));
     }
     
     @Test
-    void assertSwapToTuplesWithLeafYamlRuleConfiguration() {
-        Collection<RuleRepositoryTuple> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new LeafYamlRuleConfiguration("foo"));
-        assertThat(actual.size(), is(1));
-        RuleRepositoryTuple actualTuple = actual.iterator().next();
-        assertThat(actualTuple.getPath(), is("/rules/leaf"));
-        assertThat(actualTuple.getContent(), is("value: foo" + System.lineSeparator()));
+    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples("foo_db", new NoneYamlRuleConfiguration()).isEmpty());
     }
     
     @Test
     void assertSwapToTuplesWithEmptyNodeYamlRuleConfiguration() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new NodeYamlRuleConfiguration()).isEmpty());
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples("foo_db", new NodeYamlRuleConfiguration()).isEmpty());
     }
     
     @Test
@@ -71,7 +68,7 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         yamlRuleConfig.setLeaf(leaf);
         yamlRuleConfig.setGens(Collections.singleton("value"));
         yamlRuleConfig.setGen("single_gen");
-        List<RuleRepositoryTuple> actual = new ArrayList<>(new YamlRuleRepositoryTupleSwapperEngine("foo_db").swapToTuples(yamlRuleConfig));
+        List<RuleRepositoryTuple> actual = new ArrayList<>(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples("foo_db", yamlRuleConfig));
         assertThat(actual.size(), is(10));
         assertThat(actual.get(0).getPath(), is("/metadata/foo_db/rules/node/map_value/k"));
         assertThat(actual.get(0).getContent(), is("value: v" + System.lineSeparator()));
@@ -97,14 +94,14 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
-        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("node",
+        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("foo_db", "node",
                 Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")));
         assertThat(actual.getStringValue(), is(""));
     }
     
     @Test
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
-        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine("foo_db").swapToYamlDatabaseRuleConfiguration("node", Arrays.asList(
+        NodeYamlRuleConfiguration actual = (NodeYamlRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("foo_db", "node", Arrays.asList(
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k:qualified", "k:qualified"),
                 new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
