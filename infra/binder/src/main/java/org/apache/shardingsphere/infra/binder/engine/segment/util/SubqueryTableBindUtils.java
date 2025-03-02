@@ -81,7 +81,6 @@ public final class SubqueryTableBindUtils {
         }
         ColumnSegmentBoundInfo inputColumnBoundInfo = originalColumn.getColumn().getColumnBoundInfo();
         TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(inputColumnBoundInfo.getOriginalDatabase(), inputColumnBoundInfo.getOriginalSchema());
-        // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
         TableSourceType columnTableSourceType = TableSourceType.MIXED_TABLE == tableSourceType ? getTableSourceTypeFromInputColumn(inputColumnBoundInfo) : tableSourceType;
         newColumnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableBoundInfo, inputColumnBoundInfo.getOriginalTable(), inputColumnBoundInfo.getOriginalColumn(), columnTableSourceType));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
