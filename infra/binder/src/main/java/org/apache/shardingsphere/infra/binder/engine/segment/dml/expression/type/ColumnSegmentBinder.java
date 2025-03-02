@@ -180,7 +180,6 @@ public final class ColumnSegmentBinder {
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
             }
             inputColumnSegment = getColumnSegment(projectionSegment.get());
-            // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
             tableSourceType = TableSourceType.MIXED_TABLE == each.getTableSourceType() ? getTableSourceTypeFromInputColumn(inputColumnSegment) : each.getTableSourceType();
             if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isFromWithSegment()) {
                 break;
