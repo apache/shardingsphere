@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -57,6 +58,19 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     
     public YamlRuleRepositoryTupleSwapperEngine() {
         this(NodePathPattern.IDENTIFIER);
+    }
+    
+    /**
+     * Swap to rule repository tuple.
+     *
+     * @param yamlRuleConfig YAML rule configuration to be swapped
+     * @return rule repository tuple
+     */
+    public RuleRepositoryTuple swapToGlobalTuple(final YamlRuleConfiguration yamlRuleConfig) {
+        RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
+        Preconditions.checkNotNull(entity);
+        Preconditions.checkArgument(entity.leaf());
+        return new RuleRepositoryTuple(NodePathGenerator.toPath(new GlobalRuleNodePath(entity.value()), false), YamlEngine.marshal(yamlRuleConfig));
     }
     
     /**

@@ -78,11 +78,11 @@ public final class GlobalRulePersistService {
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
-            persistTuples(tupleSwapperEngine.swapToTuples(each));
+            persistTuple(tupleSwapperEngine.swapToGlobalTuple(each));
         }
     }
     
-    private void persistTuples(final Collection<RuleRepositoryTuple> tuples) {
-        tuples.forEach(each -> versionPersistService.persist(new VersionNodePath(each.getPath()), each.getContent()));
+    private void persistTuple(final RuleRepositoryTuple tuple) {
+        versionPersistService.persist(new VersionNodePath(tuple.getPath()), tuple.getContent());
     }
 }

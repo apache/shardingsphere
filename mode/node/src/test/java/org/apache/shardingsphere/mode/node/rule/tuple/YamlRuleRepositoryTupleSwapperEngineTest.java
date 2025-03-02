@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,17 +37,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
-    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new NoneYamlRuleConfiguration()).isEmpty());
+    void assertSwapToGlobalTuplesWithLeafYamlRuleConfiguration() {
+        RuleRepositoryTuple actual = new YamlRuleRepositoryTupleSwapperEngine().swapToGlobalTuple(new LeafYamlRuleConfiguration("foo"));
+        assertThat(actual.getPath(), is("/rules/leaf"));
+        assertThat(actual.getContent(), is("value: foo" + System.lineSeparator()));
     }
     
     @Test
-    void assertSwapToTuplesWithLeafYamlRuleConfiguration() {
-        Collection<RuleRepositoryTuple> actual = new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new LeafYamlRuleConfiguration("foo"));
-        assertThat(actual.size(), is(1));
-        RuleRepositoryTuple actualTuple = actual.iterator().next();
-        assertThat(actualTuple.getPath(), is("/rules/leaf"));
-        assertThat(actualTuple.getContent(), is("value: foo" + System.lineSeparator()));
+    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
+        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples(new NoneYamlRuleConfiguration()).isEmpty());
     }
     
     @Test
