@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -40,7 +41,7 @@ class SingleTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<SingleRuleConfiguration, SingleRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "single.tables");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("single", "tables"));
     
     @Test
     void assertSwapRuleItemConfiguration() {
