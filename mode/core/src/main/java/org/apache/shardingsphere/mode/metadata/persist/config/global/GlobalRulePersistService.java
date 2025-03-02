@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
@@ -40,15 +41,15 @@ public final class GlobalRulePersistService {
     
     private final VersionPersistService versionPersistService;
     
-    private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
-    
     private final YamlRuleConfigurationSwapperEngine yamlSwapperEngine;
+    
+    private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
     
     public GlobalRulePersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
         this.repository = repository;
         this.versionPersistService = versionPersistService;
-        tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
         yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
     }
     
     /**
@@ -78,7 +79,7 @@ public final class GlobalRulePersistService {
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
-            persistTuple(tupleSwapperEngine.swapToGlobalTuple(each));
+            persistTuple(tupleSwapperEngine.swapToTuple((YamlGlobalRuleConfiguration) each));
         }
     }
     

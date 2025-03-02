@@ -50,19 +50,22 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
     
     private final YamlRuleRepositoryTupleSwapperEngine engine;
     
+    private final String databaseName;
+    
     protected YamlRuleRepositoryTupleSwapperEngineIT(final String yamlFileName) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFileName);
         assertNotNull(url);
         yamlFile = new File(url.getFile());
-        engine = new YamlRuleRepositoryTupleSwapperEngine("foo_db");
+        engine = new YamlRuleRepositoryTupleSwapperEngine();
+        databaseName = "foo_db";
     }
     
     @Test
     void assertSwapToTuples() throws IOException {
         YamlRuleConfiguration yamlRuleConfig = loadYamlRuleConfiguration();
         List<RuleRepositoryTuple> tuples = yamlRuleConfig instanceof YamlGlobalRuleConfiguration
-                ? Collections.singletonList(engine.swapToGlobalTuple(yamlRuleConfig))
-                : new ArrayList<>(engine.swapToTuples(yamlRuleConfig));
+                ? Collections.singletonList(engine.swapToTuple((YamlGlobalRuleConfiguration) yamlRuleConfig))
+                : new ArrayList<>(engine.swapToTuples(databaseName, yamlRuleConfig));
         assertRepositoryTuples(tuples, yamlRuleConfig);
     }
     
@@ -97,8 +100,8 @@ public abstract class YamlRuleRepositoryTupleSwapperEngineIT {
         RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
         String ruleType = entity.value();
         YamlRuleConfiguration actualYamlRuleConfig = entity.leaf()
-                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, engine.swapToGlobalTuple(yamlRuleConfig).getContent())
-                : engine.swapToYamlDatabaseRuleConfiguration(ruleType, engine.swapToTuples(yamlRuleConfig));
+                ? engine.swapToYamlGlobalRuleConfiguration(ruleType, engine.swapToTuple((YamlGlobalRuleConfiguration) yamlRuleConfig).getContent())
+                : engine.swapToYamlDatabaseRuleConfiguration(databaseName, ruleType, engine.swapToTuples(databaseName, yamlRuleConfig));
         YamlRootConfiguration yamlRootConfig = new YamlRootConfiguration();
         yamlRootConfig.setRules(Collections.singletonList(actualYamlRuleConfig));
         return YamlEngine.marshal(yamlRootConfig);
