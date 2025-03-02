@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class EncryptorChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "encrypt.encryptors");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("encrypt", "encryptors"));
     
     @Test
     void assertFindRuleConfigurationWhenAbsent() {

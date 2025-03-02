@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -46,7 +47,7 @@ public final class EncryptorChangedProcessor extends AlgorithmChangedProcessor<E
     }
     
     @Override
-    public String getType() {
-        return "encrypt.encryptors";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("encrypt", "encryptors");
     }
 }

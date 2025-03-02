@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -55,7 +56,7 @@ public final class ShardingTableReferenceChangedProcessor implements RuleItemCon
     }
     
     @Override
-    public String getType() {
-        return "sharding.binding_tables";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("sharding", "binding_tables");
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
@@ -56,7 +57,7 @@ public final class BroadcastTableChangedProcessor implements RuleItemConfigurati
     }
     
     @Override
-    public String getType() {
-        return "broadcast.tables";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("broadcast", "tables");
     }
 }

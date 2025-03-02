@@ -27,5 +27,5 @@ public interface RuleChangedItem {
      *
      * @return rule item type
      */
-    String getType();
+    RuleChangedItemType getType();
 }
