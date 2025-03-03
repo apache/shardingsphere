@@ -45,8 +45,6 @@ public final class TableMetadataNodePath implements NodePath {
     /**
      * Create database search criteria.
      *
-     * rule yamlrule node tuple
-     *
      * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria() {
