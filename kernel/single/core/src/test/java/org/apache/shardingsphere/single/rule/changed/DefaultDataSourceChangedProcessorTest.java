@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -45,8 +43,7 @@ class DefaultDataSourceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        String actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "foo_ds");
+        String actual = processor.swapRuleItemConfiguration(null, "foo_ds");
         assertThat(actual, is("foo_ds"));
     }
     
@@ -66,18 +63,16 @@ class DefaultDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
         String toBeChangedItemConfig = "bar_ds";
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDefaultDataSource(), is(Optional.of("bar_ds")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(Collections.emptyList(), "foo_ds");
-        processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration(null, currentRuleConfig);
         assertFalse(currentRuleConfig.getDefaultDataSource().isPresent());
     }
 }

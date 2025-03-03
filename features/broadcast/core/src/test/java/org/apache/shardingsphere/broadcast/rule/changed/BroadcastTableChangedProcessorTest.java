@@ -22,10 +22,8 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -45,8 +43,7 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, "- foo_tbl");
+        BroadcastRuleConfiguration actual = processor.swapRuleItemConfiguration(null, "- foo_tbl");
         assertThat(actual.getTables(), is(Collections.singleton("foo_tbl")));
     }
     
@@ -66,18 +63,16 @@ class BroadcastTableChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")));
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropRuleItem dropRuleItem = mock(DropRuleItem.class);
         BroadcastRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration(null, currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     

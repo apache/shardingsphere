@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.rule.changed;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -31,7 +29,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 public final class DefaultShardingColumnChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> {
     
     @Override
-    public String swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public String swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return yamlContent;
     }
     
@@ -41,12 +39,12 @@ public final class DefaultShardingColumnChangedProcessor implements RuleItemConf
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final ShardingRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig, final String toBeChangedItemConfig) {
         currentRuleConfig.setDefaultShardingColumn(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultShardingColumn(null);
     }
     
