@@ -179,7 +179,7 @@ public final class EncryptProjectionTokenGenerator {
     private String getEncryptColumnName(final ColumnProjection columnProjection, final EncryptColumn encryptColumn) {
         IdentifierValue columnName = columnProjection.getName();
         return TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
-                ? EncryptDerivedColumnSuffix.DERIVED_CIPHER.getDerivedColumnName(columnName.getValue(), databaseType)
+                ? EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName(columnName.getValue(), databaseType)
                 : encryptColumn.getCipher().getName();
     }
     
@@ -190,15 +190,15 @@ public final class EncryptProjectionTokenGenerator {
     private Collection<Projection> generateCipherProjectionsInTableSegmentSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
         Collection<Projection> result = new LinkedList<>();
         IdentifierValue cipherColumnName = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
-                ? new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_CIPHER.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
+                ? new IdentifierValue(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
                         columnProjection.getName().getQuoteCharacter())
                 : new IdentifierValue(encryptColumn.getCipher().getName(), columnProjection.getName().getQuoteCharacter());
         IdentifierValue columnAlias = columnProjection.getAlias().orElse(columnProjection.getName());
         IdentifierValue cipherColumnAlias = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
                 ? columnProjection.getAlias()
-                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_CIPHER.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
+                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
                         .orElse(null)
-                : new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_CIPHER.getDerivedColumnName(columnAlias.getValue(), databaseType), columnAlias.getQuoteCharacter());
+                : new IdentifierValue(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName(columnAlias.getValue(), databaseType), columnAlias.getQuoteCharacter());
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, cipherColumnAlias, databaseType));
         encryptColumn.getAssistedQuery().ifPresent(optional -> addAssistedQueryColumn(columnProjection, optional, columnAlias, result));
         encryptColumn.getLikeQuery().ifPresent(optional -> addLikeQueryColumn(columnProjection, optional, columnAlias, result));
@@ -208,28 +208,28 @@ public final class EncryptProjectionTokenGenerator {
     private void addAssistedQueryColumn(final ColumnProjection columnProjection, final AssistedQueryColumnItem assistedQueryColumnItem, final IdentifierValue columnAlias,
                                         final Collection<Projection> result) {
         IdentifierValue assistedQueryName = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
-                ? new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_ASSISTED_QUERY.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
+                ? new IdentifierValue(EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
                         columnProjection.getName().getQuoteCharacter())
                 : new IdentifierValue(assistedQueryColumnItem.getName(), columnProjection.getName().getQuoteCharacter());
         IdentifierValue assistedQueryAlias = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
                 ? columnProjection.getAlias()
-                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_ASSISTED_QUERY.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
+                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
                         .orElse(null)
-                : new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_ASSISTED_QUERY.getDerivedColumnName(columnAlias.getValue(), databaseType));
+                : new IdentifierValue(EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName(columnAlias.getValue(), databaseType));
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), assistedQueryName, assistedQueryAlias, databaseType, columnProjection.getLeftParentheses().orElse(null),
                 columnProjection.getRightParentheses().orElse(null)));
     }
     
     private void addLikeQueryColumn(final ColumnProjection columnProjection, final LikeQueryColumnItem likeQueryColumnItem, final IdentifierValue columnAlias, final Collection<Projection> result) {
         IdentifierValue likeQueryName = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
-                ? new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_LIKE_QUERY.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
+                ? new IdentifierValue(EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
                         columnProjection.getName().getQuoteCharacter())
                 : new IdentifierValue(likeQueryColumnItem.getName(), columnProjection.getName().getQuoteCharacter());
         IdentifierValue likeQueryAlias = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
                 ? columnProjection.getAlias()
-                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_LIKE_QUERY.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
+                        .map(optional -> new IdentifierValue(EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName(optional.getValue(), databaseType), optional.getQuoteCharacter()))
                         .orElse(null)
-                : new IdentifierValue(EncryptDerivedColumnSuffix.DERIVED_LIKE_QUERY.getDerivedColumnName(columnAlias.getValue(), databaseType), columnAlias.getQuoteCharacter());
+                : new IdentifierValue(EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName(columnAlias.getValue(), databaseType), columnAlias.getQuoteCharacter());
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), likeQueryName, likeQueryAlias, databaseType, columnProjection.getLeftParentheses().orElse(null),
                 columnProjection.getRightParentheses().orElse(null)));
     }
