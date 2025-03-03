@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -81,7 +80,7 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutColumnProjection() throws SQLException {
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.empty());
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.empty());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         assertThat(new EncryptMergedResult(database, mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
@@ -89,9 +88,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutEncryptTable() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("bar_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("foo_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("foo_col"));
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -100,9 +98,8 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithoutEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection = new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_col"), new IdentifierValue("bar_alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new IdentifierValue("bar_col")));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("bar_col"));
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -111,11 +108,10 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueWithEncryptColumn() throws SQLException {
-        ColumnProjection columnProjection =
-                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
-                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
-                        TableSourceType.PHYSICAL_TABLE));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
+                new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
+                TableSourceType.PHYSICAL_TABLE);
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("foo_decrypted_value");
@@ -128,11 +124,10 @@ class EncryptMergedResultTest {
     
     @Test
     void assertGetValueFailed() throws SQLException {
-        ColumnProjection columnProjection =
-                new ColumnProjection(new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), new IdentifierValue("foo_alias"), databaseType, null, null, new ColumnSegmentBoundInfo(
-                        new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
-                        TableSourceType.PHYSICAL_TABLE));
-        when(selectStatementContext.findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
+                new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
+                TableSourceType.PHYSICAL_TABLE);
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenThrow(new RuntimeException("Test failed"));
