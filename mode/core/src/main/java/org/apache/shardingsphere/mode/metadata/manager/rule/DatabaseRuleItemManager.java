@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
@@ -39,6 +40,7 @@ import java.sql.SQLException;
  * Database rule item manager.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class DatabaseRuleItemManager {
     
     private final MetaDataContexts metaDataContexts;
@@ -55,15 +57,12 @@ public final class DatabaseRuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
-        Preconditions.checkArgument(String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey())),
-                "Invalid active version: %s of key: %s", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
+        if (String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey()))) {
+            log.warn("Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
+            return;
+        }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        String ruleType = alterRuleItem.getType().getRuleType();
-        String itemType = alterRuleItem.getType().getRuleItemType();
-        DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
-                ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
-                : new DatabaseRuleItem(itemType);
-        VersionNodePath versionNodePath = new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem));
+        VersionNodePath versionNodePath = getVersionNodePath(alterRuleItem);
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
@@ -71,6 +70,15 @@ public final class DatabaseRuleItemManager {
             processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
         }
+    }
+    
+    private VersionNodePath getVersionNodePath(final AlterRuleItem alterRuleItem) {
+        String ruleType = alterRuleItem.getType().getRuleType();
+        String itemType = alterRuleItem.getType().getRuleItemType();
+        DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
+                ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
+                : new DatabaseRuleItem(itemType);
+        return new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem));
     }
     
     /**
