@@ -127,7 +127,6 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         try {
             return new ConcurrentHashMap<>(GenericSchemaBuilder.build(protocolType,
                     new GenericSchemaBuilderMaterial(Maps.newHashMap(), Collections.emptyList(), props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(databaseName))));
-            
         } catch (final SQLException ignored) {
         }
         return Maps.newHashMap();
