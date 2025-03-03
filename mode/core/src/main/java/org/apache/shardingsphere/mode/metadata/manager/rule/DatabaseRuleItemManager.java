@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
 import java.sql.SQLException;
@@ -65,8 +66,9 @@ public final class DatabaseRuleItemManager {
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
+        String itemName = alterRuleItem instanceof AlterNamedRuleItem ? ((AlterNamedRuleItem) alterRuleItem).getItemName() : null;
         synchronized (this) {
-            processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
+            processor.changeRuleItemConfiguration(itemName, currentRuleConfig, processor.swapRuleItemConfiguration(itemName, yamlContent));
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
         }
     }
@@ -100,8 +102,9 @@ public final class DatabaseRuleItemManager {
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, dropRuleItem.getType());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
+        String itemName = dropRuleItem instanceof DropNamedRuleItem ? ((DropNamedRuleItem) dropRuleItem).getItemName() : null;
         synchronized (this) {
-            processor.dropRuleItemConfiguration(dropRuleItem, currentRuleConfig);
+            processor.dropRuleItemConfiguration(itemName, currentRuleConfig);
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig,
                     !TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, currentRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) currentRuleConfig));
         }

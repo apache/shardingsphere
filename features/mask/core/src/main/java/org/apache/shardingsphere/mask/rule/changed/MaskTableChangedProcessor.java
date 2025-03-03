@@ -26,9 +26,6 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigur
 import org.apache.shardingsphere.mask.yaml.swapper.rule.YamlMaskTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,7 +36,7 @@ import java.util.LinkedList;
 public final class MaskTableChangedProcessor implements RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, MaskTableRuleConfiguration> {
     
     @Override
-    public MaskTableRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public MaskTableRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new YamlMaskTableRuleConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlMaskTableRuleConfiguration.class));
     }
     
@@ -49,15 +46,15 @@ public final class MaskTableChangedProcessor implements RuleItemConfigurationCha
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final MaskRuleConfiguration currentRuleConfig, final MaskTableRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final MaskRuleConfiguration currentRuleConfig, final MaskTableRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
         currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
         currentRuleConfig.getTables().add(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final MaskRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(((DropNamedRuleItem) dropRuleItem).getItemName()));
+    public void dropRuleItemConfiguration(final String itemName, final MaskRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(itemName));
     }
     
     @Override
