@@ -32,16 +32,9 @@ public interface AlterRuleItem extends RuleChangedItem {
     String getDatabaseName();
     
     /**
-     * Get active version key.
+     * Get current version.
      *
-     * @return active version key
+     * @return current version
      */
-    String getActiveVersionKey();
-    
-    /**
-     * Get active version.
-     *
-     * @return active version
-     */
-    int getActiveVersion();
+    int getCurrentVersion();
 }

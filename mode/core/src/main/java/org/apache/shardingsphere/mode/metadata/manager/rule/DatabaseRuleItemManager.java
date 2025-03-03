@@ -59,8 +59,8 @@ public final class DatabaseRuleItemManager {
     public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
         VersionNodePath versionNodePath = new VersionNodePath(getDatabaseRuleNodePath(alterRuleItem));
         String activeVersionPath = versionNodePath.getActiveVersionPath();
-        if (!String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(activeVersionPath))) {
-            log.warn("Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), activeVersionPath);
+        if (!String.valueOf(alterRuleItem.getCurrentVersion()).equals(metaDataPersistFacade.getRepository().query(activeVersionPath))) {
+            log.warn("Invalid active version `{}` of key `{}`", alterRuleItem.getCurrentVersion(), activeVersionPath);
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
