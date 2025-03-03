@@ -19,21 +19,21 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="delete_for_parameters" db-types="MySQL">
         <input sql="DELETE FROM t_account WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="DELETE FROM t_account_1 WHERE account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+        <output sql="DELETE FROM t_account_1 WHERE account_id = ? AND `assisted_query_password` = ? AND `cipher_amount` = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_for_literals" db-types="MySQL">
         <input sql="DELETE FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account_1 WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_1 WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_plain_for_parameters" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = ? AND `assisted_query_password` = ? AND `cipher_amount` = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_for_literals" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>
