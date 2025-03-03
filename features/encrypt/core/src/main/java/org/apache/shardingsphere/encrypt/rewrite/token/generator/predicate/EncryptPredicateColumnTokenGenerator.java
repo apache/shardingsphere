@@ -112,11 +112,11 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
             return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(
-                    likeQueryColumnItem.get().getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_LIKE_QUERY, databaseType), databaseType));
+                    likeQueryColumnItem.get().getName(), columnSegment, EncryptDerivedColumnSuffix.LIKE_QUERY, databaseType), databaseType));
         }
         Collection<Projection> columnProjections = encryptColumn.getAssistedQuery()
-                .map(optional -> createColumnProjections(optional.getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_ASSISTED_QUERY, databaseType))
-                .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_CIPHER, databaseType));
+                .map(optional -> createColumnProjections(optional.getName(), columnSegment, EncryptDerivedColumnSuffix.ASSISTED_QUERY, databaseType))
+                .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment, EncryptDerivedColumnSuffix.CIPHER, databaseType));
         return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
     }
     
