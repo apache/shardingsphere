@@ -64,8 +64,16 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void createDatabase(final String databaseName) {
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
+        afterDatabaseCreated(databaseName, originalMetaDataContexts);
+    }
+    
+    private void afterDatabaseCreated(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
+        metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
