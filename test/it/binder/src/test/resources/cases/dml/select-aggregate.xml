@@ -28,6 +28,7 @@
                             <original-schema name="foo_db_2" />
                             <original-table name="t_product" />
                             <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column>
                 </paramters>
@@ -41,6 +42,7 @@
                             <original-schema name="foo_db_2" />
                             <original-table name="t_product" />
                             <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column>
                 </paramters>
@@ -54,6 +56,7 @@
                             <original-schema name="foo_db_2" />
                             <original-table name="t_product" />
                             <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column>
                 </paramters>
@@ -67,6 +70,7 @@
                             <original-schema name="foo_db_2" />
                             <original-table name="t_product" />
                             <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                            <table-source-type name="PHYSICAL_TABLE"/>
                         </column-bound>
                     </column>
                 </paramters>
@@ -107,6 +111,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order" />
                                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column>
                                 </left>
@@ -119,6 +124,7 @@
                                             <original-schema name="foo_db_1" />
                                             <original-table name="t_order_item" />
                                             <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="PHYSICAL_TABLE"/>
                                         </column-bound>
                                     </column>
                                 </right>
@@ -145,6 +151,7 @@
                                     <original-schema name="foo_db_1" />
                                     <original-table name="t_order_item" />
                                     <original-column name="product_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column>
                         </left>
@@ -157,6 +164,7 @@
                                     <original-schema name="foo_db_2" />
                                     <original-table name="t_product" />
                                     <original-column name="product_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column>
                         </right>
@@ -172,6 +180,7 @@
                     <original-schema name="foo_db_1" />
                     <original-table name="t_order" />
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
             </column-item>
         </group-by>
@@ -188,6 +197,7 @@
                                         <original-schema name="foo_db_2" />
                                         <original-table name="t_product" />
                                         <original-column name="price" start-delimiter="`" end-delimiter="`" />
+                                        <table-source-type name="PHYSICAL_TABLE"/>
                                     </column-bound>
                                 </column>
                             </paramters>

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -113,11 +114,17 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
         metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(table));
+        if (TableRefreshUtils.isSingleTable(table.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, table.getName())) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
     }
     
     @Override
-    public void dropTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, tableName);
+    public void dropTables(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tableNames) {
+        tableNames.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each));
+        if (TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, tableNames) && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
+            alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
     }
     
     @Override

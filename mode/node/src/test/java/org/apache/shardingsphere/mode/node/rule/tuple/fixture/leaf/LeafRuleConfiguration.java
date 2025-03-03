@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
-public enum NodeYamlRuleConfigurationEnum {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+
+@RequiredArgsConstructor
+@Getter
+public final class LeafRuleConfiguration implements GlobalRuleConfiguration {
     
-    FOO
+    private final String value;
 }

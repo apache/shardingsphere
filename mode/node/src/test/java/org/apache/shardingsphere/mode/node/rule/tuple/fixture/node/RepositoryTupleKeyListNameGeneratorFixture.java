@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
 
-@RuleRepositoryTupleEntity(value = "fixture", leaf = true)
-@Getter
-@Setter
-public final class MetaDataYamlRuleConfigurationFixture implements YamlRuleConfiguration {
-    
-    private String name;
+public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
     
     @Override
-    public Class<MetaDataRuleConfigurationFixture> getRuleConfigurationType() {
-        return MetaDataRuleConfigurationFixture.class;
+    public String generate(final Object tupleValue) {
+        return String.format("gen: %s", tupleValue);
     }
 }

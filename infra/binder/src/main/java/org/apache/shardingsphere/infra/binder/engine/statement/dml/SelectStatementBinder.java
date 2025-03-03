@@ -33,9 +33,10 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.Havin
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -80,8 +81,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext, final SelectStatement selectStatement) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType());
-        result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections));
+                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.MIXED_TABLE);
+        result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.MIXED_TABLE));
         return result;
     }
     

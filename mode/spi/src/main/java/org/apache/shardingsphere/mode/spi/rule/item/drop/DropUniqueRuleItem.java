@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.spi.rule.item.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 
 /**
  * Drop unique rule item.
@@ -29,5 +30,5 @@ public final class DropUniqueRuleItem implements DropRuleItem {
     
     private final String databaseName;
     
-    private final String type;
+    private final RuleChangedItemType type;
 }

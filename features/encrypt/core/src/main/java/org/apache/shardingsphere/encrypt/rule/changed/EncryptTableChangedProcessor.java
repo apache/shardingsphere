@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleC
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
@@ -61,7 +62,7 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     }
     
     @Override
-    public String getType() {
-        return "encrypt.tables";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("encrypt", "tables");
     }
 }

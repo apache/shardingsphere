@@ -94,7 +94,6 @@ public final class SQLStatementContextExtractor {
             insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
-        // SPEX ADDED: BEGIN
         if (sqlStatementContext instanceof CreateViewStatementContext) {
             CreateViewStatementContext createViewStatementContext = (CreateViewStatementContext) sqlStatementContext;
             result.add(createViewStatementContext.getSelectStatementContext());
@@ -109,7 +108,6 @@ public final class SQLStatementContextExtractor {
             alterViewStatementContext.getSelectStatementContext().get().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
-        // SPEX ADDED: END
         return result;
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config.database;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
@@ -39,13 +39,13 @@ public final class DataSourceUnitPersistService {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final VersionPersistService versionPersistService;
     
     private final YamlDataSourceConfigurationSwapper yamlDataSourceConfigurationSwapper;
     
     public DataSourceUnitPersistService(final PersistRepository repository) {
         this.repository = repository;
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        versionPersistService = new VersionPersistService(repository);
         yamlDataSourceConfigurationSwapper = new YamlDataSourceConfigurationSwapper();
     }
     
@@ -84,7 +84,7 @@ public final class DataSourceUnitPersistService {
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
             VersionNodePath versionNodePath = new VersionNodePath(new StorageUnitNodePath(databaseName, entry.getKey()));
-            metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
+            versionPersistService.persist(versionNodePath, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
         }
     }
     

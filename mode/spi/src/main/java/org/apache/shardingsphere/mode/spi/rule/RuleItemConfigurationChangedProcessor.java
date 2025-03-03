@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
@@ -66,4 +67,7 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
      * @param currentRuleConfig current rule configuration
      */
     void dropRuleItemConfiguration(DropRuleItem dropRuleItem, T currentRuleConfig);
+    
+    @Override
+    RuleChangedItemType getType();
 }

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundEx
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -206,22 +207,26 @@ public final class SimpleTableSegmentBinder {
             return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
-            return new SimpleTableSegmentBinderContext(createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName));
+            Collection<ProjectionSegment> projectionSegments = createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName);
+            return new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE);
         }
         CaseInsensitiveString caseInsensitiveTableName = new CaseInsensitiveString(tableName.getValue());
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
             TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
-            return new SimpleTableSegmentBinderContext(
-                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType()));
+            Collection<ProjectionSegment> subqueryProjections =
+                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(),
+                            TableSourceType.TEMPORARY_TABLE);
+            return new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         }
-        return new SimpleTableSegmentBinderContext(Collections.emptyList());
+        return new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
     }
     
     private static Collection<ProjectionSegment> createProjectionSegments(final CreateTableStatement sqlStatement, final IdentifierValue databaseName,
                                                                           final IdentifierValue schemaName, final IdentifierValue tableName) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         for (ColumnDefinitionSegment each : sqlStatement.getColumnDefinitions()) {
-            each.getColumnName().setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, each.getColumnName().getIdentifier()));
+            each.getColumnName().setColumnBoundInfo(
+                    new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, each.getColumnName().getIdentifier(), TableSourceType.TEMPORARY_TABLE));
             result.add(new ColumnProjectionSegment(each.getColumnName()));
         }
         return result;
@@ -237,14 +242,15 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return new SimpleTableSegmentBinderContext(projectionSegments);
+        return new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE);
     }
     
     private static ColumnSegment createColumnSegment(final SimpleTableSegment segment, final IdentifierValue databaseName, final IdentifierValue schemaName,
                                                      final ShardingSphereColumn column, final QuoteCharacter quoteCharacter, final IdentifierValue tableName) {
         ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(column.getName(), quoteCharacter));
         result.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(tableName)));
-        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, new IdentifierValue(column.getName(), quoteCharacter)));
+        result.setColumnBoundInfo(
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, new IdentifierValue(column.getName(), quoteCharacter), TableSourceType.PHYSICAL_TABLE));
         return result;
     }
 }

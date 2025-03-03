@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
@@ -39,7 +39,7 @@ public final class ViewMetaDataPersistService {
     
     private final PersistRepository repository;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final VersionPersistService versionPersistService;
     
     private final YamlViewSwapper swapper = new YamlViewSwapper();
     
@@ -81,7 +81,7 @@ public final class ViewMetaDataPersistService {
         for (ShardingSphereView each : views) {
             String viewName = each.getName().toLowerCase();
             VersionNodePath versionNodePath = new VersionNodePath(new ViewMetadataNodePath(databaseName, schemaName, viewName));
-            metaDataVersionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+            versionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
     

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.spi.rule.item.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 
 /**
  * Alter named rule item.
@@ -35,5 +36,5 @@ public final class AlterNamedRuleItem implements AlterRuleItem {
     
     private final int activeVersion;
     
-    private final String type;
+    private final RuleChangedItemType type;
 }

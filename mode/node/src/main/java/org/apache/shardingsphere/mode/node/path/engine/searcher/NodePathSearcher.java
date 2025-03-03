@@ -32,6 +32,8 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodePathSearcher {
     
+    private static final String START_PATTERN = "^";
+    
     /**
      * Find node segment.
      *
@@ -57,6 +59,6 @@ public final class NodePathSearcher {
     
     private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        return Pattern.compile(NodePathGenerator.toPath(nodePathCriteria, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(nodePathCriteria, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
     }
 }

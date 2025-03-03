@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
-public final class MetaDataYamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<MetaDataYamlRuleConfigurationFixture, MetaDataRuleConfigurationFixture> {
+public final class NodeYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<NodeYamlRuleConfiguration, NodeRuleConfiguration> {
     
     @Override
-    public MetaDataYamlRuleConfigurationFixture swapToYamlConfiguration(final MetaDataRuleConfigurationFixture data) {
-        MetaDataYamlRuleConfigurationFixture result = new MetaDataYamlRuleConfigurationFixture();
-        result.setName(data.getName());
-        return result;
+    public NodeYamlRuleConfiguration swapToYamlConfiguration(final NodeRuleConfiguration data) {
+        return new NodeYamlRuleConfiguration();
     }
     
     @Override
-    public MetaDataRuleConfigurationFixture swapToObject(final MetaDataYamlRuleConfigurationFixture yamlConfig) {
-        return new MetaDataRuleConfigurationFixture(yamlConfig.getName());
+    public NodeRuleConfiguration swapToObject(final NodeYamlRuleConfiguration yamlConfig) {
+        return new NodeRuleConfiguration();
     }
     
     @Override
     public String getRuleTagName() {
-        return "METADATA.FIXTURE";
+        return "NODE";
     }
     
     @Override
     public int getOrder() {
-        return -400;
+        return 12000;
     }
     
     @Override
-    public Class<MetaDataRuleConfigurationFixture> getTypeClass() {
-        return MetaDataRuleConfigurationFixture.class;
+    public Class<NodeRuleConfiguration> getTypeClass() {
+        return NodeRuleConfiguration.class;
     }
 }

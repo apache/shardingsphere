@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleI
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterUniqueRuleItem;
@@ -37,17 +38,16 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<AlterRuleItem> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final Integer activeVersion) {
         for (String each : databaseRuleNode.getNamedItems()) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(),
-                    new DatabaseRuleItem(each, NodePathPattern.QUALIFIED_IDENTIFIER));
-            Optional<String> itemName = new VersionNodePathParser(databaseRuleNodePath).findIdentifierByActiveVersionPath(path, 2);
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, NodePathPattern.QUALIFIED_IDENTIFIER));
+            Optional<String> itemName = new VersionNodePathParser(databaseRuleNodePath).findIdentifierByActiveVersionPath(path, 1);
             if (itemName.isPresent()) {
-                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, databaseRuleNode.getRuleType() + "." + each));
+                return Optional.of(new AlterNamedRuleItem(databaseName, itemName.get(), path, activeVersion, new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
-                return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, databaseRuleNode.getRuleType() + "." + each));
+                return Optional.of(new AlterUniqueRuleItem(databaseName, path, activeVersion, new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
             }
         }
         return Optional.empty();

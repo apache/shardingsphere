@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * projections segment.
@@ -36,7 +36,7 @@ public final class ProjectionsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final Collection<ProjectionSegment> projections = new LinkedList<>();
+    private final List<ProjectionSegment> projections = new LinkedList<>();
     
     @Setter
     private boolean distinctRow;

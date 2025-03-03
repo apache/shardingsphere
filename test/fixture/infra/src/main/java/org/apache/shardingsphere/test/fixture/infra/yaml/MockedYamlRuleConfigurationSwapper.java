@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.test.fixture.infra.yaml;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, MockedRuleConfiguration> {
+/**
+ * Mocked YAML rule configuration swapper.
+ */
+public final class MockedYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<MockedYamlRuleConfiguration, MockedRuleConfiguration> {
     
     @Override
     public Class<MockedRuleConfiguration> getTypeClass() {
@@ -28,15 +31,16 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final MockedRuleConfiguration data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
-        result.setName(data.getName());
+    public MockedYamlRuleConfiguration swapToYamlConfiguration(final MockedRuleConfiguration data) {
+        MockedYamlRuleConfiguration result = new MockedYamlRuleConfiguration();
+        result.setUnique(data.getUnique());
+        result.setNamed(data.getNamed());
         return result;
     }
     
     @Override
-    public MockedRuleConfiguration swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        return new MockedRuleConfiguration(yamlConfig.getName());
+    public MockedRuleConfiguration swapToObject(final MockedYamlRuleConfiguration yamlConfig) {
+        return new MockedRuleConfiguration(yamlConfig.getUnique(), yamlConfig.getNamed());
     }
     
     @Override
@@ -46,6 +50,6 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return -1;
+        return -10000;
     }
 }

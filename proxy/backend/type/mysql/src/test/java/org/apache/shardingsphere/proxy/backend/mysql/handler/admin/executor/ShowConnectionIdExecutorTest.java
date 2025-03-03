@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,7 +71,7 @@ class ShowConnectionIdExecutorTest {
     }
     
     private SelectStatement mockSelectStatement() {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
+        List<ProjectionSegment> projections = new LinkedList<>();
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
         when(segment.getProjections()).thenReturn(projections);
         SelectStatement result = mock(SelectStatement.class);
@@ -80,7 +80,7 @@ class ShowConnectionIdExecutorTest {
     }
     
     private SelectStatement mockSelectStatementWithAlias() {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
+        List<ProjectionSegment> projections = new LinkedList<>();
         ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "connection_id()");
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("test_alias")));
         projections.add(projectionSegment);

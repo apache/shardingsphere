@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
@@ -74,7 +75,7 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
     }
     
     @Override
-    public String getType() {
-        return "readwrite_splitting.data_source_groups";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("readwrite_splitting", "data_source_groups");
     }
 }

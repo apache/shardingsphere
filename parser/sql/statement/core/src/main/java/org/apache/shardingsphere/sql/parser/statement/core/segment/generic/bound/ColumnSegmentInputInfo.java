@@ -15,16 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
+import java.util.Optional;
+
+/**
+ * Column segment input info.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataRuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class ColumnSegmentInputInfo {
     
-    private final String name;
+    private final ColumnSegment inputColumnSegment;
+    
+    private final TableSourceType tableSourceType;
+    
+    public ColumnSegmentInputInfo(final ColumnSegment inputColumnSegment) {
+        this.inputColumnSegment = inputColumnSegment;
+        tableSourceType = TableSourceType.TEMPORARY_TABLE;
+    }
+    
+    /**
+     * Get input column segment.
+     *
+     * @return input column segment
+     */
+    public Optional<ColumnSegment> getInputColumnSegment() {
+        return Optional.ofNullable(inputColumnSegment);
+    }
 }

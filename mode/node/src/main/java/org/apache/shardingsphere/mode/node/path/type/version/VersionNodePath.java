@@ -35,6 +35,10 @@ public final class VersionNodePath {
         path = NodePathGenerator.toPath(nodePath, false);
     }
     
+    public VersionNodePath(final String path) {
+        this.path = path;
+    }
+    
     /**
      * Get active version path.
      *
@@ -61,27 +65,6 @@ public final class VersionNodePath {
      */
     public String getVersionPath(final int version) {
         return String.join("/", getVersionsPath(), String.valueOf(version));
-    }
-    
-    /**
-     * Get version path.
-     *
-     * @param activeVersionPath active version path
-     * @param activeVersion active version
-     * @return version path
-     */
-    public static String getVersionPath(final String activeVersionPath, final int activeVersion) {
-        return String.join("/", activeVersionPath.replace(ACTIVE_VERSION, VERSIONS), String.valueOf(activeVersion));
-    }
-    
-    /**
-     * Get original path.
-     *
-     * @param activeVersionPath active version path
-     * @return original path
-     */
-    public static String getOriginalPath(final String activeVersionPath) {
-        return activeVersionPath.substring(0, activeVersionPath.lastIndexOf(ACTIVE_VERSION) - 1);
     }
     
     /**

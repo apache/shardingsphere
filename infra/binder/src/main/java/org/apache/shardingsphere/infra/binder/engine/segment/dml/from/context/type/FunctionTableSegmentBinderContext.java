@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
@@ -37,5 +38,10 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
     @Override
     public Collection<ProjectionSegment> getProjectionSegments() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public TableSourceType getTableSourceType() {
+        return TableSourceType.TEMPORARY_TABLE;
     }
 }

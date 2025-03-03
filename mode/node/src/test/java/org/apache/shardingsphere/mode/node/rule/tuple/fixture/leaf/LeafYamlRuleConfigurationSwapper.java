@@ -15,40 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.fixture;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+public final class LeafYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<LeafYamlRuleConfiguration, LeafRuleConfiguration> {
     
     @Override
-    public Class<RuleConfigurationFixture> getTypeClass() {
-        return RuleConfigurationFixture.class;
+    public LeafYamlRuleConfiguration swapToYamlConfiguration(final LeafRuleConfiguration data) {
+        return new LeafYamlRuleConfiguration(data.getValue());
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
-        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
-        result.setUnique(data.getUnique());
-        result.setNamed(data.getNamed());
-        return result;
-    }
-    
-    @Override
-    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        RuleConfigurationFixture result = new RuleConfigurationFixture();
-        result.setUnique(yamlConfig.getUnique());
-        result.setNamed(yamlConfig.getNamed());
-        return result;
+    public LeafRuleConfiguration swapToObject(final LeafYamlRuleConfiguration yamlConfig) {
+        return new LeafRuleConfiguration(yamlConfig.getValue());
     }
     
     @Override
     public String getRuleTagName() {
-        return "FIXTURE";
+        return "LEAF";
     }
     
     @Override
     public int getOrder() {
-        return 3;
+        return 10000;
+    }
+    
+    @Override
+    public Class<LeafRuleConfiguration> getTypeClass() {
+        return LeafRuleConfiguration.class;
     }
 }

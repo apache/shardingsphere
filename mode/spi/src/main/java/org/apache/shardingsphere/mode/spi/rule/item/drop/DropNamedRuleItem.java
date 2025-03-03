@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.spi.rule.item.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 
 /**
  * Drop named rule item.
@@ -31,5 +32,5 @@ public final class DropNamedRuleItem implements DropRuleItem {
     
     private final String itemName;
     
-    private final String type;
+    private final RuleChangedItemType type;
 }

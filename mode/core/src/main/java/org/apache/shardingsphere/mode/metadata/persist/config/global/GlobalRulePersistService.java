@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.metadata.persist.config.RuleRepositoryTuplePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
@@ -30,26 +30,26 @@ import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwa
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Global rule persist service.
  */
 public final class GlobalRulePersistService {
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    private final PersistRepository repository;
     
-    private final RuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private final VersionPersistService versionPersistService;
     
-    private final YamlRuleRepositoryTupleSwapperEngine yamlRuleRepositoryTupleSwapperEngine;
+    private final YamlRuleConfigurationSwapperEngine yamlSwapperEngine;
     
-    private final YamlRuleConfigurationSwapperEngine yamlRuleConfigurationSwapperEngine;
+    private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
     
-    public GlobalRulePersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
-        this.metaDataVersionPersistService = metaDataVersionPersistService;
-        ruleRepositoryTuplePersistService = new RuleRepositoryTuplePersistService(repository);
-        yamlRuleRepositoryTupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
-        yamlRuleConfigurationSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+    public GlobalRulePersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
+        this.repository = repository;
+        this.versionPersistService = versionPersistService;
+        yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+        tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
     }
     
     /**
@@ -58,7 +58,7 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfigurations(ruleRepositoryTuplePersistService.load(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false)));
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false)).stream().map(this::load).collect(Collectors.toList());
     }
     
     /**
@@ -67,8 +67,9 @@ public final class GlobalRulePersistService {
      * @param ruleType rule type to be loaded
      * @return global rule configuration
      */
-    public Optional<RuleConfiguration> load(final String ruleType) {
-        return yamlRuleRepositoryTupleSwapperEngine.swapToRuleConfiguration(ruleType, ruleRepositoryTuplePersistService.load(NodePathGenerator.toPath(new GlobalRuleNodePath(ruleType), false)));
+    public RuleConfiguration load(final String ruleType) {
+        String ruleContent = versionPersistService.loadContent(new VersionNodePath(new GlobalRuleNodePath(ruleType)));
+        return yamlSwapperEngine.swapToRuleConfiguration(tupleSwapperEngine.swapToYamlGlobalRuleConfiguration(ruleType, ruleContent));
     }
     
     /**
@@ -77,12 +78,12 @@ public final class GlobalRulePersistService {
      * @param globalRuleConfigs global rule configurations
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
-        for (YamlRuleConfiguration each : yamlRuleConfigurationSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
-            persistTuples(yamlRuleRepositoryTupleSwapperEngine.swapToTuples(each));
+        for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
+            persistTuple(tupleSwapperEngine.swapToTuple((YamlGlobalRuleConfiguration) each));
         }
     }
     
-    private void persistTuples(final Collection<RuleRepositoryTuple> tuples) {
-        tuples.forEach(each -> metaDataVersionPersistService.persist(new VersionNodePath(new GlobalRuleNodePath(each.getKey())), each.getValue()));
+    private void persistTuple(final RuleRepositoryTuple tuple) {
+        versionPersistService.persist(new VersionNodePath(tuple.getPath()), tuple.getContent());
     }
 }

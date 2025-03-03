@@ -119,7 +119,7 @@ unreservedWord1
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY
     | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | JOIN
@@ -335,7 +335,7 @@ unreservedWord3
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
     | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE | NUMBER | CHAR
-    | SQLCODE | TAB | TERM | NUM
+    | SQLCODE | TAB | TERM | NUM | INNER
     ;
 
 schemaName
@@ -753,9 +753,9 @@ keepClause
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
     | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
-    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST 
-    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST 
-    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP 
+    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST
+    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST
+    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP
     | STATS_T_TEST_INDEPU | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
@@ -1482,9 +1482,9 @@ cellReference
     ;
 
 multisetCondition
-    : isASetCondition 
-    | isEmptyCondition 
-    | memberCondition 
+    : isASetCondition
+    | isEmptyCondition
+    | memberCondition
     | submultisetCondition
     ;
 
@@ -1577,7 +1577,7 @@ jsonEqualCondition
     ;
 
 jsonExistsCondition
-    : JSON_EXISTS LP_ expr (FORMAT JSON)? COMMA_ jsonBasicPathExpr 
+    : JSON_EXISTS LP_ expr (FORMAT JSON)? COMMA_ jsonBasicPathExpr
     jsonPassingClause? jsonExistsOnErrorClause? jsonExistsOnEmptyClause? RP_
     ;
 
@@ -1646,9 +1646,9 @@ jsonFilterExpr
     ;
 
 jsonCond
-    : jsonCond OR_ jsonCond | jsonCond AND_ jsonCond | jsonNegation 
-    | LP_ jsonCond RP_ | jsonComparison | jsonExistsCond 
-    | jsonInCond | jsonLikeCond | jsonLikeRegexCond 
+    : jsonCond OR_ jsonCond | jsonCond AND_ jsonCond | jsonNegation
+    | LP_ jsonCond RP_ | jsonComparison | jsonExistsCond
+    | jsonInCond | jsonLikeCond | jsonLikeRegexCond
     | jsonEqRegexCond | jsonHasSubstringCond | jsonStartsWithCond
     ;
 
@@ -1698,7 +1698,7 @@ valueList
 
 jsonComparison
     : (jsonRelativePathExpr jsonComparePred (jsonVar | jsonScalar))
-    | ((jsonVar | jsonScalar) jsonComparePred jsonRelativePathExpr) 
+    | ((jsonVar | jsonScalar) jsonComparePred jsonRelativePathExpr)
     | (jsonScalar jsonComparePred jsonScalar)
     ;
 
@@ -1727,8 +1727,8 @@ jsonString
     ;
 
 compoundCondition
-    : LP_ condition RP_ 
-    | NOT condition 
+    : LP_ condition RP_
+    | NOT condition
     | condition (AND | OR) condition
     ;
 
@@ -1737,7 +1737,7 @@ existsCondition
     ;
 
 inCondition
-    : (expr NOT? IN LP_ (expressionList | subquery) RP_) 
+    : (expr NOT? IN LP_ (expressionList | subquery) RP_)
     | (exprList NOT? IN LP_ ((expressionList (COMMA_ expressionList)*) | subquery) RP_)
     ;
 
@@ -2000,7 +2000,7 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
-    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE 
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE
         | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE
         | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
@@ -2072,7 +2072,7 @@ xmlTableFunction
     ;
 
 xmlIsSchemaValidFunction
-    : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
+    : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_
     ;
 
 xmlNamespacesClause

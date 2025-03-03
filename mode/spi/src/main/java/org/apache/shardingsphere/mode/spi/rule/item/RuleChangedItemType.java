@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.none;
+package org.apache.shardingsphere.mode.spi.rule.item;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@RuleRepositoryTupleEntity("none")
-public final class NoneYamlRuleConfiguration implements YamlRuleConfiguration {
+/**
+ * Rule changed item type.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+public final class RuleChangedItemType {
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return RuleConfiguration.class;
-    }
+    private final String ruleType;
+    
+    private final String ruleItemType;
 }

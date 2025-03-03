@@ -15,14 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
-
-public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
+public enum NodeYamlRuleConfigurationEnum {
     
-    @Override
-    public String generate(final Object tupleValue) {
-        return String.format("gen: %s", tupleValue);
-    }
+    FOO
 }

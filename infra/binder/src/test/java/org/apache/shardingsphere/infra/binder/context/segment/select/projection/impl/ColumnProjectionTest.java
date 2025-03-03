@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -54,7 +55,7 @@ class ColumnProjectionTest {
     @Test
     void assertGetOriginalTable() {
         ColumnProjection projection = new ColumnProjection(new IdentifierValue("owner"), new IdentifierValue("name"), new IdentifierValue("alias"), databaseType,
-                null, null, new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue("tbl"), new IdentifierValue("")));
+                null, null, new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue("tbl"), new IdentifierValue(""), TableSourceType.PHYSICAL_TABLE));
         assertThat(projection.getOriginalTable(), is(new IdentifierValue("tbl")));
     }
     
