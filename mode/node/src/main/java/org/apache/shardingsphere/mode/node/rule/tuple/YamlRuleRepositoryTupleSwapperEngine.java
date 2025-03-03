@@ -75,9 +75,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
      */
     public Collection<RuleRepositoryTuple> swapToTuples(final String databaseName, final YamlRuleConfiguration yamlRuleConfig) {
         RuleRepositoryTupleEntity entity = yamlRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
-        if (null == entity) {
-            return Collections.emptyList();
-        }
+        Preconditions.checkNotNull(entity);
         Preconditions.checkArgument(!entity.leaf());
         String ruleType = entity.value();
         Collection<RuleRepositoryTuple> result = new LinkedList<>();

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfigurationEnum;
-import org.apache.shardingsphere.mode.node.rule.tuple.fixture.none.NoneYamlRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -41,11 +40,6 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
         RuleRepositoryTuple actual = new YamlRuleRepositoryTupleSwapperEngine().swapToTuple(new LeafYamlRuleConfiguration("foo"));
         assertThat(actual.getPath(), is("/rules/leaf"));
         assertThat(actual.getContent(), is("value: foo" + System.lineSeparator()));
-    }
-    
-    @Test
-    void assertSwapToTuplesWithoutTupleEntityAnnotation() {
-        assertTrue(new YamlRuleRepositoryTupleSwapperEngine().swapToTuples("foo_db", new NoneYamlRuleConfiguration()).isEmpty());
     }
     
     @Test
