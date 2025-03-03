@@ -57,12 +57,13 @@ public final class DatabaseRuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
-        if (String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(alterRuleItem.getActiveVersionKey()))) {
-            log.warn("Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), alterRuleItem.getActiveVersionKey());
+        VersionNodePath versionNodePath = new VersionNodePath(getDatabaseRuleNodePath(alterRuleItem));
+        String activeVersionPath = versionNodePath.getActiveVersionPath();
+        if (!String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(activeVersionPath))) {
+            log.warn("Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), activeVersionPath);
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
-        VersionNodePath versionNodePath = getVersionNodePath(alterRuleItem);
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
         String databaseName = alterRuleItem.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
@@ -72,13 +73,13 @@ public final class DatabaseRuleItemManager {
         }
     }
     
-    private VersionNodePath getVersionNodePath(final AlterRuleItem alterRuleItem) {
+    private DatabaseRuleNodePath getDatabaseRuleNodePath(final AlterRuleItem alterRuleItem) {
         String ruleType = alterRuleItem.getType().getRuleType();
         String itemType = alterRuleItem.getType().getRuleItemType();
         DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
                 ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
                 : new DatabaseRuleItem(itemType);
-        return new VersionNodePath(new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem));
+        return new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem);
     }
     
     /**
