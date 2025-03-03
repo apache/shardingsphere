@@ -138,9 +138,6 @@ public final class DatabaseRulePersistService {
         Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(configs)) {
             List<RuleRepositoryTuple> tuples = new LinkedList<>(tupleSwapperEngine.swapToTuples(databaseName, each));
-            if (tuples.isEmpty()) {
-                continue;
-            }
             Collections.reverse(tuples);
             result.addAll(deleteTuples(tuples));
         }
