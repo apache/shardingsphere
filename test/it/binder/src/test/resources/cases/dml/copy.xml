@@ -41,6 +41,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="user_id" start-index="0" stop-index="0" start-delimiter="&quot;" end-delimiter="&quot;">
@@ -50,6 +51,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="user_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="status" start-index="0" stop-index="0" start-delimiter="&quot;" end-delimiter="&quot;">
@@ -59,6 +61,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="status" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="merchant_id" start-index="0" stop-index="0" start-delimiter="&quot;" end-delimiter="&quot;">
@@ -68,6 +71,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="merchant_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="remark" start-index="0" stop-index="0" start-delimiter="&quot;" end-delimiter="&quot;">
@@ -77,6 +81,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="remark" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                             <column-projection name="creation_date" start-index="0" stop-index="0" start-delimiter="&quot;" end-delimiter="&quot;">
@@ -86,6 +91,7 @@
                                     <original-schema name="public" />
                                     <original-table name="t_order" />
                                     <original-column name="creation_date" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
                             </column-projection>
                         </actual-projections>

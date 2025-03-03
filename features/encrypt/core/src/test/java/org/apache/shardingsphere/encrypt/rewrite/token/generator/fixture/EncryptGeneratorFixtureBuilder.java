@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -130,10 +131,10 @@ public final class EncryptGeneratorFixtureBuilder {
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         userIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"),
-                new IdentifierValue("user_id")));
+                new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment userNameColumn = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
         userNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
-                new IdentifierValue("t_user"), new IdentifierValue("user_name")));
+                new IdentifierValue("t_user"), new IdentifierValue("user_name"), TableSourceType.PHYSICAL_TABLE));
         List<ColumnSegment> insertColumns = Arrays.asList(userIdColumn, userNameColumn);
         if (containsInsertColumns) {
             result.setInsertColumns(new InsertColumnsSegment(0, 0, insertColumns));
@@ -147,7 +148,7 @@ public final class EncryptGeneratorFixtureBuilder {
         projections.getProjections().add(new ColumnProjectionSegment(userIdColumn));
         ColumnSegment statusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         statusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"),
-                new IdentifierValue("status")));
+                new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
         projections.getProjections().add(new ColumnProjectionSegment(statusColumn));
         selectStatement.setProjections(projections);
         result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
@@ -169,12 +170,11 @@ public final class EncryptGeneratorFixtureBuilder {
     
     private static WhereSegment createWhereSegment() {
         ColumnSegment nameColumnSegment = new ColumnSegment(10, 13, new IdentifierValue("name"));
-        nameColumnSegment.setColumnBoundInfo(
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"), new IdentifierValue("name")));
+        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
+        nameColumnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("t_user"), new IdentifierValue("name"), TableSourceType.TEMPORARY_TABLE));
         BinaryOperationExpression nameExpression = new BinaryOperationExpression(10, 24, nameColumnSegment, new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
         ColumnSegment pwdColumnSegment = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
-        pwdColumnSegment.setColumnBoundInfo(
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"), new IdentifierValue("pwd")));
+        pwdColumnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("t_user"), new IdentifierValue("pwd"), TableSourceType.TEMPORARY_TABLE));
         BinaryOperationExpression pwdExpression = new BinaryOperationExpression(30, 44, pwdColumnSegment, new LiteralExpressionSegment(40, 45, "123456"), "=", "pwd = '123456'");
         return new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, nameExpression, pwdExpression, "AND", "name = 'LiLei' AND pwd = '123456'"));
     }

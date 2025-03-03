@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 @RequiredArgsConstructor
 @Getter
-public final class LeafRuleConfiguration implements RuleConfiguration {
+public final class LeafRuleConfiguration implements GlobalRuleConfiguration {
     
     private final String value;
 }

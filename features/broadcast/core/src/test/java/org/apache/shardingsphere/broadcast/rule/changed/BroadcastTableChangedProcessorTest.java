@@ -22,6 +22,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
@@ -40,7 +41,7 @@ class BroadcastTableChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<BroadcastRuleConfiguration, BroadcastRuleConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "broadcast.tables");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("broadcast", "tables"));
     
     @Test
     void assertSwapRuleItemConfiguration() {

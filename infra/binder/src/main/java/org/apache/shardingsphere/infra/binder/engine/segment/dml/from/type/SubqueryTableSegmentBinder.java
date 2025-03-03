@@ -26,11 +26,15 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.Collection;
 
 /**
  * Subquery table segment binder.
@@ -62,9 +66,10 @@ public final class SubqueryTableSegmentBinder {
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
-        SimpleTableSegmentBinderContext tableBinderContext =
-                new SimpleTableSegmentBinderContext(
-                        SubqueryTableBindUtils.createSubqueryProjections(boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType()));
+        Collection<ProjectionSegment> subqueryProjections =
+                SubqueryTableBindUtils.createSubqueryProjections(boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(),
+                        TableSourceType.TEMPORARY_TABLE);
+        SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
         tableBinderContexts.put(new CaseInsensitiveString(subqueryTableName.getValue()), tableBinderContext);
         return result;

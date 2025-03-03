@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -49,12 +50,13 @@ class AssignmentSegmentBinderTest {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
-                new IdentifierValue("t_order"), new IdentifierValue("order_id")));
+                new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         assignments.add(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        tableBinderContexts.put(new CaseInsensitiveString("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn))));
+        tableBinderContexts.put(new CaseInsensitiveString("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
         SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, mock(SQLStatementBinderContext.class), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual, not(setAssignmentSegment));
         assertThat(actual.getAssignments().iterator().next(), not(setAssignmentSegment.getAssignments().iterator().next()));

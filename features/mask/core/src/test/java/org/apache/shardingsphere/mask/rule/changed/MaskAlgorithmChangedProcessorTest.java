@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class MaskAlgorithmChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "mask.mask_algorithms");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("mask", "mask_algorithms"));
     
     @Test
     void assertFindRuleConfigurationWhenAbsent() {

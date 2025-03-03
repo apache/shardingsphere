@@ -29,9 +29,10 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ColumnProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ShorthandProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.SubqueryProjectionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -147,8 +148,9 @@ public final class ProjectionsSegmentBinder {
     private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext,
                                                                                                                final Collection<ProjectionSegment> projections) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
-        Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(projections, new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType());
-        result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections));
+        Collection<ProjectionSegment> subqueryProjections =
+                SubqueryTableBindUtils.createSubqueryProjections(projections, new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+        result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
         return result;
     }
 }

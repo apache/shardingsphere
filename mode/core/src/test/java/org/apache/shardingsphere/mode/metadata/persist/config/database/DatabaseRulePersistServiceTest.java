@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
@@ -47,17 +47,29 @@ class DatabaseRulePersistServiceTest {
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
-    
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
+    void setUp() {
         persistService = new DatabaseRulePersistService(repository);
-        Plugins.getMemberAccessor().set(DatabaseRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), persistService, ruleRepositoryTuplePersistService);
     }
     
     @Test
     void assertLoad() {
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.singletonList("fixture"));
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/versions/0")).thenReturn("unique_content");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/named")).thenReturn(Collections.singletonList("rule_item"));
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/versions/0")).thenReturn("named_content");
+        Collection<RuleConfiguration> actual = persistService.load("foo_db");
+        assertThat(actual.size(), is(1));
+        MockedRuleConfiguration ruleConfig = (MockedRuleConfiguration) actual.iterator().next();
+        assertThat(ruleConfig.getUnique(), is("unique_content"));
+        assertThat(ruleConfig.getNamed(), is(Collections.singletonMap("rule_item", "named_content")));
+    }
+    
+    @Test
+    void assertLoadWithEmptyDatabase() {
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.emptyList());
         assertTrue(persistService.load("foo_db").isEmpty());
     }
     

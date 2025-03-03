@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.spi.rule.item.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 
 /**
  * Alter unique rule item.
@@ -33,5 +34,5 @@ public final class AlterUniqueRuleItem implements AlterRuleItem {
     
     private final int activeVersion;
     
-    private final String type;
+    private final RuleChangedItemType type;
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -39,7 +40,7 @@ class DefaultShardingColumnChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, String> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "sharding.default_sharding_column");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("sharding", "default_sharding_column"));
     
     @Test
     void assertSwapRuleItemConfiguration() {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +46,8 @@ class TableMetaDataPersistServiceTest {
     
     @BeforeEach
     void setUp() {
-        MetaDataVersionPersistService metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
-        persistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
+        VersionPersistService versionPersistService = new VersionPersistService(repository);
+        persistService = new TableMetaDataPersistService(repository, versionPersistService);
     }
     
     @Test

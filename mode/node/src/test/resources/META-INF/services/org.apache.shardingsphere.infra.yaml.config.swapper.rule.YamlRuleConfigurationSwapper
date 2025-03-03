@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfigurationSwapper
+org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.NodeYamlRuleConfigurationSwapper

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.type;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -55,8 +54,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
             return;
         }
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        Optional<RuleConfiguration> ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
-        Preconditions.checkArgument(ruleConfig.isPresent(), "Can not find rule configuration with name: %s", ruleType.get());
-        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig.get());
+        RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig);
     }
 }
