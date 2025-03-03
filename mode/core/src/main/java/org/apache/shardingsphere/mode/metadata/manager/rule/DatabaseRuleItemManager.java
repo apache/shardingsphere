@@ -58,9 +58,7 @@ public final class DatabaseRuleItemManager {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
         VersionNodePath versionNodePath = new VersionNodePath(getDatabaseRuleNodePath(alterRuleItem));
-        String activeVersionPath = versionNodePath.getActiveVersionPath();
-        if (!String.valueOf(alterRuleItem.getActiveVersion()).equals(metaDataPersistFacade.getRepository().query(activeVersionPath))) {
-            log.warn("Invalid active version: {} of key: {}", alterRuleItem.getActiveVersion(), activeVersionPath);
+        if (!checkActiveVersion(versionNodePath, alterRuleItem.getCurrentVersion())) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
@@ -71,6 +69,14 @@ public final class DatabaseRuleItemManager {
             processor.changeRuleItemConfiguration(alterRuleItem, currentRuleConfig, processor.swapRuleItemConfiguration(alterRuleItem, yamlContent));
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
         }
+    }
+    
+    private boolean checkActiveVersion(final VersionNodePath versionNodePath, final int currentVersion) {
+        if (String.valueOf(currentVersion).equals(metaDataPersistFacade.getRepository().query(versionNodePath.getActiveVersionPath()))) {
+            return true;
+        }
+        log.warn("Invalid active version `{}` of key `{}`", currentVersion, versionNodePath.getActiveVersionPath());
+        return false;
     }
     
     private DatabaseRuleNodePath getDatabaseRuleNodePath(final AlterRuleItem alterRuleItem) {

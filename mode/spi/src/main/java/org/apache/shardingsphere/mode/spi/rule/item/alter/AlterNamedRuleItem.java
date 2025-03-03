@@ -32,9 +32,7 @@ public final class AlterNamedRuleItem implements AlterRuleItem {
     
     private final String itemName;
     
-    private final String activeVersionKey;
-    
-    private final int activeVersion;
+    private final int currentVersion;
     
     private final RuleChangedItemType type;
 }

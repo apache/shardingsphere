@@ -30,9 +30,7 @@ public final class AlterUniqueRuleItem implements AlterRuleItem {
     
     private final String databaseName;
     
-    private final String activeVersionKey;
-    
-    private final int activeVersion;
+    private final int currentVersion;
     
     private final RuleChangedItemType type;
 }
