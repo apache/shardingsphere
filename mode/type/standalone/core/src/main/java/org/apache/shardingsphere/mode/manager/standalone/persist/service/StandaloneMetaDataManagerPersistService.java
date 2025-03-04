@@ -31,8 +31,6 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedTy
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
@@ -215,7 +213,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemAlteredBuildExecutor());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), true);
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
@@ -230,7 +228,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemDroppedBuildExecutor());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), false);
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }

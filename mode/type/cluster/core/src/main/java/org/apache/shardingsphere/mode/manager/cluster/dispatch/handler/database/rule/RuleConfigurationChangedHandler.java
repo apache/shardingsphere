@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
@@ -60,12 +58,12 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), new RuleItemAlteredBuildExecutor());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), true);
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), new RuleItemDroppedBuildExecutor());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), false);
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }
