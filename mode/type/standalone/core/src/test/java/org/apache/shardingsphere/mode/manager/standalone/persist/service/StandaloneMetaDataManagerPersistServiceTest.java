@@ -174,7 +174,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersions);
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
         RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = mock(RuleItemChangedBuildExecutor.class);
-        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any(), eq(true))).thenReturn(Optional.of(databaseRuleNodePath));
+        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedBuildExecutor);
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath, 0);
@@ -193,7 +193,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
         RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = mock(RuleItemChangedBuildExecutor.class);
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
-        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any(), eq(false))).thenReturn(Optional.of(databaseRuleNodePath));
+        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedBuildExecutor);
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(databaseRuleNodePath);

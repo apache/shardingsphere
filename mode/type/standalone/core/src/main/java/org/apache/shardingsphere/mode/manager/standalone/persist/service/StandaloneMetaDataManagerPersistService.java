@@ -213,7 +213,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath(), true);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath());
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
@@ -228,7 +228,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath(), false);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath());
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }

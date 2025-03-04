@@ -36,17 +36,16 @@ public final class RuleItemChangedBuildExecutor {
      *
      * @param databaseName database name
      * @param path path
-     * @param containsChildPath contains child path
      * @return built database rule node path
      */
-    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path, final boolean containsChildPath) {
+    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path) {
         Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
         if (!ruleType.isPresent()) {
             return Optional.empty();
         }
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
-            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, containsChildPath));
+            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, true));
             if (!itemName.isPresent()) {
                 continue;
             }
