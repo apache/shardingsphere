@@ -54,7 +54,7 @@ public final class RuleItemChangedBuildExecutor {
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
-                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each)));
+                return Optional.of(databaseRuleNodePath);
             }
         }
         return Optional.empty();
