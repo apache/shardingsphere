@@ -67,7 +67,6 @@ customKeyword
     | UTC_DATE
     | UTC_TIME
     | UTC_TIMESTAMP
-    | UTC_TIMESTAMP
     ;
 
 literals
@@ -151,7 +150,6 @@ identifierKeywordsUnambiguous
     | AVG_ROW_LENGTH
     | AVG
     | BACKUP
-    | BEFORE
     | BERNOULLI
     | BINLOG
     | BIT
@@ -191,7 +189,6 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
-    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -199,9 +196,7 @@ identifierKeywordsUnambiguous
     | DATETIME
     | DATE
     | DAY
-    | DAY_MINUTE
     | DEFAULT_AUTH
-    | DEFAULT
     | DEFINER
     | DEFINITION
     | DELAY_KEY_WRITE
@@ -213,7 +208,6 @@ identifierKeywordsUnambiguous
     | DISK
     | DUMPFILE
     | DUPLICATE
-    | DROP
     | DYNAMIC
     | ENABLE
     | ENCRYPTION
@@ -255,7 +249,6 @@ identifierKeywordsUnambiguous
     | GET_MASTER_PUBLIC_KEY
     | GRANTS
     | GROUP_REPLICATION
-    | GROUPS
     | GTIDS
     | HASH
     | HISTOGRAM
@@ -279,11 +272,8 @@ identifierKeywordsUnambiguous
     | ISSUER
     | JSON
     | JSON_VALUE
-    | KEY
-    | KEYS
     | KEY_BLOCK_SIZE
     | KEYRING
-    | KILL
     | LAST
     | LEAVES
     | LESS
@@ -294,9 +284,6 @@ identifierKeywordsUnambiguous
     | LOCKS
     | LOGFILE
     | LOGS
-    | LOOP
-    | MANUAL
-    | MATCH
     | MAXVALUE
     | MASTER_AUTO_POSITION
     | MASTER_COMPRESSION_ALGORITHM
@@ -342,7 +329,6 @@ identifierKeywordsUnambiguous
     | MIN_ROWS
     | MODE
     | MODIFY
-    | MODIFIES
     | MONTH
     | MULTILINESTRING
     | MULTIPOINT
@@ -352,7 +338,6 @@ identifierKeywordsUnambiguous
     | NAMES
     | NAME
     | NATIONAL
-    | NATURAL
     | NCHAR
     | NDBCLUSTER
     | NESTED
@@ -365,7 +350,6 @@ identifierKeywordsUnambiguous
     | NULLS
     | NUMBER
     | NVARCHAR
-    | OF
     | OFF
     | OFFSET
     | OJ
@@ -404,12 +388,10 @@ identifierKeywordsUnambiguous
     | PROCESSLIST
     | PROFILES
     | PROFILE
-    | QUALIFY
     | QUARTER
     | QUERY
     | QUICK
     | RANDOM
-    | RANK
     | READ_ONLY
     | REBUILD
     | RECOVER
@@ -497,8 +479,6 @@ identifierKeywordsUnambiguous
     | SUSPEND
     | SWAPS
     | SWITCHES
-    | SYSTEM
-    | TABLE
     | TABLES
     | TABLESPACE
     | TABLE_CHECKSUM
@@ -546,9 +526,6 @@ identifierKeywordsUnambiguous
     | XID
     | XML
     | YEAR
-    | YEAR_MONTH
-    | CONDITION
-    | DESCRIBE
     | ZONE
     ;
 
