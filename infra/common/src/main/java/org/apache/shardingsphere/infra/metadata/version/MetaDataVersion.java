@@ -34,6 +34,6 @@ public final class MetaDataVersion {
     private final int activeVersion;
     
     public MetaDataVersion(final String path) {
-        this(path, 0);
+        this(path, INIT_VERSION);
     }
 }
