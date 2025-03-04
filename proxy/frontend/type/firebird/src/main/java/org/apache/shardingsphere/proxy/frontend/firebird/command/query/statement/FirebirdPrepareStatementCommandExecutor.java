@@ -303,11 +303,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getFunctionType(String functionName) {
         switch (functionName) {
-            case "rdb$set_context":
-            case "rdb$get_context":
-                return 4;
-            default:
+            case "current_user":
                 return 12;
+            default:
+                return 4;
         }
     }
     

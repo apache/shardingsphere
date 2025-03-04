@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Bool
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CompleteRegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ContextVariablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeNameContext;
@@ -492,10 +494,21 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
+        return null == ctx.completeRegularFunction() ? visit(ctx.contextVariables()) : visit(ctx.completeRegularFunction());
+    }
+    
+    @Override
+    public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitContextVariables(final ContextVariablesContext ctx) {
+        String text = getOriginalText(ctx);
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), text);
     }
     
     @Override

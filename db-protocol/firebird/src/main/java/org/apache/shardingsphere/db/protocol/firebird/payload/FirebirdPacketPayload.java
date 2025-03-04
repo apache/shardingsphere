@@ -195,7 +195,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @param value fixed length bytes
      */
     public void writeString(final String value) {
-        this.writeBuffer(value.getBytes(charset));
+        writeBuffer(value.getBytes(charset));
     }
     
     /**

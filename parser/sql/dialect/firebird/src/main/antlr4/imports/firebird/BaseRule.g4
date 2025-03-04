@@ -283,7 +283,6 @@ simpleExpr
     | matchExpression
     | caseExpression
     | intervalExpression
-    | timeConstants
     ;
 
 functionCall
@@ -338,6 +337,11 @@ trimFunction
     ;
 
 regularFunction
+    : completeRegularFunction
+    | contextVariables
+    ;
+
+completeRegularFunction
     : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
@@ -349,9 +353,9 @@ regularFunctionName
     | COALESCE
     ;
 
-timeConstants
-    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP
-    ;
+//timeConstants
+//    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP
+//    ;
 
 matchExpression
     : literals MATCH UNIQUE? (PARTIAL | FULL)  subquery
@@ -482,7 +486,8 @@ defaultValue
 contextVariables
     : CURRENT_CONNECTION | CURRENT_DATE | CURRENT_ROLE
     | CURRENT_TIME | CURRENT_TIMESTAMP
-    | CURRENT_TRANSACTION | CURRENT_USER
+    | LOCALTIME | LOCALTIMESTAMP
+    | CURRENT_TRANSACTION | CURRENT_USER | USER
     | INSERTING | UPDATING | DELETING
     | NEW | NOW | OLD | ROW_COUNT
     | SQLCODE | GDSCODE | SQLSTATE
