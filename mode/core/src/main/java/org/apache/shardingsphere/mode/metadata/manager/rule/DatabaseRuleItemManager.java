@@ -54,6 +54,7 @@ public final class DatabaseRuleItemManager {
      * Alter rule item.
      *
      * @param alterRuleItem alter rule item
+     * @param currentVersion current version
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
