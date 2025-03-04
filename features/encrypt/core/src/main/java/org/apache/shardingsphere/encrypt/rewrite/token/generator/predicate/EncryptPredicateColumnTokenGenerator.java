@@ -32,7 +32,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
@@ -112,11 +114,11 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
             Preconditions.checkState(likeQueryColumnItem.isPresent());
             return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(
-                    likeQueryColumnItem.get().getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_LIKE_QUERY, databaseType), databaseType));
+                    likeQueryColumnItem.get().getName(), columnSegment, EncryptDerivedColumnSuffix.LIKE_QUERY, databaseType), databaseType));
         }
         Collection<Projection> columnProjections = encryptColumn.getAssistedQuery()
-                .map(optional -> createColumnProjections(optional.getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_ASSISTED_QUERY, databaseType))
-                .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment, EncryptDerivedColumnSuffix.DERIVED_CIPHER, databaseType));
+                .map(optional -> createColumnProjections(optional.getName(), columnSegment, EncryptDerivedColumnSuffix.ASSISTED_QUERY, databaseType))
+                .orElseGet(() -> createColumnProjections(encryptColumn.getCipher().getName(), columnSegment, EncryptDerivedColumnSuffix.CIPHER, databaseType));
         return Collections.singleton(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, databaseType));
     }
     
@@ -129,7 +131,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         String columnName = TableSourceType.TEMPORARY_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType()
                 ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), databaseType)
                 : actualColumnName;
-        ColumnProjection columnProjection = new ColumnProjection(null, new IdentifierValue(columnName, columnSegment.getIdentifier().getQuoteCharacter()), null, databaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        ColumnProjection columnProjection = new ColumnProjection(null, new IdentifierValue(columnName, dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType);
         return Collections.singleton(columnProjection);
     }
 }

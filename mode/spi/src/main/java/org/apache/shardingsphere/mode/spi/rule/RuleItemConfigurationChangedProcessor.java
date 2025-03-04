@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
 /**
  * Rule item configuration changed processor.
@@ -37,11 +35,11 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     /**
      * Swap rule item configuration.
      *
-     * @param alterRuleItem alter rule item
+     * @param itemName item name
      * @param yamlContent YAML content
      * @return rule item configuration
      */
-    I swapRuleItemConfiguration(AlterRuleItem alterRuleItem, String yamlContent);
+    I swapRuleItemConfiguration(String itemName, String yamlContent);
     
     /**
      * Find rule configuration.
@@ -54,19 +52,19 @@ public interface RuleItemConfigurationChangedProcessor<T extends RuleConfigurati
     /**
      * Change rule item configuration.
      *
-     * @param alterRuleItem alter rule item
+     * @param itemName item name
      * @param currentRuleConfig current rule configuration
      * @param toBeChangedItemConfig to be changed item configuration
      */
-    void changeRuleItemConfiguration(AlterRuleItem alterRuleItem, T currentRuleConfig, I toBeChangedItemConfig);
+    void changeRuleItemConfiguration(String itemName, T currentRuleConfig, I toBeChangedItemConfig);
     
     /**
      * Drop rule item configuration.
      *
-     * @param dropRuleItem drop rule item
+     * @param itemName item name
      * @param currentRuleConfig current rule configuration
      */
-    void dropRuleItemConfiguration(DropRuleItem dropRuleItem, T currentRuleConfig);
+    void dropRuleItemConfiguration(String itemName, T currentRuleConfig);
     
     @Override
     RuleChangedItemType getType();

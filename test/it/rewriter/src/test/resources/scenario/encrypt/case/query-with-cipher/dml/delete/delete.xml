@@ -19,52 +19,52 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="delete_for_parameters" db-types="MySQL">
         <input sql="DELETE FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="DELETE FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="DELETE FROM t_account WHERE account_id = ? AND `assisted_query_password` = ? AND `like_query_password` like ? AND `cipher_amount` = ? AND status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_for_literals" db-types="MySQL">
         <input sql="DELETE FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="DELETE FROM t_account WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `like_query_password` like 'like_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_plain_for_parameters" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND `assisted_query_password` = ? AND `like_query_password` like ? AND `cipher_amount` = ? AND status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_plain_for_literals" db-types="MySQL">
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND `assisted_query_password` = 'assisted_query_aaa' AND `like_query_password` like 'like_query_aaa' AND `cipher_amount` = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_table_with_alias_for_parameters" db-types="MySQL">
         <input sql="DELETE t FROM t_account t WHERE t.account_id = ? AND t.password = ? AND t.password like ? AND t.amount = ? AND t.status = ?" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="DELETE t FROM t_account t WHERE t.account_id = ? AND t.assisted_query_password = ? AND t.like_query_password like ? AND t.cipher_amount = ? AND t.status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="DELETE t FROM t_account t WHERE t.account_id = ? AND t.`assisted_query_password` = ? AND t.`like_query_password` like ? AND t.`cipher_amount` = ? AND t.status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_table_with_alias_for_literals" db-types="MySQL">
         <input sql="DELETE t FROM t_account t WHERE t.account_id = 1 AND t.password = 'aaa' AND t.password like 'aaa' AND t.amount = 1000 AND t.status = 'OK'" />
-        <output sql="DELETE t FROM t_account t WHERE t.account_id = 1 AND t.assisted_query_password = 'assisted_query_aaa' AND t.like_query_password like 'like_query_aaa' AND t.cipher_amount = 'encrypt_1000' AND t.status = 'OK'" />
+        <output sql="DELETE t FROM t_account t WHERE t.account_id = 1 AND t.`assisted_query_password` = 'assisted_query_aaa' AND t.`like_query_password` like 'like_query_aaa' AND t.`cipher_amount` = 'encrypt_1000' AND t.status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_user_for_parameters" db-types="SQLServer">
         <input sql="DELETE FROM t_user WHERE user_id = ? and user_name = ? and user_name like ? and password = ?  and email = ?" parameters="1, test_user, test_%, admin123, admin@gmail.com" />
-        <output sql="DELETE FROM t_user WHERE user_id = ? and user_name_cipher = ? and user_name_like like ? and password_cipher = ?  and email_cipher = ?" parameters="1, o07WOpLlazifLKU747nd8w==, udtu_%, beO6rTHBW9jmVeSPPb62QA==, zclI1Wk2uaVYHyNckTRYzA==" />
+        <output sql="DELETE FROM t_user WHERE user_id = ? and [user_name_cipher] = ? and [user_name_like] like ? and [password_cipher] = ?  and [email_cipher] = ?" parameters="1, o07WOpLlazifLKU747nd8w==, udtu_%, beO6rTHBW9jmVeSPPb62QA==, zclI1Wk2uaVYHyNckTRYzA==" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_user_for_literals" db-types="SQLServer">
         <input sql="DELETE FROM t_user WHERE user_id = 2 and user_name = 'test_user' and user_name like 'test_%' and password = 'admin123'  and email = 'admin@gmail.com'" />
-        <output sql="DELETE FROM t_user WHERE user_id = 2 and user_name_cipher = 'o07WOpLlazifLKU747nd8w==' and user_name_like like 'udtu_%' and password_cipher = 'beO6rTHBW9jmVeSPPb62QA=='  and email_cipher = 'zclI1Wk2uaVYHyNckTRYzA=='" />
+        <output sql="DELETE FROM t_user WHERE user_id = 2 and [user_name_cipher] = 'o07WOpLlazifLKU747nd8w==' and [user_name_like] like 'udtu_%' and [password_cipher] = 'beO6rTHBW9jmVeSPPb62QA=='  and [email_cipher] = 'zclI1Wk2uaVYHyNckTRYzA=='" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_user_with_alias_for_literals" db-types="SQLServer">
         <input sql="DELETE t FROM t_user as t WHERE t.user_id = 3 and t.user_name = 'test_user' and t.user_name like 'test_%' and t.password = 'admin123'  and t.email = 'admin@gmail.com'" />
-        <output sql="DELETE t FROM t_user as t WHERE t.user_id = 3 and t.user_name_cipher = 'o07WOpLlazifLKU747nd8w==' and t.user_name_like like 'udtu_%' and t.password_cipher = 'beO6rTHBW9jmVeSPPb62QA=='  and t.email_cipher = 'zclI1Wk2uaVYHyNckTRYzA=='" />
+        <output sql="DELETE t FROM t_user as t WHERE t.user_id = 3 and t.[user_name_cipher] = 'o07WOpLlazifLKU747nd8w==' and t.[user_name_like] like 'udtu_%' and t.[password_cipher] = 'beO6rTHBW9jmVeSPPb62QA=='  and t.[email_cipher] = 'zclI1Wk2uaVYHyNckTRYzA=='" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_user_with_database_and_schema_and_alias_for_literals" db-types="SQLServer">
         <input sql="DELETE t FROM encrypt.dbo.t_user as t WHERE t.user_id = 4 and t.user_name = 'test_user' and t.user_name like 'test_%' and t.password = 'admin123'  and t.email = 'admin@gmail.com'" />
-        <output sql="DELETE t FROM dbo.t_user as t WHERE t.user_id = 4 and t.user_name_cipher = 'o07WOpLlazifLKU747nd8w==' and t.user_name_like like 'udtu_%' and t.password_cipher = 'beO6rTHBW9jmVeSPPb62QA=='  and t.email_cipher = 'zclI1Wk2uaVYHyNckTRYzA=='" />
+        <output sql="DELETE t FROM dbo.t_user as t WHERE t.user_id = 4 and t.[user_name_cipher] = 'o07WOpLlazifLKU747nd8w==' and t.[user_name_like] like 'udtu_%' and t.[password_cipher] = 'beO6rTHBW9jmVeSPPb62QA=='  and t.[email_cipher] = 'zclI1Wk2uaVYHyNckTRYzA=='" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_with_quote" db-types="MySQL">
