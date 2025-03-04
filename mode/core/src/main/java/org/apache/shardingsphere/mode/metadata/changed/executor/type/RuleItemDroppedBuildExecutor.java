@@ -20,34 +20,30 @@ package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
-import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropUniqueRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 
 import java.util.Optional;
 
 /**
  * Rule item dropped build executor.
  */
-public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor<DropRuleItem> {
+public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor {
     
     @Override
-    public Optional<DropRuleItem> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path) {
+    public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path) {
         for (String each : databaseRuleNode.getNamedItems()) {
             Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseRuleNode.getRuleType(), each));
             if (itemName.isPresent()) {
-                return Optional.of(new DropNamedRuleItem(databaseName, itemName.get(), new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
+                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get())));
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
-                return Optional.of(new DropUniqueRuleItem(databaseName, new RuleChangedItemType(databaseRuleNode.getRuleType(), each)));
+                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each)));
             }
         }
         return Optional.empty();

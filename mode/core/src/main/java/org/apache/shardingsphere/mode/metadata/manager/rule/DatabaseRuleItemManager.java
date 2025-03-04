@@ -26,14 +26,9 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
 import java.sql.SQLException;
 
@@ -53,21 +48,21 @@ public final class DatabaseRuleItemManager {
     /**
      * Alter rule item.
      *
-     * @param alterRuleItem alter rule item
+     * @param databaseRuleNodePath database rule node path
      * @param currentVersion current version
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void alter(final AlterRuleItem alterRuleItem, final int currentVersion) throws SQLException {
-        VersionNodePath versionNodePath = new VersionNodePath(getDatabaseRuleNodePath(alterRuleItem));
+    public void alter(final DatabaseRuleNodePath databaseRuleNodePath, final int currentVersion) throws SQLException {
+        VersionNodePath versionNodePath = new VersionNodePath(databaseRuleNodePath);
         if (!checkActiveVersion(versionNodePath, currentVersion)) {
             return;
         }
-        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, databaseRuleNodePath.getRuleType());
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
-        String databaseName = alterRuleItem.getDatabaseName();
+        String databaseName = databaseRuleNodePath.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
-        String itemName = alterRuleItem instanceof AlterNamedRuleItem ? ((AlterNamedRuleItem) alterRuleItem).getItemName() : null;
+        String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
             processor.changeRuleItemConfiguration(itemName, currentRuleConfig, processor.swapRuleItemConfiguration(itemName, yamlContent));
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
@@ -82,28 +77,19 @@ public final class DatabaseRuleItemManager {
         return false;
     }
     
-    private DatabaseRuleNodePath getDatabaseRuleNodePath(final AlterRuleItem alterRuleItem) {
-        String ruleType = alterRuleItem.getType().getRuleType();
-        String itemType = alterRuleItem.getType().getRuleItemType();
-        DatabaseRuleItem databaseRuleItem = alterRuleItem instanceof AlterNamedRuleItem
-                ? new DatabaseRuleItem(itemType, ((AlterNamedRuleItem) alterRuleItem).getItemName())
-                : new DatabaseRuleItem(itemType);
-        return new DatabaseRuleNodePath(alterRuleItem.getDatabaseName(), ruleType, databaseRuleItem);
-    }
-    
     /**
      * Drop rule item.
      *
-     * @param dropRuleItem drop rule item
+     * @param databaseRuleNodePath database rule node path
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void drop(final DropRuleItem dropRuleItem) throws SQLException {
-        String databaseName = dropRuleItem.getDatabaseName();
+    public void drop(final DatabaseRuleNodePath databaseRuleNodePath) throws SQLException {
+        String databaseName = databaseRuleNodePath.getDatabaseName();
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
-        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, dropRuleItem.getType());
+        RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, databaseRuleNodePath.getRuleType());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
-        String itemName = dropRuleItem instanceof DropNamedRuleItem ? ((DropNamedRuleItem) dropRuleItem).getItemName() : null;
+        String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
             processor.dropRuleItemConfiguration(itemName, currentRuleConfig);
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig,
