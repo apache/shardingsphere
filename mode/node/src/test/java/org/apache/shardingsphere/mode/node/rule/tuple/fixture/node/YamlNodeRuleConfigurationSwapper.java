@@ -17,7 +17,32 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
-public enum NodeYamlRuleConfigurationEnum {
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+
+public final class YamlNodeRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlNodeRuleConfiguration, NodeRuleConfiguration> {
     
-    FOO
+    @Override
+    public YamlNodeRuleConfiguration swapToYamlConfiguration(final NodeRuleConfiguration data) {
+        return new YamlNodeRuleConfiguration();
+    }
+    
+    @Override
+    public NodeRuleConfiguration swapToObject(final YamlNodeRuleConfiguration yamlConfig) {
+        return new NodeRuleConfiguration();
+    }
+    
+    @Override
+    public String getRuleTagName() {
+        return "NODE";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 12000;
+    }
+    
+    @Override
+    public Class<NodeRuleConfiguration> getTypeClass() {
+        return NodeRuleConfiguration.class;
+    }
 }

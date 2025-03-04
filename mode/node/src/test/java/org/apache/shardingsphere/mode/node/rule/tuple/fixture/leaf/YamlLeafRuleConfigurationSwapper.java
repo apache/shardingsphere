@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
-public final class NodeYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<NodeYamlRuleConfiguration, NodeRuleConfiguration> {
+public final class YamlLeafRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlLeafRuleConfiguration, LeafRuleConfiguration> {
     
     @Override
-    public NodeYamlRuleConfiguration swapToYamlConfiguration(final NodeRuleConfiguration data) {
-        return new NodeYamlRuleConfiguration();
+    public YamlLeafRuleConfiguration swapToYamlConfiguration(final LeafRuleConfiguration data) {
+        return new YamlLeafRuleConfiguration(data.getValue());
     }
     
     @Override
-    public NodeRuleConfiguration swapToObject(final NodeYamlRuleConfiguration yamlConfig) {
-        return new NodeRuleConfiguration();
+    public LeafRuleConfiguration swapToObject(final YamlLeafRuleConfiguration yamlConfig) {
+        return new LeafRuleConfiguration(yamlConfig.getValue());
     }
     
     @Override
     public String getRuleTagName() {
-        return "NODE";
+        return "LEAF";
     }
     
     @Override
     public int getOrder() {
-        return 12000;
+        return 11000;
     }
     
     @Override
-    public Class<NodeRuleConfiguration> getTypeClass() {
-        return NodeRuleConfiguration.class;
+    public Class<LeafRuleConfiguration> getTypeClass() {
+        return LeafRuleConfiguration.class;
     }
 }
