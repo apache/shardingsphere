@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -63,7 +62,7 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         RuleRepositoryTupleEntity entity = yamlGlobalRuleConfig.getClass().getAnnotation(RuleRepositoryTupleEntity.class);
         Preconditions.checkNotNull(entity);
         Preconditions.checkArgument(entity.leaf());
-        return new RuleRepositoryTuple(NodePathGenerator.toPath(new GlobalRuleNodePath(entity.value()), false), YamlEngine.marshal(yamlGlobalRuleConfig));
+        return new RuleRepositoryTuple(new GlobalRuleNodePath(entity.value()), YamlEngine.marshal(yamlGlobalRuleConfig));
     }
     
     /**
@@ -107,14 +106,13 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
         if (fieldValue instanceof Map) {
             for (Object entry : ((Map) fieldValue).entrySet()) {
                 String ruleItemName = ((Entry) entry).getKey().toString();
-                String path = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, ruleItemName)), false);
-                result.add(new RuleRepositoryTuple(path, YamlEngine.marshal(((Entry) entry).getValue())));
+                result.add(
+                        new RuleRepositoryTuple(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, ruleItemName)), YamlEngine.marshal(((Entry) entry).getValue())));
             }
         } else {
             for (Object each : (Collection) fieldValue) {
                 String ruleItemName = field.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class).value().getConstructor().newInstance().generate(each);
-                String path = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, ruleItemName)), false);
-                result.add(new RuleRepositoryTuple(path, each.toString()));
+                result.add(new RuleRepositoryTuple(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, ruleItemName)), each.toString()));
             }
         }
         return result;
@@ -122,20 +120,20 @@ public final class YamlRuleRepositoryTupleSwapperEngine {
     
     @SuppressWarnings("rawtypes")
     private Optional<RuleRepositoryTuple> swapToUniqueTuple(final String databaseName, final String ruleType, final String ruleItemType, final Object fieldValue) {
-        String path = NodePathGenerator.toPath(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType)), false);
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType));
         if (fieldValue instanceof Collection) {
-            return ((Collection) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleRepositoryTuple(path, YamlEngine.marshal(fieldValue)));
+            return ((Collection) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleRepositoryTuple(databaseRuleNodePath, YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
-            return ((String) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleRepositoryTuple(path, fieldValue.toString()));
+            return ((String) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleRepositoryTuple(databaseRuleNodePath, fieldValue.toString()));
         }
         if (fieldValue instanceof Boolean || fieldValue instanceof Integer || fieldValue instanceof Long) {
-            return Optional.of(new RuleRepositoryTuple(path, fieldValue.toString()));
+            return Optional.of(new RuleRepositoryTuple(databaseRuleNodePath, fieldValue.toString()));
         }
         if (fieldValue instanceof Enum) {
-            return Optional.of(new RuleRepositoryTuple(path, ((Enum) fieldValue).name()));
+            return Optional.of(new RuleRepositoryTuple(databaseRuleNodePath, ((Enum) fieldValue).name()));
         }
-        return Optional.of(new RuleRepositoryTuple(path, YamlEngine.marshal(fieldValue)));
+        return Optional.of(new RuleRepositoryTuple(databaseRuleNodePath, YamlEngine.marshal(fieldValue)));
     }
     
     /**

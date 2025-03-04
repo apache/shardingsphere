@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.YamlLeafRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.YamlNodeRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.YamlNodeRuleConfigurationEnum;
@@ -88,22 +90,23 @@ class YamlRuleRepositoryTupleSwapperEngineTest {
     
     @Test
     void assertSwapToYamlRuleConfigurationWithEmptyNodeYamlRuleConfiguration() {
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("string_value"));
         YamlNodeRuleConfiguration actual = (YamlNodeRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("foo_db", "node",
-                Collections.singleton(new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "")));
+                Collections.singleton(new RuleRepositoryTuple(databaseRuleNodePath, "")));
         assertThat(actual.getStringValue(), is(""));
     }
     
     @Test
     void assertSwapToYamlRuleConfigurationWithNodeYamlRuleConfiguration() {
         YamlNodeRuleConfiguration actual = (YamlNodeRuleConfiguration) new YamlRuleRepositoryTupleSwapperEngine().swapToYamlDatabaseRuleConfiguration("foo_db", "node", Arrays.asList(
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k", "v"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/map_value/k:qualified", "k:qualified"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/collection_value", "- !LEAF" + System.lineSeparator() + "  value: foo"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/string_value", "str"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/boolean_value", "true"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/integer_value", "1"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/long_value", "10"),
-                new RuleRepositoryTuple("/metadata/foo_db/rules/node/enum_value", "FOO")));
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("map_value/k")), "v"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("map_value/k:qualified")), "k:qualified"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("collection_value")), "- !LEAF" + System.lineSeparator() + "  value: foo"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("string_value")), "str"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("boolean_value")), "true"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("integer_value")), "1"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("long_value")), "10"),
+                new RuleRepositoryTuple(new DatabaseRuleNodePath("foo_db", "node", new DatabaseRuleItem("enum_value")), "FOO")));
         assertThat(actual.getMapValue().size(), is(2));
         assertThat(actual.getMapValue().get("k").getValue(), is("v"));
         assertThat(actual.getMapValue().get("k:qualified").getValue(), is("k:qualified"));

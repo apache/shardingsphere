@@ -84,6 +84,6 @@ public final class GlobalRulePersistService {
     }
     
     private void persistTuple(final RuleRepositoryTuple tuple) {
-        versionPersistService.persist(new VersionNodePath(tuple.getPath()), tuple.getContent());
+        versionPersistService.persist(new VersionNodePath(tuple.getNodePath()), tuple.getContent());
     }
 }

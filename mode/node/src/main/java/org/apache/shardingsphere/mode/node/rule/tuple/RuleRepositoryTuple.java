@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.node.rule.tuple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 
 /**
  * Rule repository tuple.
@@ -27,7 +29,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class RuleRepositoryTuple {
     
-    private final String path;
+    private final NodePath nodePath;
     
     private final String content;
+    
+    /**
+     * Get path.
+     *
+     * @return path
+     */
+    public String getPath() {
+        return NodePathGenerator.toPath(nodePath, false);
+    }
 }
