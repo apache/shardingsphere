@@ -1,10 +1,24 @@
 #!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-# Default value for BUILD_NEW flag
 BUILD_NEW=false
 CONFIG_PATH=""
 
-# Parse command-line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --new)
@@ -22,21 +36,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Check if --PATH argument is provided
 if [ -z "$CONFIG_PATH" ]; then
     echo "Usage: sh run_proxy_container.sh --PATH=<path> [--new]"
     exit 1
 fi
 
-# Normalize Windows-style path to Linux-style path (convert backslashes to forward slashes)
 if [[ "$CONFIG_PATH" =~ ^[A-Za-z]:\\ ]]; then
-    # Convert Windows path to Unix format
-    CONFIG_PATH=$(echo "$CONFIG_PATH" | sed 's/\\/\//g')  # Change backslashes to forward slashes
-#    CONFIG_PATH=$(dirname "$CONFIG_PATH")"/"  # Keep only directory part, ensure trailing slash
-
-#else [[ "$CONFIG_PATH" =~ ^[A-Za-z]:/ ]];
-    # Handle already Unix-style Windows paths (C:/...)
-#    CONFIG_PATH=$(dirname "$CONFIG_PATH")"/"
+    CONFIG_PATH=$(echo "$CONFIG_PATH" | sed 's/\\/\//g')
 fi
 
 echo "Normalized Config Path: ${CONFIG_PATH}"
@@ -101,7 +107,6 @@ if docker ps -a | grep -q ${CONTAINER_NAME}; then
     esac
 fi
 
-# Function to open psql in a new terminal
 open_sql() {
 
     case "$(uname)" in
@@ -131,7 +136,6 @@ if command -v docker >/dev/null 2>&1; then
                  -v "${CONFIG_PATH}/ext-lib:/opt/shardingsphere-proxy/ext-lib" \
                  -e PORT=3308 -p13308:3308 \
                  "apache/shardingsphere-proxy:${VERSION}"
-# Check if the container is running
     if docker ps -q -f name=${CONTAINER_NAME}; then
         echo -e "\nContainer started successfully with image: apache/shardingsphere-proxy:${VERSION}"
         echo "Port: 3308"
