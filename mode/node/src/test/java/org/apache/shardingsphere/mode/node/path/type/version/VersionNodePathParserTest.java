@@ -34,7 +34,6 @@ class VersionNodePathParserTest {
     @Test
     void assertIsActiveVersionPath() {
         assertTrue(parser.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-        assertFalse(parser.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
     }
     
     @Test
@@ -49,13 +48,6 @@ class VersionNodePathParserTest {
     void assertNotFindIdentifierByActiveVersionPath() {
         String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions";
         assertFalse(parser.findIdentifierByActiveVersionPath(path, 1).isPresent());
-    }
-    
-    @Test
-    void assertIsVersionPath() {
-        assertTrue(parser.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
-        assertFalse(parser.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
-        assertFalse(parser.isVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/xxx"));
     }
     
     @Test

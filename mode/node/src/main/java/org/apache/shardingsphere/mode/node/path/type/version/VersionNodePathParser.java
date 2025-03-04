@@ -51,16 +51,6 @@ public final class VersionNodePathParser {
     }
     
     /**
-     * Judge whether to version path.
-     *
-     * @param path to be judged path
-     * @return is version path or not
-     */
-    public boolean isVersionPath(final String path) {
-        return versionPattern.matcher(path).find();
-    }
-    
-    /**
      * Find identifier name by active version path.
      *
      * @param activeVersionPath active version path

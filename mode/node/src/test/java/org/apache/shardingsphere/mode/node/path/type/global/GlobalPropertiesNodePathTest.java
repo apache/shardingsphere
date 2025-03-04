@@ -36,6 +36,5 @@ class GlobalPropertiesNodePathTest {
     void assertGetVersion() {
         VersionNodePathParser versionNodePathParser = new VersionNodePathParser(new GlobalPropertiesNodePath());
         assertTrue(versionNodePathParser.isActiveVersionPath("/props/active_version"));
-        assertTrue(versionNodePathParser.isVersionPath("/props/versions/0"));
     }
 }
