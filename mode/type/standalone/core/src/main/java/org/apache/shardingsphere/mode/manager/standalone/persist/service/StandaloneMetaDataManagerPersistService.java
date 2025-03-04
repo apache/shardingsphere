@@ -37,9 +37,8 @@ import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -216,9 +215,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemAlteredBuildExecutor());
-            if (alterRuleItem.isPresent()) {
-                metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemAlteredBuildExecutor());
+            if (databaseRuleNodePath.isPresent()) {
+                metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
         }
         clearServiceCache();
@@ -231,9 +230,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemDroppedBuildExecutor());
-            if (dropRuleItem.isPresent()) {
-                metaDataContextManager.getDatabaseRuleItemManager().drop(dropRuleItem.get());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemDroppedBuildExecutor());
+            if (databaseRuleNodePath.isPresent()) {
+                metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }
         }
         clearServiceCache();

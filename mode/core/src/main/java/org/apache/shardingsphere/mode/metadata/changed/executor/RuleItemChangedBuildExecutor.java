@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.mode.metadata.changed.executor;
 
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 import java.util.Optional;
 
 /**
  * Rule item changed build executor.
- * 
- * @param <T> type of rule changed item
  */
-public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
+public interface RuleItemChangedBuildExecutor {
     
     /**
      * Build rule item.
@@ -35,7 +33,7 @@ public interface RuleItemChangedBuildExecutor<T extends RuleChangedItem> {
      * @param databaseRuleNode rule node path
      * @param databaseName database name
      * @param path path
-     * @return built rule item
+     * @return built database rule node path
      */
-    Optional<T> build(DatabaseRuleNode databaseRuleNode, String databaseName, String path);
+    Optional<DatabaseRuleNodePath> build(DatabaseRuleNode databaseRuleNode, String databaseName, String path);
 }

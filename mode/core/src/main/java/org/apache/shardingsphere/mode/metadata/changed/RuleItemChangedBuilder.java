@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedB
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItem;
 
 import java.util.Optional;
 
@@ -36,10 +35,9 @@ public final class RuleItemChangedBuilder {
      * @param databaseName database name
      * @param path path
      * @param executor rule item changed build executor
-     * @param <T> type of rule changed item
-     * @return built rule item
+     * @return built database rule node path
      */
-    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String path, final RuleItemChangedBuildExecutor<T> executor) {
+    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path, final RuleItemChangedBuildExecutor executor) {
         Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
         return ruleType.isPresent() ? executor.build(DatabaseRuleNodeGenerator.generate(ruleType.get()), databaseName, path) : Optional.empty();
     }
