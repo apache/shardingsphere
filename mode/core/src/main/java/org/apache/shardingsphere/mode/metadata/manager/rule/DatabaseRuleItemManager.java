@@ -57,9 +57,9 @@ public final class DatabaseRuleItemManager {
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void alter(final AlterRuleItem alterRuleItem) throws SQLException {
+    public void alter(final AlterRuleItem alterRuleItem, final int currentVersion) throws SQLException {
         VersionNodePath versionNodePath = new VersionNodePath(getDatabaseRuleNodePath(alterRuleItem));
-        if (!checkActiveVersion(versionNodePath, alterRuleItem.getCurrentVersion())) {
+        if (!checkActiveVersion(versionNodePath, currentVersion)) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, alterRuleItem.getType());

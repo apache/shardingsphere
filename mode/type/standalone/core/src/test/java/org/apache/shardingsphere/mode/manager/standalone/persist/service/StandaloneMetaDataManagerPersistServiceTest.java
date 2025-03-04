@@ -178,7 +178,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(ruleItemChangedBuilder.build(eq("foo_db"), any(), any(), any())).thenReturn(Optional.of(alterRuleItem));
         setRuleConfigurationEventBuilder(ruleItemChangedBuilder);
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(any(AlterRuleItem.class));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(alterRuleItem, 0);
     }
     
     @Test
