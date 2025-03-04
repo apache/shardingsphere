@@ -303,6 +303,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getFunctionType(String functionName) {
         switch (functionName) {
+            case "current_role":
             case "current_user":
                 return 12;
             default:

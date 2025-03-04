@@ -978,3 +978,7 @@ COMMENT
 SIMILAR
     : S I M I L A R
     ;
+
+CURRENT_ROLE
+    : C U R R E N T UL_ R O L E
+    ;

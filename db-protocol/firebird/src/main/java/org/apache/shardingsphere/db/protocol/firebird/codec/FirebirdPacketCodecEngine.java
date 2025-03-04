@@ -72,9 +72,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
         out.add(in.readRetainedSlice(firstPacketLength));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
-            int type = in.getInt(in.readerIndex());
-            pendingPacketType = FirebirdCommandPacketType.valueOf(type);
-            addToBuffer(context, in, out);
+            decode(context, in, out);
         }
     }
     
