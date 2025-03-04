@@ -30,11 +30,4 @@ public interface AlterRuleItem extends RuleChangedItem {
      * @return database name
      */
     String getDatabaseName();
-    
-    /**
-     * Get current version.
-     *
-     * @return current version
-     */
-    int getCurrentVersion();
 }
