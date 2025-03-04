@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.changed.executor.type;
 
 import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
@@ -34,8 +34,7 @@ public final class RuleItemAlteredBuildExecutor implements RuleItemChangedBuildE
     @Override
     public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path) {
         for (String each : databaseRuleNode.getNamedItems()) {
-            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, NodePathPattern.QUALIFIED_IDENTIFIER));
-            Optional<String> itemName = new VersionNodePathParser(databaseRuleNodePath).findIdentifierByActiveVersionPath(path, 1);
+            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each));
             if (itemName.isPresent()) {
                 return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get())));
             }
