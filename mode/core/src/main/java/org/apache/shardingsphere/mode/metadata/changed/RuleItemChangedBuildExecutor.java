@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleI
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 
 import java.util.Optional;
 
@@ -33,23 +34,30 @@ public final class RuleItemChangedBuildExecutor {
     /**
      * Build rule item.
      *
-     * @param databaseRuleNode rule node path
      * @param databaseName database name
      * @param path path
-     * @param containsChildPath contains child path
      * @return built database rule node path
      */
-    public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final boolean containsChildPath) {
+    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path) {
+        Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
+        if (!ruleType.isPresent()) {
+            return Optional.empty();
+        }
+        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
-            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, containsChildPath));
-            if (itemName.isPresent()) {
-                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get())));
+            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, true));
+            if (!itemName.isPresent()) {
+                continue;
+            }
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get()));
+            if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
+                return Optional.of(databaseRuleNodePath);
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
-                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each)));
+                return Optional.of(databaseRuleNodePath);
             }
         }
         return Optional.empty();

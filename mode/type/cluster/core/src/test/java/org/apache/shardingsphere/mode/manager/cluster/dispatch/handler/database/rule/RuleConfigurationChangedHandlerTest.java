@@ -57,14 +57,14 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithEmptyValue() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/versions/0", "", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithPathNotFound() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/versions/0", "foo", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
@@ -90,7 +90,7 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithNamedRuleItemDropped() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item", "foo", Type.DELETED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item/active_version", "0", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(any(DatabaseRuleNodePath.class));
     }
     

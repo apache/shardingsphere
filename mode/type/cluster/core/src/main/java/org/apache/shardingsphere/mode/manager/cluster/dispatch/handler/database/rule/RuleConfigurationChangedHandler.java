@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
+import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
@@ -31,16 +32,12 @@ import java.util.Optional;
 /**
  * Rule configuration changed handler.
  */
+@RequiredArgsConstructor
 public final class RuleConfigurationChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final RuleItemChangedBuilder ruleItemChangedBuilder;
-    
-    public RuleConfigurationChangedHandler(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        ruleItemChangedBuilder = new RuleItemChangedBuilder();
-    }
+    private final RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = new RuleItemChangedBuildExecutor();
     
     /**
      * Handle rule changed.
@@ -58,12 +55,12 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), true);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(databaseName, event.getKey());
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(databaseName, event.getKey(), false);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(databaseName, event.getKey());
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }

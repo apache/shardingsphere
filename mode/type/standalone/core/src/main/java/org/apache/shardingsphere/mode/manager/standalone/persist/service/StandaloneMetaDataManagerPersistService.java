@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
+import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
@@ -57,12 +57,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private final MetaDataPersistFacade metaDataPersistFacade;
     
-    private final RuleItemChangedBuilder ruleItemChangedBuilder;
+    private final RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor;
     
     public StandaloneMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager) {
         this.metaDataContextManager = metaDataContextManager;
         metaDataPersistFacade = metaDataContextManager.getMetaDataPersistFacade();
-        ruleItemChangedBuilder = new RuleItemChangedBuilder();
+        ruleItemChangedBuildExecutor = new RuleItemChangedBuildExecutor();
     }
     
     @Override
@@ -213,7 +213,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), true);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath());
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
@@ -228,7 +228,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuilder.build(database.getName(), each.getPath(), false);
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(database.getName(), each.getPath());
             if (databaseRuleNodePath.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }
