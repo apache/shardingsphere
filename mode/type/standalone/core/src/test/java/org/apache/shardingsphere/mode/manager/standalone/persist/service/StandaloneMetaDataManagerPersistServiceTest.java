@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuildExecutor;
+import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
@@ -173,9 +173,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
         Collection<MetaDataVersion> metaDataVersions = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersions);
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
-        RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = mock(RuleItemChangedBuildExecutor.class);
-        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
-        setRuleItemChangedBuildExecutor(ruleItemChangedBuildExecutor);
+        RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
+        when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
+        setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath, 0);
     }
@@ -191,10 +191,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
         Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
-        RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = mock(RuleItemChangedBuildExecutor.class);
+        RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
-        when(ruleItemChangedBuildExecutor.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
-        setRuleItemChangedBuildExecutor(ruleItemChangedBuildExecutor);
+        when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
+        setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(databaseRuleNodePath);
     }
@@ -236,7 +236,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setRuleItemChangedBuildExecutor(final RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedBuildExecutor"), metaDataManagerPersistService, ruleItemChangedBuildExecutor);
+    private void setRuleItemChangedBuildExecutor(final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder) {
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedBuildExecutor"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
     }
 }
