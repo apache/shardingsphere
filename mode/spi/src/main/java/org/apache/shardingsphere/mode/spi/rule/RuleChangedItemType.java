@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.spi.rule.item;
+package org.apache.shardingsphere.mode.spi.rule;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
