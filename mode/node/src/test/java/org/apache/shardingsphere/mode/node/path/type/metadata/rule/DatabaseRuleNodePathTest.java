@@ -59,11 +59,14 @@ class DatabaseRuleNodePathTest {
     @Test
     void assertCreateRuleItemNameSearchCriteria() {
         assertThat(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")), is(Optional.of("item_value")));
-        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item", DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
-        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value", DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item"))
-                .isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)), is(Optional.of("item_value")));
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
         assertTrue(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", true)).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
     }
 }
