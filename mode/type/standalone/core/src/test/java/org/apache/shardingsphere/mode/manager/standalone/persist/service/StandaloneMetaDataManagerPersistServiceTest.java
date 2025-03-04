@@ -237,6 +237,6 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRuleItemChangedBuildExecutor(final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedBuildExecutor"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
+        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedNodePathBuilder"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
     }
 }
