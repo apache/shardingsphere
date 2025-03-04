@@ -17,32 +17,25 @@
 
 package org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
 
-public final class LeafYamlRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<LeafYamlRuleConfiguration, LeafRuleConfiguration> {
+@RuleRepositoryTupleEntity(value = "leaf", leaf = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public final class YamlLeafRuleConfiguration implements YamlGlobalRuleConfiguration {
+    
+    private String value;
     
     @Override
-    public LeafYamlRuleConfiguration swapToYamlConfiguration(final LeafRuleConfiguration data) {
-        return new LeafYamlRuleConfiguration(data.getValue());
-    }
-    
-    @Override
-    public LeafRuleConfiguration swapToObject(final LeafYamlRuleConfiguration yamlConfig) {
-        return new LeafRuleConfiguration(yamlConfig.getValue());
-    }
-    
-    @Override
-    public String getRuleTagName() {
-        return "LEAF";
-    }
-    
-    @Override
-    public int getOrder() {
-        return 10000;
-    }
-    
-    @Override
-    public Class<LeafRuleConfiguration> getTypeClass() {
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
         return LeafRuleConfiguration.class;
     }
 }

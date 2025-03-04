@@ -32,7 +32,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -96,6 +95,6 @@ class DatabaseRulePersistServiceTest {
     void assertDeleteWithRuleConfigurations() {
         Collection<MetaDataVersion> actual = persistService.delete("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
-        assertNull(actual.iterator().next().getActiveVersion());
+        assertThat(actual.iterator().next().getActiveVersion(), is(0));
     }
 }

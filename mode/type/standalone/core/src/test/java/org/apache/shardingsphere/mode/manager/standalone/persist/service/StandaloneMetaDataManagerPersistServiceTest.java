@@ -230,13 +230,14 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertDropTables() throws SQLException {
-        metaDataManagerPersistService.dropTables(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(),
-                Collections.emptyList()), "foo_schema", Collections.singleton("foo_tbl"));
+        metaDataManagerPersistService.dropTables(new ShardingSphereDatabase(
+                "foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", Collections.singleton("foo_tbl"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setRuleItemChangedBuildExecutor(final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder) {
-        Plugins.getMemberAccessor().set(StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedBuildExecutor"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
+        Plugins.getMemberAccessor().set(
+                StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedNodePathBuilder"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
     }
 }

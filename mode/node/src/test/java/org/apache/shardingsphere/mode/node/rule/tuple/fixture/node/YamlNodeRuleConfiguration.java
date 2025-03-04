@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryT
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
-import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.LeafYamlRuleConfiguration;
+import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.YamlLeafRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,13 +35,13 @@ import java.util.Map;
 @RuleRepositoryTupleEntity(value = "node")
 @Getter
 @Setter
-public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlNodeRuleConfiguration implements YamlRuleConfiguration {
     
     @RuleRepositoryTupleField(type = Type.OTHER)
-    private Map<String, LeafYamlRuleConfiguration> mapValue = new HashMap<>();
+    private Map<String, YamlLeafRuleConfiguration> mapValue = new HashMap<>();
     
     @RuleRepositoryTupleField(type = Type.OTHER)
-    private Collection<LeafYamlRuleConfiguration> collectionValue = new LinkedList<>();
+    private Collection<YamlLeafRuleConfiguration> collectionValue = new LinkedList<>();
     
     @RuleRepositoryTupleField(type = Type.OTHER)
     private String stringValue = "";
@@ -56,10 +56,10 @@ public final class NodeYamlRuleConfiguration implements YamlRuleConfiguration {
     private Long longValue;
     
     @RuleRepositoryTupleField(type = Type.OTHER)
-    private NodeYamlRuleConfigurationEnum enumValue;
+    private YamlNodeRuleConfigurationEnum enumValue;
     
     @RuleRepositoryTupleField(type = Type.OTHER)
-    private LeafYamlRuleConfiguration leaf;
+    private YamlLeafRuleConfiguration leaf;
     
     @RuleRepositoryTupleField(type = Type.OTHER)
     @RuleRepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
