@@ -28,16 +28,11 @@ import java.util.regex.Pattern;
  */
 public final class VersionNodePathParser {
     
-    private static final String VERSION_PATTERN = "(\\d+)";
-    
     private final Pattern activeVersionPattern;
-    
-    private final Pattern versionPattern;
     
     public VersionNodePathParser(final NodePath nodePath) {
         VersionNodePath versionNodePath = new VersionNodePath(nodePath);
         activeVersionPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        versionPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
     }
     
     /**
