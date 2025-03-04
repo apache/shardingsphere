@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
