@@ -61,16 +61,4 @@ public final class VersionNodePathParser {
         Matcher matcher = activeVersionPattern.matcher(activeVersionPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
-    
-    /**
-     * Find identifier name by versions' path.
-     *
-     * @param versionsPath versions path
-     * @param identifierGroupIndex identifier group index
-     * @return found identifier
-     */
-    public Optional<String> findIdentifierByVersionsPath(final String versionsPath, final int identifierGroupIndex) {
-        Matcher matcher = versionPattern.matcher(versionsPath);
-        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
-    }
 }
