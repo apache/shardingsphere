@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.node.rule.tuple;
 import com.google.common.base.CaseFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -47,7 +46,6 @@ public final class YamlRuleConfigurationReflectionEngine {
      * @return found class
      * @throws IllegalArgumentException throw if YAML rule configuration class not found
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     public static Class<? extends YamlRuleConfiguration> findClass(final String ruleType) {
         for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)) {
