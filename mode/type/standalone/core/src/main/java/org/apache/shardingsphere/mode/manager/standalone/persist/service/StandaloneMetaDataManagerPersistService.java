@@ -216,9 +216,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), each.getActiveVersion(), new RuleItemAlteredBuildExecutor());
+            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
-                metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get());
+                metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
         }
         clearServiceCache();
@@ -231,7 +231,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         }
         Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), each.getActiveVersion(), new RuleItemDroppedBuildExecutor());
+            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemDroppedBuildExecutor());
             if (dropRuleItem.isPresent()) {
                 metaDataContextManager.getDatabaseRuleItemManager().drop(dropRuleItem.get());
             }

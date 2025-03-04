@@ -35,13 +35,12 @@ public final class RuleItemChangedBuilder {
      *
      * @param databaseName database name
      * @param path path
-     * @param activeVersion active version
      * @param executor rule item changed build executor
      * @param <T> type of rule changed item
      * @return built rule item
      */
-    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String path, final Integer activeVersion, final RuleItemChangedBuildExecutor<T> executor) {
+    public <T extends RuleChangedItem> Optional<T> build(final String databaseName, final String path, final RuleItemChangedBuildExecutor<T> executor) {
         Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
-        return ruleType.isPresent() ? executor.build(DatabaseRuleNodeGenerator.generate(ruleType.get()), databaseName, path, activeVersion) : Optional.empty();
+        return ruleType.isPresent() ? executor.build(DatabaseRuleNodeGenerator.generate(ruleType.get()), databaseName, path) : Optional.empty();
     }
 }
