@@ -218,7 +218,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         for (MetaDataVersion each : metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig))) {
             Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(database.getName(), each.getPath(), new RuleItemAlteredBuildExecutor());
             if (alterRuleItem.isPresent()) {
-                metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get(), null == each.getActiveVersion() ? 0: each.getActiveVersion());
+                metaDataContextManager.getDatabaseRuleItemManager().alter(alterRuleItem.get(), null == each.getActiveVersion() ? 0 : each.getActiveVersion());
             }
         }
         clearServiceCache();
