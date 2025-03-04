@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleI
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
+import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 
 import java.util.Optional;
 
@@ -33,13 +34,17 @@ public final class RuleItemChangedBuildExecutor {
     /**
      * Build rule item.
      *
-     * @param databaseRuleNode rule node path
      * @param databaseName database name
      * @param path path
      * @param containsChildPath contains child path
      * @return built database rule node path
      */
-    public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final boolean containsChildPath) {
+    public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path, final boolean containsChildPath) {
+        Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
+        if (!ruleType.isPresent()) {
+            return Optional.empty();
+        }
+        DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
             Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, containsChildPath));
             if (itemName.isPresent()) {
