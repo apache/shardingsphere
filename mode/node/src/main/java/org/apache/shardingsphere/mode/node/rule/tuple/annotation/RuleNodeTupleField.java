@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
-import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
+import lombok.RequiredArgsConstructor;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Sharding binding table repository tuple key list name generator.
+ * Rule node tuple field.
  */
-public final class ShardingBindingTableRepositoryTupleKeyListNameGenerator implements RuleRepositoryTupleKeyListNameGenerator.Generator {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuleNodeTupleField {
     
-    @Override
-    public String generate(final Object tupleValue) {
-        return YamlShardingTableReferenceRuleConfigurationConverter.convertToObject(tupleValue.toString()).getName();
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    Type type();
+    
+    @RequiredArgsConstructor
+    enum Type {
+        
+        ALGORITHM, DEFAULT_ALGORITHM, STRATEGY, DEFAULT_STRATEGY, DATA_SOURCE, TABLE, OTHER
     }
 }

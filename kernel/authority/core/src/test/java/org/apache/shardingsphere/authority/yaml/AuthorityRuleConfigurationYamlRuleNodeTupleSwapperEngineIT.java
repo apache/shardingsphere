@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml;
+package org.apache.shardingsphere.authority.yaml;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SingleRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
+class AuthorityRuleConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     
-    SingleRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
-        super("yaml/single-rule.yaml");
+    AuthorityRuleConfigurationYamlRuleNodeTupleSwapperEngineIT() {
+        super("yaml/authority-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualTuples.size(), is(2));
-        assertRepositoryTuple(actualTuples.get(0), "tables", ((YamlSingleRuleConfiguration) expectedYamlRuleConfig).getTables());
-        assertRepositoryTuple(actualTuples.get(1), "default_data_source", ((YamlSingleRuleConfiguration) expectedYamlRuleConfig).getDefaultDataSource());
+    protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+        assertThat(actualTuples.size(), is(1));
+        assertRuleNodeTuple(actualTuples.get(0), "authority", expectedYamlRuleConfig);
     }
 }

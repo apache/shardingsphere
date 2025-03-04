@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleConfigurationFieldUtil;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleKeyListNameGenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -49,16 +49,16 @@ public final class DatabaseRuleNodeGenerator {
      * @return generated database rule node
      */
     public static DatabaseRuleNode generate(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
-        RuleRepositoryTupleEntity tupleEntity = yamlRuleConfigurationClass.getAnnotation(RuleRepositoryTupleEntity.class);
-        Preconditions.checkNotNull(tupleEntity, "Can not find @RuleRepositoryTupleEntity on class: ", yamlRuleConfigurationClass.getName());
+        RuleNodeTupleEntity tupleEntity = yamlRuleConfigurationClass.getAnnotation(RuleNodeTupleEntity.class);
+        Preconditions.checkNotNull(tupleEntity, "Can not find @RuleNodeTupleEntity on class: ", yamlRuleConfigurationClass.getName());
         Collection<String> namedItems = new LinkedList<>();
         Collection<String> uniqueItems = new LinkedList<>();
         for (Field each : YamlRuleConfigurationFieldUtil.getFields(yamlRuleConfigurationClass)) {
-            if (null == each.getAnnotation(RuleRepositoryTupleField.class)) {
+            if (null == each.getAnnotation(RuleNodeTupleField.class)) {
                 continue;
             }
             String tupleName = YamlRuleConfigurationFieldUtil.getTupleItemName(each);
-            if (each.getType().equals(Map.class) || each.getType().equals(Collection.class) && null != each.getAnnotation(RuleRepositoryTupleKeyListNameGenerator.class)) {
+            if (each.getType().equals(Map.class) || each.getType().equals(Collection.class) && null != each.getAnnotation(RuleNodeTupleKeyListNameGenerator.class)) {
                 namedItems.add(tupleName);
             } else {
                 uniqueItems.add(tupleName);
@@ -83,7 +83,7 @@ public final class DatabaseRuleNodeGenerator {
             if (!yamlRuleConfigurationClass.isPresent()) {
                 continue;
             }
-            RuleRepositoryTupleEntity entity = yamlRuleConfigurationClass.get().getAnnotation(RuleRepositoryTupleEntity.class);
+            RuleNodeTupleEntity entity = yamlRuleConfigurationClass.get().getAnnotation(RuleNodeTupleEntity.class);
             if (null != entity && entity.value().equals(ruleType)) {
                 return yamlRuleConfigurationClass;
             }

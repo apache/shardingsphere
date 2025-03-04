@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.tuple;
+package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Rule repository tuple.
+ * Rule node tuple entity.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RuleRepositoryTuple {
-    
-    private final NodePath nodePath;
-    
-    private final String content;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuleNodeTupleEntity {
     
     /**
-     * Get path.
+     * Get rule type name.
      *
-     * @return path
+     * @return rule type name
      */
-    public String getPath() {
-        return NodePathGenerator.toPath(nodePath, false);
-    }
+    String value();
+    
+    /**
+     * Whether leaf node.
+     *
+     * @return is leaf node or not
+     */
+    boolean leaf() default false;
 }

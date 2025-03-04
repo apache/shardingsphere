@@ -15,14 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
+package org.apache.shardingsphere.mode.node.rule.tuple;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 
-public final class RepositoryTupleKeyListNameGeneratorFixture implements RuleRepositoryTupleKeyListNameGenerator.Generator {
+/**
+ * Rule node tuple.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class RuleNodeTuple {
     
-    @Override
-    public String generate(final Object tupleValue) {
-        return String.format("gen: %s", tupleValue);
+    private final NodePath nodePath;
+    
+    private final String content;
+    
+    /**
+     * Get path.
+     *
+     * @return path
+     */
+    public String getPath() {
+        return NodePathGenerator.toPath(nodePath, false);
     }
 }
