@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.yaml;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,27 +28,27 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
+class ShadowRuleConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     
-    ShadowRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
+    ShadowRuleConfigurationYamlRuleNodeTupleSwapperEngineIT() {
         super("yaml/shadow-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualTuples.size(), is(9));
-        List<RuleRepositoryTuple> actual = new ArrayList<>(actualTuples);
-        assertRepositoryTuple(actual.get(0),
+        List<RuleNodeTuple> actual = new ArrayList<>(actualTuples);
+        assertRuleNodeTuple(actual.get(0),
                 "shadow_algorithms/user-id-insert-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-insert-match-algorithm"));
-        assertRepositoryTuple(actual.get(1),
+        assertRuleNodeTuple(actual.get(1),
                 "shadow_algorithms/user-id-update-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-update-match-algorithm"));
-        assertRepositoryTuple(actual.get(2),
+        assertRuleNodeTuple(actual.get(2),
                 "shadow_algorithms/user-id-select-match-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("user-id-select-match-algorithm"));
-        assertRepositoryTuple(actual.get(3), "shadow_algorithms/sql-hint-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("sql-hint-algorithm"));
-        assertRepositoryTuple(actual.get(4), "default_shadow_algorithm_name", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDefaultShadowAlgorithmName());
-        assertRepositoryTuple(actual.get(5), "data_sources/shadowDataSource", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDataSources().get("shadowDataSource"));
-        assertRepositoryTuple(actual.get(6), "tables/t_order", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order"));
-        assertRepositoryTuple(actual.get(7), "tables/t_order_item", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order_item"));
-        assertRepositoryTuple(actual.get(8), "tables/t_address", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_address"));
+        assertRuleNodeTuple(actual.get(3), "shadow_algorithms/sql-hint-algorithm", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getShadowAlgorithms().get("sql-hint-algorithm"));
+        assertRuleNodeTuple(actual.get(4), "default_shadow_algorithm_name", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDefaultShadowAlgorithmName());
+        assertRuleNodeTuple(actual.get(5), "data_sources/shadowDataSource", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getDataSources().get("shadowDataSource"));
+        assertRuleNodeTuple(actual.get(6), "tables/t_order", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order"));
+        assertRuleNodeTuple(actual.get(7), "tables/t_order_item", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_order_item"));
+        assertRuleNodeTuple(actual.get(8), "tables/t_address", ((YamlShadowRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_address"));
     }
 }

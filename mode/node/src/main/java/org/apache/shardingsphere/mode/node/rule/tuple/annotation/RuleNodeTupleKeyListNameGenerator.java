@@ -23,16 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Rule repository tuple key list name generator.
+ * Rule node tuple key list name generator.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RuleRepositoryTupleKeyListNameGenerator {
+public @interface RuleNodeTupleKeyListNameGenerator {
     
     /**
-     * Get repository tuple key list name generator class.
+     * Get node tuple key list name generator class.
      *
-     * @return repository tuple key list name generator class
+     * @return node tuple key list name generator class
      */
     Class<? extends Generator> value();
     

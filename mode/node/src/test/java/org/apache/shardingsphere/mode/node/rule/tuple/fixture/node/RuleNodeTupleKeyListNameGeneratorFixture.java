@@ -15,31 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.rule.tuple.annotation;
+package org.apache.shardingsphere.mode.node.rule.tuple.fixture.node;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleKeyListNameGenerator;
 
-/**
- * Rule repository tuple entity.
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RuleRepositoryTupleEntity {
+public final class RuleNodeTupleKeyListNameGeneratorFixture implements RuleNodeTupleKeyListNameGenerator.Generator {
     
-    /**
-     * Get rule type name.
-     *
-     * @return rule type name
-     */
-    String value();
-    
-    /**
-     * Whether leaf node.
-     *
-     * @return is leaf node or not
-     */
-    boolean leaf() default false;
+    @Override
+    public String generate(final Object tupleValue) {
+        return String.format("gen: %s", tupleValue);
+    }
 }

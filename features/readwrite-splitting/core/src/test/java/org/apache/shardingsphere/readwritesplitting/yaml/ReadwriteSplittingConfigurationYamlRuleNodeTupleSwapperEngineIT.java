@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadwriteSplittingConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
+class ReadwriteSplittingConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     
-    ReadwriteSplittingConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
+    ReadwriteSplittingConfigurationYamlRuleNodeTupleSwapperEngineIT() {
         super("yaml/readwrite-splitting-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualTuples.size(), is(4));
-        assertRepositoryTuple(actualTuples.get(0), "load_balancers/random", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("random"));
-        assertRepositoryTuple(actualTuples.get(1), "load_balancers/roundRobin", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("roundRobin"));
-        assertRepositoryTuple(actualTuples.get(2), "data_source_groups/ds_0", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_0"));
-        assertRepositoryTuple(actualTuples.get(3), "data_source_groups/ds_1", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_1"));
+        assertRuleNodeTuple(actualTuples.get(0), "load_balancers/random", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("random"));
+        assertRuleNodeTuple(actualTuples.get(1), "load_balancers/roundRobin", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getLoadBalancers().get("roundRobin"));
+        assertRuleNodeTuple(actualTuples.get(2), "data_source_groups/ds_0", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_0"));
+        assertRuleNodeTuple(actualTuples.get(3), "data_source_groups/ds_1", ((YamlReadwriteSplittingRuleConfiguration) expectedYamlRuleConfig).getDataSourceGroups().get("ds_1"));
     }
 }

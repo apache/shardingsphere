@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleEntity;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField.Type;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleKeyListNameGenerator;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField.Type;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleKeyListNameGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.YamlLeafRuleConfiguration;
 
 import java.util.Collection;
@@ -32,41 +32,41 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-@RuleRepositoryTupleEntity(value = "node")
+@RuleNodeTupleEntity(value = "node")
 @Getter
 @Setter
 public final class YamlNodeRuleConfiguration implements YamlRuleConfiguration {
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private Map<String, YamlLeafRuleConfiguration> mapValue = new HashMap<>();
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private Collection<YamlLeafRuleConfiguration> collectionValue = new LinkedList<>();
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private String stringValue = "";
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private Boolean booleanValue;
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private Integer integerValue;
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private Long longValue;
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private YamlNodeRuleConfigurationEnum enumValue;
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
+    @RuleNodeTupleField(type = Type.OTHER)
     private YamlLeafRuleConfiguration leaf;
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
-    @RuleRepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
+    @RuleNodeTupleField(type = Type.OTHER)
+    @RuleNodeTupleKeyListNameGenerator(RuleNodeTupleKeyListNameGeneratorFixture.class)
     private Collection<String> gens = new LinkedList<>();
     
-    @RuleRepositoryTupleField(type = Type.OTHER)
-    @RuleRepositoryTupleKeyListNameGenerator(RepositoryTupleKeyListNameGeneratorFixture.class)
+    @RuleNodeTupleField(type = Type.OTHER)
+    @RuleNodeTupleKeyListNameGenerator(RuleNodeTupleKeyListNameGeneratorFixture.class)
     private String gen;
     
     @Override

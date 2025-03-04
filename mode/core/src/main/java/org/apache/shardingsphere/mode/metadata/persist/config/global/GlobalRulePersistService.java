@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistSer
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
-import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleRepositoryTupleSwapperEngine;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleNodeTupleSwapperEngine;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -43,13 +43,13 @@ public final class GlobalRulePersistService {
     
     private final YamlRuleConfigurationSwapperEngine yamlSwapperEngine;
     
-    private final YamlRuleRepositoryTupleSwapperEngine tupleSwapperEngine;
+    private final YamlRuleNodeTupleSwapperEngine tupleSwapperEngine;
     
     public GlobalRulePersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
         this.repository = repository;
         this.versionPersistService = versionPersistService;
         yamlSwapperEngine = new YamlRuleConfigurationSwapperEngine();
-        tupleSwapperEngine = new YamlRuleRepositoryTupleSwapperEngine();
+        tupleSwapperEngine = new YamlRuleNodeTupleSwapperEngine();
     }
     
     /**
@@ -83,7 +83,7 @@ public final class GlobalRulePersistService {
         }
     }
     
-    private void persistTuple(final RuleRepositoryTuple tuple) {
+    private void persistTuple(final RuleNodeTuple tuple) {
         versionPersistService.persist(new VersionNodePath(tuple.getNodePath()), tuple.getContent());
     }
 }

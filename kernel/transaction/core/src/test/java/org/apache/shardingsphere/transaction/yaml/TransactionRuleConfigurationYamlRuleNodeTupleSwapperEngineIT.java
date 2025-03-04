@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.parser.yaml;
+package org.apache.shardingsphere.transaction.yaml;
 
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class SQLParserRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
+class TransactionRuleConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     
-    SQLParserRuleConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
-        super("yaml/sql-parser-rule.yaml");
+    TransactionRuleConfigurationYamlRuleNodeTupleSwapperEngineIT() {
+        super("yaml/transaction-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualTuples.size(), is(1));
-        assertRepositoryTuple(actualTuples.get(0), "sql_parser", expectedYamlRuleConfig);
+        assertRuleNodeTuple(actualTuples.get(0), "transaction", expectedYamlRuleConfig);
     }
 }

@@ -21,7 +21,7 @@ import com.google.common.base.CaseFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleRepositoryTupleField;
+import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -43,8 +43,8 @@ public final class YamlRuleConfigurationFieldUtil {
      */
     public static Collection<Field> getFields(final Class<? extends YamlRuleConfiguration> yamlRuleConfigurationClass) {
         return Arrays.stream(yamlRuleConfigurationClass.getDeclaredFields())
-                .filter(each -> null != each.getAnnotation(RuleRepositoryTupleField.class))
-                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RuleRepositoryTupleField.class).type().ordinal())).collect(Collectors.toList());
+                .filter(each -> null != each.getAnnotation(RuleNodeTupleField.class))
+                .sorted(Comparator.comparingInt(o -> o.getAnnotation(RuleNodeTupleField.class).type().ordinal())).collect(Collectors.toList());
     }
     
     /**

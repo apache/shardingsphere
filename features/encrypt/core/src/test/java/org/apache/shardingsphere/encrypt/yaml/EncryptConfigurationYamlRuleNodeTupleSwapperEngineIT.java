@@ -18,26 +18,26 @@
 package org.apache.shardingsphere.encrypt.yaml;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.mode.node.rule.tuple.RuleRepositoryTuple;
+import org.apache.shardingsphere.mode.node.rule.tuple.RuleNodeTuple;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.it.yaml.YamlRuleRepositoryTupleSwapperEngineIT;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleNodeTupleSwapperEngineIT;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptConfigurationYamlRuleRepositoryTupleSwapperEngineIT extends YamlRuleRepositoryTupleSwapperEngineIT {
+class EncryptConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNodeTupleSwapperEngineIT {
     
-    EncryptConfigurationYamlRuleRepositoryTupleSwapperEngineIT() {
+    EncryptConfigurationYamlRuleNodeTupleSwapperEngineIT() {
         super("yaml/encrypt-rule.yaml");
     }
     
     @Override
-    protected void assertRepositoryTuples(final List<RuleRepositoryTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
+    protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
         assertThat(actualTuples.size(), is(3));
-        assertRepositoryTuple(actualTuples.get(0), "encryptors/aes_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("aes_encryptor"));
-        assertRepositoryTuple(actualTuples.get(1), "encryptors/assisted_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("assisted_encryptor"));
-        assertRepositoryTuple(actualTuples.get(2), "tables/t_user", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
+        assertRuleNodeTuple(actualTuples.get(0), "encryptors/aes_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("aes_encryptor"));
+        assertRuleNodeTuple(actualTuples.get(1), "encryptors/assisted_encryptor", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getEncryptors().get("assisted_encryptor"));
+        assertRuleNodeTuple(actualTuples.get(2), "tables/t_user", ((YamlEncryptRuleConfiguration) expectedYamlRuleConfig).getTables().get("t_user"));
     }
 }
