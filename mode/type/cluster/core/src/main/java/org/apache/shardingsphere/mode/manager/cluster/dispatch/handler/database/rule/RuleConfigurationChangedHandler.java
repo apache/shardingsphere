@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuildExecutor;
+import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
@@ -37,7 +37,7 @@ public final class RuleConfigurationChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final RuleItemChangedBuildExecutor ruleItemChangedBuildExecutor = new RuleItemChangedBuildExecutor();
+    private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
     /**
      * Handle rule changed.
@@ -55,12 +55,12 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(databaseName, event.getKey());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedBuildExecutor.build(databaseName, event.getKey());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
             if (databaseRuleNodePath.isPresent()) {
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }

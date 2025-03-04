@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import java.util.Optional;
 
 /**
- * Rule item changed build executor.
+ * Rule item changed node path builder.
  */
-public final class RuleItemChangedBuildExecutor {
+public final class RuleItemChangedNodePathBuilder {
     
     /**
      * Build rule item.
