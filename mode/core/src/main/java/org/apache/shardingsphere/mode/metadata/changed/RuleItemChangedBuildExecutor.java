@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.changed.executor.type;
+package org.apache.shardingsphere.mode.metadata.changed;
 
-import org.apache.shardingsphere.mode.metadata.changed.executor.RuleItemChangedBuildExecutor;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
@@ -27,14 +26,22 @@ import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import java.util.Optional;
 
 /**
- * Rule item dropped build executor.
+ * Rule item changed build executor.
  */
-public final class RuleItemDroppedBuildExecutor implements RuleItemChangedBuildExecutor {
+public final class RuleItemChangedBuildExecutor {
     
-    @Override
-    public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path) {
+    /**
+     * Build rule item.
+     *
+     * @param databaseRuleNode rule node path
+     * @param databaseName database name
+     * @param path path
+     * @param containsChildPath contains child path
+     * @return built database rule node path
+     */
+    public Optional<DatabaseRuleNodePath> build(final DatabaseRuleNode databaseRuleNode, final String databaseName, final String path, final boolean containsChildPath) {
         for (String each : databaseRuleNode.getNamedItems()) {
-            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, false));
+            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, containsChildPath));
             if (itemName.isPresent()) {
                 return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get())));
             }
