@@ -47,8 +47,12 @@ public final class RuleItemChangedBuildExecutor {
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
             Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, containsChildPath));
-            if (itemName.isPresent()) {
-                return Optional.of(new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get())));
+            if (!itemName.isPresent()) {
+                continue;
+            }
+            DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get()));
+            if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
+                return Optional.of(databaseRuleNodePath);
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
