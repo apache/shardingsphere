@@ -91,10 +91,10 @@ public final class YamlRuleNodeTupleSwapperEngine {
         if (null == fieldValue) {
             return Collections.emptyList();
         }
-        String tupleName = YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field);
+        String ruleItemName = YamlRuleConfigurationReflectionEngine.getRuleNodeItemName(field);
         return isNamedItem(field)
-                ? swapToNamedTuples(databaseName, ruleType, tupleName, field, fieldValue)
-                : swapToUniqueTuple(databaseName, ruleType, tupleName, fieldValue).map(Collections::singletonList).orElse(Collections.emptyList());
+                ? swapToNamedTuples(databaseName, ruleType, ruleItemName, field, fieldValue)
+                : swapToUniqueTuple(databaseName, ruleType, ruleItemName, fieldValue).map(Collections::singletonList).orElse(Collections.emptyList());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
