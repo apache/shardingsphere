@@ -15,49 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.type;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+
+import java.util.Collections;
 
 /**
- * Storage node changed handler.
+ * Storage unit changed handler.
  */
 @RequiredArgsConstructor
-public final class StorageNodeChangedHandler {
+public final class StorageUnitChangedHandler {
     
     private final ContextManager contextManager;
     
     /**
-     * Handle storage node registered.
+     * Handle storage unit registered.
      *
      * @param databaseName database name
      * @param dataSourceUnitName data source unit name
      * @param event data changed event
      */
     public void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
-        // TODO
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
     }
     
     /**
-     * Handle storage node altered.
+     * Handle storage unit altered.
      *
      * @param databaseName database name
      * @param dataSourceUnitName data source unit name
      * @param event data changed event
      */
     public void handleAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
-        // TODO
+        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
     }
     
     /**
-     * Handle storage node unregistered.
+     * Handle storage unit unregistered.
      *
      * @param databaseName database name
      * @param dataSourceUnitName data source unit name
      */
     public void handleUnregistered(final String databaseName, final String dataSourceUnitName) {
-        // TODO
+        Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().unregister(databaseName, dataSourceUnitName);
     }
 }

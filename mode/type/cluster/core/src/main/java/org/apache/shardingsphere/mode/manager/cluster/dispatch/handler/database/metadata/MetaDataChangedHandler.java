@@ -21,15 +21,11 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.SchemaChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageNodeChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageNodeNodePath;
-import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -45,16 +41,10 @@ public final class MetaDataChangedHandler {
     
     private final ViewChangedHandler viewChangedHandler;
     
-    private final StorageUnitChangedHandler storageUnitChangedHandler;
-    
-    private final StorageNodeChangedHandler storageNodeChangedHandler;
-    
     public MetaDataChangedHandler(final ContextManager contextManager) {
         schemaChangedHandler = new SchemaChangedHandler(contextManager);
         tableChangedHandler = new TableChangedHandler(contextManager);
         viewChangedHandler = new ViewChangedHandler(contextManager);
-        storageUnitChangedHandler = new StorageUnitChangedHandler(contextManager);
-        storageNodeChangedHandler = new StorageNodeChangedHandler(contextManager);
     }
     
     /**
@@ -77,10 +67,6 @@ public final class MetaDataChangedHandler {
         }
         if (schemaName.isPresent() && isViewMetaDataChanged(eventKey)) {
             handleViewChanged(databaseName, schemaName.get(), event);
-            return;
-        }
-        if (NodePathSearcher.isMatchedPath(eventKey, StorageUnitNodePath.createDataSourceSearchCriteria())) {
-            handleDataSourceChanged(databaseName, event);
         }
     }
     
@@ -114,56 +100,6 @@ public final class MetaDataChangedHandler {
             viewChangedHandler.handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria())) {
             viewChangedHandler.handleDropped(databaseName, schemaName, event);
-        }
-    }
-    
-    private void handleDataSourceChanged(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = new VersionNodePathParser(new StorageUnitNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
-        boolean isActiveVersion = true;
-        if (!storageUnitName.isPresent()) {
-            storageUnitName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
-            isActiveVersion = false;
-        }
-        if (storageUnitName.isPresent()) {
-            handleStorageUnitChanged(databaseName, event, storageUnitName.get(), isActiveVersion);
-            return;
-        }
-        Optional<String> storageNodeName = new VersionNodePathParser(new StorageNodeNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
-        isActiveVersion = true;
-        if (!storageNodeName.isPresent()) {
-            storageNodeName = NodePathSearcher.find(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria());
-            isActiveVersion = false;
-        }
-        if (storageNodeName.isPresent()) {
-            handleStorageNodeChanged(databaseName, event, storageNodeName.get(), isActiveVersion);
-        }
-    }
-    
-    private void handleStorageUnitChanged(final String databaseName, final DataChangedEvent event, final String storageUnitName, final boolean isActiveVersion) {
-        if (isActiveVersion) {
-            if (Type.ADDED == event.getType()) {
-                storageUnitChangedHandler.handleRegistered(databaseName, storageUnitName, event);
-            } else if (Type.UPDATED == event.getType()) {
-                storageUnitChangedHandler.handleAltered(databaseName, storageUnitName, event);
-            }
-            return;
-        }
-        if (Type.DELETED == event.getType()) {
-            storageUnitChangedHandler.handleUnregistered(databaseName, storageUnitName);
-        }
-    }
-    
-    private void handleStorageNodeChanged(final String databaseName, final DataChangedEvent event, final String storageNodeName, final boolean isActiveVersion) {
-        if (isActiveVersion) {
-            if (Type.ADDED == event.getType()) {
-                storageNodeChangedHandler.handleRegistered(databaseName, storageNodeName, event);
-            } else if (Type.UPDATED == event.getType()) {
-                storageNodeChangedHandler.handleAltered(databaseName, storageNodeName, event);
-            }
-            return;
-        }
-        if (Type.DELETED == event.getType()) {
-            storageNodeChangedHandler.handleUnregistered(databaseName, storageNodeName);
         }
     }
 }
