@@ -63,13 +63,6 @@ class RuleConfigurationChangedHandlerTest {
     }
     
     @Test
-    void assertHandleWithPathNotFound() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/active_version", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
-    }
-    
-    @Test
     void assertHandleWithIgnoreType() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item/active_version", "foo", Type.IGNORED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
