@@ -37,7 +37,8 @@ class StorageNodeNodePathTest {
     
     @Test
     void assertCreateStorageNodeSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria()), is(Optional.of("foo_ds")));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria()).isPresent());
+        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")), is(Optional.of("foo_ds")));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/bar_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")).isPresent());
     }
 }
