@@ -26,7 +26,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageUnitNodePathTest {
     
@@ -34,15 +33,6 @@ class StorageUnitNodePathTest {
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", null), false), is("/metadata/foo_db/data_sources/units"));
         assertThat(NodePathGenerator.toPath(new StorageUnitNodePath("foo_db", "foo_storage_unit"), false), is("/metadata/foo_db/data_sources/units/foo_storage_unit"));
-    }
-    
-    @Test
-    void assertCreateDataSourceSearchCriteria() {
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/bar_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
     }
     
     @Test
