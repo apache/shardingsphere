@@ -33,10 +33,13 @@ public final class TableChangedHandler {
     
     private final ContextManager contextManager;
     
+    private final ActiveVersionChecker activeVersionChecker;
+    
     private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public TableChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
+        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
@@ -50,7 +53,7 @@ public final class TableChangedHandler {
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = new VersionNodePathParser(new TableMetadataNodePath())
                 .findIdentifierByActiveVersionPath(event.getKey(), 3).orElseThrow(() -> new IllegalStateException("Table name not found."));
-        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+        if (!activeVersionChecker.checkSame(event)) {
             return;
         }
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);

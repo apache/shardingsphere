@@ -33,10 +33,13 @@ public final class ViewChangedHandler {
     
     private final ContextManager contextManager;
     
+    private final ActiveVersionChecker activeVersionChecker;
+    
     private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public ViewChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
+        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
@@ -50,7 +53,7 @@ public final class ViewChangedHandler {
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = new VersionNodePathParser(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
                 .orElseThrow(() -> new IllegalStateException("View name not found."));
-        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+        if (!activeVersionChecker.checkSame(event)) {
             return;
         }
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);

@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource;
 
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
@@ -35,10 +34,16 @@ import java.util.Optional;
 /**
  * Storage unit changed handler.
  */
-@RequiredArgsConstructor
 public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     
     private final ContextManager contextManager;
+    
+    private final ActiveVersionChecker activeVersionChecker;
+    
+    public StorageUnitChangedHandler(final ContextManager contextManager) {
+        this.contextManager = contextManager;
+        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
+    }
     
     @Override
     public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
@@ -67,7 +72,7 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleRegistered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
-        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+        if (!activeVersionChecker.checkSame(event)) {
             return;
         }
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
@@ -75,7 +80,7 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleAltered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
-        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+        if (!activeVersionChecker.checkSame(event)) {
             return;
         }
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
