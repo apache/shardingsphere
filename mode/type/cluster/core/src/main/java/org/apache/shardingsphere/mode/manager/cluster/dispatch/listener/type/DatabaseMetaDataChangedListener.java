@@ -24,7 +24,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageNodeChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageUnitChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.SchemaChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
@@ -44,7 +46,9 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     public DatabaseMetaDataChangedListener(final ContextManager contextManager) {
         handlers = Arrays.asList(
-                new MetaDataChangedHandler(contextManager),
+                new SchemaChangedHandler(contextManager),
+                new TableChangedHandler(contextManager),
+                new ViewChangedHandler(contextManager),
                 new StorageUnitChangedHandler(contextManager),
                 new StorageNodeChangedHandler(contextManager),
                 new RuleConfigurationChangedHandler(contextManager));

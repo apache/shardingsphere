@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
+import java.util.Optional;
+
 /**
  * Table changed handler.
  */
-public final class TableChangedHandler {
+public final class TableChangedHandler implements DatabaseChangedHandler {
     
     private final ContextManager contextManager;
     
@@ -43,14 +47,27 @@ public final class TableChangedHandler {
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
-    /**
-     * Handle table created or altered.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param event data changed event
-     */
-    public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
+    @Override
+    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createTableSearchCriteria())
+                || new VersionNodePathParser(new TableMetadataNodePath()).isActiveVersionPath(event.getKey());
+    }
+    
+    @Override
+    public void handle(final String databaseName, final DataChangedEvent event) {
+        String eventKey = event.getKey();
+        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
+        if (!schemaName.isPresent()) {
+            return;
+        }
+        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType()) && new VersionNodePathParser(new TableMetadataNodePath()).isActiveVersionPath(event.getKey())) {
+            handleCreatedOrAltered(databaseName, schemaName.get(), event);
+        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createTableSearchCriteria())) {
+            handleDropped(databaseName, schemaName.get(), event);
+        }
+    }
+    
+    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = new VersionNodePathParser(new TableMetadataNodePath())
                 .findIdentifierByActiveVersionPath(event.getKey(), 3).orElseThrow(() -> new IllegalStateException("Table name not found."));
         if (!activeVersionChecker.checkSame(event)) {
@@ -61,14 +78,7 @@ public final class TableChangedHandler {
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    /**
-     * Handle table dropped.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param event data changed event
-     */
-    public void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
+    private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String tableName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createTableSearchCriteria()).orElseThrow(() -> new IllegalStateException("Table name not found."));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
