@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.SchemaChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type.ViewChangedHandler;
@@ -33,7 +34,7 @@ import java.util.Optional;
 /**
  * Meta data changed handler.
  */
-public final class MetaDataChangedHandler {
+public final class MetaDataChangedHandler implements DatabaseChangedHandler {
     
     private final SchemaChangedHandler schemaChangedHandler;
     
@@ -47,12 +48,12 @@ public final class MetaDataChangedHandler {
         viewChangedHandler = new ViewChangedHandler(contextManager);
     }
     
-    /**
-     * Handle meta data changed.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     */
+    @Override
+    public boolean isSubscribed(final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(true));
+    }
+    
+    @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
         Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(false));

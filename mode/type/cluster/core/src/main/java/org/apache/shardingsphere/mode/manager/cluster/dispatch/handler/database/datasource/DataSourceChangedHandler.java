@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.type.StorageNodeChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.type.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -32,7 +33,7 @@ import java.util.Optional;
 /**
  * Data source changed handler.
  */
-public final class DataSourceChangedHandler {
+public final class DataSourceChangedHandler implements DatabaseChangedHandler {
     
     private final StorageUnitChangedHandler storageUnitChangedHandler;
     
@@ -43,12 +44,12 @@ public final class DataSourceChangedHandler {
         storageNodeChangedHandler = new StorageNodeChangedHandler(contextManager);
     }
     
-    /**
-     * Handle data source changed.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     */
+    @Override
+    public boolean isSubscribed(final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria());
+    }
+    
+    @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         if (!NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria())) {
             return;
