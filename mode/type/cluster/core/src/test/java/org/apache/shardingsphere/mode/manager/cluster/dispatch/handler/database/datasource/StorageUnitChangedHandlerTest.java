@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource;
 
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -39,24 +38,21 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class DataSourceChangedHandlerTest {
+class StorageUnitChangedHandlerTest {
     
-    private DataSourceChangedHandler handler;
+    private StorageUnitChangedHandler handler;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)).thenReturn(false);
-        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         when(contextManager.getPersistServiceFacade().getRepository().query(any())).thenReturn("0");
-        handler = new DataSourceChangedHandler(contextManager);
+        handler = new StorageUnitChangedHandler(contextManager);
     }
     
     @Test
     void assertHandleStorageUnitRegistered() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).register(eq("foo_db"), any());
@@ -64,7 +60,6 @@ class DataSourceChangedHandlerTest {
     
     @Test
     void assertHandleStorageUnitAltered() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alter(eq("foo_db"), any());
