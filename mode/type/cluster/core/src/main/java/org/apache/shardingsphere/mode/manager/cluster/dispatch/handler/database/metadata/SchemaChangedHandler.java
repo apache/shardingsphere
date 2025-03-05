@@ -47,8 +47,7 @@ public final class SchemaChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        String eventKey = event.getKey();
-        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
+        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
         if (!schemaName.isPresent()) {
             return;
         }

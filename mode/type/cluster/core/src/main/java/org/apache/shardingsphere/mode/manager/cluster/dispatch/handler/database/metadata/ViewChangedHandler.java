@@ -56,8 +56,7 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        String eventKey = event.getKey();
-        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
+        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
         if (!schemaName.isPresent()) {
             return;
         }
