@@ -28,7 +28,7 @@ public interface DatabaseChangedHandler {
     
     /**
      * Is subscribed event.
-     * 
+     *
      * @param event data changed event
      * @return is subscribed or not
      */
