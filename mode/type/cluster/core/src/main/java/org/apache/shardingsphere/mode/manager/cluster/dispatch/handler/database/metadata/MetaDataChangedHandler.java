@@ -49,7 +49,7 @@ public final class MetaDataChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final DataChangedEvent event) {
+    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
         return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(true));
     }
     

@@ -38,11 +38,11 @@ class StorageUnitNodePathTest {
     
     @Test
     void assertCreateDataSourceSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()), is(Optional.of("foo_db")));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria()));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources", StorageUnitNodePath.createDataSourceSearchCriteria()));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db", StorageUnitNodePath.createDataSourceSearchCriteria()));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/data_sources", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
+        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
+        assertFalse(NodePathSearcher.isMatchedPath("/metadata/bar_db/data_sources/units/foo_ds", StorageUnitNodePath.createDataSourceSearchCriteria("foo_db")));
     }
     
     @Test

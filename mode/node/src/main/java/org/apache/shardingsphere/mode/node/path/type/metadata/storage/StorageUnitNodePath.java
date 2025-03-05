@@ -43,10 +43,11 @@ public final class StorageUnitNodePath implements NodePath {
     /**
      * Create data source search criteria.
      *
+     * @param databaseName database name
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createDataSourceSearchCriteria() {
-        return new NodePathSearchCriteria(new StorageUnitNodePath(NodePathPattern.IDENTIFIER, null), true, true, 1);
+    public static NodePathSearchCriteria createDataSourceSearchCriteria(final String databaseName) {
+        return new NodePathSearchCriteria(new StorageUnitNodePath(databaseName, null), true, true, 0);
     }
     
     /**

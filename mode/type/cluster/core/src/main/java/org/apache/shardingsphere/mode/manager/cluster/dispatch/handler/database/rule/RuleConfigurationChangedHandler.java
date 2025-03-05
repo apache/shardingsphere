@@ -42,7 +42,7 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
     @Override
-    public boolean isSubscribed(final DataChangedEvent event) {
+    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
         return NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria());
     }
     
