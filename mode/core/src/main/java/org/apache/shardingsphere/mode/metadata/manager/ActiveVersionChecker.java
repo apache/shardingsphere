@@ -44,7 +44,7 @@ public final class ActiveVersionChecker {
     
     /**
      * Check whether the current version same with an active version.
-     * 
+     *
      * @param repository repository
      * @param versionNodePath version node path
      * @param currentVersion current version
