@@ -22,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 
@@ -33,19 +35,18 @@ import java.util.Optional;
  * Rule configuration changed handler.
  */
 @RequiredArgsConstructor
-public final class RuleConfigurationChangedHandler {
+public final class RuleConfigurationChangedHandler implements DatabaseChangedHandler {
     
     private final ContextManager contextManager;
     
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
-    /**
-     * Handle rule changed.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @throws SQLException SQL exception
-     */
+    @Override
+    public boolean isSubscribed(final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria());
+    }
+    
+    @Override
     public void handle(final String databaseName, final DataChangedEvent event) throws SQLException {
         if (Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
             return;
