@@ -46,6 +46,6 @@ public final class StorageNodeNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createStorageNodeSearchCriteria() {
-        return new NodePathSearchCriteria(new StorageNodeNodePath(), false, false, 2);
+        return new NodePathSearchCriteria(new StorageNodeNodePath(), false, true, 2);
     }
 }

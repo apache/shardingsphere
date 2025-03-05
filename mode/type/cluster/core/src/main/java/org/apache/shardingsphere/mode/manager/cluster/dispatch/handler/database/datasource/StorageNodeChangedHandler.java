@@ -19,13 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageNodeNodePath;
-import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Optional;
@@ -45,34 +43,34 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageNodeName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
+        Optional<String> storageNodeName = NodePathSearcher.find(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria());
         if (!storageNodeName.isPresent()) {
-            storageNodeName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
+            return;
         }
-        if (storageNodeName.isPresent()) {
-            handleStorageNodeChanged(databaseName, event, storageNodeName.get());
+        switch (event.getType()) {
+            case ADDED:
+                handleRegistered(databaseName, storageNodeName.get(), event);
+                break;
+            case UPDATED:
+                handleAltered(databaseName, storageNodeName.get(), event);
+                break;
+            case DELETED:
+                handleUnregistered(databaseName, storageNodeName.get());
+                break;
+            default:
+                break;
         }
     }
     
-    private void handleStorageNodeChanged(final String databaseName, final DataChangedEvent event, final String storageUnitName) {
-        if (Type.ADDED == event.getType()) {
-            handleRegistered(databaseName, storageUnitName, event);
-        } else if (Type.UPDATED == event.getType()) {
-            handleAltered(databaseName, storageUnitName, event);
-        } else if (Type.DELETED == event.getType()) {
-            handleUnregistered(databaseName, storageUnitName);
-        }
-    }
-    
-    private void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
+    private void handleRegistered(final String databaseName, final String storageNodeName, final DataChangedEvent event) {
         // TODO
     }
     
-    private void handleAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
+    private void handleAltered(final String databaseName, final String storageNodeName, final DataChangedEvent event) {
         // TODO
     }
     
-    private void handleUnregistered(final String databaseName, final String dataSourceUnitName) {
+    private void handleUnregistered(final String databaseName, final String storageNodeName) {
         // TODO
     }
 }

@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
@@ -50,37 +49,37 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     public void handle(final String databaseName, final DataChangedEvent event) {
         Optional<String> storageUnitName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
         if (!storageUnitName.isPresent()) {
-            storageUnitName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria());
+            return;
         }
-        if (storageUnitName.isPresent()) {
-            handleStorageUnitChanged(databaseName, event, storageUnitName.get());
+        switch (event.getType()) {
+            case ADDED:
+                handleRegistered(databaseName, storageUnitName.get(), event);
+                break;
+            case UPDATED:
+                handleAltered(databaseName, storageUnitName.get(), event);
+                break;
+            case DELETED:
+                handleUnregistered(databaseName, storageUnitName.get());
+                break;
+            default:
+                break;
         }
     }
     
-    private void handleStorageUnitChanged(final String databaseName, final DataChangedEvent event, final String storageUnitName) {
-        if (Type.ADDED == event.getType()) {
-            handleRegistered(databaseName, storageUnitName, event);
-        } else if (Type.UPDATED == event.getType()) {
-            handleAltered(databaseName, storageUnitName, event);
-        } else if (Type.DELETED == event.getType()) {
-            handleUnregistered(databaseName, storageUnitName);
-        }
-    }
-    
-    private void handleRegistered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
+    private void handleRegistered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
-        contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
     
-    private void handleAltered(final String databaseName, final String dataSourceUnitName, final DataChangedEvent event) {
+    private void handleAltered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
         ActiveVersionChecker.checkActiveVersion(contextManager, event);
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, dataSourceUnitName);
-        contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(dataSourceUnitName, dataSourcePoolProps));
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
     
-    private void handleUnregistered(final String databaseName, final String dataSourceUnitName) {
+    private void handleUnregistered(final String databaseName, final String storageUnitName) {
         Preconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
-        contextManager.getMetaDataContextManager().getStorageUnitManager().unregister(databaseName, dataSourceUnitName);
+        contextManager.getMetaDataContextManager().getStorageUnitManager().unregister(databaseName, storageUnitName);
     }
 }
