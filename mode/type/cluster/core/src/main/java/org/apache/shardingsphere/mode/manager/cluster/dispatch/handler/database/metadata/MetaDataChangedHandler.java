@@ -49,19 +49,19 @@ public final class MetaDataChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final DataChangedEvent event) {
-        return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(true));
+    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
-        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(false));
+        Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
             return;
         }
-        schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(true));
+        schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
             return;

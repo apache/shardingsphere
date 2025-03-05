@@ -54,11 +54,12 @@ public final class TableMetadataNodePath implements NodePath {
     /**
      * Create schema search criteria.
      *
+     * @param databaseName database name
      * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 2);
+    public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 1);
     }
     
     /**

@@ -45,15 +45,12 @@ public final class DataSourceChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final DataChangedEvent event) {
-        return NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria());
+    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
+        return NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria(databaseName));
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        if (!NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria())) {
-            return;
-        }
         Optional<String> storageUnitName = new VersionNodePathParser(new StorageUnitNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 2);
         boolean isActiveVersion = true;
         if (!storageUnitName.isPresent()) {
