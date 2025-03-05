@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -43,28 +41,26 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
     
     @Override
     public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria(databaseName));
+        return new VersionNodePathParser(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null)).isActiveVersionPath(event.getKey());
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) throws SQLException {
-        if (Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
+        Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
+        if (!databaseRuleNodePath.isPresent()) {
             return;
         }
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            if (!VersionNodePath.isActiveVersionPath(event.getKey())) {
-                return;
-            }
-            int version = Integer.parseInt(event.getValue());
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
-            if (databaseRuleNodePath.isPresent()) {
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                int version = Integer.parseInt(event.getValue());
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
-            }
-        } else if (Type.DELETED == event.getType()) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
-            if (databaseRuleNodePath.isPresent()) {
+                break;
+            case DELETED:
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
-            }
+                break;
+            default:
+                break;
         }
     }
 }
