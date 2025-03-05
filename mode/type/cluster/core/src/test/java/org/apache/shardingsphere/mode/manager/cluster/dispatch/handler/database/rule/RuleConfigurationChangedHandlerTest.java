@@ -50,7 +50,7 @@ class RuleConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleWithInvalidPath() throws SQLException {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/foo_rule", "foo", Type.ADDED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture", "foo", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
