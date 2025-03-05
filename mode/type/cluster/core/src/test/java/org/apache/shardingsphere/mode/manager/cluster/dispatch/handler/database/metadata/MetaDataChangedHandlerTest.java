@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -35,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -121,28 +119,5 @@ class MetaDataChangedHandlerTest {
     void assertHandleViewDropped() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view", "", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropView("foo_db", "foo_schema", "foo_view");
-    }
-    
-    @Test
-    void assertHandleStorageUnitRegistered() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).register(eq("foo_db"), any());
-    }
-    
-    @Test
-    void assertHandleStorageUnitAltered() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("key")).thenReturn("value");
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alter(eq("foo_db"), any());
-    }
-    
-    @Test
-    void assertHandleStorageUnitUnregistered() {
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit", "", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).unregister("foo_db", "foo_unit");
     }
 }
