@@ -39,7 +39,7 @@ public final class RuleItemChangedNodePathBuilder {
      * @return built database rule node path
      */
     public Optional<DatabaseRuleNodePath> build(final String databaseName, final String path) {
-        Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria());
+        Optional<String> ruleType = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleTypeSearchCriteria(databaseName));
         if (!ruleType.isPresent()) {
             return Optional.empty();
         }

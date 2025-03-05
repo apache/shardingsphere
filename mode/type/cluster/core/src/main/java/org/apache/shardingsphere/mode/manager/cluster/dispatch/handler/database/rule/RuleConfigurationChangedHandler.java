@@ -43,7 +43,7 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
     
     @Override
     public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria());
+        return NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria(databaseName));
     }
     
     @Override
