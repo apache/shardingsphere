@@ -43,7 +43,6 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     public StorageUnitChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
         activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
-        
     }
     
     @Override
