@@ -23,10 +23,13 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -41,7 +44,10 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
     
     @Override
     public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return new VersionNodePathParser(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null)).isActiveVersionPath(event.getKey());
+        Collection<DatabaseRuleNodePath> databaseRuleNodePaths = Arrays.asList(
+                new DatabaseRuleNodePath(databaseName, NodePathPattern.QUALIFIED_IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER)),
+                new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER)));
+        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePathParser(each).isActiveVersionPath(event.getKey()));
     }
     
     @Override
