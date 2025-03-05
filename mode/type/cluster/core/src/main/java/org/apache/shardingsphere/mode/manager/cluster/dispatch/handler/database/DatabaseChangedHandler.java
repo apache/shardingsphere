@@ -41,5 +41,5 @@ public interface DatabaseChangedHandler {
      * @param event data changed event
      * @throws SQLException SQL exception
      */
-    void handle(final String databaseName, final DataChangedEvent event) throws SQLException;
+    void handle(String databaseName, DataChangedEvent event) throws SQLException;
 }
