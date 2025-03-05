@@ -25,11 +25,12 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.sql.SQLException;
 
@@ -56,7 +57,7 @@ public final class DatabaseRuleItemManager {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final DatabaseRuleNodePath databaseRuleNodePath, final int currentVersion) throws SQLException {
         VersionNodePath versionNodePath = new VersionNodePath(databaseRuleNodePath);
-        if (!checkActiveVersion(versionNodePath, currentVersion)) {
+        if (!ActiveVersionChecker.checkSame(metaDataPersistFacade.getRepository(), versionNodePath, currentVersion)) {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
@@ -69,14 +70,6 @@ public final class DatabaseRuleItemManager {
             processor.changeRuleItemConfiguration(itemName, currentRuleConfig, processor.swapRuleItemConfiguration(itemName, yamlContent));
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, true);
         }
-    }
-    
-    private boolean checkActiveVersion(final VersionNodePath versionNodePath, final int currentVersion) {
-        if (String.valueOf(currentVersion).equals(metaDataPersistFacade.getRepository().query(versionNodePath.getActiveVersionPath()))) {
-            return true;
-        }
-        log.warn("Invalid active version `{}` of key `{}`", currentVersion, versionNodePath.getActiveVersionPath());
-        return false;
     }
     
     /**
