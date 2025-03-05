@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.manager;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
@@ -27,34 +26,34 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 /**
  * Active version checker.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
 public final class ActiveVersionChecker {
+    
+    private final PersistRepository repository;
     
     /**
      * Check whether the current version same with an active version.
      *
-     * @param repository repository
      * @param event data changed event
      * @return same or not
      */
-    public static boolean checkSame(final PersistRepository repository, final DataChangedEvent event) {
-        return checkSame(repository, event.getValue(), event.getKey());
+    public boolean checkSame(final DataChangedEvent event) {
+        return checkSame(event.getValue(), event.getKey());
     }
     
     /**
      * Check whether the current version same with an active version.
      *
-     * @param repository repository
      * @param versionNodePath version node path
      * @param currentVersion current version
      * @return same or not
      */
-    public static boolean checkSame(final PersistRepository repository, final VersionNodePath versionNodePath, final int currentVersion) {
-        return checkSame(repository, String.valueOf(currentVersion), versionNodePath.getActiveVersionPath());
+    public boolean checkSame(final VersionNodePath versionNodePath, final int currentVersion) {
+        return checkSame(String.valueOf(currentVersion), versionNodePath.getActiveVersionPath());
     }
     
-    private static boolean checkSame(final PersistRepository repository, final String currentVersion, final String activeVersionPath) {
+    private boolean checkSame(final String currentVersion, final String activeVersionPath) {
         if (currentVersion.equals(repository.query(activeVersionPath))) {
             return true;
         }

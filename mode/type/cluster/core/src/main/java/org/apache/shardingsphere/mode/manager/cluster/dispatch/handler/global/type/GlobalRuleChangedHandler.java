@@ -53,7 +53,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
         if (!ruleType.isPresent()) {
             return;
         }
-        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
             return;
         }
         RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
