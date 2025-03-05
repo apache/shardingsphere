@@ -161,7 +161,11 @@ public final class SQLUtils {
      */
     public static String getExpressionWithoutOutsideParentheses(final String value) {
         int parenthesesOffset = getParenthesesOffset(value);
-        return 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        String result = 0 == parenthesesOffset ? value : value.substring(parenthesesOffset, value.length() - parenthesesOffset);
+        if (isValidParenthesis(result)) {
+            return result;
+        }
+        return value;
     }
     
     private static int getParenthesesOffset(final String value) {
@@ -260,5 +264,26 @@ public final class SQLUtils {
             result = result.substring(0, result.length() - 1);
         }
         return result.trim();
+    }
+    
+    /**
+     * Check for valid parenthesis in String.
+     *
+     * @param text to be checked for valid parenthesis
+     * @return true or false
+     */
+    public static boolean isValidParenthesis(final String text) {
+        int count = 0;
+        for (char c : text.toCharArray()) {
+            if (Paren.PARENTHESES.getLeftParen() == c) {
+                count++;
+            } else if (Paren.PARENTHESES.getRightParen() == c) {
+                if (count == 0) {
+                    return false;
+                }
+                count--;
+            }
+        }
+        return count == 0;
     }
 }
