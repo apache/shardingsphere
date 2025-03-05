@@ -25,10 +25,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.util.Map;
@@ -44,7 +40,7 @@ public abstract class AlgorithmChangedProcessor<T extends RuleConfiguration> imp
     private final Class<? extends ShardingSphereRule> ruleClass;
     
     @Override
-    public final AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public final AlgorithmConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
     }
     
@@ -55,13 +51,13 @@ public abstract class AlgorithmChangedProcessor<T extends RuleConfiguration> imp
     }
     
     @Override
-    public final void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final T currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        getAlgorithmConfigurations(currentRuleConfig).put(((AlterNamedRuleItem) alterRuleItem).getItemName(), toBeChangedItemConfig);
+    public final void changeRuleItemConfiguration(final String itemName, final T currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
+        getAlgorithmConfigurations(currentRuleConfig).put(itemName, toBeChangedItemConfig);
     }
     
     @Override
-    public final void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final T currentRuleConfig) {
-        getAlgorithmConfigurations(currentRuleConfig).remove(((DropNamedRuleItem) dropRuleItem).getItemName());
+    public final void dropRuleItemConfiguration(final String itemName, final T currentRuleConfig) {
+        getAlgorithmConfigurations(currentRuleConfig).remove(itemName);
     }
     
     protected abstract T createEmptyRuleConfiguration();

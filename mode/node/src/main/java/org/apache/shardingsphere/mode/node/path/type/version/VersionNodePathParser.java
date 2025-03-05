@@ -28,16 +28,11 @@ import java.util.regex.Pattern;
  */
 public final class VersionNodePathParser {
     
-    private static final String VERSION_PATTERN = "(\\d+)";
-    
     private final Pattern activeVersionPattern;
-    
-    private final Pattern versionPattern;
     
     public VersionNodePathParser(final NodePath nodePath) {
         VersionNodePath versionNodePath = new VersionNodePath(nodePath);
         activeVersionPattern = Pattern.compile(versionNodePath.getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
-        versionPattern = Pattern.compile(String.join("/", versionNodePath.getVersionsPath(), VERSION_PATTERN) + "$", Pattern.CASE_INSENSITIVE);
     }
     
     /**
@@ -51,16 +46,6 @@ public final class VersionNodePathParser {
     }
     
     /**
-     * Judge whether to version path.
-     *
-     * @param path to be judged path
-     * @return is version path or not
-     */
-    public boolean isVersionPath(final String path) {
-        return versionPattern.matcher(path).find();
-    }
-    
-    /**
      * Find identifier name by active version path.
      *
      * @param activeVersionPath active version path
@@ -69,18 +54,6 @@ public final class VersionNodePathParser {
      */
     public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
         Matcher matcher = activeVersionPattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
-    }
-    
-    /**
-     * Find identifier name by versions' path.
-     *
-     * @param versionsPath versions path
-     * @param identifierGroupIndex identifier group index
-     * @return found identifier
-     */
-    public Optional<String> findIdentifierByVersionsPath(final String versionsPath, final int identifierGroupIndex) {
-        Matcher matcher = versionPattern.matcher(versionsPath);
         return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }

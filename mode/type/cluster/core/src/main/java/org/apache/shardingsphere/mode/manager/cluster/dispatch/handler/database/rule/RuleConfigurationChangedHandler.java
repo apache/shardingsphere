@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedBuilder;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemAlteredBuildExecutor;
-import org.apache.shardingsphere.mode.metadata.changed.executor.type.RuleItemDroppedBuildExecutor;
+import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -34,16 +32,12 @@ import java.util.Optional;
 /**
  * Rule configuration changed handler.
  */
+@RequiredArgsConstructor
 public final class RuleConfigurationChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final RuleItemChangedBuilder ruleItemChangedBuilder;
-    
-    public RuleConfigurationChangedHandler(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        ruleItemChangedBuilder = new RuleItemChangedBuilder();
-    }
+    private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
     /**
      * Handle rule changed.
@@ -61,14 +55,14 @@ public final class RuleConfigurationChangedHandler {
                 return;
             }
             int version = Integer.parseInt(event.getValue());
-            Optional<AlterRuleItem> alterRuleItem = ruleItemChangedBuilder.build(databaseName, event.getKey(), version, new RuleItemAlteredBuildExecutor());
-            if (alterRuleItem.isPresent()) {
-                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(alterRuleItem.get());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
+            if (databaseRuleNodePath.isPresent()) {
+                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
             }
         } else if (Type.DELETED == event.getType()) {
-            Optional<DropRuleItem> dropRuleItem = ruleItemChangedBuilder.build(databaseName, event.getKey(), null, new RuleItemDroppedBuildExecutor());
-            if (dropRuleItem.isPresent()) {
-                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(dropRuleItem.get());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
+            if (databaseRuleNodePath.isPresent()) {
+                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }
         }
     }

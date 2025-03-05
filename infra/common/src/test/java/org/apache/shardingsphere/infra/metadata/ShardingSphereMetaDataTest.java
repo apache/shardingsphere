@@ -67,7 +67,7 @@ class ShardingSphereMetaDataTest {
     void assertAddDatabase() {
         GlobalRule globalRule = mock(GlobalRule.class);
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
-        DatabaseType databaseType = mock(DatabaseType.class);
+        DatabaseType databaseType = database.getProtocolType();
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         when(ShardingSphereDatabaseFactory.create("foo_db", databaseType, configProps)).thenReturn(database);
         Collection<ShardingSphereDatabase> databases = new LinkedList<>(Collections.singleton(database));
@@ -129,6 +129,7 @@ class ShardingSphereMetaDataTest {
         StorageUnit storageUnit = new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, dataSource);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(rules)));
+        when(result.getProtocolType()).thenReturn(storageUnit.getStorageType());
         return result;
     }
 }

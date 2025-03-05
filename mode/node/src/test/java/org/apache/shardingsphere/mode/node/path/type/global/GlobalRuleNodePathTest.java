@@ -37,6 +37,5 @@ class GlobalRuleNodePathTest {
     void assertGetVersion() {
         VersionNodePathParser versionNodePathParser = new VersionNodePathParser(new GlobalRuleNodePath("foo_rule"));
         assertTrue(versionNodePathParser.isActiveVersionPath("/rules/foo_rule/active_version"));
-        assertTrue(versionNodePathParser.isVersionPath("/rules/foo_rule/versions/0"));
     }
 }

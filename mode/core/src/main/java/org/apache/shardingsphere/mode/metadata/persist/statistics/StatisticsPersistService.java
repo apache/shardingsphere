@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.statistics;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -105,9 +107,11 @@ public final class StatisticsPersistService {
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
         schemaStatistics.getTableStatisticsMap().values().forEach(each -> {
-            YamlRowStatisticsSwapper swapper =
-                    new YamlRowStatisticsSwapper(new ArrayList<>(database.getSchema(schemaName).getTable(each.getName()).getAllColumns()));
-            persistTableData(database.getName(), schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
+            Collection<ShardingSphereColumn> columns = database.getSchema(schemaName)
+                    .containsTable(each.getName()) ? database.getSchema(schemaName).getTable(each.getName()).getAllColumns() : Collections.emptyList();
+            YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(columns));
+            persistTableData(database.getName(), schemaName, each.getName(), columns.isEmpty() ? Collections.emptyList()
+                    : each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }
     

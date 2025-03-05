@@ -22,10 +22,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.DataSourceChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.sql.SQLException;
@@ -46,13 +49,16 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             return;
         }
         OrderedServicesCache.clearCache();
-        if (new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event)) {
-            return;
-        }
-        try {
-            new RuleConfigurationChangedHandler(contextManager).handle(databaseName.get(), event);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+        if (NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(true))) {
+            new MetaDataChangedHandler(contextManager).handle(databaseName.get(), event);
+        } else if (NodePathSearcher.isMatchedPath(event.getKey(), StorageUnitNodePath.createDataSourceSearchCriteria())) {
+            new DataSourceChangedHandler(contextManager).handle(databaseName.get(), event);
+        } else if (NodePathSearcher.isMatchedPath(event.getKey(), DatabaseRuleNodePath.createRuleTypeSearchCriteria())) {
+            try {
+                new RuleConfigurationChangedHandler(contextManager).handle(databaseName.get(), event);
+            } catch (final SQLException ex) {
+                throw new SQLWrapperException(ex);
+            }
         }
     }
 }

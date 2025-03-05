@@ -64,8 +64,16 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void createDatabase(final String databaseName) {
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
+        afterDatabaseCreated(databaseName, originalMetaDataContexts);
+    }
+    
+    private void afterDatabaseCreated(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
+        MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
+        metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
@@ -231,7 +239,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     private MetaDataContexts getReloadMetaDataContexts(final MetaDataContexts originalMetaDataContexts) {
         Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
-        if (reloadMetaDataContexts != originalMetaDataContexts) {
+        if (reloadMetaDataContexts.getMetaData() != originalMetaDataContexts.getMetaData() && reloadMetaDataContexts.getStatistics() != reloadMetaDataContexts.getStatistics()) {
             return reloadMetaDataContexts;
         }
         long startTime = System.currentTimeMillis();

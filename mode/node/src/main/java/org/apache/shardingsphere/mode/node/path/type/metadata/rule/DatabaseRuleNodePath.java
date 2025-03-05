@@ -60,11 +60,13 @@ public final class DatabaseRuleNodePath implements NodePath {
     /**
      * Create rule item name search criteria.
      *
+     * @param databaseName database name
      * @param ruleType rule type
      * @param ruleItemType rule item type
+     * @param containsChildPath contains child path
      * @return create search criteria
      */
-    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String ruleType, final String ruleItemType) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.IDENTIFIER)), false, false, 2);
+    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType, final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, containsChildPath, 1);
     }
 }
