@@ -62,29 +62,26 @@ public final class MetaDataChangedHandler {
      *
      * @param databaseName database name
      * @param event data changed event
-     * @return handle completed or not
      */
-    public boolean handle(final String databaseName, final DataChangedEvent event) {
+    public void handle(final String databaseName, final DataChangedEvent event) {
         String eventKey = event.getKey();
         Optional<String> schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(false));
         if (schemaName.isPresent()) {
             handleSchemaChanged(databaseName, schemaName.get(), event);
-            return true;
+            return;
         }
         schemaName = NodePathSearcher.find(eventKey, TableMetadataNodePath.createSchemaSearchCriteria(true));
         if (schemaName.isPresent() && isTableMetaDataChanged(eventKey)) {
             handleTableChanged(databaseName, schemaName.get(), event);
-            return true;
+            return;
         }
         if (schemaName.isPresent() && isViewMetaDataChanged(eventKey)) {
             handleViewChanged(databaseName, schemaName.get(), event);
-            return true;
+            return;
         }
         if (NodePathSearcher.isMatchedPath(eventKey, StorageUnitNodePath.createDataSourceSearchCriteria())) {
             handleDataSourceChanged(databaseName, event);
-            return true;
         }
-        return false;
     }
     
     private void handleSchemaChanged(final String databaseName, final String schemaName, final DataChangedEvent event) {
