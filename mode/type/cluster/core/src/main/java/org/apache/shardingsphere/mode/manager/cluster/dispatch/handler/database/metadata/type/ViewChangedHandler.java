@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
@@ -50,7 +50,9 @@ public final class ViewChangedHandler {
     public void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
         String viewName = new VersionNodePathParser(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
                 .orElseThrow(() -> new IllegalStateException("View name not found."));
-        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+            return;
+        }
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();

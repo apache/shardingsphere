@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCac
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.DataSourceChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.MetaDataChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -42,7 +43,11 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     private final Collection<DatabaseChangedHandler> handlers;
     
     public DatabaseMetaDataChangedListener(final ContextManager contextManager) {
-        handlers = Arrays.asList(new MetaDataChangedHandler(contextManager), new DataSourceChangedHandler(contextManager), new RuleConfigurationChangedHandler(contextManager));
+        handlers = Arrays.asList(
+                new MetaDataChangedHandler(contextManager),
+                new StorageUnitChangedHandler(contextManager),
+                new StorageNodeChangedHandler(contextManager),
+                new RuleConfigurationChangedHandler(contextManager));
     }
     
     @Override

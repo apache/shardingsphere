@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalPropertiesNodePath;
@@ -49,7 +49,9 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
         if (!new VersionNodePathParser(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
             return;
         }
-        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        if (!ActiveVersionChecker.checkSame(contextManager.getPersistServiceFacade().getRepository(), event)) {
+            return;
+        }
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load());
     }
 }
