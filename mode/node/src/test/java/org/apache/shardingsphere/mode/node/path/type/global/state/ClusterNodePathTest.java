@@ -15,38 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.cluster;
+package org.apache.shardingsphere.mode.node.path.type.global.state;
 
-import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.state.ClusterNodePath;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.junit.jupiter.api.Test;
 
-/**
- * Cluster state persist service.
- */
-@RequiredArgsConstructor
-public final class ClusterStatePersistService {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ClusterNodePathTest {
     
-    private final PersistRepository repository;
-    
-    /**
-     * Update cluster state.
-     *
-     * @param state to be updated cluster state
-     */
-    public void update(final ClusterState state) {
-        repository.persist(NodePathGenerator.toPath(new ClusterNodePath(), false), state.name());
-    }
-    
-    /**
-     * Load cluster state.
-     *
-     * @return loaded cluster state
-     */
-    public ClusterState load() {
-        String value = repository.query(NodePathGenerator.toPath(new ClusterNodePath(), false));
-        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
+    @Test
+    void assertToPath() {
+        assertThat(NodePathGenerator.toPath(new ClusterNodePath(), false), is("/states/cluster_state"));
     }
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.label.LabelNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
