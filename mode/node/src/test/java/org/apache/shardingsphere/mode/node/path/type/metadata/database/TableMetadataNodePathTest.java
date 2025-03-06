@@ -64,9 +64,9 @@ class TableMetadataNodePathTest {
     
     @Test
     void assertCreateTableSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria()), is(Optional.of("foo_tbl")));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria()).isPresent());
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria()));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", TableMetadataNodePath.createTableSearchCriteria()));
+        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria("foo_db", "foo_schema")), is(Optional.of("foo_tbl")));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria("foo_db", "foo_schema")).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl", TableMetadataNodePath.createTableSearchCriteria("foo_db", "foo_schema")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0", TableMetadataNodePath.createTableSearchCriteria("foo_db", "foo_schema")));
     }
 }
