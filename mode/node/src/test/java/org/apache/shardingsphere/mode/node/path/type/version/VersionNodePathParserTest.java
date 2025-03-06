@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathParserTest {
     
-    private final VersionNodePathParser parser = new VersionNodePathParser(new TableMetadataNodePath());
+    private final VersionNodePathParser parser = new VersionNodePathParser(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
     
     @Test
     void assertIsActiveVersionPath() {

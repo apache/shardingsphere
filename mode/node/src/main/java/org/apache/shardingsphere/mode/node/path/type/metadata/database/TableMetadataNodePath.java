@@ -38,10 +38,6 @@ public final class TableMetadataNodePath implements NodePath {
     
     private final String tableName;
     
-    public TableMetadataNodePath() {
-        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
-    }
-    
     /**
      * Create database search criteria.
      *
@@ -65,9 +61,11 @@ public final class TableMetadataNodePath implements NodePath {
     /**
      * Create table search criteria.
      *
+     * @param databaseName database name
+     * @param schemaName schema name
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createTableSearchCriteria() {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(), false, false, 3);
+    public static NodePathSearchCriteria createTableSearchCriteria(final String databaseName, final String schemaName) {
+        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }
