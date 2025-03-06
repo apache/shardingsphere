@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.path.type.global.state;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.global.state.ClusterNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
