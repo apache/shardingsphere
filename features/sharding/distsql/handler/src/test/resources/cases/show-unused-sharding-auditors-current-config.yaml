@@ -23,22 +23,10 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: database_inline
         tableStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: table_inline
 
-    shardingAlgorithms:
-      database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
-      table_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_${order_id % 2}
-      t_order_hash_mod:
-        type: hash_mod
-        props:
-          sharding-count: '6'
+    auditors:
+      sharding_key_required_auditor:
+        type: DML_SHARDING_CONDITIONS

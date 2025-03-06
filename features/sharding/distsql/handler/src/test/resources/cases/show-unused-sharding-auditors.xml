@@ -17,10 +17,10 @@
   -->
 
 <distsql-rule-query-executor-test-cases>
-    <test-case dist-sql="SHOW UNUSED SHARDING ALGORITHMS" current-rule-config-yaml-file="cases/show-unused-sharding-algorithms-current-config.yaml">
+    <test-case dist-sql="SHOW UNUSED SHARDING AUDITORS" current-rule-config-yaml-file="cases/show-unused-sharding-auditors-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                t_order_hash_mod|hash_mod|{"sharding-count":"6"}
+                sharding_key_required_auditor|DML_SHARDING_CONDITIONS|
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
