@@ -41,9 +41,11 @@ public final class ViewMetadataNodePath implements NodePath {
     /**
      * Create view search criteria.
      *
+     * @param databaseName database name
+     * @param schemaName schema name
      * @return created search criteria
      */
     public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, false, 1);
+        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }
