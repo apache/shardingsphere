@@ -65,6 +65,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             if (each.isSubscribed(databaseName.get(), event)) {
                 try {
                     each.handle(databaseName.get(), event);
+                    break;
                 } catch (final SQLException ex) {
                     throw new SQLWrapperException(ex);
                 }
