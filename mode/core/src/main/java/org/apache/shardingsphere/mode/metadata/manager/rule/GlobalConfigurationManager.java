@@ -52,9 +52,7 @@ public final class GlobalConfigurationManager {
         if (null == ruleConfig) {
             return;
         }
-        Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
-        closeGlobalRule(ruleConfig, rules);
-        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        Collection<ShardingSphereRule> rules = removeGlobalRule(ruleConfig, metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
         rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
@@ -63,13 +61,18 @@ public final class GlobalConfigurationManager {
     }
     
     @SneakyThrows(Exception.class)
-    private void closeGlobalRule(final RuleConfiguration ruleConfig, final Collection<ShardingSphereRule> rules) {
+    private Collection<ShardingSphereRule> removeGlobalRule(final RuleConfiguration ruleConfig, final Collection<ShardingSphereRule> rules) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
-            if (each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()) && each instanceof AutoCloseable) {
+            if (!each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())) {
+                result.add(each);
+                continue;
+            }
+            if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
-                return;
             }
         }
+        return result;
     }
     
     /**
