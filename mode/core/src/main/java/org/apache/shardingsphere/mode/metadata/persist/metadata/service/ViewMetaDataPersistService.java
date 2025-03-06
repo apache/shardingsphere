@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.metadata.schema.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 

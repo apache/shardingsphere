@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.schema;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

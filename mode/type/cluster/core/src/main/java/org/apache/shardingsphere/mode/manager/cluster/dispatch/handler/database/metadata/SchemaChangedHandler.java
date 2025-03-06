@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 
 /**
  * Schema changed handler.

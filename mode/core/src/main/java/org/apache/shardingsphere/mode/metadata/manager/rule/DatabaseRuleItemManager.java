@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;

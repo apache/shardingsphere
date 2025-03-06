@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,38 +25,24 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Database rule node path.
+ * Storage node node path.
  */
-@NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
+@NodePathEntity("/metadata/${databaseName}/data_sources/nodes/${storageNodeName}")
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseRuleNodePath implements NodePath {
+public final class StorageNodeNodePath implements NodePath {
     
     private final String databaseName;
     
-    private final String ruleType;
-    
-    private final DatabaseRuleItem databaseRuleItem;
+    private final String storageNodeName;
     
     /**
-     * Create rule type search criteria.
+     * Create storage node search criteria.
      *
      * @param databaseName database name
-     * @return create search criteria
+     * @return created search criteria
      */
-    public static NodePathSearchCriteria createRuleTypeSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null), false, true, 1);
-    }
-    
-    /**
-     * Create rule item name search criteria.
-     *
-     * @param databaseName database name
-     * @param ruleType rule type
-     * @param ruleItemType rule item type
-     * @return create search criteria
-     */
-    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, true, 1);
+    public static NodePathSearchCriteria createStorageNodeSearchCriteria(final String databaseName) {
+        return new NodePathSearchCriteria(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }

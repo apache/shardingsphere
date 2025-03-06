@@ -15,14 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.statistics;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.rule;
 
-import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Statistics job node path.
+ * Database rule item.
  */
-@NodePathEntity("/statistics/job")
-public final class StatisticsJobNodePath implements NodePath {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseRuleItem {
+    
+    private final String type;
+    
+    private final String name;
+    
+    public DatabaseRuleItem(final String value) {
+        String[] values = value.split("/");
+        if (1 == values.length) {
+            type = values[0];
+            name = null;
+        } else {
+            type = values[0];
+            name = values[1];
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return null == name ? type : String.join("/", type, name);
+    }
 }

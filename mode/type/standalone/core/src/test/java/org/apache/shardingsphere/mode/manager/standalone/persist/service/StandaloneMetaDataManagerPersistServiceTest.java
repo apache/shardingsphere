@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBu
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;

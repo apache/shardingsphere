@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.sql.SQLException;
