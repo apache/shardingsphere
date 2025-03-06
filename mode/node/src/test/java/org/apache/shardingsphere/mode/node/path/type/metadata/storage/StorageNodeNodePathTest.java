@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,7 +35,7 @@ class StorageNodeNodePathTest {
     
     @Test
     void assertCreateStorageNodeSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")), is(Optional.of("foo_ds")));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")), is("foo_ds"));
         assertFalse(NodePathSearcher.find("/xxx/foo_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")).isPresent());
         assertFalse(NodePathSearcher.find("/metadata/bar_db/data_sources/nodes/foo_ds", StorageNodeNodePath.createStorageNodeSearchCriteria("foo_db")).isPresent());
     }

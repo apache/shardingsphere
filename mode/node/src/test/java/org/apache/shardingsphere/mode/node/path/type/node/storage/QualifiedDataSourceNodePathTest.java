@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,8 +37,8 @@ class QualifiedDataSourceNodePathTest {
     
     @Test
     void assertCreateQualifiedDataSourceSearchCriteria() {
-        assertThat(NodePathSearcher.find("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()),
-                is(Optional.of("replica_query_db.readwrite_ds.replica_ds_0")));
+        assertThat(NodePathSearcher.get("/nodes/qualified_data_sources/replica_query_db.readwrite_ds.replica_ds_0", QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()),
+                is("replica_query_db.readwrite_ds.replica_ds_0"));
         assertFalse(NodePathSearcher.find("/nodes/xxx/", QualifiedDataSourceNodePath.createQualifiedDataSourceSearchCriteria()).isPresent());
     }
 }

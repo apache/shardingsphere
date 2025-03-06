@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,7 +47,7 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertCreateViewSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()), is(Optional.of("foo_view")));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()), is("foo_view"));
         assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()).isPresent());
         assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()));
         assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetadataNodePath.createViewSearchCriteria()));

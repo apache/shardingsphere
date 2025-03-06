@@ -28,8 +28,6 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
-import java.util.Optional;
-
 /**
  * Table changed handler.
  */
@@ -54,17 +52,14 @@ public final class TableChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        if (!schemaName.isPresent()) {
-            return;
-        }
+        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                handleCreatedOrAltered(databaseName, schemaName.get(), event);
+                handleCreatedOrAltered(databaseName, schemaName, event);
                 break;
             case DELETED:
-                handleDropped(databaseName, schemaName.get(), event);
+                handleDropped(databaseName, schemaName, event);
                 break;
             default:
                 break;
@@ -72,8 +67,7 @@ public final class TableChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName))
-                .orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
         if (!activeVersionChecker.checkSame(event)) {
             return;
         }
@@ -83,8 +77,7 @@ public final class TableChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName))
-                .orElseThrow(() -> new IllegalStateException("Table name not found."));
+        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }

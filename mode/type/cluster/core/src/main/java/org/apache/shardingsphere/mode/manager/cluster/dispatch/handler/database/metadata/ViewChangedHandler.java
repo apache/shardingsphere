@@ -29,8 +29,6 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMeta
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
-import java.util.Optional;
-
 /**
  * View changed handler.
  */
@@ -56,15 +54,12 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        if (!schemaName.isPresent()) {
-            return;
-        }
+        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
         if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
                 && new VersionNodePathParser(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())) {
-            handleCreatedOrAltered(databaseName, schemaName.get(), event);
+            handleCreatedOrAltered(databaseName, schemaName, event);
         } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria())) {
-            handleDropped(databaseName, schemaName.get(), event);
+            handleDropped(databaseName, schemaName, event);
         }
     }
     
@@ -80,7 +75,7 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.find(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria()).orElseThrow(() -> new IllegalStateException("View name not found."));
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria());
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,8 +37,8 @@ class ShowProcessListTriggerNodePathTest {
     
     @Test
     void assertCreateInstanceIdSearchCriteria() {
-        assertThat(NodePathSearcher.find("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id",
-                ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
+        assertThat(NodePathSearcher.get("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id",
+                ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()), is("foo_instance_id"));
         assertFalse(NodePathSearcher.find("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()).isPresent());
         assertTrue(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id", ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()));
         assertFalse(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()));
@@ -48,8 +46,8 @@ class ShowProcessListTriggerNodePathTest {
     
     @Test
     void assertCreateProcessIdSearchCriteria() {
-        assertThat(NodePathSearcher.find("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id",
-                ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()), is(Optional.of("foo_process_id")));
+        assertThat(NodePathSearcher.get("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id",
+                ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()), is("foo_process_id"));
         assertFalse(NodePathSearcher.find("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()).isPresent());
         assertTrue(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id", ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()));
         assertFalse(NodePathSearcher.isMatchedPath("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()));

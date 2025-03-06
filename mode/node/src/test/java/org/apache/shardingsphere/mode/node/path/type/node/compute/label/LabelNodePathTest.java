@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,6 +33,6 @@ class LabelNodePathTest {
     
     @Test
     void assertCreateInstanceIdSearchCriteria() {
-        assertThat(NodePathSearcher.find("/nodes/compute_nodes/labels/foo_instance_id", LabelNodePath.createInstanceIdSearchCriteria()), is(Optional.of("foo_instance_id")));
+        assertThat(NodePathSearcher.get("/nodes/compute_nodes/labels/foo_instance_id", LabelNodePath.createInstanceIdSearchCriteria()), is("foo_instance_id"));
     }
 }

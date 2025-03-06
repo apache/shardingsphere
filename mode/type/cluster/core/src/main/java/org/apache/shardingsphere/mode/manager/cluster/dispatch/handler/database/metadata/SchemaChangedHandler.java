@@ -24,8 +24,6 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 
-import java.util.Optional;
-
 /**
  * Schema changed handler.
  */
@@ -47,17 +45,14 @@ public final class SchemaChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> schemaName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
-        if (!schemaName.isPresent()) {
-            return;
-        }
+        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                handleCreated(databaseName, schemaName.get());
+                handleCreated(databaseName, schemaName);
                 break;
             case DELETED:
-                handleDropped(databaseName, schemaName.get());
+                handleDropped(databaseName, schemaName);
                 break;
             default:
                 break;
