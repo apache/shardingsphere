@@ -25,16 +25,11 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -57,9 +52,7 @@ public final class GlobalConfigurationManager {
         if (null == ruleConfig) {
             return;
         }
-        closeStaleTransactionRule(ruleConfig);
-        Collection<ShardingSphereRule> rules = new LinkedList<>(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
-        rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
+        Collection<ShardingSphereRule> rules = removeGlobalRule(ruleConfig, metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
         rules.addAll(GlobalRulesBuilder.buildSingleRules(ruleConfig, metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getProps()));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
@@ -67,14 +60,19 @@ public final class GlobalConfigurationManager {
                 metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()), metaDataPersistFacade);
     }
     
-    // TODO Optimize string comparison rule type.
     @SneakyThrows(Exception.class)
-    private void closeStaleTransactionRule(final RuleConfiguration ruleConfig) {
-        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(ruleConfig);
-        if (!"transaction".equals(Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RuleNodeTupleEntity.class)).value())) {
-            return;
+    private Collection<ShardingSphereRule> removeGlobalRule(final RuleConfiguration ruleConfig, final Collection<ShardingSphereRule> rules) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            if (!each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass())) {
+                result.add(each);
+                continue;
+            }
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
         }
-        metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class).ifPresent(TransactionRule::close);
+        return result;
     }
     
     /**

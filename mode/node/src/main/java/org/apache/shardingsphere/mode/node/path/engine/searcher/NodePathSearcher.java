@@ -47,7 +47,18 @@ public final class NodePathSearcher {
     }
     
     /**
-     * Whether to matched path.
+     * Get node segment.
+     *
+     * @param path to be searched path
+     * @param criteria node path search criteria
+     * @return got node segment
+     */
+    public static String get(final String path, final NodePathSearchCriteria criteria) {
+        return find(path, criteria).orElseThrow(() -> new IllegalArgumentException(String.format("Can not find node segment in path: %s", path)));
+    }
+    
+    /**
+     * Whether to match the path.
      *
      * @param path to be searched path
      * @param criteria node path search criteria

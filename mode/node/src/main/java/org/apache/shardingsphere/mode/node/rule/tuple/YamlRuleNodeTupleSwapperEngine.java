@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;

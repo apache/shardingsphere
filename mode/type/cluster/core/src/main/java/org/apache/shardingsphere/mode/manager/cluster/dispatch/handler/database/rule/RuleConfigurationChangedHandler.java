@@ -17,53 +17,56 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Rule configuration changed handler.
  */
 @RequiredArgsConstructor
-public final class RuleConfigurationChangedHandler {
+public final class RuleConfigurationChangedHandler implements DatabaseChangedHandler {
     
     private final ContextManager contextManager;
     
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
-    /**
-     * Handle rule changed.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @throws SQLException SQL exception
-     */
+    @Override
+    public boolean isSubscribed(final String databaseName, final String path) {
+        Collection<DatabaseRuleNodePath> databaseRuleNodePaths = Arrays.asList(
+                new DatabaseRuleNodePath(databaseName, NodePathPattern.QUALIFIED_IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER)),
+                new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER)));
+        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePathParser(each).isActiveVersionPath(path));
+    }
+    
+    @Override
     public void handle(final String databaseName, final DataChangedEvent event) throws SQLException {
-        if (Type.DELETED != event.getType() && Strings.isNullOrEmpty(event.getValue())) {
+        Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
+        if (!databaseRuleNodePath.isPresent()) {
             return;
         }
-        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
-            if (!VersionNodePath.isActiveVersionPath(event.getKey())) {
-                return;
-            }
-            int version = Integer.parseInt(event.getValue());
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
-            if (databaseRuleNodePath.isPresent()) {
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                int version = Integer.parseInt(event.getValue());
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
-            }
-        } else if (Type.DELETED == event.getType()) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
-            if (databaseRuleNodePath.isPresent()) {
+                break;
+            case DELETED:
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
-            }
+                break;
+            default:
+                break;
         }
     }
 }
