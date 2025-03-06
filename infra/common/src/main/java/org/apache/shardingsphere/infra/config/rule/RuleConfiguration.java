@@ -17,8 +17,20 @@
 
 package org.apache.shardingsphere.infra.config.rule;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Rule configuration.
  */
 public interface RuleConfiguration {
+    
+    /**
+     * Get logic table names.
+     *
+     * @return logic table names
+     */
+    default Collection<String> getLogicTableNames() {
+        return Collections.emptyList();
+    }
 }
