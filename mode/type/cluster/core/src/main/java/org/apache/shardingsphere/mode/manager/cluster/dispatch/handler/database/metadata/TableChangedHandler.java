@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.schema.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 /**

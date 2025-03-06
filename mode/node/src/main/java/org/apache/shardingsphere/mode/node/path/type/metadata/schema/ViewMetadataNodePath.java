@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.database;
+package org.apache.shardingsphere.mode.node.path.type.metadata.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,47 +25,27 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Table metadata node path.
+ * View metadata node path.
  */
-@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/tables/${tableName}")
+@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/views/${viewName}")
 @RequiredArgsConstructor
 @Getter
-public final class TableMetadataNodePath implements NodePath {
+public final class ViewMetadataNodePath implements NodePath {
     
     private final String databaseName;
     
     private final String schemaName;
     
-    private final String tableName;
+    private final String viewName;
     
     /**
-     * Create database search criteria.
-     *
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createDatabaseSearchCriteria() {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1);
-    }
-    
-    /**
-     * Create schema search criteria.
-     *
-     * @param databaseName database name
-     * @param containsChildPath contains child path
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 1);
-    }
-    
-    /**
-     * Create table search criteria.
+     * Create view search criteria.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createTableSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
+        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }
