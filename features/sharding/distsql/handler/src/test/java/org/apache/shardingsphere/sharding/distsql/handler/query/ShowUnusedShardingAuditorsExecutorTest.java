@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 
 @DistSQLRuleQueryExecutorSettings("cases/show-unused-sharding-auditors.xml")
 class ShowUnusedShardingAuditorsExecutorTest {
-
+    
     @ParameterizedTest(name = "DistSQL -> {0}")
     @ArgumentsSource(DistSQLRuleQueryExecutorTestCaseArgumentsProvider.class)
     void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
