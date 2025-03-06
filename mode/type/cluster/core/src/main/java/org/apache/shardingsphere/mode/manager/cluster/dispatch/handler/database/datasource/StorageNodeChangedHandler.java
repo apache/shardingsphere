@@ -44,10 +44,10 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
         String storageNodeName = NodePathSearcher.get(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                handleRegistered(databaseName, storageNodeName, event);
+                handleRegistered(databaseName, storageNodeName);
                 break;
             case UPDATED:
-                handleAltered(databaseName, storageNodeName, event);
+                handleAltered(databaseName, storageNodeName);
                 break;
             case DELETED:
                 handleUnregistered(databaseName, storageNodeName);
@@ -57,11 +57,11 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
         }
     }
     
-    private void handleRegistered(final String databaseName, final String storageNodeName, final DataChangedEvent event) {
+    private void handleRegistered(final String databaseName, final String storageNodeName) {
         // TODO
     }
     
-    private void handleAltered(final String databaseName, final String storageNodeName, final DataChangedEvent event) {
+    private void handleAltered(final String databaseName, final String storageNodeName) {
         // TODO
     }
     

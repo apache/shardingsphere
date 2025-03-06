@@ -54,10 +54,14 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
         String storageUnitName = NodePathSearcher.get(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                handleRegistered(databaseName, storageUnitName, event);
+                if (activeVersionChecker.checkSame(event)) {
+                    handleRegistered(databaseName, storageUnitName);
+                }
                 break;
             case UPDATED:
-                handleAltered(databaseName, storageUnitName, event);
+                if (activeVersionChecker.checkSame(event)) {
+                    handleAltered(databaseName, storageUnitName);
+                }
                 break;
             case DELETED:
                 handleUnregistered(databaseName, storageUnitName);
@@ -67,18 +71,12 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
         }
     }
     
-    private void handleRegistered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
-        if (!activeVersionChecker.checkSame(event)) {
-            return;
-        }
+    private void handleRegistered(final String databaseName, final String storageUnitName) {
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
     
-    private void handleAltered(final String databaseName, final String storageUnitName, final DataChangedEvent event) {
-        if (!activeVersionChecker.checkSame(event)) {
-            return;
-        }
+    private void handleAltered(final String databaseName, final String storageUnitName) {
         DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
