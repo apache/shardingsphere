@@ -62,7 +62,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         }
         OrderedServicesCache.clearCache();
         for (DatabaseChangedHandler each : handlers) {
-            if (each.isSubscribed(databaseName.get(), event)) {
+            if (each.isSubscribed(databaseName.get(), event.getKey())) {
                 try {
                     each.handle(databaseName.get(), event);
                     break;

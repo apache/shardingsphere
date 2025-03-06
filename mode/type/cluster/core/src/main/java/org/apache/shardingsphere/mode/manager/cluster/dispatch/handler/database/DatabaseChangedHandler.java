@@ -30,10 +30,10 @@ public interface DatabaseChangedHandler {
      * Is subscribed event.
      *
      * @param databaseName database name
-     * @param event data changed event
+     * @param path path
      * @return is subscribed or not
      */
-    boolean isSubscribed(String databaseName, DataChangedEvent event);
+    boolean isSubscribed(String databaseName, String path);
     
     /**
      * Handle database changed.
