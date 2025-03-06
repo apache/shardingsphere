@@ -53,31 +53,29 @@ public final class TableChangedHandler implements DatabaseChangedHandler {
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                handleCreatedOrAltered(databaseName, schemaName, event);
+                if (activeVersionChecker.checkSame(event)) {
+                    handleCreatedOrAltered(databaseName, schemaName, tableName);
+                }
                 break;
             case DELETED:
-                handleDropped(databaseName, schemaName, event);
+                handleDropped(databaseName, schemaName, tableName);
                 break;
             default:
                 break;
         }
     }
     
-    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
-        if (!activeVersionChecker.checkSame(event)) {
-            return;
-        }
+    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String tableName) {
         ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
+    private void handleDropped(final String databaseName, final String schemaName, final String tableName) {
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropTable(databaseName, schemaName, tableName);
         statisticsRefreshEngine.asyncRefresh();
     }

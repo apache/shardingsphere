@@ -54,31 +54,29 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                handleCreatedOrAltered(databaseName, schemaName, event);
+                if (activeVersionChecker.checkSame(event)) {
+                    handleCreatedOrAltered(databaseName, schemaName, viewName);
+                }
                 break;
             case DELETED:
-                handleDropped(databaseName, schemaName, event);
+                handleDropped(databaseName, schemaName, viewName);
                 break;
             default:
                 break;
         }
     }
     
-    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
-        if (!activeVersionChecker.checkSame(event)) {
-            return;
-        }
+    private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String viewName) {
         ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
+    private void handleDropped(final String databaseName, final String schemaName, final String viewName) {
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }
