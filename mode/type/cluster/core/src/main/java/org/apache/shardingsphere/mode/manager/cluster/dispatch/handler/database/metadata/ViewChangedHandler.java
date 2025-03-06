@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.metadata.database.ViewMetadataNodePath;
@@ -48,24 +48,27 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return new VersionNodePathParser(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())
-                || NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria());
+        return new VersionNodePathParser(new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey());
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
         String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        if ((Type.ADDED == event.getType() || Type.UPDATED == event.getType())
-                && new VersionNodePathParser(new ViewMetadataNodePath()).isActiveVersionPath(event.getKey())) {
-            handleCreatedOrAltered(databaseName, schemaName, event);
-        } else if (Type.DELETED == event.getType() && NodePathSearcher.isMatchedPath(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria())) {
-            handleDropped(databaseName, schemaName, event);
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                handleCreatedOrAltered(databaseName, schemaName, event);
+                break;
+            case DELETED:
+                handleDropped(databaseName, schemaName, event);
+                break;
+            default:
+                break;
         }
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = new VersionNodePathParser(new ViewMetadataNodePath()).findIdentifierByActiveVersionPath(event.getKey(), 3)
-                .orElseThrow(() -> new IllegalStateException("View name not found."));
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
         if (!activeVersionChecker.checkSame(event)) {
             return;
         }
@@ -75,7 +78,7 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final DataChangedEvent event) {
-        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria());
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropView(databaseName, schemaName, viewName);
         statisticsRefreshEngine.asyncRefresh();
     }
