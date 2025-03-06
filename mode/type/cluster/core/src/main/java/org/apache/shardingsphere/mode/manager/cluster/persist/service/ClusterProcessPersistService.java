@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlPro
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.execution.ProcessNodePath;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.process.InstanceProcessNodeValue;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.process.KillProcessTriggerNodePath;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.process.ShowProcessListTriggerNodePath;
-import org.apache.shardingsphere.mode.node.path.type.node.compute.status.OnlineNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.execution.ProcessNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.InstanceProcessNodeValue;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 

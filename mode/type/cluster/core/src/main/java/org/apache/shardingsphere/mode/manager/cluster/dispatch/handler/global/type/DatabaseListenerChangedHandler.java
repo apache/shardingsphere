@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.state.DatabaseListenerCoordinatorNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;

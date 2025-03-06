@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.state.ClusterNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.state.ClusterNodePath;
 import org.apache.shardingsphere.mode.state.cluster.ClusterState;
 
 import java.util.Arrays;

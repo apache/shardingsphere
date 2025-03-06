@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.node.storage.QualifiedDataSourceNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.storage.QualifiedDataSourceNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
