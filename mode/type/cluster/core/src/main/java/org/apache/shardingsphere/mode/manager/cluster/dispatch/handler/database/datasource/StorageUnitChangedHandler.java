@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUni
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Storage unit changed handler.
@@ -52,19 +51,16 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageUnitName = NodePathSearcher.find(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria(databaseName));
-        if (!storageUnitName.isPresent()) {
-            return;
-        }
+        String storageUnitName = NodePathSearcher.get(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                handleRegistered(databaseName, storageUnitName.get(), event);
+                handleRegistered(databaseName, storageUnitName, event);
                 break;
             case UPDATED:
-                handleAltered(databaseName, storageUnitName.get(), event);
+                handleAltered(databaseName, storageUnitName, event);
                 break;
             case DELETED:
-                handleUnregistered(databaseName, storageUnitName.get());
+                handleUnregistered(databaseName, storageUnitName);
                 break;
             default:
                 break;

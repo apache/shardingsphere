@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,8 +49,8 @@ class DatabaseRuleNodePathTest {
     
     @Test
     void assertCreateRuleItemNameSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)), is(Optional.of("item_value")));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)), is("item_value"));
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item",
                 DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value",

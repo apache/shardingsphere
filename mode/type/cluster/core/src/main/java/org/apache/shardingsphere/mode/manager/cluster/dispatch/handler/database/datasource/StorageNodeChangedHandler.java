@@ -26,8 +26,6 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageNodeNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
-import java.util.Optional;
-
 /**
  * Storage node changed handler.
  */
@@ -43,19 +41,16 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        Optional<String> storageNodeName = NodePathSearcher.find(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria(databaseName));
-        if (!storageNodeName.isPresent()) {
-            return;
-        }
+        String storageNodeName = NodePathSearcher.get(event.getKey(), StorageNodeNodePath.createStorageNodeSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                handleRegistered(databaseName, storageNodeName.get(), event);
+                handleRegistered(databaseName, storageNodeName, event);
                 break;
             case UPDATED:
-                handleAltered(databaseName, storageNodeName.get(), event);
+                handleAltered(databaseName, storageNodeName, event);
                 break;
             case DELETED:
-                handleUnregistered(databaseName, storageNodeName.get());
+                handleUnregistered(databaseName, storageNodeName);
                 break;
             default:
                 break;
