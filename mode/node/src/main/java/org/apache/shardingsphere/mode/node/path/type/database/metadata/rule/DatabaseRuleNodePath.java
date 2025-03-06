@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.schema;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,27 +25,38 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * View metadata node path.
+ * Database rule node path.
  */
-@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/views/${viewName}")
+@NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
 @RequiredArgsConstructor
 @Getter
-public final class ViewMetadataNodePath implements NodePath {
+public final class DatabaseRuleNodePath implements NodePath {
     
     private final String databaseName;
     
-    private final String schemaName;
+    private final String ruleType;
     
-    private final String viewName;
+    private final DatabaseRuleItem databaseRuleItem;
     
     /**
-     * Create view search criteria.
+     * Create rule type search criteria.
      *
      * @param databaseName database name
-     * @param schemaName schema name
-     * @return created search criteria
+     * @return create search criteria
      */
-    public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createRuleTypeSearchCriteria(final String databaseName) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null), false, true, 1);
+    }
+    
+    /**
+     * Create rule item name search criteria.
+     *
+     * @param databaseName database name
+     * @param ruleType rule type
+     * @param ruleItemType rule item type
+     * @return create search criteria
+     */
+    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, true, 1);
     }
 }

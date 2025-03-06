@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.datasource;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,24 +25,24 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Storage node node path.
+ * Storage unit node path.
  */
-@NodePathEntity("/metadata/${databaseName}/data_sources/nodes/${storageNodeName}")
+@NodePathEntity("/metadata/${databaseName}/data_sources/units/${storageUnitName}")
 @RequiredArgsConstructor
 @Getter
-public final class StorageNodeNodePath implements NodePath {
+public final class StorageUnitNodePath implements NodePath {
     
     private final String databaseName;
     
-    private final String storageNodeName;
+    private final String storageUnitName;
     
     /**
-     * Create storage node search criteria.
+     * Create storage unit search criteria.
      *
-     * @param databaseName database name
+     * @param databaseName database name 
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createStorageNodeSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createStorageUnitSearchCriteria(final String databaseName) {
+        return new NodePathSearchCriteria(new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }

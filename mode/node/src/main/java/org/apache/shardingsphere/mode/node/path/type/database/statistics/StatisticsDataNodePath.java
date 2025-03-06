@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.statistics;
+package org.apache.shardingsphere.mode.node.path.type.database.statistics;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

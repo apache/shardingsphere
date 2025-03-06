@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.metadata.datasource.StorageNodeNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageNodeNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**

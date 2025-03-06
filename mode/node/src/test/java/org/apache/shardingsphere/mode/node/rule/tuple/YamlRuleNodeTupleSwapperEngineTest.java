@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.node.rule.tuple;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
-import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.leaf.YamlLeafRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.YamlNodeRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.fixture.node.YamlNodeRuleConfigurationEnum;
