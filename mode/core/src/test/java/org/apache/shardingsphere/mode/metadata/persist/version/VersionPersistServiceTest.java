@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.version;
 
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

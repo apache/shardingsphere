@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.version;
+package org.apache.shardingsphere.mode.node.path.version;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

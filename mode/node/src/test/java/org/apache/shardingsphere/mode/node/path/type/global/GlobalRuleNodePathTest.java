@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.type.global;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
