@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseRuleNodePathTest {
     
@@ -50,14 +49,12 @@ class DatabaseRuleNodePathTest {
     @Test
     void assertCreateRuleItemNameSearchCriteria() {
         assertThat(NodePathSearcher.get("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)), is("item_value"));
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")), is("item_value"));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")), is("item_value"));
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
-        assertTrue(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", true)).isPresent());
-        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
     }
 }
