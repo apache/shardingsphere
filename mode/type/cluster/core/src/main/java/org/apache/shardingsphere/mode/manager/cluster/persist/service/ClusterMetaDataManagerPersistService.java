@@ -200,9 +200,10 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeAlteredRuleConfig) {
             return;
         }
+        Collection<String> needReadTables = getNeedReloadTables(database, toBeAlteredRuleConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
-        reloadAlteredTables(database.getName(), getReloadMetaDataContexts(originalMetaDataContexts), toBeAlteredRuleConfig);
+        reloadAlteredTables(database.getName(), originalMetaDataContexts, needReadTables);
     }
     
     @Override
@@ -210,21 +211,31 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeRemovedRuleConfig) {
             return;
         }
+        Collection<String> needReadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
-        reloadAlteredTables(database.getName(), getReloadMetaDataContexts(originalMetaDataContexts), toBeRemovedRuleConfig);
+        reloadAlteredTables(database.getName(), originalMetaDataContexts, needReadTables);
     }
     
-    private void reloadAlteredTables(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final RuleConfiguration toBeAlteredRuleConfig) throws SQLException {
+    private void reloadAlteredTables(final String databaseName, final MetaDataContexts originalMetaDataContexts, final Collection<String> needReadTables) throws SQLException {
+        MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
                 new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(toBeAlteredRuleConfig.getLogicTableNames(), database.getProtocolType(), material);
+        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReadTables, database.getProtocolType(), material);
         for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
             Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeAddedTables(entry.getValue(), database.getSchema(entry.getKey()));
             metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(databaseName, entry.getKey(), tables);
         }
+    }
+    
+    private Collection<String> getNeedReloadTables(final ShardingSphereDatabase originalShardingDatabase, final RuleConfiguration toBeAlteredRuleConfig) {
+        if (toBeAlteredRuleConfig instanceof SingleRuleConfiguration) {
+            Collection<String> originalSingleTables = originalShardingDatabase.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration().getLogicTableNames();
+            return toBeAlteredRuleConfig.getLogicTableNames().stream().filter(each -> !originalSingleTables.contains(each)).collect(Collectors.toList());
+        }
+        return toBeAlteredRuleConfig.getLogicTableNames();
     }
     
     @Override
