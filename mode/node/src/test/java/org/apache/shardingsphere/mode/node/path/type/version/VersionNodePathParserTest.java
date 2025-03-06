@@ -40,9 +40,7 @@ class VersionNodePathParserTest {
     @Test
     void assertFindIdentifierByActiveVersionPath() {
         String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version";
-        assertThat(parser.findIdentifierByActiveVersionPath(path, 1), is(Optional.of("foo_db")));
-        assertThat(parser.findIdentifierByActiveVersionPath(path, 2), is(Optional.of("foo_schema")));
-        assertThat(parser.findIdentifierByActiveVersionPath(path, 3), is(Optional.of("foo_tbl")));
+        assertThat(parser.findIdentifierByActiveVersionPath(path, 1), is(Optional.of("foo_tbl")));
     }
     
     @Test
