@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.type.version;
 
-import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.schema.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

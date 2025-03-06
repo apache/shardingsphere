@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.metadata.storage.StorageUnitNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.datasource.StorageUnitNodePath;
 import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
 
 import java.util.Collections;
