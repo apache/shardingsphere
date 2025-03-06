@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.type;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata;
 
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.metadata.schema.TableMetadataNodePath;
 
 /**
  * Schema changed handler.
  */
-public final class SchemaChangedHandler {
+public final class SchemaChangedHandler implements DatabaseChangedHandler {
     
     private final ContextManager contextManager;
     
@@ -34,24 +38,33 @@ public final class SchemaChangedHandler {
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
-    /**
-     * Handle schema created.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    public void handleCreated(final String databaseName, final String schemaName) {
+    @Override
+    public boolean isSubscribed(final String databaseName, final String path) {
+        return NodePathSearcher.isMatchedPath(path, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
+    }
+    
+    @Override
+    public void handle(final String databaseName, final DataChangedEvent event) {
+        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
+        switch (event.getType()) {
+            case ADDED:
+            case UPDATED:
+                handleCreated(databaseName, schemaName);
+                break;
+            case DELETED:
+                handleDropped(databaseName, schemaName);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    private void handleCreated(final String databaseName, final String schemaName) {
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }
     
-    /**
-     * Handle schema dropped.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    public void handleDropped(final String databaseName, final String schemaName) {
+    private void handleDropped(final String databaseName, final String schemaName) {
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropSchema(databaseName, schemaName);
         statisticsRefreshEngine.asyncRefresh();
     }

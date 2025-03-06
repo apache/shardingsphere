@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.metadata.storage;
+package org.apache.shardingsphere.mode.node.path.type.metadata.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,37 +25,27 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Storage unit node path.
+ * View metadata node path.
  */
-@NodePathEntity("/metadata/${databaseName}/data_sources/units/${storageUnitName}")
+@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/views/${viewName}")
 @RequiredArgsConstructor
 @Getter
-public final class StorageUnitNodePath implements NodePath {
+public final class ViewMetadataNodePath implements NodePath {
     
     private final String databaseName;
     
-    private final String storageUnitName;
+    private final String schemaName;
     
-    public StorageUnitNodePath() {
-        this(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
-    }
+    private final String viewName;
     
     /**
-     * Create data source search criteria.
+     * Create view search criteria.
      *
      * @param databaseName database name
+     * @param schemaName schema name
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createDataSourceSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new StorageUnitNodePath(databaseName, null), true, true, 0);
-    }
-    
-    /**
-     * Create storage unit search criteria.
-     *
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createStorageUnitSearchCriteria() {
-        return new NodePathSearchCriteria(new StorageUnitNodePath(), false, false, 2);
+    public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
+        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }

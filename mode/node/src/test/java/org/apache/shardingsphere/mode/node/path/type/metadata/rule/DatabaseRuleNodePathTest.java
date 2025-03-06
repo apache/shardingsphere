@@ -19,15 +19,12 @@ package org.apache.shardingsphere.mode.node.path.type.metadata.rule;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseRuleNodePathTest {
     
@@ -50,23 +47,14 @@ class DatabaseRuleNodePathTest {
     }
     
     @Test
-    void assertCreateValidRuleTypeSearchCriteria() {
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/named_rule_item/item/active_version", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/foo_rule/unique_rule_item/versions/0", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/rules/bar_rule/unique_rule_item/", DatabaseRuleNodePath.createValidRuleTypeSearchCriteria("foo_rule")));
-    }
-    
-    @Test
     void assertCreateRuleItemNameSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)), is(Optional.of("item_value")));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")), is("item_value"));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")), is("item_value"));
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
         assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/bar_rule/foo_rule_item/item_value",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
-        assertTrue(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", true)).isPresent());
-        assertFalse(NodePathSearcher.find("/metadata/foo_db/rules/foo_rule/foo_rule_item/item_value/versions/0",
-                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item", false)).isPresent());
+                DatabaseRuleNodePath.createRuleItemNameSearchCriteria("foo_db", "foo_rule", "foo_rule_item")).isPresent());
     }
 }

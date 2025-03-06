@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.t
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +49,9 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
         if (!new VersionNodePathParser(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
             return;
         }
-        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
+            return;
+        }
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load());
     }
 }

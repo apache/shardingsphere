@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.changed;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 
@@ -45,7 +45,7 @@ public final class RuleItemChangedNodePathBuilder {
         }
         DatabaseRuleNode databaseRuleNode = DatabaseRuleNodeGenerator.generate(ruleType.get());
         for (String each : databaseRuleNode.getNamedItems()) {
-            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each, true));
+            Optional<String> itemName = NodePathSearcher.find(path, DatabaseRuleNodePath.createRuleItemNameSearchCriteria(databaseName, databaseRuleNode.getRuleType(), each));
             if (!itemName.isPresent()) {
                 continue;
             }

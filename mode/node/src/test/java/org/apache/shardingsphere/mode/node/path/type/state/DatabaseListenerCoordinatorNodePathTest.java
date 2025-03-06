@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,7 +35,7 @@ class DatabaseListenerCoordinatorNodePathTest {
     
     @Test
     void assertCreateDatabaseSearchCriteria() {
-        assertThat(NodePathSearcher.find("/states/database_listener_coordinator/foo_db", DatabaseListenerCoordinatorNodePath.createDatabaseSearchCriteria()), is(Optional.of("foo_db")));
+        assertThat(NodePathSearcher.get("/states/database_listener_coordinator/foo_db", DatabaseListenerCoordinatorNodePath.createDatabaseSearchCriteria()), is("foo_db"));
         assertFalse(NodePathSearcher.find("/states/database_listener_coordinator", DatabaseListenerCoordinatorNodePath.createDatabaseSearchCriteria()).isPresent());
     }
 }

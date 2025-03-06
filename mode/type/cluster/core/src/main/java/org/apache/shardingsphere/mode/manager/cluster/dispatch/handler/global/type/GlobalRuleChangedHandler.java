@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.checker.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.global.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +53,9 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
         if (!ruleType.isPresent()) {
             return;
         }
-        ActiveVersionChecker.checkActiveVersion(contextManager, event);
+        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
+            return;
+        }
         RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig);
     }

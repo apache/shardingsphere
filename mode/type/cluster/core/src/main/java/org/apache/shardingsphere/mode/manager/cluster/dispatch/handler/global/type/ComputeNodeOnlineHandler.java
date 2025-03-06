@@ -56,7 +56,7 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
         if (!NodePathSearcher.isMatchedPath(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria())) {
             return;
         }
-        InstanceType instanceType = InstanceType.valueOf(NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceTypeSearchCriteria()).orElse("").toUpperCase());
+        InstanceType instanceType = InstanceType.valueOf(NodePathSearcher.get(event.getKey(), OnlineNodePath.createInstanceTypeSearchCriteria()).toUpperCase());
         String instanceId = NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria()).orElse("");
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);

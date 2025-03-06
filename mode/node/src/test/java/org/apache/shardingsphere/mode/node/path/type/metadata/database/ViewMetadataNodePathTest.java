@@ -19,10 +19,9 @@ package org.apache.shardingsphere.mode.node.path.type.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.version.VersionNodePath;
+import org.apache.shardingsphere.mode.node.path.type.metadata.schema.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,9 +48,9 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertCreateViewSearchCriteria() {
-        assertThat(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()), is(Optional.of("foo_view")));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()).isPresent());
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria()));
-        assertFalse(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetadataNodePath.createViewSearchCriteria()));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")), is("foo_view"));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
     }
 }

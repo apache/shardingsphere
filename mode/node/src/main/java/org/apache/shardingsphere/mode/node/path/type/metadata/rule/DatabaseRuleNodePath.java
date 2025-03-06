@@ -39,16 +39,6 @@ public final class DatabaseRuleNodePath implements NodePath {
     private final DatabaseRuleItem databaseRuleItem;
     
     /**
-     * Create valid rule type search criteria.
-     *
-     * @param ruleType rule type
-     * @return create search criteria
-     */
-    public static NodePathSearchCriteria createValidRuleTypeSearchCriteria(final String ruleType) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(NodePathPattern.IDENTIFIER, ruleType, null), false, true, 1);
-    }
-    
-    /**
      * Create rule type search criteria.
      *
      * @param databaseName database name
@@ -64,10 +54,9 @@ public final class DatabaseRuleNodePath implements NodePath {
      * @param databaseName database name
      * @param ruleType rule type
      * @param ruleItemType rule item type
-     * @param containsChildPath contains child path
      * @return create search criteria
      */
-    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType, final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, containsChildPath, 1);
+    public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType) {
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, true, 1);
     }
 }
