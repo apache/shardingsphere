@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.config;
+package org.apache.shardingsphere.mode.manager.cluster.exception;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 /**
- * Broadcast rule configuration.
+ * Reload table meta failed exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
+public final class ReloadTableMetaFailedException extends ClusterSQLException {
     
-    private final Collection<String> tables;
-    
-    @Override
-    public Collection<String> getLogicTableNames() {
-        return new CaseInsensitiveSet<>(tables);
+    public ReloadTableMetaFailedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 12, "Failed to reload table meta data.");
     }
 }
