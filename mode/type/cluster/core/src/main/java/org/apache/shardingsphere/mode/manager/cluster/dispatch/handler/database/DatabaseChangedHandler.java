@@ -27,7 +27,7 @@ import java.sql.SQLException;
 public interface DatabaseChangedHandler {
     
     /**
-     * Is subscribed event.
+     * Whether path is subscribed.
      *
      * @param databaseName database name
      * @param path path
