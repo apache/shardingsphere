@@ -43,11 +43,11 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
     @Override
-    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
+    public boolean isSubscribed(final String databaseName, final String path) {
         Collection<DatabaseRuleNodePath> databaseRuleNodePaths = Arrays.asList(
                 new DatabaseRuleNodePath(databaseName, NodePathPattern.QUALIFIED_IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER)),
                 new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER)));
-        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePathParser(each).isActiveVersionPath(event.getKey()));
+        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePathParser(each).isActiveVersionPath(path));
     }
     
     @Override

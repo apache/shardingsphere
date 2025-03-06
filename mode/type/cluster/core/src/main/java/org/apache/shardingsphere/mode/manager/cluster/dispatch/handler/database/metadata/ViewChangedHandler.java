@@ -47,8 +47,8 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return new VersionNodePathParser(new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey());
+    public boolean isSubscribed(final String databaseName, final String path) {
+        return new VersionNodePathParser(new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
     }
     
     @Override

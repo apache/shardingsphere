@@ -39,8 +39,8 @@ public final class SchemaChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return NodePathSearcher.isMatchedPath(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
+    public boolean isSubscribed(final String databaseName, final String path) {
+        return NodePathSearcher.isMatchedPath(path, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
     }
     
     @Override

@@ -35,8 +35,8 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
     private final ContextManager contextManager;
     
     @Override
-    public boolean isSubscribed(final String databaseName, final DataChangedEvent event) {
-        return new VersionNodePathParser(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey());
+    public boolean isSubscribed(final String databaseName, final String path) {
+        return new VersionNodePathParser(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
     }
     
     @Override
