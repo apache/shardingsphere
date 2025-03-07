@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mode.node.path.type.global.config;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalRuleNodePathTest {
@@ -37,5 +39,12 @@ class GlobalRuleNodePathTest {
     void assertGetVersion() {
         VersionNodePathParser versionNodePathParser = new VersionNodePathParser(new GlobalRuleNodePath("foo_rule"));
         assertTrue(versionNodePathParser.isActiveVersionPath("/rules/foo_rule/active_version"));
+    }
+    
+    @Test
+    void assertCreateRuleTypeSearchCriteria() {
+        assertThat(NodePathSearcher.get("/rules/foo_rule", GlobalRuleNodePath.createRuleTypeSearchCriteria()), is("foo_rule"));
+        assertThat(NodePathSearcher.get("/rules/foo_rule/active_version", GlobalRuleNodePath.createRuleTypeSearchCriteria()), is("foo_rule"));
+        assertFalse(NodePathSearcher.find("/xxx/foo_rule/active_version", GlobalRuleNodePath.createRuleTypeSearchCriteria()).isPresent());
     }
 }
