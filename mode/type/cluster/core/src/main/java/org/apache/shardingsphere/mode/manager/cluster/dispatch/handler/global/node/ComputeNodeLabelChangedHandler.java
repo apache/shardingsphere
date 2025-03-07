@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -54,8 +53,7 @@ public final class ComputeNodeLabelChangedHandler implements GlobalDataChangedEv
     
     @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
-        ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        // TODO labels may be empty
-        computeNodeInstanceContext.updateLabels(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
+        contextManager.getComputeNodeInstanceContext().updateLabels(
+                instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
     }
 }
