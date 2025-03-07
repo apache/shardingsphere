@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.GlobalRuleChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.PropertiesChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type.GlobalRuleChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type.PropertiesChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.DatabaseListenerChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.ClusterStateChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.QualifiedDataSourceChangedHandler

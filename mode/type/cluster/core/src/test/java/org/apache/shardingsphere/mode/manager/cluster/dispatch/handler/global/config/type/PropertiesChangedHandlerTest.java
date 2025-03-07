@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -31,14 +30,15 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Properties;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GlobalRuleChangedHandlerTest {
+class PropertiesChangedHandlerTest {
     
     private GlobalDataChangedEventHandler handler;
     
@@ -48,27 +48,20 @@ class GlobalRuleChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/rules")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/props")).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidEventKey() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
-    }
-    
-    @Test
-    void assertHandleWithEmptyRuleName() {
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
+        handler.handle(contextManager, new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
+        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService(), times(0)).load();
     }
     
     @Test
     void assertHandle() {
-        when(contextManager.getPersistServiceFacade().getRepository().query("/rules/foo_rule/active_version")).thenReturn("rule_value");
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load("foo_rule")).thenReturn(ruleConfig);
-        handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
+        Properties props = mock(Properties.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load()).thenReturn(props);
+        handler.handle(contextManager, new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));
+        verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterProperties(props);
     }
 }
