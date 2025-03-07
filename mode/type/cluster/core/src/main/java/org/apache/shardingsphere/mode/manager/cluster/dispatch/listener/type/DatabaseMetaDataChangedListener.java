@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
@@ -76,7 +75,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             if (!isSubscribed(each, databaseName.get(), event)) {
                 continue;
             }
-            if ((event.getType().equals(DataChangedEvent.Type.ADDED) || event.getType().equals(Type.UPDATED))
+            if ((DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType())
                     && !new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
                 return;
             }
