@@ -50,14 +50,18 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
         if (!NodePathSearcher.isMatchedPath(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria())) {
             return;
         }
-        String instanceId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()).orElse("");
-        String processId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()).orElse("");
-        if (Type.ADDED == event.getType()) {
-            if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
-            }
-        } else if (Type.DELETED == event.getType()) {
-            ProcessOperationLockRegistry.getInstance().notify(processId);
+        String instanceId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria());
+        String processId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria());
+        switch (event.getType()) {
+            case ADDED:
+                if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                    new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
+                }
+                break;
+            case DELETED:
+                ProcessOperationLockRegistry.getInstance().notify(processId);
+                break;
+            default:
         }
     }
 }
