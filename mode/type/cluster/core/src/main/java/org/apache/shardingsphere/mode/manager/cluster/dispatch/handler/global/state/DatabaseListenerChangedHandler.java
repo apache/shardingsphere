@@ -59,12 +59,18 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     private void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType type) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        if (ClusterDatabaseListenerCoordinatorType.CREATE == type) {
-            repository.watch(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true), new DatabaseMetaDataChangedListener(contextManager));
-            contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
-        } else if (ClusterDatabaseListenerCoordinatorType.DROP == type) {
-            repository.removeDataListener(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true));
-            contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
+        String databasePath = NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true);
+        switch (type) {
+            case CREATE:
+                repository.watch(databasePath, new DatabaseMetaDataChangedListener(contextManager));
+                contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().addDatabase(databaseName);
+                break;
+            case DROP:
+                repository.removeDataListener(databasePath);
+                contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().dropDatabase(databaseName);
+                break;
+            default:
+                break;
         }
         new ClusterDatabaseListenerPersistCoordinator(repository).delete(databaseName);
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
