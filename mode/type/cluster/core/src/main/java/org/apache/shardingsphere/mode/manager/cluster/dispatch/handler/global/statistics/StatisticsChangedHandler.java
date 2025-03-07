@@ -50,10 +50,10 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        StatisticsManager databaseManager = contextManager.getMetaDataContextManager().getStatisticsManager();
+        StatisticsManager statisticsManager = contextManager.getMetaDataContextManager().getStatisticsManager();
         Optional<String> databaseName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createDatabaseSearchCriteria(false));
         if (databaseName.isPresent()) {
-            handleDatabaseChanged(databaseManager, event.getType(), databaseName.get());
+            handleDatabaseChanged(statisticsManager, event.getType(), databaseName.get());
             return;
         }
         databaseName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createDatabaseSearchCriteria(true));
@@ -62,7 +62,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
         }
         Optional<String> schemaName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createSchemaSearchCriteria(false));
         if (schemaName.isPresent()) {
-            handleSchemaChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get());
+            handleSchemaChanged(statisticsManager, event.getType(), databaseName.get(), schemaName.get());
             return;
         }
         schemaName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createSchemaSearchCriteria(true));
@@ -71,7 +71,7 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
         }
         Optional<String> tableName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createTableSearchCriteria(false));
         if (tableName.isPresent()) {
-            handleTableChanged(databaseManager, event.getType(), databaseName.get(), schemaName.get(), tableName.get());
+            handleTableChanged(statisticsManager, event.getType(), databaseName.get(), schemaName.get(), tableName.get());
             return;
         }
         tableName = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createTableSearchCriteria(true));
@@ -80,55 +80,55 @@ public final class StatisticsChangedHandler implements GlobalDataChangedEventHan
         }
         Optional<String> uniqueKey = NodePathSearcher.find(event.getKey(), StatisticsDataNodePath.createRowUniqueKeySearchCriteria());
         if (uniqueKey.isPresent()) {
-            handleRowDataChanged(databaseManager, event.getType(), event.getValue(), databaseName.get(), schemaName.get(), tableName.get(), uniqueKey.get());
+            handleRowDataChanged(statisticsManager, event.getType(), event.getValue(), databaseName.get(), schemaName.get(), tableName.get(), uniqueKey.get());
         }
     }
     
-    private void handleDatabaseChanged(final StatisticsManager databaseManager, final Type type, final String databaseName) {
+    private void handleDatabaseChanged(final StatisticsManager statisticsManager, final Type type, final String databaseName) {
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addDatabaseStatistics(databaseName);
+                statisticsManager.addDatabaseStatistics(databaseName);
                 return;
             case DELETED:
-                databaseManager.dropDatabaseStatistics(databaseName);
+                statisticsManager.dropDatabaseStatistics(databaseName);
                 return;
             default:
         }
     }
     
-    private void handleSchemaChanged(final StatisticsManager databaseManager, final Type type, final String databaseName, final String schemaName) {
+    private void handleSchemaChanged(final StatisticsManager statisticsManager, final Type type, final String databaseName, final String schemaName) {
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addSchemaStatistics(databaseName, schemaName);
+                statisticsManager.addSchemaStatistics(databaseName, schemaName);
                 return;
             case DELETED:
-                databaseManager.dropSchemaStatistics(databaseName, schemaName);
+                statisticsManager.dropSchemaStatistics(databaseName, schemaName);
                 return;
             default:
         }
     }
     
-    private void handleTableChanged(final StatisticsManager databaseManager, final Type type, final String databaseName, final String schemaName, final String tableName) {
+    private void handleTableChanged(final StatisticsManager statisticsManager, final Type type, final String databaseName, final String schemaName, final String tableName) {
         switch (type) {
             case ADDED:
             case UPDATED:
-                databaseManager.addTableStatistics(databaseName, schemaName, tableName);
+                statisticsManager.addTableStatistics(databaseName, schemaName, tableName);
                 return;
             case DELETED:
-                databaseManager.dropTableStatistics(databaseName, schemaName, tableName);
+                statisticsManager.dropTableStatistics(databaseName, schemaName, tableName);
                 return;
             default:
         }
     }
     
-    private void handleRowDataChanged(final StatisticsManager databaseManager, final Type type, final String eventValue,
+    private void handleRowDataChanged(final StatisticsManager statisticsManager, final Type type, final String eventValue,
                                       final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
         if ((Type.ADDED == type || Type.UPDATED == type) && !Strings.isNullOrEmpty(eventValue)) {
-            databaseManager.alterRowStatistics(databaseName, schemaName, tableName, YamlEngine.unmarshal(eventValue, YamlRowStatistics.class));
+            statisticsManager.alterRowStatistics(databaseName, schemaName, tableName, YamlEngine.unmarshal(eventValue, YamlRowStatistics.class));
         } else if (Type.DELETED == type) {
-            databaseManager.deleteRowStatistics(databaseName, schemaName, tableName, uniqueKey);
+            statisticsManager.deleteRowStatistics(databaseName, schemaName, tableName, uniqueKey);
         }
     }
 }
