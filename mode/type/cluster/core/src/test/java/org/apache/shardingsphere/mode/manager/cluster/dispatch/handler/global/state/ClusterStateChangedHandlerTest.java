@@ -55,7 +55,7 @@ class ClusterStateChangedHandlerTest {
     
     @Test
     void assertHandleWithInvalidClusterState() {
-        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "", Type.UPDATED));
         verify(contextManager.getStateContext()).switchState(ClusterState.OK);
     }
 }
