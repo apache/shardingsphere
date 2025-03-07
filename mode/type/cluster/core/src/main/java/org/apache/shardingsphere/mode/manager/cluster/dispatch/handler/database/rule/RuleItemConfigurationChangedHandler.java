@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 
@@ -31,7 +31,7 @@ import java.util.Optional;
  * Rule item configuration changed handler.
  */
 @RequiredArgsConstructor
-public abstract class RuleItemConfigurationChangedHandler implements DatabaseLeafChangedHandler {
+public abstract class RuleItemConfigurationChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     

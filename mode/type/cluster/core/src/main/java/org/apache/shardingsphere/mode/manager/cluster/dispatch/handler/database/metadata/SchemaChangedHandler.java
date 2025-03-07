@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.Ta
 /**
  * Schema changed handler.
  */
-public final class SchemaChangedHandler implements DatabaseNodeChangedHandler {
+public final class SchemaChangedHandler implements DatabaseNodeValueChangedHandler {
     
     private final ContextManager contextManager;
     

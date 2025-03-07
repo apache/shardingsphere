@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePath;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.Vi
 /**
  * View changed handler.
  */
-public final class ViewChangedHandler implements DatabaseLeafChangedHandler {
+public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database;
 
 /**
- * Database node changed handler.
+ * Database leaf value changed handler.
  */
-public interface DatabaseNodeChangedHandler extends DatabaseChangedHandler {
+public interface DatabaseLeafValueChangedHandler extends DatabaseChangedHandler {
 }

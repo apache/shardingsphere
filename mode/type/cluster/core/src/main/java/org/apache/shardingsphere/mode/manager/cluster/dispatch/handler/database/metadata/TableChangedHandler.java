@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePath;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.Ta
 /**
  * Table changed handler.
  */
-public final class TableChangedHandler implements DatabaseLeafChangedHandler {
+public final class TableChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     

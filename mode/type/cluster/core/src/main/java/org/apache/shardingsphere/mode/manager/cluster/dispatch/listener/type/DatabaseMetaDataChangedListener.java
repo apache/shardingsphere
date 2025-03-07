@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCac
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageNodeChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageUnitChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.SchemaChangedHandler;
@@ -80,10 +80,10 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     }
     
     private boolean isSubscribed(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
-        if (handler instanceof DatabaseLeafChangedHandler) {
+        if (handler instanceof DatabaseLeafValueChangedHandler) {
             return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
         }
-        if (handler instanceof DatabaseNodeChangedHandler) {
+        if (handler instanceof DatabaseNodeValueChangedHandler) {
             return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), true, false, 1));
         }
         return false;
