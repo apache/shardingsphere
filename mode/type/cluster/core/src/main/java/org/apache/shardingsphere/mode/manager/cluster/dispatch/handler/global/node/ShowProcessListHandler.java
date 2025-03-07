@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath;
 
@@ -36,8 +36,8 @@ import java.util.Collection;
 public final class ShowProcessListHandler implements GlobalDataChangedEventHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false);
+    public NodePath getSubscribedNodePath() {
+        return new ShowProcessListTriggerNodePath(null);
     }
     
     @Override

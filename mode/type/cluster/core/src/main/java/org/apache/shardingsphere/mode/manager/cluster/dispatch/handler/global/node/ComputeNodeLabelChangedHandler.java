@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath;
 
@@ -38,8 +38,8 @@ import java.util.Collection;
 public final class ComputeNodeLabelChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new LabelNodePath(null), false);
+    public NodePath getSubscribedNodePath() {
+        return new LabelNodePath(null);
     }
     
     @Override
