@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathTest {
     
@@ -40,11 +38,5 @@ class VersionNodePathTest {
     @Test
     void assertGetVersionPath() {
         assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
-    }
-    
-    @Test
-    void assertIsActiveVersionPath() {
-        assertTrue(VersionNodePath.isActiveVersionPath("foo/active_version"));
-        assertFalse(VersionNodePath.isActiveVersionPath("foo/versions"));
     }
 }

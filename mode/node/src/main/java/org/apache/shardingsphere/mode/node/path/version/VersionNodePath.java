@@ -62,14 +62,4 @@ public final class VersionNodePath {
     public String getVersionPath(final int version) {
         return String.join("/", getVersionsPath(), String.valueOf(version));
     }
-    
-    /**
-     *  Is active version path.
-     *
-     * @param path path
-     * @return is active version path or not
-     */
-    public static boolean isActiveVersionPath(final String path) {
-        return path.endsWith(ACTIVE_VERSION);
-    }
 }
