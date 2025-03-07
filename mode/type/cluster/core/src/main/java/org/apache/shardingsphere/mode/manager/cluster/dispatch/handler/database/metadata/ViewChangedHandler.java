@@ -47,7 +47,7 @@ public final class ViewChangedHandler implements DatabaseLeafChangedHandler {
     }
     
     @Override
-    public NodePath getSubscribedNodePath(String databaseName) {
+    public NodePath getSubscribedNodePath(final String databaseName) {
         return new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     

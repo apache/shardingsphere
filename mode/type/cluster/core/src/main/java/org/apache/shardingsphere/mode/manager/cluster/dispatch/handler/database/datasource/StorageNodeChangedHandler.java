@@ -35,7 +35,7 @@ public final class StorageNodeChangedHandler implements DatabaseLeafChangedHandl
     private final ContextManager contextManager;
     
     @Override
-    public NodePath getSubscribedNodePath(String databaseName) {
+    public NodePath getSubscribedNodePath(final String databaseName) {
         return new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER);
     }
     

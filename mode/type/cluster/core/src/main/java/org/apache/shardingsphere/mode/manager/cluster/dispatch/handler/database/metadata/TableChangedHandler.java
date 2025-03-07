@@ -46,7 +46,7 @@ public final class TableChangedHandler implements DatabaseLeafChangedHandler {
     }
     
     @Override
-    public NodePath getSubscribedNodePath(String databaseName) {
+    public NodePath getSubscribedNodePath(final String databaseName) {
         return new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     

@@ -45,7 +45,7 @@ public final class StorageUnitChangedHandler implements DatabaseLeafChangedHandl
     }
     
     @Override
-    public NodePath getSubscribedNodePath(String databaseName) {
+    public NodePath getSubscribedNodePath(final String databaseName) {
         return new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER);
     }
     

@@ -34,7 +34,7 @@ public final class NamedRuleItemConfigurationChangedHandler extends RuleItemConf
     }
     
     @Override
-    public NodePath getSubscribedNodePath(String databaseName) {
+    public NodePath getSubscribedNodePath(final String databaseName) {
         return new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER));
     }
 }
