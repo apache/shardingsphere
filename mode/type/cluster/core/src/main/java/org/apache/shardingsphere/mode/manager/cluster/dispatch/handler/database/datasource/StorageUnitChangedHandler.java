@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -33,16 +33,10 @@ import java.util.Collections;
 /**
  * Storage unit changed handler.
  */
+@RequiredArgsConstructor
 public final class StorageUnitChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
-    
-    private final ActiveVersionChecker activeVersionChecker;
-    
-    public StorageUnitChangedHandler(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
-    }
     
     @Override
     public NodePath getSubscribedNodePath(final String databaseName) {
