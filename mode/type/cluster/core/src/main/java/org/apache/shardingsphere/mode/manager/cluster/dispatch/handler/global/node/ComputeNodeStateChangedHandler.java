@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,7 +49,6 @@ public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEv
     }
     
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
-        ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        computeNodeInstanceContext.updateStatus(instanceId, event.getValue());
+        contextManager.getComputeNodeInstanceContext().updateStatus(instanceId, event.getValue());
     }
 }
