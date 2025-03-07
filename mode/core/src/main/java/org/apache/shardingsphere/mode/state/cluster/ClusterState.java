@@ -28,7 +28,7 @@ public enum ClusterState {
     
     /**
      * Value from.
-     * 
+     *
      * @param value value
      * @return cluster state
      */
