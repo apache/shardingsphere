@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
 
+import org.apache.shardingsphere.infra.instance.ClusterInstanceRegistry;
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -56,14 +57,19 @@ public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHan
         if (!NodePathSearcher.isMatchedPath(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria())) {
             return;
         }
+        ClusterInstanceRegistry clusterInstanceRegistry = contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry();
         InstanceType instanceType = InstanceType.valueOf(NodePathSearcher.get(event.getKey(), OnlineNodePath.createInstanceTypeSearchCriteria()).toUpperCase());
-        String instanceId = NodePathSearcher.find(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria()).orElse("");
+        String instanceId = NodePathSearcher.get(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria());
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);
-        if (Type.ADDED == event.getType()) {
-            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
-        } else if (Type.DELETED == event.getType()) {
-            contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().delete(new ComputeNodeInstance(instanceMetaData));
+        switch (event.getType()) {
+            case ADDED:
+                clusterInstanceRegistry.add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
+                break;
+            case DELETED:
+                clusterInstanceRegistry.delete(new ComputeNodeInstance(instanceMetaData));
+                break;
+            default:
         }
     }
 }
