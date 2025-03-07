@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.Gl
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
@@ -50,14 +49,13 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        GlobalRuleNodePath globalRuleNodePath = new GlobalRuleNodePath(NodePathPattern.IDENTIFIER);
-        if (!new VersionNodePathParser(globalRuleNodePath).isActiveVersionPath(event.getKey())) {
+        if (!new VersionNodePathParser(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
             return;
         }
         if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
             return;
         }
-        String ruleType = NodePathSearcher.get(event.getKey(), new NodePathSearchCriteria(globalRuleNodePath, false, true, 1));
+        String ruleType = NodePathSearcher.get(event.getKey(), GlobalRuleNodePath.createRuleTypeSearchCriteria());
         RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType);
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig);
     }
