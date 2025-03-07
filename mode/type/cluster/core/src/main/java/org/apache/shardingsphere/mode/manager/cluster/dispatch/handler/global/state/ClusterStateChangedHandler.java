@@ -45,14 +45,6 @@ public final class ClusterStateChangedHandler implements GlobalDataChangedEventH
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        contextManager.getStateContext().switchState(getClusterState(event));
-    }
-    
-    private ClusterState getClusterState(final DataChangedEvent event) {
-        try {
-            return ClusterState.valueOf(event.getValue());
-        } catch (final IllegalArgumentException ignore) {
-            return ClusterState.OK;
-        }
+        contextManager.getStateContext().switchState(ClusterState.valueFrom(event.getValue()));
     }
 }
