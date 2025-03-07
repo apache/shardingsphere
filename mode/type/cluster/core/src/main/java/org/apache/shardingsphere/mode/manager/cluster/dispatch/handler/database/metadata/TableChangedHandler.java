@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 /**
  * Table changed handler.
@@ -47,7 +47,7 @@ public final class TableChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePathParser(new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+        return new VersionNodePath(new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
     }
     
     @Override

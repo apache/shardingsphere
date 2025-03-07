@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.changed;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNode;
 import org.apache.shardingsphere.mode.node.rule.node.DatabaseRuleNodeGenerator;
 
@@ -50,13 +50,13 @@ public final class RuleItemChangedNodePathBuilder {
                 continue;
             }
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each, itemName.get()));
-            if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
+            if (new VersionNodePath(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(databaseRuleNodePath);
             }
         }
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
-            if (new VersionNodePathParser(databaseRuleNodePath).isActiveVersionPath(path)) {
+            if (new VersionNodePath(databaseRuleNodePath).isActiveVersionPath(path)) {
                 return Optional.of(databaseRuleNodePath);
             }
         }

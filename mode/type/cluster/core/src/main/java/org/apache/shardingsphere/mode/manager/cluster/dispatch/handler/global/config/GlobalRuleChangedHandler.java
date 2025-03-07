@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!new VersionNodePathParser(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
+        if (!new VersionNodePath(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
             return;
         }
         if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {

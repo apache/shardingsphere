@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.Gl
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!new VersionNodePathParser(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
+        if (!new VersionNodePath(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
             return;
         }
         if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {

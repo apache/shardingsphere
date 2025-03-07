@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageNodeNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 /**
  * Storage node changed handler.
@@ -36,7 +36,7 @@ public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
     
     @Override
     public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePathParser(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+        return new VersionNodePath(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
     }
     
     @Override

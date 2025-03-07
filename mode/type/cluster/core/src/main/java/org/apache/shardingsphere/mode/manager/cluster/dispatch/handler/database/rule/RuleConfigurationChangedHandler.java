@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBu
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -47,7 +47,7 @@ public final class RuleConfigurationChangedHandler implements DatabaseChangedHan
         Collection<DatabaseRuleNodePath> databaseRuleNodePaths = Arrays.asList(
                 new DatabaseRuleNodePath(databaseName, NodePathPattern.QUALIFIED_IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER)),
                 new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER)));
-        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePathParser(each).isActiveVersionPath(path));
+        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePath(each).isActiveVersionPath(path));
     }
     
     @Override
