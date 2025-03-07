@@ -177,8 +177,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
         when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
+        when(metaDataPersistFacade.getRepository().query("/metadata/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath, 0);
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath);
     }
     
     @Test

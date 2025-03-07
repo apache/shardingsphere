@@ -33,7 +33,6 @@ import java.sql.SQLException;
 
 import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -53,27 +52,27 @@ class UniqueRuleItemConfigurationChangedHandlerTest {
     @Test
     void assertHandleWithInvalidPath() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture", "foo", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithIgnoreType() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique/active_version", "0", Type.IGNORED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any(), eq(0));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).alter(any());
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager(), times(0)).drop(any());
     }
     
     @Test
     void assertHandleWithAddItem() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique/active_version", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))), eq(0));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
     }
     
     @Test
     void assertHandleWithAlterItem() throws SQLException {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique/active_version", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))), eq(0));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
     }
     
     @Test

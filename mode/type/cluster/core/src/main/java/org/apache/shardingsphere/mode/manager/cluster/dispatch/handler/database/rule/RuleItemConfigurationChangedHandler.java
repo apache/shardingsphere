@@ -46,8 +46,7 @@ public abstract class RuleItemConfigurationChangedHandler implements DatabaseLea
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                int version = Integer.parseInt(event.getValue());
-                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get(), version);
+                contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
                 break;
             case DELETED:
                 contextManager.getMetaDataContextManager().getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());

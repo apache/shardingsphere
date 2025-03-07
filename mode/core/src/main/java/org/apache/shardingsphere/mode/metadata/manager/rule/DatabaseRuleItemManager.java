@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
@@ -51,18 +50,13 @@ public final class DatabaseRuleItemManager {
      * Alter rule item.
      *
      * @param databaseRuleNodePath database rule node path
-     * @param currentVersion current version
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void alter(final DatabaseRuleNodePath databaseRuleNodePath, final int currentVersion) throws SQLException {
-        VersionNodePath versionNodePath = new VersionNodePath(databaseRuleNodePath);
-        if (!new ActiveVersionChecker(metaDataPersistFacade.getRepository()).checkSame(versionNodePath, currentVersion)) {
-            return;
-        }
+    public void alter(final DatabaseRuleNodePath databaseRuleNodePath) throws SQLException {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));
-        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(versionNodePath);
+        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(new VersionNodePath(databaseRuleNodePath));
         String databaseName = databaseRuleNodePath.getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
