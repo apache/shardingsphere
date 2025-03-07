@@ -58,6 +58,6 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerGlobalHandlers(final GlobalDataChangedEventHandler handler) {
-        repository.watch(handler.getSubscribedKey(), new GlobalMetaDataChangedListener(contextManager, handler));
+        repository.watch(NodePathGenerator.toPath(handler.getSubscribedNodePath(), false), new GlobalMetaDataChangedListener(contextManager, handler));
     }
 }

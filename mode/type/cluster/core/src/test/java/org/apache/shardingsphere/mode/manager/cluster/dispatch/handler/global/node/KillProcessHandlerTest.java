@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ class KillProcessHandlerTest {
     void setUp() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> each.getSubscribedKey().equals("/nodes/compute_nodes/kill_process_trigger")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/kill_process_trigger")).findFirst().orElse(null);
     }
     
     @Test
