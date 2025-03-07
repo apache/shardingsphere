@@ -22,14 +22,19 @@ import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCac
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageNodeChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource.StorageUnitChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.SchemaChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.NamedRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.UniqueRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.sql.SQLException;
@@ -51,7 +56,8 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
                 new ViewChangedHandler(contextManager),
                 new StorageUnitChangedHandler(contextManager),
                 new StorageNodeChangedHandler(contextManager),
-                new RuleConfigurationChangedHandler(contextManager));
+                new NamedRuleItemConfigurationChangedHandler(contextManager),
+                new UniqueRuleItemConfigurationChangedHandler(contextManager));
     }
     
     @Override
@@ -62,14 +68,24 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         }
         OrderedServicesCache.clearCache();
         for (DatabaseChangedHandler each : handlers) {
-            if (each.isSubscribed(databaseName.get(), event.getKey())) {
+            if (isSubscribed(each, databaseName.get(), event)) {
                 try {
                     each.handle(databaseName.get(), event);
-                    return;
                 } catch (final SQLException ex) {
                     throw new SQLWrapperException(ex);
                 }
+                return;
             }
         }
+    }
+    
+    private boolean isSubscribed(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
+        if (handler instanceof DatabaseLeafValueChangedHandler) {
+            return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
+        }
+        if (handler instanceof DatabaseNodeValueChangedHandler) {
+            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), true, false, 1));
+        }
+        return false;
     }
 }

@@ -17,30 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database;
 
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.node.path.NodePath;
-
-import java.sql.SQLException;
-
 /**
- * Database changed handler.
+ * Database leaf value changed handler.
  */
-public interface DatabaseChangedHandler {
-    
-    /**
-     * Get subscribed node path.
-     *
-     * @param databaseName database name
-     * @return subscribed node path
-     */
-    NodePath getSubscribedNodePath(String databaseName);
-    
-    /**
-     * Handle database changed.
-     *
-     * @param databaseName database name
-     * @param event data changed event
-     * @throws SQLException SQL exception
-     */
-    void handle(String databaseName, DataChangedEvent event) throws SQLException;
+public interface DatabaseLeafValueChangedHandler extends DatabaseChangedHandler {
 }

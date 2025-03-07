@@ -20,23 +20,23 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageNodeNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 /**
  * Storage node changed handler.
  */
 @RequiredArgsConstructor
-public final class StorageNodeChangedHandler implements DatabaseChangedHandler {
+public final class StorageNodeChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePath(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER);
     }
     
     @Override

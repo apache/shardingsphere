@@ -20,19 +20,19 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 /**
  * View changed handler.
  */
-public final class ViewChangedHandler implements DatabaseChangedHandler {
+public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
@@ -47,8 +47,8 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePath(new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override

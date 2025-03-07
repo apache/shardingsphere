@@ -20,35 +20,22 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
-import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Rule configuration changed handler.
+ * Rule item configuration changed handler.
  */
 @RequiredArgsConstructor
-public final class RuleConfigurationChangedHandler implements DatabaseChangedHandler {
+public abstract class RuleItemConfigurationChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
-    
-    @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        Collection<DatabaseRuleNodePath> databaseRuleNodePaths = Arrays.asList(
-                new DatabaseRuleNodePath(databaseName, NodePathPattern.QUALIFIED_IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER)),
-                new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, NodePathPattern.QUALIFIED_IDENTIFIER)));
-        return databaseRuleNodePaths.stream().anyMatch(each -> new VersionNodePath(each).isActiveVersionPath(path));
-    }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) throws SQLException {

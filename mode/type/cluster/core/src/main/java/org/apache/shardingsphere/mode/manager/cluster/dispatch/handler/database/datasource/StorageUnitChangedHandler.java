@@ -21,19 +21,19 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Collections;
 
 /**
  * Storage unit changed handler.
  */
-public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
+public final class StorageUnitChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
@@ -45,8 +45,8 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePath(new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER);
     }
     
     @Override

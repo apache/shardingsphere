@@ -19,15 +19,17 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseNodeValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 
 /**
  * Schema changed handler.
  */
-public final class SchemaChangedHandler implements DatabaseChangedHandler {
+public final class SchemaChangedHandler implements DatabaseNodeValueChangedHandler {
     
     private final ContextManager contextManager;
     
@@ -39,8 +41,8 @@ public final class SchemaChangedHandler implements DatabaseChangedHandler {
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return NodePathSearcher.isMatchedPath(path, TableMetadataNodePath.createSchemaSearchCriteria(databaseName, false));
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, null);
     }
     
     @Override
