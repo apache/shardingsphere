@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mode.node.path.version;
 
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathTest {
     
@@ -38,5 +41,19 @@ class VersionNodePathTest {
     @Test
     void assertGetVersionPath() {
         assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+    }
+    
+    @Test
+    void assertIsActiveVersionPath() {
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        assertTrue(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+    }
+    
+    @Test
+    void assertIsNotActiveVersionPath() {
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/bar_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
 }
