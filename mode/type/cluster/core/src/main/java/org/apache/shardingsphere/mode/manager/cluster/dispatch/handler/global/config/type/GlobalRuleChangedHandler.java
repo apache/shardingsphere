@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.GlobalConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
@@ -35,7 +34,7 @@ import java.util.Collection;
 /**
  * Global rule changed handler.
  */
-public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHandler {
+public final class GlobalRuleChangedHandler implements GlobalConfigurationChangedHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
@@ -50,9 +49,6 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
         if (!new VersionNodePath(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
-            return;
-        }
-        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
             return;
         }
         String ruleType = NodePathSearcher.get(event.getKey(), GlobalRuleNodePath.createRuleTypeSearchCriteria());
