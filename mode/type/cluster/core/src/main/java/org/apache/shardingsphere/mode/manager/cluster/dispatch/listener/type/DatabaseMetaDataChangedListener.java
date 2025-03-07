@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.NamedRuleItemConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.UniqueRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
@@ -47,9 +49,12 @@ import java.util.Optional;
  */
 public final class DatabaseMetaDataChangedListener implements DataChangedEventListener {
     
+    private final ContextManager contextManager;
+    
     private final Collection<DatabaseChangedHandler> handlers;
     
     public DatabaseMetaDataChangedListener(final ContextManager contextManager) {
+        this.contextManager = contextManager;
         handlers = Arrays.asList(
                 new SchemaChangedHandler(contextManager),
                 new TableChangedHandler(contextManager),
@@ -68,14 +73,15 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
         }
         OrderedServicesCache.clearCache();
         for (DatabaseChangedHandler each : handlers) {
-            if (isSubscribed(each, databaseName.get(), event)) {
-                try {
-                    each.handle(databaseName.get(), event);
-                } catch (final SQLException ex) {
-                    throw new SQLWrapperException(ex);
-                }
+            if (!isSubscribed(each, databaseName.get(), event)) {
+                continue;
+            }
+            if ((event.getType().equals(DataChangedEvent.Type.ADDED) || event.getType().equals(Type.UPDATED))
+                    && !new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
                 return;
             }
+            handle(each, databaseName.get(), event);
+            return;
         }
     }
     
@@ -87,5 +93,13 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), true, false, 1));
         }
         return false;
+    }
+    
+    private void handle(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
+        try {
+            handler.handle(databaseName, event);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
     }
 }

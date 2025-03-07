@@ -54,14 +54,10 @@ public final class StorageUnitChangedHandler implements DatabaseLeafValueChanged
         String storageUnitName = NodePathSearcher.get(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleRegistered(databaseName, storageUnitName);
-                }
+                handleRegistered(databaseName, storageUnitName);
                 break;
             case UPDATED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleAltered(databaseName, storageUnitName);
-                }
+                handleAltered(databaseName, storageUnitName);
                 break;
             case DELETED:
                 handleUnregistered(databaseName, storageUnitName);

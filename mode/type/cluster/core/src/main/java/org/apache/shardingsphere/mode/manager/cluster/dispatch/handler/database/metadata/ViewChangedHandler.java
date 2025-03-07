@@ -58,9 +58,7 @@ public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleCreatedOrAltered(databaseName, schemaName, viewName);
-                }
+                handleCreatedOrAltered(databaseName, schemaName, viewName);
                 break;
             case DELETED:
                 handleDropped(databaseName, schemaName, viewName);

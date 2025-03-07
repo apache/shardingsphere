@@ -57,9 +57,7 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleCreatedOrAltered(databaseName, schemaName, tableName);
-                }
+                handleCreatedOrAltered(databaseName, schemaName, tableName);
                 break;
             case DELETED:
                 handleDropped(databaseName, schemaName, tableName);
