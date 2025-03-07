@@ -31,6 +31,12 @@ class VersionNodePathParserTest {
     @Test
     void assertIsActiveVersionPath() {
         assertTrue(parser.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+    }
+    
+    @Test
+    void assertIsNotActiveVersionPath() {
         assertFalse(parser.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertFalse(parser.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertFalse(parser.isActiveVersionPath("/metadata/bar_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
 }
