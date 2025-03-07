@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.statistics;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.statistics;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
