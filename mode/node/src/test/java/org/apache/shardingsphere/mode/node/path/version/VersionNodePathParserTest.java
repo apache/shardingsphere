@@ -21,11 +21,6 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VersionNodePathParserTest {
@@ -35,17 +30,5 @@ class VersionNodePathParserTest {
     @Test
     void assertIsActiveVersionPath() {
         assertTrue(parser.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
-    }
-    
-    @Test
-    void assertFindIdentifierByActiveVersionPath() {
-        String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version";
-        assertThat(parser.findIdentifierByActiveVersionPath(path, 1), is(Optional.of("foo_tbl")));
-    }
-    
-    @Test
-    void assertNotFindIdentifierByActiveVersionPath() {
-        String path = "/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions";
-        assertFalse(parser.findIdentifierByActiveVersionPath(path, 1).isPresent());
     }
 }

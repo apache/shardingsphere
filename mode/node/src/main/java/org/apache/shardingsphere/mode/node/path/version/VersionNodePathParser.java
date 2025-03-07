@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mode.node.path.version;
 
 import org.apache.shardingsphere.mode.node.path.NodePath;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -43,17 +41,5 @@ public final class VersionNodePathParser {
      */
     public boolean isActiveVersionPath(final String path) {
         return activeVersionPattern.matcher(path).find();
-    }
-    
-    /**
-     * Find identifier name by active version path.
-     *
-     * @param activeVersionPath active version path
-     * @param identifierGroupIndex identifier group index
-     * @return found identifier
-     */
-    public Optional<String> findIdentifierByActiveVersionPath(final String activeVersionPath, final int identifierGroupIndex) {
-        Matcher matcher = activeVersionPattern.matcher(activeVersionPath);
-        return matcher.find() ? Optional.of(matcher.group(identifierGroupIndex)) : Optional.empty();
     }
 }
