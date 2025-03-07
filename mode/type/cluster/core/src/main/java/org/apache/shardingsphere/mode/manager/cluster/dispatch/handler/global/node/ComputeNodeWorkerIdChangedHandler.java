@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -47,11 +46,9 @@ public final class ComputeNodeWorkerIdChangedHandler implements GlobalDataChange
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        NodePathSearcher.find(event.getKey(), ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
-    }
-    
-    private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
-        ComputeNodeInstanceContext computeNodeInstanceContext = contextManager.getComputeNodeInstanceContext();
-        computeNodeInstanceContext.updateWorkerId(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue()));
+        if (!Strings.isNullOrEmpty(event.getValue())) {
+            NodePathSearcher.find(event.getKey(), ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria())
+                    .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().updateWorkerId(optional, Integer.valueOf(event.getValue())));
+        }
     }
 }
