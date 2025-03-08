@@ -17,10 +17,22 @@
 
 package org.apache.shardingsphere.mode.state.cluster;
 
+import com.google.common.base.Strings;
+
 /**
  * Cluster state.
  */
 public enum ClusterState {
     
-    OK, READ_ONLY, UNAVAILABLE
+    OK, READ_ONLY, UNAVAILABLE;
+    
+    /**
+     * Value from.
+     *
+     * @param value value
+     * @return cluster state
+     */
+    public static ClusterState valueFrom(final String value) {
+        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
+    }
 }

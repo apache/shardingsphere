@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.GlobalConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalRuleNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Global rule changed handler.
  */
-public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHandler {
+public final class GlobalRuleChangedHandler implements GlobalConfigurationChangedHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new GlobalRuleNodePath(null), false);
+    public NodePath getSubscribedNodePath() {
+        return new GlobalRuleNodePath(null);
     }
     
     @Override
@@ -49,14 +48,11 @@ public final class GlobalRuleChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        Optional<String> ruleType = new VersionNodePathParser(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).findIdentifierByActiveVersionPath(event.getKey(), 1);
-        if (!ruleType.isPresent()) {
+        if (!new VersionNodePath(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER)).isActiveVersionPath(event.getKey())) {
             return;
         }
-        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
-            return;
-        }
-        RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType.get());
+        String ruleType = NodePathSearcher.get(event.getKey(), GlobalRuleNodePath.createRuleTypeSearchCriteria());
+        RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType);
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig);
     }
 }

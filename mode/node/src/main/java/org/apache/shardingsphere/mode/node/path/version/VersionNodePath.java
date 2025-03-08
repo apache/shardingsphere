@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.node.path.version;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 
+import java.util.regex.Pattern;
+
 /**
  * Version node path.
  */
@@ -64,12 +66,16 @@ public final class VersionNodePath {
     }
     
     /**
-     *  Is active version path.
+     * Judge whether to active version path.
      *
-     * @param path path
+     * @param path to be judged path
      * @return is active version path or not
      */
-    public static boolean isActiveVersionPath(final String path) {
-        return path.endsWith(ACTIVE_VERSION);
+    public boolean isActiveVersionPath(final String path) {
+        return createActiveVersionPathPattern().matcher(path).find();
+    }
+    
+    private Pattern createActiveVersionPathPattern() {
+        return Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
     }
 }

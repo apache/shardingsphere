@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
  * Global rule node path.
@@ -31,4 +33,13 @@ import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 public final class GlobalRuleNodePath implements NodePath {
     
     private final String ruleType;
+    
+    /**
+     * Create rule type search criteria.
+     *
+     * @return created search criteria
+     */
+    public static NodePathSearchCriteria createRuleTypeSearchCriteria() {
+        return new NodePathSearchCriteria(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER), false, true, 1);
+    }
 }

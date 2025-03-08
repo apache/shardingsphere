@@ -81,6 +81,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataContextManager.getDatabaseMetaDataManager()).addDatabase("foo_db");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
+        verify(metaDataPersistFacade).persistReloadDatabaseByAlter(eq("foo_db"), any(ShardingSphereDatabase.class), any(ShardingSphereDatabase.class));
     }
     
     @Test
@@ -176,8 +177,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
         when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
+        when(metaDataPersistFacade.getRepository().query("/metadata/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath, 0);
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath);
     }
     
     @Test

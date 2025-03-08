@@ -35,7 +35,7 @@ public interface PersistRepository extends TypedSPI, AutoCloseable {
      * Query data.
      *
      * @param key key to be queried
-     * @return queryed data
+     * @return queried data
      */
     String query(String key);
     

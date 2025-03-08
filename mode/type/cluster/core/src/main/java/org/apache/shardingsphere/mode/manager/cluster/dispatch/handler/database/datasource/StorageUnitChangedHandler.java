@@ -18,35 +18,29 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.datasource;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 import java.util.Collections;
 
 /**
  * Storage unit changed handler.
  */
-public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
+@RequiredArgsConstructor
+public final class StorageUnitChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
     
-    private final ActiveVersionChecker activeVersionChecker;
-    
-    public StorageUnitChangedHandler(final ContextManager contextManager) {
-        this.contextManager = contextManager;
-        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
-    }
-    
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePathParser(new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER);
     }
     
     @Override
@@ -54,14 +48,10 @@ public final class StorageUnitChangedHandler implements DatabaseChangedHandler {
         String storageUnitName = NodePathSearcher.get(event.getKey(), StorageUnitNodePath.createStorageUnitSearchCriteria(databaseName));
         switch (event.getType()) {
             case ADDED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleRegistered(databaseName, storageUnitName);
-                }
+                handleRegistered(databaseName, storageUnitName);
                 break;
             case UPDATED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleAltered(databaseName, storageUnitName);
-                }
+                handleAltered(databaseName, storageUnitName);
                 break;
             case DELETED:
                 handleUnregistered(databaseName, storageUnitName);

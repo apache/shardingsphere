@@ -20,35 +20,31 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseChangedHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
 import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
 
 /**
  * View changed handler.
  */
-public final class ViewChangedHandler implements DatabaseChangedHandler {
+public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler {
     
     private final ContextManager contextManager;
-    
-    private final ActiveVersionChecker activeVersionChecker;
     
     private final StatisticsRefreshEngine statisticsRefreshEngine;
     
     public ViewChangedHandler(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        activeVersionChecker = new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository());
         statisticsRefreshEngine = new StatisticsRefreshEngine(contextManager);
     }
     
     @Override
-    public boolean isSubscribed(final String databaseName, final String path) {
-        return new VersionNodePathParser(new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER)).isActiveVersionPath(path);
+    public NodePath getSubscribedNodePath(final String databaseName) {
+        return new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override
@@ -58,9 +54,7 @@ public final class ViewChangedHandler implements DatabaseChangedHandler {
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (activeVersionChecker.checkSame(event)) {
-                    handleCreatedOrAltered(databaseName, schemaName, viewName);
-                }
+                handleCreatedOrAltered(databaseName, schemaName, viewName);
                 break;
             case DELETED:
                 handleDropped(databaseName, schemaName, viewName);

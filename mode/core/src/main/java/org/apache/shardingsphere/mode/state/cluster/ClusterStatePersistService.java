@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.state.cluster;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.state.ClusterNodePath;
@@ -46,7 +45,6 @@ public final class ClusterStatePersistService {
      * @return loaded cluster state
      */
     public ClusterState load() {
-        String value = repository.query(NodePathGenerator.toPath(new ClusterNodePath(), false));
-        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
+        return ClusterState.valueFrom(repository.query(NodePathGenerator.toPath(new ClusterNodePath(), false)));
     }
 }

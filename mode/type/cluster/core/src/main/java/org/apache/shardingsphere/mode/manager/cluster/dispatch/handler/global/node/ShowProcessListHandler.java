@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath;
 
@@ -36,8 +36,8 @@ import java.util.Collection;
 public final class ShowProcessListHandler implements GlobalDataChangedEventHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false);
+    public NodePath getSubscribedNodePath() {
+        return new ShowProcessListTriggerNodePath(null);
     }
     
     @Override
@@ -50,14 +50,18 @@ public final class ShowProcessListHandler implements GlobalDataChangedEventHandl
         if (!NodePathSearcher.isMatchedPath(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria())) {
             return;
         }
-        String instanceId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria()).orElse("");
-        String processId = NodePathSearcher.find(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria()).orElse("");
-        if (Type.ADDED == event.getType()) {
-            if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
-            }
-        } else if (Type.DELETED == event.getType()) {
-            ProcessOperationLockRegistry.getInstance().notify(processId);
+        String instanceId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria());
+        String processId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria());
+        switch (event.getType()) {
+            case ADDED:
+                if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                    new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
+                }
+                break;
+            case DELETED:
+                ProcessOperationLockRegistry.getInstance().notify(processId);
+                break;
+            default:
         }
     }
 }

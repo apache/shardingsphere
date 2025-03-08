@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath;
 
@@ -39,8 +39,8 @@ import java.util.Collection;
 public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new KillProcessTriggerNodePath(null), false);
+    public NodePath getSubscribedNodePath() {
+        return new KillProcessTriggerNodePath(null);
     }
     
     @Override
@@ -53,20 +53,23 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
         if (!NodePathSearcher.isMatchedPath(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria())) {
             return;
         }
-        String instanceId = NodePathSearcher.find(event.getKey(), KillProcessTriggerNodePath.createInstanceIdSearchCriteria()).orElse("");
-        String processId = NodePathSearcher.find(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria()).orElse("");
-        if (Type.ADDED == event.getType()) {
-            if (!instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+        String instanceId = NodePathSearcher.get(event.getKey(), KillProcessTriggerNodePath.createInstanceIdSearchCriteria());
+        String processId = NodePathSearcher.get(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria());
+        switch (event.getType()) {
+            case ADDED:
+                if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
+                    try {
+                        ProcessRegistry.getInstance().kill(processId);
+                    } catch (final SQLException ex) {
+                        throw new SQLWrapperException(ex);
+                    }
+                    new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).cleanProcess(instanceId, processId);
+                }
                 return;
-            }
-            try {
-                ProcessRegistry.getInstance().kill(processId);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            }
-            new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).cleanProcess(instanceId, processId);
-        } else if (Type.DELETED == event.getType()) {
-            ProcessOperationLockRegistry.getInstance().notify(processId);
+            case DELETED:
+                ProcessOperationLockRegistry.getInstance().notify(processId);
+                return;
+            default:
         }
     }
 }

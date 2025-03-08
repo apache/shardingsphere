@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.version;
 
+import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,15 @@ class VersionNodePathTest {
     
     @Test
     void assertIsActiveVersionPath() {
-        assertTrue(VersionNodePath.isActiveVersionPath("foo/active_version"));
-        assertFalse(VersionNodePath.isActiveVersionPath("foo/versions"));
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        assertTrue(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
+    }
+    
+    @Test
+    void assertIsNotActiveVersionPath() {
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
+        assertFalse(versionNodePath.isActiveVersionPath("/metadata/bar_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
 }

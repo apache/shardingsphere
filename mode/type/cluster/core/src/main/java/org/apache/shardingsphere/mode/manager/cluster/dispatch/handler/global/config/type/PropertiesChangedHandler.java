@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type;
 
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.GlobalConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.config.GlobalPropertiesNodePath;
-import org.apache.shardingsphere.mode.node.path.version.VersionNodePathParser;
+import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,11 +31,11 @@ import java.util.Collection;
 /**
  * Properties changed handler.
  */
-public final class PropertiesChangedHandler implements GlobalDataChangedEventHandler {
+public final class PropertiesChangedHandler implements GlobalConfigurationChangedHandler {
     
     @Override
-    public String getSubscribedKey() {
-        return NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false);
+    public NodePath getSubscribedNodePath() {
+        return new GlobalPropertiesNodePath();
     }
     
     @Override
@@ -46,10 +45,7 @@ public final class PropertiesChangedHandler implements GlobalDataChangedEventHan
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!new VersionNodePathParser(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
-            return;
-        }
-        if (!new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
+        if (!new VersionNodePath(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
             return;
         }
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load());

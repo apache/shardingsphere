@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.state.cluster.ClusterState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class ClusterStateChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> each.getSubscribedKey().equals("/states/cluster_state")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/states/cluster_state")).findFirst().orElse(null);
     }
     
     @Test
@@ -54,7 +55,7 @@ class ClusterStateChangedHandlerTest {
     
     @Test
     void assertHandleWithInvalidClusterState() {
-        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "INVALID", Type.UPDATED));
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "", Type.UPDATED));
         verify(contextManager.getStateContext()).switchState(ClusterState.OK);
     }
 }

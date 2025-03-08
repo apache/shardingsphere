@@ -28,7 +28,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,6 @@ class TableChangedHandlerTest {
     
     @Test
     void assertHandleTableCreated() {
-        when(contextManager.getPersistServiceFacade().getRepository().query(any())).thenReturn("0");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0", Type.ADDED));
@@ -57,7 +55,6 @@ class TableChangedHandlerTest {
     
     @Test
     void assertHandleTableAltered() {
-        when(contextManager.getPersistServiceFacade().getRepository().query(any())).thenReturn("0");
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0", Type.UPDATED));
