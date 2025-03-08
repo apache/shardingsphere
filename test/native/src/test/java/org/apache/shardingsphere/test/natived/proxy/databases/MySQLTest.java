@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -41,7 +41,8 @@ import java.time.Duration;
 import java.util.Properties;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
-@EnabledInNativeImage
+@Disabled("TODO Affected by https://github.com/apache/shardingsphere/issues/34816, "
+        + "the SQL statement `SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id` cannot be executed")
 @Testcontainers
 class MySQLTest {
     
