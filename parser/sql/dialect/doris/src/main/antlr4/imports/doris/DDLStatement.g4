@@ -359,6 +359,33 @@ createView
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
+createMaterializedView
+    : CREATE MATERIALIZED VIEW ifNotExists? name
+    (LP_ columnDefinition RP_)? buildMode?
+    (REFRESH refreshMethod? refreshTrigger?)?
+    ((DUPLICATE)? KEY keys= LP_ identifierList RP_)?
+    commentClause? partitionClause? distributedbyClause? propertiesClause?
+    AS select
+    ;
+
+buildMode
+    : BUILD (IMMEDIATE | DEFERRED)
+    ;
+
+refreshMethod
+    : COMPLETE | AUTO
+    ;
+
+refreshTrigger
+    : ON MANUAL
+    | ON SCHEDULE refreshSchedule
+    | ON COMMIT
+    ;
+
+refreshSchedule
+    : EVERY intervalValue (STARTS timestampValue)?
+    ;
+
 alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
