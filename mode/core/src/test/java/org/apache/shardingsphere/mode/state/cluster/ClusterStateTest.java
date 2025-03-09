@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.state.cluster;
 
+import org.apache.shardingsphere.mode.state.ClusterState;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
