@@ -24,17 +24,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class StateContextTest {
     
-    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
+    private final StateContext stateContext = new StateContext(ShardingSphereState.OK);
     
     @Test
     void assertGetClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
+        assertThat(stateContext.getState(), is(ShardingSphereState.OK));
     }
     
     @Test
     void assertSwitchClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
-        stateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
+        assertThat(stateContext.getState(), is(ShardingSphereState.OK));
+        stateContext.switchState(ShardingSphereState.UNAVAILABLE);
+        assertThat(stateContext.getState(), is(ShardingSphereState.UNAVAILABLE));
     }
 }

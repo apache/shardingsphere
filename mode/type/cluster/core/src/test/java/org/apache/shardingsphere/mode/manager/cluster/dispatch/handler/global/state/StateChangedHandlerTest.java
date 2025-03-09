@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ClusterStateChangedHandlerTest {
+class StateChangedHandlerTest {
     
     private GlobalDataChangedEventHandler handler;
     
@@ -49,13 +49,13 @@ class ClusterStateChangedHandlerTest {
     
     @Test
     void assertHandleWithValidClusterState() {
-        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", ClusterState.READ_ONLY.name(), Type.UPDATED));
-        verify(contextManager.getStateContext()).switchState(ClusterState.READ_ONLY);
+        handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", ShardingSphereState.READ_ONLY.name(), Type.UPDATED));
+        verify(contextManager.getStateContext()).switchState(ShardingSphereState.READ_ONLY);
     }
     
     @Test
     void assertHandleWithInvalidClusterState() {
         handler.handle(contextManager, new DataChangedEvent("/states/cluster_state", "", Type.UPDATED));
-        verify(contextManager.getStateContext()).switchState(ClusterState.OK);
+        verify(contextManager.getStateContext()).switchState(ShardingSphereState.OK);
     }
 }

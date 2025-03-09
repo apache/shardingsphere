@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Cluster node path.
+ * State node path.
  */
 @NodePathEntity("/states/cluster_state")
-public final class ClusterNodePath implements NodePath {
+public final class StateNodePath implements NodePath {
 }

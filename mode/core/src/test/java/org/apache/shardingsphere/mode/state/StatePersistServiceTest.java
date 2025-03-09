@@ -30,33 +30,33 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClusterStatePersistServiceTest {
+class StatePersistServiceTest {
     
-    private ClusterStatePersistService clusterStatePersistService;
+    private StatePersistService statePersistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        clusterStatePersistService = new ClusterStatePersistService(repository);
+        statePersistService = new StatePersistService(repository);
     }
     
     @Test
     void assertUpdate() {
-        clusterStatePersistService.update(ClusterState.OK);
-        verify(repository).persist("/states/cluster_state", ClusterState.OK.name());
+        statePersistService.update(ShardingSphereState.OK);
+        verify(repository).persist("/states/cluster_state", ShardingSphereState.OK.name());
     }
     
     @Test
     void assertLoad() {
-        when(repository.query("/states/cluster_state")).thenReturn(ClusterState.READ_ONLY.name());
-        assertThat(clusterStatePersistService.load(), is(ClusterState.READ_ONLY));
+        when(repository.query("/states/cluster_state")).thenReturn(ShardingSphereState.READ_ONLY.name());
+        assertThat(statePersistService.load(), is(ShardingSphereState.READ_ONLY));
     }
     
     @Test
     void assertLoadWithEmptyState() {
         when(repository.query("/states/cluster_state")).thenReturn("");
-        assertThat(clusterStatePersistService.load(), is(ClusterState.OK));
+        assertThat(statePersistService.load(), is(ShardingSphereState.OK));
     }
 }

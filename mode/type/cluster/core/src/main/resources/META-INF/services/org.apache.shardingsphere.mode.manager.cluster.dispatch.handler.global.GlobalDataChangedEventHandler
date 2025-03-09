@@ -18,7 +18,7 @@
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type.GlobalRuleChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.type.PropertiesChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.DatabaseListenerChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.ClusterStateChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.StateChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.QualifiedDataSourceChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeOnlineHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeStateChangedHandler

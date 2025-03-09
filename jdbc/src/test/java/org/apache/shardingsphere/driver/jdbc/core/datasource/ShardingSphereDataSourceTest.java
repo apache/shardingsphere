@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -56,7 +56,7 @@ class ShardingSphereDataSourceTest {
         try (ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db", null)) {
             ContextManager contextManager = getContextManager(actual);
             assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
-            assertThat(contextManager.getStateContext().getState(), is(ClusterState.OK));
+            assertThat(contextManager.getStateContext().getState(), is(ShardingSphereState.OK));
             assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
             assertTrue(contextManager.getStorageUnits("foo_db").isEmpty());
         }
@@ -69,7 +69,7 @@ class ShardingSphereDataSourceTest {
         try (ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection))) {
             ContextManager contextManager = getContextManager(actual);
             assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
-            assertThat(contextManager.getStateContext().getState(), is(ClusterState.OK));
+            assertThat(contextManager.getStateContext().getState(), is(ShardingSphereState.OK));
             assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
             assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
             assertThat(contextManager.getStorageUnits("foo_db").get("ds").getDataSource().getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));

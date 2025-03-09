@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.state.impl;
 
-import org.apache.shardingsphere.mode.exception.ClusterStateException;
+import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class ReadOnlyProxyStateTest {
     
     @Test
     void assertExecuteWithUnsupportedSQL() {
-        assertThrows(ClusterStateException.class, () -> new ReadOnlyProxyState().check(mock(InsertStatement.class)));
+        assertThrows(ShardingSphereStateException.class, () -> new ReadOnlyProxyState().check(mock(InsertStatement.class)));
     }
     
     @Test

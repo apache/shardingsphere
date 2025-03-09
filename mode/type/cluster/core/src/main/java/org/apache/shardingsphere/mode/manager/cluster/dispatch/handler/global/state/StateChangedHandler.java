@@ -22,20 +22,20 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
-import org.apache.shardingsphere.mode.node.path.type.global.state.ClusterNodePath;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.node.path.type.global.state.StateNodePath;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Cluster state changed handler.
+ * State changed handler.
  */
-public final class ClusterStateChangedHandler implements GlobalDataChangedEventHandler {
+public final class StateChangedHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
-        return new ClusterNodePath();
+        return new StateNodePath();
     }
     
     @Override
@@ -45,6 +45,6 @@ public final class ClusterStateChangedHandler implements GlobalDataChangedEventH
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        contextManager.getStateContext().switchState(ClusterState.valueFrom(event.getValue()));
+        contextManager.getStateContext().switchState(ShardingSphereState.valueFrom(event.getValue()));
     }
 }
