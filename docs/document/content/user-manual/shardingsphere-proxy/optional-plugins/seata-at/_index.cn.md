@@ -170,6 +170,7 @@ authority:
   users:
     - user: root@%
       password: root
+      admin: true
   privilege:
     type: ALL_PERMITTED
 transaction:
