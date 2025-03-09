@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.cluster;
+package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.mode.state.ClusterStateContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StateContextTest {
-    
-    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
+class ClusterStateTest {
     
     @Test
-    void assertGetClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
+    void assertValueFromEmptyValue() {
+        assertThat(ClusterState.valueFrom(""), is(ClusterState.OK));
     }
     
     @Test
-    void assertSwitchClusterState() {
-        assertThat(stateContext.getState(), is(ClusterState.OK));
-        stateContext.switchState(ClusterState.UNAVAILABLE);
-        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
+    void assertValueFrom() {
+        assertThat(ClusterState.valueFrom("UNAVAILABLE"), is(ClusterState.UNAVAILABLE));
     }
 }
