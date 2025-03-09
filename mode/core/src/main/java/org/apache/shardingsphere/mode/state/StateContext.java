@@ -17,22 +17,34 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import com.google.common.base.Strings;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Cluster state.
+ * State context.
  */
-public enum ClusterState {
+public final class StateContext {
     
-    OK, READ_ONLY, UNAVAILABLE;
+    private final AtomicReference<ShardingSphereState> state;
+    
+    public StateContext(final ShardingSphereState state) {
+        this.state = new AtomicReference<>(state);
+    }
     
     /**
-     * Value from.
+     * Get state.
      *
-     * @param value value
-     * @return cluster state
+     * @return state
      */
-    public static ClusterState valueFrom(final String value) {
-        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
+    public ShardingSphereState getState() {
+        return state.get();
+    }
+    
+    /**
+     * Switch state.
+     *
+     * @param state to be switched state
+     */
+    public void switchState(final ShardingSphereState state) {
+        this.state.set(state);
     }
 }

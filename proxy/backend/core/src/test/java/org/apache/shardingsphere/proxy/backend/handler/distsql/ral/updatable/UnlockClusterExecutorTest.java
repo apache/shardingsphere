@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.lock.exception.NotLockedClusterException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -42,7 +42,7 @@ class UnlockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(null), contextManager));
     }
@@ -50,7 +50,7 @@ class UnlockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithUsingTimeout() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.UNAVAILABLE);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.UNAVAILABLE);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertDoesNotThrow(() -> executor.executeUpdate(new UnlockClusterStatement(2000L), contextManager));
     }

@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state;
+package org.apache.shardingsphere.mode.exception;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ClusterStateContextTest {
+/**
+ * ShardingSphere state exception.
+ */
+public final class ShardingSphereStateException extends ClusterSQLException {
     
-    @Test
-    void assertSwitchState() {
-        ClusterStateContext clusterStateContext = new ClusterStateContext(ClusterState.OK);
-        clusterStateContext.switchState(ClusterState.READ_ONLY);
-        assertThat(clusterStateContext.getState(), is(ClusterState.READ_ONLY));
+    private static final long serialVersionUID = 3834132923835083492L;
+    
+    public ShardingSphereStateException(final String type, final SQLStatement sqlStatement) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster state is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
     }
 }

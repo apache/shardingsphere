@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.exception;
+package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import com.google.common.base.Strings;
 
 /**
- * Cluster state exception.
+ * ShardingSphere state.
  */
-public final class ClusterStateException extends ClusterSQLException {
+public enum ShardingSphereState {
     
-    private static final long serialVersionUID = 3834132923835083492L;
+    OK, READ_ONLY, UNAVAILABLE;
     
-    public ClusterStateException(final String type, final SQLStatement sqlStatement) {
-        super(XOpenSQLState.GENERAL_ERROR, 20, "The cluster state is %s, can not support SQL statement '%s'.", type, sqlStatement.getClass().getSimpleName());
+    /**
+     * Value from.
+     *
+     * @param value value
+     * @return state
+     */
+    public static ShardingSphereState valueFrom(final String value) {
+        return Strings.isNullOrEmpty(value) ? ShardingSphereState.OK : ShardingSphereState.valueOf(value);
     }
 }

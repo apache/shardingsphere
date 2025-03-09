@@ -17,34 +17,34 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import java.util.concurrent.atomic.AtomicReference;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.global.state.StateNodePath;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Cluster state context.
+ * State persist service.
  */
-public final class ClusterStateContext {
+@RequiredArgsConstructor
+public final class StatePersistService {
     
-    private final AtomicReference<ClusterState> clusterState;
+    private final PersistRepository repository;
     
-    public ClusterStateContext(final ClusterState clusterState) {
-        this.clusterState = new AtomicReference<>(clusterState);
+    /**
+     * Update state.
+     *
+     * @param state to be updated state
+     */
+    public void update(final ShardingSphereState state) {
+        repository.persist(NodePathGenerator.toPath(new StateNodePath(), false), state.name());
     }
     
     /**
-     * Get cluster state.
+     * Load state.
      *
-     * @return cluster state
+     * @return loaded state
      */
-    public ClusterState getState() {
-        return clusterState.get();
-    }
-    
-    /**
-     * Switch cluster state.
-     *
-     * @param state to be switched cluster state
-     */
-    public void switchState(final ClusterState state) {
-        clusterState.set(state);
+    public ShardingSphereState load() {
+        return ShardingSphereState.valueFrom(repository.query(NodePathGenerator.toPath(new StateNodePath(), false)));
     }
 }

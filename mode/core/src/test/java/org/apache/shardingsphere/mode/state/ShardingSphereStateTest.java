@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.global.state;
+package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ClusterNodePathTest {
+class ShardingSphereStateTest {
     
     @Test
-    void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new ClusterNodePath(), false), is("/states/cluster_state"));
+    void assertValueFromEmptyValue() {
+        assertThat(ShardingSphereState.valueFrom(""), is(ShardingSphereState.OK));
+    }
+    
+    @Test
+    void assertValueFrom() {
+        assertThat(ShardingSphereState.valueFrom("UNAVAILABLE"), is(ShardingSphereState.UNAVAILABLE));
     }
 }

@@ -47,7 +47,7 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.ClusterStateContext;
+import org.apache.shardingsphere.mode.state.StateContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -67,7 +67,7 @@ public final class ContextManager implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
-    private final ClusterStateContext stateContext;
+    private final StateContext stateContext;
     
     private final PersistServiceFacade persistServiceFacade;
     
@@ -78,7 +78,7 @@ public final class ContextManager implements AutoCloseable {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
         metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
-        stateContext = new ClusterStateContext(persistServiceFacade.getClusterStatePersistService().load());
+        stateContext = new StateContext(persistServiceFacade.getStatePersistService().load());
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             each.onInitialized(this);

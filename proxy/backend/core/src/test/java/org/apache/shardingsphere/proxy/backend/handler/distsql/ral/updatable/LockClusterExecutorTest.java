@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.mode.state.ClusterState;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.lock.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -46,21 +46,21 @@ class LockClusterExecutorTest {
     @Test
     void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.UNAVAILABLE);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.UNAVAILABLE);
         assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
     @Test
     void assertExecuteUpdateWithUsingTimeout() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStateContext().getState()).thenReturn(ClusterState.OK);
+        when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
         assertDoesNotThrow(() -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("WRITE", new Properties()), 2000L), contextManager));
     }
 }
