@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.cluster.ClusterStatePersistService;
-import org.apache.shardingsphere.mode.state.node.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.state.node.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.state.ClusterStatePersistService;
+import org.apache.shardingsphere.mode.node.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.node.QualifiedDataSourceStatePersistService;
 
 /**
  * Persist service facade.

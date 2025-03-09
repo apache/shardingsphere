@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.cluster;
+package org.apache.shardingsphere.mode.state;
 
-import org.junit.jupiter.api.Test;
+import com.google.common.base.Strings;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ClusterStateTest {
+/**
+ * Cluster state.
+ */
+public enum ClusterState {
     
-    @Test
-    void assertValueFromEmptyValue() {
-        assertThat(ClusterState.valueFrom(""), is(ClusterState.OK));
-    }
+    OK, READ_ONLY, UNAVAILABLE;
     
-    @Test
-    void assertValueFrom() {
-        assertThat(ClusterState.valueFrom("UNAVAILABLE"), is(ClusterState.UNAVAILABLE));
+    /**
+     * Value from.
+     *
+     * @param value value
+     * @return cluster state
+     */
+    public static ClusterState valueFrom(final String value) {
+        return Strings.isNullOrEmpty(value) ? ClusterState.OK : ClusterState.valueOf(value);
     }
 }

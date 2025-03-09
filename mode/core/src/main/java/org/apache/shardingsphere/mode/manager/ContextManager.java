@@ -47,7 +47,7 @@ import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.cluster.ClusterStateContext;
+import org.apache.shardingsphere.mode.state.ClusterStateContext;
 
 import java.sql.SQLException;
 import java.util.Collection;

@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.lock.impl;
+package org.apache.shardingsphere.mode.state;
 
-import org.apache.shardingsphere.mode.state.ClusterState;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
+import org.junit.jupiter.api.Test;
 
-/**
- * Cluster write lock strategy.
- */
-public class ClusterWriteLockStrategy implements ClusterLockStrategy {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class StateContextTest {
     
-    @Override
-    public void lock() {
-        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getClusterStatePersistService().update(ClusterState.READ_ONLY);
+    private final ClusterStateContext stateContext = new ClusterStateContext(ClusterState.OK);
+    
+    @Test
+    void assertGetClusterState() {
+        assertThat(stateContext.getState(), is(ClusterState.OK));
     }
     
-    @Override
-    public String getType() {
-        return "WRITE";
+    @Test
+    void assertSwitchClusterState() {
+        assertThat(stateContext.getState(), is(ClusterState.OK));
+        stateContext.switchState(ClusterState.UNAVAILABLE);
+        assertThat(stateContext.getState(), is(ClusterState.UNAVAILABLE));
     }
 }

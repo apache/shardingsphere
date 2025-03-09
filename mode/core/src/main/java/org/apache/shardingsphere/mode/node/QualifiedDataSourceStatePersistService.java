@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.state.node;
+package org.apache.shardingsphere.mode.node;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
