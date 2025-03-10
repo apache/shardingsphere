@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -171,9 +170,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        Collection<MetaDataVersion> metaDataVersions = Collections.singleton(mock(MetaDataVersion.class));
-        when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersions);
+        MetaDataVersion metaDataVersion = mock(MetaDataVersion.class);
+        when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(metaDataVersion));
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
+        when(metaDataVersion.getNodePath()).thenReturn(databaseRuleNodePath);
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
         when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
@@ -191,10 +191,11 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertRemoveRuleConfigurationItem() throws SQLException {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        Collection<MetaDataVersion> metaDataVersion = Collections.singleton(mock(MetaDataVersion.class));
-        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(metaDataVersion);
+        MetaDataVersion metaDataVersion = mock(MetaDataVersion.class);
+        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(metaDataVersion));
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
         DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
+        when(metaDataVersion.getNodePath()).thenReturn(databaseRuleNodePath);
         when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
         setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), ruleConfig);

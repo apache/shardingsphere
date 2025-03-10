@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.version;
+package org.apache.shardingsphere.mode.node.path.version;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 /**
  * Meta data version.
@@ -29,11 +30,11 @@ public final class MetaDataVersion {
     
     public static final int INIT_VERSION = 0;
     
-    private final String path;
+    private final NodePath nodePath;
     
     private final int activeVersion;
     
-    public MetaDataVersion(final String path) {
-        this(path, INIT_VERSION);
+    public MetaDataVersion(final NodePath nodePath) {
+        this(nodePath, INIT_VERSION);
     }
 }
