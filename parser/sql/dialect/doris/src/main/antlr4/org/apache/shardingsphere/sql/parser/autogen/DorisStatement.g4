@@ -128,6 +128,7 @@ execute
     | dropTablespace
     | delimiter
     | startReplica
+    | createMaterializedView
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
