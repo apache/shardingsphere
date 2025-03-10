@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.exception;
+package org.apache.shardingsphere.mode.exception;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Reload table meta failed exception.
+ * Load table meta data failed exception.
  */
-public final class ReloadTableMetaFailedException extends ClusterSQLException {
+public final class LoadTableMetaDataFailedException extends MetaDataSQLException {
     
-    public ReloadTableMetaFailedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 12, "Failed to reload table meta data.");
+    public LoadTableMetaDataFailedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 12, "Failed to load table meta data.");
     }
 }
