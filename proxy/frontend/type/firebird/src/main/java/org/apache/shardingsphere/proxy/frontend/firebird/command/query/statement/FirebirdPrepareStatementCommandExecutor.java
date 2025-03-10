@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -226,9 +227,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Optional<Object> columnNames = ReflectionUtils.getFieldValueByGetMethod(sqlStatementContext, "columnNames");
         List<String> affectedColumns = columnNames.map(columns -> (List<String>) columns).orElseGet(() -> new ArrayList<>(0));
         affectedColumns.addAll(findWhereParametersColumns(sqlStatementContext));
-        return projections.isEmpty() ?
+        int columnCount = projections.isEmpty() ?
                 processAllTables(tableNames, metaDataContexts, databaseName, schemaName, buffer, returnAll, requestedItems, affectedColumns)
                 : processProjections(projections, metaDataContexts, databaseName, schemaName, buffer, returnAll, requestedItems, affectedColumns);
+        return returnAll ? columnCount : processUnnamedParameters(sqlStatementContext, columnCount, databaseName, schemaName, buffer, requestedItems);
     }
     
     private List<Projection> getProjections(SQLStatementContext sqlStatementContext) {
@@ -271,10 +273,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (each instanceof ColumnProjection) {
                 ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(((ColumnProjection) each).getOriginalTable().getValue());
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
-                if (!returnAll && !affectedColumns.contains(column.getName().toLowerCase())) {
-                    continue;
+                if (returnAll || affectedColumns.contains(column.getName().toLowerCase())) {
+                    processColumn(buffer, requestedItems, table, column, (ColumnProjection) each, ++columnCount);
                 }
-                processColumn(buffer, requestedItems, table, column, (ColumnProjection) each, ++columnCount);
             } else if (each instanceof ExpressionProjection) {
                 columnCount = processExpressionProjection(((ExpressionProjection) each).getExpressionSegment().getExpr(), buffer, requestedItems, columnCount, returnAll);
             }
@@ -303,6 +304,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getFunctionType(String functionName) {
         switch (functionName) {
+            case "substring":
             case "current_role":
             case "current_user":
                 return 12;
@@ -332,6 +334,24 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return columnCount;
+    }
+    
+    private int processUnnamedParameters(SQLStatementContext sqlStatementContext, int columnCount, String databaseName, String schemaName, ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems) {
+        int count = columnCount;
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
+            return count;
+        }
+        Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
+        for (WhereSegment each : whereSegments) {
+            if (each.getExpr() instanceof InExpression) {
+                for (ExpressionSegment expr : ((InExpression) each.getExpr()).getExpressionList()) {
+                    if (expr instanceof ParameterMarkerExpressionSegment) {
+                        count = processCustomColumn(null, null, 12, buffer, requestedItems, count);
+                    }
+                }
+            }
+        }
+        return count;
     }
     
     private void processColumn(ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, ShardingSphereTable table, ShardingSphereColumn column, ColumnProjection projection, int idx) {
