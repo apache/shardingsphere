@@ -59,10 +59,6 @@ UCHAR_TEXT
     : U STRING_
     ;
 
-BYTE_UNIT
-    : K | M | G | T | P | E
-    ;
-
 fragment INT_
     : [0-9]+
     ;

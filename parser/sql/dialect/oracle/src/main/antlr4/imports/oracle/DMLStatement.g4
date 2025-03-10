@@ -48,7 +48,8 @@ conditionalInsertElsePart
     ;
 
 insertIntoClause
-    : INTO dmlTableExprClause alias? columnNames?
+    : INTO dmlTableExprClause
+    | INTO dmlTableExprClause alias? columnNames?
     ;
 
 insertValuesClause
@@ -106,7 +107,7 @@ updateSetColumnList
     ;
 
 updateSetColumnClause
-    : (LP_ columnName (COMMA_ columnName)* RP_ EQ_ LP_ selectSubquery RP_) 
+    : (LP_ columnName (COMMA_ columnName)* RP_ EQ_ LP_ selectSubquery RP_)
     | (columnName EQ_ (expr | LP_ selectSubquery RP_ | DEFAULT))
     ;
 
@@ -224,7 +225,7 @@ invokerRightsClause
     ;
 
 subqueryFactoringClause
-    : queryName (LP_ alias (COMMA_ alias)* RP_)? AS LP_ selectSubquery RP_ searchClause? cycleClause? 
+    : queryName (LP_ alias (COMMA_ alias)* RP_)? AS LP_ selectSubquery RP_ searchClause? cycleClause?
     ;
 
 searchClause
@@ -372,7 +373,7 @@ hierNavigationExpression
     ;
 
 hierAncestorExpression
-    : HIER_ANCESTOR LP_ memberExpression AT (LEVEL levelRef | DEPTH depthExpression) RP_ 
+    : HIER_ANCESTOR LP_ memberExpression AT (LEVEL levelRef | DEPTH depthExpression) RP_
     ;
 
 hierParentExpression
@@ -447,7 +448,8 @@ fromClauseOption
     ;
 
 selectTableReference
-    : (queryTableExprClause | containersClause | shardsClause) alias?
+    : queryTableExprClause | containersClause | shardsClause
+    | (queryTableExprClause | containersClause | shardsClause) alias?
     ;
 
 queryTableExprClause
@@ -498,7 +500,7 @@ inlineExternalTableProperties
     ;
 
 externalTableDataProperties
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? 
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))?
     (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
     ;
 
@@ -507,7 +509,7 @@ mofifiedExternalTable
     ;
 
 modifyExternalTableProperties
-    : (DEFAULT DIRECTORY directoryName)? (LOCATION LP_ (directoryName COLON_)? SQ_ locationSpecifier SQ_ (COMMA_ (directoryName COLON_)? SQ_ locationSpecifier SQ_)* RP_)? 
+    : (DEFAULT DIRECTORY directoryName)? (LOCATION LP_ (directoryName COLON_)? SQ_ locationSpecifier SQ_ (COMMA_ (directoryName COLON_)? SQ_ locationSpecifier SQ_)* RP_)?
     (ACCESS PARAMETERS (BADFILE fileName | LOGFILE fileName | DISCARDFILE fileName))? (REJECT LIMIT (INTEGER_ | UNLIMITED))?
     ;
 
@@ -666,11 +668,14 @@ modelIterateClause
     ;
 
 cellAssignment
-    : measureColumn LBT_ (((condition | expr | singleColumnForLoop) (COMMA_ (condition | expr | singleColumnForLoop))*) | multiColumnForLoop) RBT_
+    : measureColumn LBT_ (
+        multiColumnForLoop
+        | ((condition | expr | singleColumnForLoop) (COMMA_ (condition | expr | singleColumnForLoop))*)
+    ) RBT_
     ;
 
 singleColumnForLoop
-    : FOR dimensionColumn ((IN LP_ ((literals (COMMA_ literals)*) | selectSubquery) RP_) 
+    : FOR dimensionColumn ((IN LP_ ((literals (COMMA_ literals)*) | selectSubquery) RP_)
     | ((LIKE pattern)? FROM literals TO literals (INCREMENT | DECREMENT) literals))
     ;
 
@@ -684,8 +689,8 @@ subquery
     ;
 
 modelExpr
-    : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_) 
-    | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_) 
+    : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_)
+    | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_)
     | analyticFunction) ((PLUS_ | SLASH_) LP_? modelExpr* RP_? | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
     | expr
     ;
@@ -785,7 +790,7 @@ rowPatternRowsPerMatch
     ;
 
 rowPatternSkipTo
-    : AFTER MATCH SKIP_SYMBOL ((TO NEXT | PAST LAST) ROW 
+    : AFTER MATCH SKIP_SYMBOL ((TO NEXT | PAST LAST) ROW
     | TO (FIRST | LAST)? variableName)
     ;
 
@@ -846,9 +851,9 @@ rowPatternRecFunc
     ;
 
 patternMeasExpression
-    : stringLiterals 
-    | numberLiterals 
-    | columnName 
+    : stringLiterals
+    | numberLiterals
+    | columnName
     | rowPatternRecFunc
     ;
 

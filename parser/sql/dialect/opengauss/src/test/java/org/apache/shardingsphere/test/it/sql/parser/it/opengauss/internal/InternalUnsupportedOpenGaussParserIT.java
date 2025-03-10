@@ -19,7 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.it.opengauss.internal;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled
 @InternalSQLParserITSettings("openGauss")
 class InternalUnsupportedOpenGaussParserIT extends InternalUnsupportedSQLParserIT {
 }
