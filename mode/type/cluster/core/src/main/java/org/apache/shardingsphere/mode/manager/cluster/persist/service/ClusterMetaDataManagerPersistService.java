@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
-import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadTableMetaFailedException;
+import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -234,7 +234,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             }
         } catch (final SQLException ex) {
             log.error("Reload table meta failed, databaseName:{}, needReloadTables:{}", databaseName, needReloadTables, ex);
-            throw new ReloadTableMetaFailedException();
+            throw new LoadTableMetaDataFailedException();
         }
     }
     
