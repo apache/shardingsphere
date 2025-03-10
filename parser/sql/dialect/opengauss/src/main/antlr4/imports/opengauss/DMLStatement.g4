@@ -123,10 +123,10 @@ selectClauseN
     ;
 
 simpleSelect
-    : SELECT ALL? targetList? intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
-    | SELECT distinctClause targetList intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
+    : SELECT distinctClause targetList intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
     | valuesClause
     | TABLE relationExpr
+    | SELECT ALL? targetList? intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
     ;
 
 withClause
@@ -228,8 +228,8 @@ offsetClause
     ;
 
 selectLimitValue
-    : cExpr
-    | ALL
+    : ALL
+    | cExpr
     ;
 
 selectOffsetValue
