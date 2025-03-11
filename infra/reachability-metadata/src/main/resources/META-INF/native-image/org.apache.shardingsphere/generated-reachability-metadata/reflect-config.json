@@ -1,9 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-  "name":"JdkLogger"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"},
   "name":"JdkLogger"
 },
@@ -20,7 +16,7 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007f74ffb9d648"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x00007fa063b9d408"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -1629,7 +1625,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeOnlineHandler"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"},
   "name":"org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1757,7 +1753,7 @@
   "methods":[{"name":"getRows","parameterTypes":[] }, {"name":"getUniqueKey","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService$$Lambda/0x00007f74ffa45720"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService$$Lambda/0x00007fa063a46cd0"},
   "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"
 },
 {
@@ -2068,31 +2064,31 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeLabelChangedHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeLabelChangedHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeOnlineHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeStateChangedHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeStateChangedHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeWorkerIdChangedHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeWorkerIdChangedHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.KillProcessHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process.KillProcessHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.QualifiedDataSourceChangedHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process.ShowProcessListHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ShowProcessListHandler"
+  "name":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.storage.QualifiedDataSourceChangedHandler"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChangedEventListenerRegistry"},
@@ -2302,7 +2298,7 @@
   "fields":[{"name":"instanceProcess"}]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeOnlineHandler"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler"},
   "name":"org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath",
   "fields":[{"name":"instanceId"}, {"name":"instanceType"}]
 },

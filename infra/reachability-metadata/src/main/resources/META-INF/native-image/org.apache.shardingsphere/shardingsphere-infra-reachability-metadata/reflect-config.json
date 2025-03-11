@@ -333,6 +333,11 @@
   "allDeclaredFields": true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
   "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
   "allPublicMethods": true
