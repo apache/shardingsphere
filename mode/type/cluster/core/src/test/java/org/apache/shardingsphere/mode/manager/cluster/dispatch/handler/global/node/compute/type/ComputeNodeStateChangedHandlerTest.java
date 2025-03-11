@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -31,14 +30,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ComputeNodeOnlineHandlerTest {
+class ComputeNodeStateChangedHandlerTest {
     
     private GlobalDataChangedEventHandler handler;
     
@@ -48,26 +44,18 @@ class ComputeNodeOnlineHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/online")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/status")).findFirst().orElse(null);
     }
     
     @Test
-    void assertHandleWithInvalidInstanceOnlinePath() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/foo", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
+    void assertHandleWithEmptyInstanceId() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/status", "", Type.ADDED));
         verify(contextManager, times(0)).getComputeNodeInstanceContext();
     }
     
     @Test
-    void assertHandleWithInstanceOnlineEvent() {
-        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
-        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(any())).thenReturn(computeNodeInstance);
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
-        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);
-    }
-    
-    @Test
-    void assertHandleWithInstanceOfflineEvent() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.DELETED));
-        verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).delete(any());
+    void assertHandleWithComputeNodeInstanceStateChangedEvent() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "OK", Type.ADDED));
+        verify(contextManager.getComputeNodeInstanceContext()).updateStatus("foo_instance_id", "OK");
     }
 }

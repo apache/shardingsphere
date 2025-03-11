@@ -15,40 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.ComputeNodeChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Compute node work ID changed handler.
+ * Compute node label changed handler.
  */
-public final class ComputeNodeWorkerIdChangedHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeLabelChangedHandler implements ComputeNodeChangedHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
-        return new ComputeNodeWorkerIDNodePath(null);
+        return new LabelNodePath(null);
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!Strings.isNullOrEmpty(event.getValue())) {
-            NodePathSearcher.find(event.getKey(), ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria())
-                    .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().updateWorkerId(optional, Integer.valueOf(event.getValue())));
-        }
+        NodePathSearcher.find(event.getKey(), LabelNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
+        contextManager.getComputeNodeInstanceContext().updateLabels(
+                instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
     }
 }
