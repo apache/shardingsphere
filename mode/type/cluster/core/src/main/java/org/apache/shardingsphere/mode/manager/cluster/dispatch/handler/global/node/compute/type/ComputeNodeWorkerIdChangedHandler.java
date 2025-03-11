@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.ComputeNodeChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Compute node state changed handler.
+ * Compute node work ID changed handler.
  */
-public final class ComputeNodeStateChangedHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeWorkerIdChangedHandler implements ComputeNodeChangedHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
-        return new StatusNodePath(null);
+        return new ComputeNodeWorkerIDNodePath(null);
     }
     
     @Override
     public Collection<Type> getSubscribedTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        NodePathSearcher.find(event.getKey(), StatusNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
-    }
-    
-    private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
-        contextManager.getComputeNodeInstanceContext().updateStatus(instanceId, event.getValue());
+        if (!Strings.isNullOrEmpty(event.getValue())) {
+            NodePathSearcher.find(event.getKey(), ComputeNodeWorkerIDNodePath.createInstanceIdSearchCriteria())
+                    .ifPresent(optional -> contextManager.getComputeNodeInstanceContext().updateWorkerId(optional, Integer.valueOf(event.getValue())));
+        }
     }
 }

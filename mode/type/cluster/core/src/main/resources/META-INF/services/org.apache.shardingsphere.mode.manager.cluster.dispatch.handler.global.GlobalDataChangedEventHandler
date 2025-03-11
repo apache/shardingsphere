@@ -20,10 +20,10 @@ org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.config.ty
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.DatabaseListenerChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.state.StateChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.QualifiedDataSourceChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeOnlineHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeStateChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeWorkerIdChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ComputeNodeLabelChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeOnlineHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeStateChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeWorkerIdChangedHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeLabelChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.statistics.StatisticsChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ShowProcessListHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.KillProcessHandler

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
 import org.apache.shardingsphere.infra.instance.ClusterInstanceRegistry;
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.ComputeNodeChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
@@ -40,7 +40,7 @@ import java.util.Collection;
 /**
  *  Compute node online handler.
  */
-public final class ComputeNodeOnlineHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeOnlineHandler implements ComputeNodeChangedHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {

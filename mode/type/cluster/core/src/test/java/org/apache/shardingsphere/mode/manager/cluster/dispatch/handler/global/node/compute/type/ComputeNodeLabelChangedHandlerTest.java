@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;

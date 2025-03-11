@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.ComputeNodeChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.LabelNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Compute node label changed handler.
+ * Compute node state changed handler.
  */
-public final class ComputeNodeLabelChangedHandler implements GlobalDataChangedEventHandler {
+public final class ComputeNodeStateChangedHandler implements ComputeNodeChangedHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
-        return new LabelNodePath(null);
+        return new StatusNodePath(null);
     }
     
     @Override
@@ -48,12 +45,10 @@ public final class ComputeNodeLabelChangedHandler implements GlobalDataChangedEv
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        NodePathSearcher.find(event.getKey(), LabelNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
+        NodePathSearcher.find(event.getKey(), StatusNodePath.createInstanceIdSearchCriteria()).ifPresent(optional -> handle(contextManager, event, optional));
     }
     
-    @SuppressWarnings("unchecked")
     private void handle(final ContextManager contextManager, final DataChangedEvent event, final String instanceId) {
-        contextManager.getComputeNodeInstanceContext().updateLabels(
-                instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class));
+        contextManager.getComputeNodeInstanceContext().updateStatus(instanceId, event.getValue());
     }
 }
