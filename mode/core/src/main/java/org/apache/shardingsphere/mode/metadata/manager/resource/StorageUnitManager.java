@@ -61,7 +61,7 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(database);
             SwitchingResource switchingResource = resourceSwitchManager.switchByRegisterStorageUnit(database.getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
+            buildNewMetaDataContext(databaseName, switchingResource, true);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
@@ -78,7 +78,7 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(database);
             SwitchingResource switchingResource = resourceSwitchManager.switchByAlterStorageUnit(database.getResourceMetaData(), propsMap);
-            buildNewMetaDataContext(databaseName, switchingResource);
+            buildNewMetaDataContext(databaseName, switchingResource, true);
         } catch (final SQLException ex) {
             log.error("Alter database: {} alter storage unit failed.", databaseName, ex);
         }
@@ -95,15 +95,15 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(database);
             SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName));
-            buildNewMetaDataContext(databaseName, switchingResource);
+            buildNewMetaDataContext(databaseName, switchingResource, false);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }
     }
     
-    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
+    private void buildNewMetaDataContext(final String databaseName, final SwitchingResource switchingResource, final boolean isLoadSchemasFromRegisterCenter) throws SQLException {
         MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createBySwitchResource(
-                databaseName, true, switchingResource, metaDataContexts);
+                databaseName, isLoadSchemasFromRegisterCenter, switchingResource, metaDataContexts);
         metaDataContexts.update(reloadMetaDataContexts);
         metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
         switchingResource.closeStaleDataSources();
