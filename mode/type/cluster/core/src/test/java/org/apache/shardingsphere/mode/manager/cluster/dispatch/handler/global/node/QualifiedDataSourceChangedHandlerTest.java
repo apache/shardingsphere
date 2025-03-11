@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -59,13 +60,13 @@ class QualifiedDataSourceChangedHandlerTest {
     @Test
     void assertHandleWithEmptyValue() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources/foo_db.foo_group.foo_ds", "", Type.ADDED));
-        verify(contextManager.getMetaDataContexts(), times(0)).getMetaData();
+        verify(contextManager.getMetaDataContexts().getMetaData(), times(0)).containsDatabase(any());
     }
     
     @Test
     void assertHandleWithoutQualifiedDataSource() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/qualified_data_sources", "state: DISABLED", Type.ADDED));
-        verify(contextManager.getMetaDataContexts(), times(0)).getMetaData();
+        verify(contextManager.getMetaDataContexts().getMetaData(), times(0)).containsDatabase(any());
     }
     
     @Test
