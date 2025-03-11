@@ -62,9 +62,9 @@ import static org.mockito.Mockito.when;
 
 class EncryptInsertOnUpdateTokenGeneratorTest {
     
-    private EncryptInsertOnUpdateTokenGenerator generator;
-    
     private static MockedConstruction<DatabaseTypeRegistry> registryConstruction;
+    
+    private EncryptInsertOnUpdateTokenGenerator generator;
     
     @BeforeAll
     static void beforeAll() {
