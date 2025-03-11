@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -27,20 +25,19 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.Gl
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.process.ClusterProcessPersistCoordinator;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.KillProcessTriggerNodePath;
+import org.apache.shardingsphere.mode.node.path.type.global.node.compute.process.ShowProcessListTriggerNodePath;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Kill process handler.
+ * Show process list handler.
  */
-public final class KillProcessHandler implements GlobalDataChangedEventHandler {
+public final class ShowProcessListHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public NodePath getSubscribedNodePath() {
-        return new KillProcessTriggerNodePath(null);
+        return new ShowProcessListTriggerNodePath(null);
     }
     
     @Override
@@ -50,25 +47,20 @@ public final class KillProcessHandler implements GlobalDataChangedEventHandler {
     
     @Override
     public void handle(final ContextManager contextManager, final DataChangedEvent event) {
-        if (!NodePathSearcher.isMatchedPath(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria())) {
+        if (!NodePathSearcher.isMatchedPath(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria())) {
             return;
         }
-        String instanceId = NodePathSearcher.get(event.getKey(), KillProcessTriggerNodePath.createInstanceIdSearchCriteria());
-        String processId = NodePathSearcher.get(event.getKey(), KillProcessTriggerNodePath.createProcessIdSearchCriteria());
+        String instanceId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createInstanceIdSearchCriteria());
+        String processId = NodePathSearcher.get(event.getKey(), ShowProcessListTriggerNodePath.createProcessIdSearchCriteria());
         switch (event.getType()) {
             case ADDED:
                 if (instanceId.equals(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId())) {
-                    try {
-                        ProcessRegistry.getInstance().kill(processId);
-                    } catch (final SQLException ex) {
-                        throw new SQLWrapperException(ex);
-                    }
-                    new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).cleanProcess(instanceId, processId);
+                    new ClusterProcessPersistCoordinator(contextManager.getPersistServiceFacade().getRepository()).reportLocalProcesses(instanceId, processId);
                 }
-                return;
+                break;
             case DELETED:
                 ProcessOperationLockRegistry.getInstance().notify(processId);
-                return;
+                break;
             default:
         }
     }

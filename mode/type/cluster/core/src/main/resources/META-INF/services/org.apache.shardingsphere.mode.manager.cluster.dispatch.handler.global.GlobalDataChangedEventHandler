@@ -25,5 +25,5 @@ org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.comp
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeWorkerIdChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.type.ComputeNodeLabelChangedHandler
 org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.statistics.StatisticsChangedHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.ShowProcessListHandler
-org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.KillProcessHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process.ShowProcessListHandler
+org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process.KillProcessHandler

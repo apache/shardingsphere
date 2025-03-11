@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node;
+package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.process;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
@@ -35,8 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,8 +41,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@StaticMockSettings({ProcessRegistry.class, ProcessOperationLockRegistry.class})
-class ShowProcessListHandlerTest {
+@StaticMockSettings(ProcessOperationLockRegistry.class)
+class KillProcessHandlerTest {
     
     private GlobalDataChangedEventHandler handler;
     
@@ -56,31 +53,30 @@ class ShowProcessListHandlerTest {
     void setUp() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/show_process_list_trigger")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/kill_process_trigger")).findFirst().orElse(null);
     }
     
     @Test
-    void assertHandleWithInvalidShowProcessListTriggerEventKey() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id", "", Type.DELETED));
+    void assertHandleWithInvalidKillProcessListTriggerEventKey() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id", "", Type.DELETED));
         verify(ProcessOperationLockRegistry.getInstance(), times(0)).notify(any());
     }
     
     @Test
-    void assertHandleReportLocalProcessesWithNotCurrentInstance() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/bar_instance_id:foo_task_id", "", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
-    }
-    
-    @Test
-    void assertHandleReportLocalProcesses() {
-        when(ProcessRegistry.getInstance().listAll()).thenReturn(Collections.emptyList());
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.ADDED));
+    void assertHandleKillLocalProcessWithCurrentInstance() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.ADDED));
         verify(contextManager.getPersistServiceFacade().getRepository()).delete(any());
     }
     
     @Test
-    void assertHandleCompleteToReportLocalProcesses() {
-        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_task_id", "", Type.DELETED));
-        verify(ProcessOperationLockRegistry.getInstance()).notify("foo_task_id");
+    void assertHandleKillLocalProcessWithNotCurrentInstance() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/bar_instance_id:foo_pid", "", Type.ADDED));
+        verify(contextManager.getPersistServiceFacade().getRepository(), times(0)).delete(any());
+    }
+    
+    @Test
+    void assertHandleCompleteToKillLocalProcess() {
+        handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/kill_process_trigger/foo_instance_id:foo_pid", "", Type.DELETED));
+        verify(ProcessOperationLockRegistry.getInstance()).notify("foo_pid");
     }
 }
