@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -26,11 +27,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.info
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -44,12 +41,13 @@ public final class MySQLInformationSchemaExecutorFactory {
     /**
      * Create executor.
      *
-     * @param sqlStatement SQL statement
+     * @param selectStatementContext select statement context
      * @param sql SQL being executed
      * @param parameters parameters
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
+        SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
             return Optional.empty();
         }
@@ -57,19 +55,9 @@ public final class MySQLInformationSchemaExecutorFactory {
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
         }
-        Map<String, Collection<String>> selectedSchemaTables = Collections.singletonMap("information_schema", Collections.singletonList(tableName));
-        if (isSelectSystemTable(selectedSchemaTables)) {
+        if (SystemSchemaManager.isSystemTable("mysql", "information_schema", tableName)) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();
-    }
-    
-    private static boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTableNames) {
-        for (Entry<String, Collection<String>> each : selectedSchemaTableNames.entrySet()) {
-            if (!SystemSchemaManager.isSystemTable("mysql", each.getKey(), each.getValue())) {
-                return false;
-            }
-        }
-        return true;
     }
 }
