@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -39,7 +38,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be added database name
      */
     public void add(final String databaseName) {
-        repository.persist(NodePathGenerator.toPath(new SchemaMetadataNodePath(databaseName, null), true), "");
+        repository.persist(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false), "");
     }
     
     /**
@@ -48,7 +47,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be dropped database name
      */
     public void drop(final String databaseName) {
-        repository.delete(NodePathGenerator.toPath(new SchemaMetadataNodePath(databaseName, null), true));
+        repository.delete(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false));
     }
     
     /**

@@ -33,7 +33,6 @@ class TableMetadataNodePathTest {
     @Test
     void assertToPath() {
         assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/tables"));
-        assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
         assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"), false),
                 is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
     }
