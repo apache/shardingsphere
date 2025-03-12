@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -59,7 +59,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     private void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType type) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        String databasePath = NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), true);
+        String databasePath = NodePathGenerator.toPath(new SchemaMetadataNodePath(databaseName, null), true);
         switch (type) {
             case CREATE:
                 repository.watch(databasePath, new DatabaseMetaDataChangedListener(contextManager));

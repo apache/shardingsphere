@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -51,7 +52,7 @@ public final class TableMetaDataPersistService {
      * @return loaded tables
      */
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
-        return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, schemaName, null), false)).stream()
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new SchemaMetadataNodePath(databaseName, schemaName), false)).stream()
                 .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     

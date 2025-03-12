@@ -45,7 +45,7 @@ public final class NodePathGenerator {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
         LinkedList<String> nodeSegments = new LinkedList<>();
         for (String each : templatePath.split(PATH_DELIMITER)) {
-            Optional<String> segmentLiteral = new NodePathSegment(each).getLiteral(nodePath);
+            Optional<String> segmentLiteral = new NodePathSegment(each, trimEmptyNode).getLiteral(nodePath);
             if (segmentLiteral.isPresent()) {
                 nodeSegments.add(segmentLiteral.get());
                 continue;
