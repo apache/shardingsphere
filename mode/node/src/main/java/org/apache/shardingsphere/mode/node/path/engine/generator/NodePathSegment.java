@@ -47,7 +47,7 @@ public final class NodePathSegment {
                 return Optional.empty();
             }
             if (variableValue instanceof NodePath) {
-                return Optional.of(NodePathGenerator.toPath(((NodePath) variableValue), trimEmptyNode));
+                return Optional.of(NodePathGenerator.toPath((NodePath) variableValue, trimEmptyNode));
             }
             return Optional.of(variableValue.toString());
         }
