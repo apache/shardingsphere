@@ -25,28 +25,29 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Statistics data node path.
+ * Statistics table node path.
  */
-@NodePathEntity("${table}/${uniqueKey}")
+@NodePathEntity("${schema}/tables/${tableName}")
 @RequiredArgsConstructor
 @Getter
-public final class StatisticsDataNodePath implements NodePath {
+public final class StatisticsTableNodePath implements NodePath {
     
-    private final StatisticsTableNodePath table;
+    private final StatisticsSchemaNodePath schema;
     
-    private final String uniqueKey;
+    private final String tableName;
     
-    public StatisticsDataNodePath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
-        table = new StatisticsTableNodePath(databaseName, schemaName, tableName);
-        this.uniqueKey = uniqueKey;
+    public StatisticsTableNodePath(final String databaseName, final String schemaName, final String tableName) {
+        schema = new StatisticsSchemaNodePath(databaseName, schemaName);
+        this.tableName = tableName;
     }
     
     /**
-     * Create row unique key search criteria.
+     * Create table search criteria.
      *
+     * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createRowUniqueKeySearchCriteria() {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 4);
+    public static NodePathSearchCriteria createTableSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsTableNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, containsChildPath, 3);
     }
 }

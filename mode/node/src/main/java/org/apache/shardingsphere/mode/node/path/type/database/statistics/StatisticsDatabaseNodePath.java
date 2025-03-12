@@ -25,28 +25,22 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Statistics data node path.
+ * Statistics database node path.
  */
-@NodePathEntity("${table}/${uniqueKey}")
+@NodePathEntity("/statistics/databases/${databaseName}")
 @RequiredArgsConstructor
 @Getter
-public final class StatisticsDataNodePath implements NodePath {
+public final class StatisticsDatabaseNodePath implements NodePath {
     
-    private final StatisticsTableNodePath table;
-    
-    private final String uniqueKey;
-    
-    public StatisticsDataNodePath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
-        table = new StatisticsTableNodePath(databaseName, schemaName, tableName);
-        this.uniqueKey = uniqueKey;
-    }
+    private final String databaseName;
     
     /**
-     * Create row unique key search criteria.
+     * Create database search criteria.
      *
+     * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createRowUniqueKeySearchCriteria() {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 4);
+    public static NodePathSearchCriteria createDatabaseSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsDatabaseNodePath(NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
     }
 }

@@ -18,35 +18,34 @@
 package org.apache.shardingsphere.mode.node.path.type.database.statistics;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Statistics data node path.
+ * Statistics schema node path.
  */
-@NodePathEntity("${table}/${uniqueKey}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/schemas/${schemaName}")
 @Getter
-public final class StatisticsDataNodePath implements NodePath {
+public final class StatisticsSchemaNodePath implements NodePath {
     
-    private final StatisticsTableNodePath table;
+    private final StatisticsDatabaseNodePath database;
     
-    private final String uniqueKey;
+    private final String schemaName;
     
-    public StatisticsDataNodePath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
-        table = new StatisticsTableNodePath(databaseName, schemaName, tableName);
-        this.uniqueKey = uniqueKey;
+    public StatisticsSchemaNodePath(final String databaseName, final String schemaName) {
+        database = new StatisticsDatabaseNodePath(databaseName);
+        this.schemaName = schemaName;
     }
     
     /**
-     * Create row unique key search criteria.
+     * Create schema search criteria.
      *
+     * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createRowUniqueKeySearchCriteria() {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 4);
+    public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new StatisticsSchemaNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, containsChildPath, 2);
     }
 }
