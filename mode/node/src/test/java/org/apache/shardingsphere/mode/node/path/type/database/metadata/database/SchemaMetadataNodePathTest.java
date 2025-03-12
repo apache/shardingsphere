@@ -34,12 +34,6 @@ class SchemaMetadataNodePathTest {
     }
     
     @Test
-    void assertCreateDatabaseSearchCriteria() {
-        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema", SchemaMetadataNodePath.createDatabaseSearchCriteria()), is("foo_db"));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema", SchemaMetadataNodePath.createDatabaseSearchCriteria()).isPresent());
-    }
-    
-    @Test
     void assertCreateSchemaSearchCriteria() {
         assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", false)), is("foo_schema"));
         assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/tables", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", true)), is("foo_schema"));

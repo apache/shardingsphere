@@ -26,16 +26,16 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCr
 /**
  * Table metadata node path.
  */
-@NodePathEntity("${schemaMetadata}/tables/${tableName}")
+@NodePathEntity("${schema}/tables/${tableName}")
 @Getter
 public final class TableMetadataNodePath implements NodePath {
     
-    private final SchemaMetadataNodePath schemaMetadata;
+    private final SchemaMetadataNodePath schema;
     
     private final String tableName;
     
     public TableMetadataNodePath(final String databaseName, final String schemaName, final String tableName) {
-        schemaMetadata = new SchemaMetadataNodePath(databaseName, schemaName);
+        schema = new SchemaMetadataNodePath(databaseName, schemaName);
         this.tableName = tableName;
     }
     

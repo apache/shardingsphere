@@ -18,31 +18,26 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
  * Schema metadata node path.
  */
-@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/schemas/${schemaName}")
 @Getter
 public final class SchemaMetadataNodePath implements NodePath {
     
-    private final String databaseName;
+    private final DatabaseMetaDataNodePath database;
     
     private final String schemaName;
     
-    /**1
-     * Create database search criteria.
-     *
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createDatabaseSearchCriteria() {
-        return new NodePathSearchCriteria(new SchemaMetadataNodePath(NodePathPattern.IDENTIFIER, null), true, true, 1);
+    public SchemaMetadataNodePath(final String databaseName, final String schemaName) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.schemaName = schemaName;
     }
     
     /**
@@ -53,6 +48,6 @@ public final class SchemaMetadataNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new SchemaMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER), true, containsChildPath, 1);
+        return new NodePathSearchCriteria(new SchemaMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
     }
 }
