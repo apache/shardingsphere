@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.node.path.type.database.metadata.database
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ class TableMetadataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new SchemaMetadataNodePath("foo_db", null), false), is("/metadata/foo_db/schemas"));
         assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/tables"));
         assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
         assertThat(NodePathGenerator.toPath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl"), false),

@@ -32,7 +32,6 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", null, null), false), is("/metadata/foo_db/schemas"));
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), true), is("/metadata/foo_db/schemas/foo_schema"));
         assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));

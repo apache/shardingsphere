@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.database;
 
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class SchemaMetadataNodePathTest {
+    
+    @Test
+    void assertToPath() {
+        assertThat(NodePathGenerator.toPath(new SchemaMetadataNodePath("foo_db", null), false), is("/metadata/foo_db/schemas"));
+    }
     
     @Test
     void assertCreateDatabaseSearchCriteria() {

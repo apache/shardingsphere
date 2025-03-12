@@ -27,16 +27,19 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCr
 /**
  * View metadata node path.
  */
-@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/views/${viewName}")
+@NodePathEntity("${schemaMetadata}/views/${viewName}")
 @RequiredArgsConstructor
 @Getter
 public final class ViewMetadataNodePath implements NodePath {
     
-    private final String databaseName;
-    
-    private final String schemaName;
+    private final SchemaMetadataNodePath schemaMetadata;
     
     private final String viewName;
+    
+    public ViewMetadataNodePath(final String databaseName, final String schemaName, final String viewName) {
+        schemaMetadata = new SchemaMetadataNodePath(databaseName, schemaName);
+        this.viewName = viewName;
+    }
     
     /**
      * Create view search criteria.
