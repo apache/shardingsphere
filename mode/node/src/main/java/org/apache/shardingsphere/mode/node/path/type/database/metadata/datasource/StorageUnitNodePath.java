@@ -18,23 +18,27 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
  * Storage unit node path.
  */
-@NodePathEntity("/metadata/${databaseName}/data_sources/units/${storageUnitName}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/data_sources/units/${storageUnitName}")
 @Getter
 public final class StorageUnitNodePath implements NodePath {
     
-    private final String databaseName;
+    private final DatabaseMetaDataNodePath database;
     
     private final String storageUnitName;
+    
+    public StorageUnitNodePath(final String databaseName, final String storageUnitName) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.storageUnitName = storageUnitName;
+    }
     
     /**
      * Create storage unit search criteria.
