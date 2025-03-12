@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * Table metadata node path.
+ * Schema metadata node path.
  */
 @NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}")
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public final class SchemaMetadataNodePath implements NodePath {
     
     private final String schemaName;
     
-    /**
+    /**1
      * Create database search criteria.
      *
      * @return created search criteria
