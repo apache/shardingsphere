@@ -184,13 +184,23 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
-        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getAllSchemas().forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade()
-                .getSchema().alterByRuleDropped(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        try {
+            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
+            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey()));
+                tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
+            }
+        } catch (final SQLException ex) {
+            log.error("Reload table meta failed, databaseName:{}", databaseName, ex);
+            throw new LoadTableMetaDataFailedException();
+        }
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseStatistics(databaseName))
                 .ifPresent(optional -> optional.getSchemaStatisticsMap().forEach((schemaName, schemaStatistics) -> metaDataPersistFacade.getStatisticsService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaStatistics)));
-        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override

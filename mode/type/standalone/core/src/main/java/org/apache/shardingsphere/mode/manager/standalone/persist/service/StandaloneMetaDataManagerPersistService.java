@@ -204,8 +204,21 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private void afterStorageUnitsUnregistered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final String storageUnitName) {
         metaDataContextManager.getStorageUnitManager().unregister(databaseName, storageUnitName);
-        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
+        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        try {
+            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
+            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey()));
+                tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
+            }
+        } catch (final SQLException ex) {
+            log.error("Reload table meta failed, databaseName:{}", databaseName, ex);
+            throw new LoadTableMetaDataFailedException();
+        }
     }
     
     private Collection<String> getToBeDroppedResourceNames(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
