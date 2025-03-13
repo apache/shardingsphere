@@ -36,7 +36,7 @@ public final class StatePersistService {
      * @param state to be updated state
      */
     public void update(final ShardingSphereState state) {
-        repository.persist(NodePathGenerator.toPath(new StateNodePath(), false), state.name());
+        repository.persist(NodePathGenerator.toPath(new StateNodePath()), state.name());
     }
     
     /**
@@ -45,6 +45,6 @@ public final class StatePersistService {
      * @return loaded state
      */
     public ShardingSphereState load() {
-        return ShardingSphereState.valueFrom(repository.query(NodePathGenerator.toPath(new StateNodePath(), false)));
+        return ShardingSphereState.valueFrom(repository.query(NodePathGenerator.toPath(new StateNodePath())));
     }
 }

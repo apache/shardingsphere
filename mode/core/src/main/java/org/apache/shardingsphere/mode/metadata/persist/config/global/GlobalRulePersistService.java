@@ -58,7 +58,7 @@ public final class GlobalRulePersistService {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> load() {
-        return repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false)).stream().map(this::load).collect(Collectors.toList());
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new GlobalRuleNodePath(null))).stream().map(this::load).collect(Collectors.toList());
     }
     
     /**

@@ -27,6 +27,6 @@ class StatisticsJobNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsJobNodePath(), false), is("/statistics/job"));
+        assertThat(NodePathGenerator.toPath(new StatisticsJobNodePath()), is("/statistics/job"));
     }
 }

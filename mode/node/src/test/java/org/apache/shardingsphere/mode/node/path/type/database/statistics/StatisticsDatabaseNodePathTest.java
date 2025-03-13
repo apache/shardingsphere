@@ -29,8 +29,8 @@ class StatisticsDatabaseNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDatabaseNodePath(null), false), is("/statistics/databases"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDatabaseNodePath("foo_db"), false), is("/statistics/databases/foo_db"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDatabaseNodePath(null)), is("/statistics/databases"));
+        assertThat(NodePathGenerator.toPath(new StatisticsDatabaseNodePath("foo_db")), is("/statistics/databases/foo_db"));
     }
     
     @Test

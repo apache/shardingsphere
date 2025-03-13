@@ -27,7 +27,7 @@ class WorkerIDReservationNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(null), false), is("/reservation/worker_id"));
-        assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(1), false), is("/reservation/worker_id/1"));
+        assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(null)), is("/reservation/worker_id"));
+        assertThat(NodePathGenerator.toPath(new WorkerIDReservationNodePath(1)), is("/reservation/worker_id/1"));
     }
 }

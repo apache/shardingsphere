@@ -51,7 +51,7 @@ public final class ViewMetaDataPersistService {
      * @return loaded views
      */
     public Collection<ShardingSphereView> load(final String databaseName, final String schemaName) {
-        return repository.getChildrenKeys(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, null), false)).stream()
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, null))).stream()
                 .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
     }
     
@@ -93,6 +93,6 @@ public final class ViewMetaDataPersistService {
      * @param viewName to be dropped view name
      */
     public void drop(final String databaseName, final String schemaName, final String viewName) {
-        repository.delete(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, viewName.toLowerCase()), false));
+        repository.delete(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, viewName.toLowerCase())));
     }
 }

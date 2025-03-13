@@ -29,7 +29,7 @@ class StatisticsDataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key")),
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
     }
     

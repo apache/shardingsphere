@@ -38,7 +38,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be added database name
      */
     public void add(final String databaseName) {
-        repository.persist(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false), "");
+        repository.persist(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName)), "");
     }
     
     /**
@@ -47,7 +47,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName to be dropped database name
      */
     public void drop(final String databaseName) {
-        repository.delete(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false));
+        repository.delete(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName)));
     }
     
     /**
@@ -56,6 +56,6 @@ public final class DatabaseMetaDataPersistService {
      * @return loaded database names
      */
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(null), false));
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(null)));
     }
 }

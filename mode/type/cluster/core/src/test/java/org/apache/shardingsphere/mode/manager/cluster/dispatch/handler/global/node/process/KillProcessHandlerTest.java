@@ -53,7 +53,7 @@ class KillProcessHandlerTest {
     void setUp() {
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("foo_instance_id");
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/kill_process_trigger")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/compute_nodes/kill_process_trigger")).findFirst().orElse(null);
     }
     
     @Test
