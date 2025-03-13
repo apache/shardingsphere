@@ -48,6 +48,6 @@ public final class SchemaMetaDataNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new SchemaMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
+        return new NodePathSearchCriteria(new SchemaMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER), containsChildPath, 1);
     }
 }

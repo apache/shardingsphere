@@ -48,6 +48,6 @@ public final class StatisticsTableNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createTableSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new StatisticsTableNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, containsChildPath, 3);
+        return new NodePathSearchCriteria(new StatisticsTableNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), containsChildPath, 3);
     }
 }

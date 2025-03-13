@@ -47,6 +47,6 @@ public final class StorageUnitNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createStorageUnitSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER), false, true, 1);
+        return new NodePathSearchCriteria(new StorageUnitNodePath(databaseName, NodePathPattern.IDENTIFIER), true, 1);
     }
 }

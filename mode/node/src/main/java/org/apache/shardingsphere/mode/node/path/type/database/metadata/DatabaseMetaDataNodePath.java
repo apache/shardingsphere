@@ -40,6 +40,6 @@ public final class DatabaseMetaDataNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria() {
-        return new NodePathSearchCriteria(new DatabaseMetaDataNodePath(NodePathPattern.IDENTIFIER), false, true, 1);
+        return new NodePathSearchCriteria(new DatabaseMetaDataNodePath(NodePathPattern.IDENTIFIER), true, 1);
     }
 }

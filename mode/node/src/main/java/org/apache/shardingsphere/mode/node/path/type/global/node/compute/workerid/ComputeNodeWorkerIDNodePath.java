@@ -40,6 +40,6 @@ public final class ComputeNodeWorkerIDNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
-        return new NodePathSearchCriteria(new ComputeNodeWorkerIDNodePath(NodePathPattern.IDENTIFIER), false, false, 1);
+        return new NodePathSearchCriteria(new ComputeNodeWorkerIDNodePath(NodePathPattern.IDENTIFIER), false, 1);
     }
 }

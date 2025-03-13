@@ -45,6 +45,6 @@ public final class QualifiedDataSourceNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createQualifiedDataSourceSearchCriteria() {
-        return new NodePathSearchCriteria(new QualifiedDataSourceNodePath(NodePathPattern.QUALIFIED_IDENTIFIER), false, false, 1);
+        return new NodePathSearchCriteria(new QualifiedDataSourceNodePath(NodePathPattern.QUALIFIED_IDENTIFIER), false, 1);
     }
 }

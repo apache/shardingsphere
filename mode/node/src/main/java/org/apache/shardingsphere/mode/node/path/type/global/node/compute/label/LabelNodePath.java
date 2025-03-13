@@ -40,6 +40,6 @@ public final class LabelNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
-        return new NodePathSearchCriteria(new LabelNodePath(NodePathPattern.IDENTIFIER), false, false, 1);
+        return new NodePathSearchCriteria(new LabelNodePath(NodePathPattern.IDENTIFIER), false, 1);
     }
 }
