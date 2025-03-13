@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -54,9 +54,14 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        getSqlStatement().getWhere().ifPresent(whereSegments::add);
+        extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
+    }
+    
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final UpdateStatement updateStatement) {
+        updateStatement.getWhere().ifPresent(this.whereSegments::add);
+        whereSegments.addAll(WhereExtractor.extractJoinWhereSegments(updateStatement));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

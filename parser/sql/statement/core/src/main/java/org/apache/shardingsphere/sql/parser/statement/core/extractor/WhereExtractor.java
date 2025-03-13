@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,16 @@ public final class WhereExtractor {
      */
     public static Collection<WhereSegment> extractJoinWhereSegments(final SelectStatement selectStatement) {
         return selectStatement.getFrom().map(WhereExtractor::extractJoinWhereSegments).orElseGet(Collections::emptyList);
+    }
+    
+    /**
+     * Extract join where segment from update statement.
+     *
+     * @param updateStatement to be extracted update statement
+     * @return extracted join where segments
+     */
+    public static Collection<WhereSegment> extractJoinWhereSegments(final UpdateStatement updateStatement) {
+        return extractJoinWhereSegments(updateStatement.getTable());
     }
     
     private static Collection<WhereSegment> extractJoinWhereSegments(final TableSegment tableSegment) {

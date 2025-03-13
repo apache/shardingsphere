@@ -577,14 +577,14 @@
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="order_id" start-index="19" stop-index="26" />
                 <assignment-value>
-                    <common-expression text="order_id" literal-text="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37" />
+                    <column name="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37" />
                 </assignment-value>
             </assignment>
             <assignment start-index="40" stop-index="54" literal-stop-index="54">
                 <column name="status" start-index="40" stop-index="45" />
                 <assignment-value>
                     <literal-expression value="init" start-index="49" stop-index="54" />
-                    <common-expression text="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54" />
+                    <column name="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54" />
                 </assignment-value>
             </assignment>
         </set>
