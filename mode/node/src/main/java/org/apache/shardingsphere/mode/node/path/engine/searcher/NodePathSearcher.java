@@ -68,8 +68,8 @@ public final class NodePathSearcher {
         return createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
     }
     
-    private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
+    private static Pattern createPattern(final NodePath searchExample, final boolean trimEmptyNode, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(nodePathCriteria, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
     }
 }
