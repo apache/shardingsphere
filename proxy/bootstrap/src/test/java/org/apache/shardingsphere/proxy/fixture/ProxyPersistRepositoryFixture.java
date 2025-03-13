@@ -96,6 +96,6 @@ public final class ProxyPersistRepositoryFixture implements ClusterPersistReposi
     
     @Override
     public String getType() {
-        return "GOV_FIXTURE";
+        return "PROXY_FIXTURE";
     }
 }
