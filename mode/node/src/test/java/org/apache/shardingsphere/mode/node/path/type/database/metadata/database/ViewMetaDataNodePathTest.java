@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.node.path.type.database.metadata.database
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.junit.jupiter.api.Test;
 
@@ -28,17 +28,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ViewMetadataNodePathTest {
+class ViewMetaDataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
-        assertThat(NodePathGenerator.toPath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
+        assertThat(NodePathGenerator.toPath(new ViewMetaDataNodePath("foo_db", "foo_schema", null), false), is("/metadata/foo_db/schemas/foo_schema/views"));
+        assertThat(NodePathGenerator.toPath(new ViewMetaDataNodePath("foo_db", "foo_schema", "foo_view"), false), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
     
     @Test
     void assertToVersionPath() {
-        VersionNodePath versionNodePath = new VersionNodePath(new ViewMetadataNodePath("foo_db", "foo_schema", "foo_view"));
+        VersionNodePath versionNodePath = new VersionNodePath(new ViewMetaDataNodePath("foo_db", "foo_schema", "foo_view"));
         assertThat(versionNodePath.getActiveVersionPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version"));
         assertThat(versionNodePath.getVersionsPath(), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions"));
         assertThat(versionNodePath.getVersionPath(0), is("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0"));
@@ -46,9 +46,9 @@ class ViewMetadataNodePathTest {
     
     @Test
     void assertCreateViewSearchCriteria() {
-        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")), is("foo_view"));
-        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")).isPresent());
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
-        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetadataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetaDataNodePath.createViewSearchCriteria("foo_db", "foo_schema")), is("foo_view"));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/views/foo_view", ViewMetaDataNodePath.createViewSearchCriteria("foo_db", "foo_schema")).isPresent());
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view", ViewMetaDataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
+        assertTrue(NodePathSearcher.isMatchedPath("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0", ViewMetaDataNodePath.createViewSearchCriteria("foo_db", "foo_schema")));
     }
 }

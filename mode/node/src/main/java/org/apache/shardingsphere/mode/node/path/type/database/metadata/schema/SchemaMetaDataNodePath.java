@@ -22,31 +22,32 @@ import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
- * Table metadata node path.
+ * Schema meta data node path.
  */
-@NodePathEntity("${schema}/tables/${tableName}")
+@NodePathEntity("${database}/schemas/${schemaName}")
 @Getter
-public final class TableMetadataNodePath implements NodePath {
+public final class SchemaMetaDataNodePath implements NodePath {
     
-    private final SchemaMetadataNodePath schema;
+    private final DatabaseMetaDataNodePath database;
     
-    private final String tableName;
+    private final String schemaName;
     
-    public TableMetadataNodePath(final String databaseName, final String schemaName, final String tableName) {
-        schema = new SchemaMetadataNodePath(databaseName, schemaName);
-        this.tableName = tableName;
+    public SchemaMetaDataNodePath(final String databaseName, final String schemaName) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.schemaName = schemaName;
     }
     
     /**
-     * Create table search criteria.
+     * Create schema search criteria.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createTableSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new SchemaMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
     }
 }

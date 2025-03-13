@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.node.path.version;
 
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,31 +30,31 @@ class VersionNodePathTest {
     
     @Test
     void assertGetActiveVersionPath() {
-        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getActiveVersionPath(),
+        assertThat(new VersionNodePath(new TableMetaDataNodePath("foo_db", "foo_schema", "foo_tbl")).getActiveVersionPath(),
                 is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
     
     @Test
     void assertGetVersionsPath() {
-        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionsPath(),
+        assertThat(new VersionNodePath(new TableMetaDataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionsPath(),
                 is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions"));
     }
     
     @Test
     void assertGetVersionPath() {
-        assertThat(new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionPath(0),
+        assertThat(new VersionNodePath(new TableMetaDataNodePath("foo_db", "foo_schema", "foo_tbl")).getVersionPath(0),
                 is("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
     }
     
     @Test
     void assertIsActiveVersionPath() {
-        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
         assertTrue(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version"));
     }
     
     @Test
     void assertIsNotActiveVersionPath() {
-        VersionNodePath versionNodePath = new VersionNodePath(new TableMetadataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
+        VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath("foo_db", "foo_schema", NodePathPattern.IDENTIFIER));
         assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/versions/0"));
         assertFalse(versionNodePath.isActiveVersionPath("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl"));
         assertFalse(versionNodePath.isActiveVersionPath("/metadata/bar_db/schemas/foo_schema/tables/foo_tbl/active_version"));
