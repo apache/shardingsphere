@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.cluster.fixture.ClusterPersistRepositoryFixture
-org.apache.shardingsphere.mode.manager.cluster.fixture.ProcessListClusterPersistRepositoryFixture
