@@ -48,7 +48,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
                             final DatabaseRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mockRule()).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
     }
-
+    
     private static ReadwriteSplittingRule mockRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingExportableRuleAttribute ruleAttribute = mock(ReadwriteSplittingExportableRuleAttribute.class);
@@ -56,7 +56,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
-
+    
     private static Map<String, Object> createExportedData() {
         Map<String, Object> result = new HashMap<>();
         result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
