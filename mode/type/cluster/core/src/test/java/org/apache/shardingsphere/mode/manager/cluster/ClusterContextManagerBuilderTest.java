@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -78,8 +77,6 @@ class ClusterContextManagerBuilderTest {
     }
     
     private static ModeConfiguration createModeConfiguration() {
-        PersistRepositoryConfiguration repositoryConfig = mock(ClusterPersistRepositoryConfiguration.class);
-        when(repositoryConfig.getType()).thenReturn("FIXTURE");
-        return new ModeConfiguration("CLUSTER", repositoryConfig);
+        return new ModeConfiguration("CLUSTER", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()));
     }
 }

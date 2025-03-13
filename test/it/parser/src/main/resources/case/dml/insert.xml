@@ -508,13 +508,17 @@
             <assignment start-index="65" stop-index="69">
                 <column name="b" start-index="65" stop-index="65"  />
                 <assignment-value>
-                    <common-expression literal-text="n.a" start-index="67" stop-index="69" />
+                    <column name="a" start-index="67" stop-index="69">
+                        <owner name="n" start-index="67" stop-index="67" />
+                    </column>
                 </assignment-value>
             </assignment>
             <assignment start-index="72" stop-index="76">
                 <column name="a" start-index="72" stop-index="72"  />
                 <assignment-value>
-                    <common-expression literal-text="n.b" start-index="74" stop-index="76" />
+                    <column name="b" start-index="74" stop-index="76" >
+                        <owner name="n" start-index="74" stop-index="74" />
+                    </column>
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
