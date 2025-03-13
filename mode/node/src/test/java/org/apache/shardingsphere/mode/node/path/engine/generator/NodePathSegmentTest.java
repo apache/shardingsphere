@@ -33,17 +33,17 @@ class NodePathSegmentTest {
     
     @Test
     void assertGetLiteralWithoutVariable() {
-        assertThat(new NodePathSegment("foo", false).getLiteral(new NodePathFixture("foo")), is(Optional.of("foo")));
+        assertThat(new NodePathSegment("foo").getLiteral(new NodePathFixture("foo")), is(Optional.of("foo")));
     }
     
     @Test
     void assertGetLiteralWithVariable() {
-        assertThat(new NodePathSegment("${fooVariable}", false).getLiteral(new NodePathFixture("foo_value")), is(Optional.of("foo_value")));
+        assertThat(new NodePathSegment("${fooVariable}").getLiteral(new NodePathFixture("foo_value")), is(Optional.of("foo_value")));
     }
     
     @Test
     void assertGetLiteralWithNullVariable() {
-        assertFalse(new NodePathSegment("${fooVariable}", false).getLiteral(new NodePathFixture(null)).isPresent());
+        assertFalse(new NodePathSegment("${fooVariable}").getLiteral(new NodePathFixture(null)).isPresent());
     }
     
     @NodePathEntity("/foo/${fooVariable}")

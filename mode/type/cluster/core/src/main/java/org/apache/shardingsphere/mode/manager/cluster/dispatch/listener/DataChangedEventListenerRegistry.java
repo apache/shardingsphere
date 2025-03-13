@@ -54,10 +54,10 @@ public final class DataChangedEventListenerRegistry {
     }
     
     private void registerDatabaseListeners(final String databaseName) {
-        repository.watch(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false), new DatabaseMetaDataChangedListener(contextManager));
+        repository.watch(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName)), new DatabaseMetaDataChangedListener(contextManager));
     }
     
     private void registerGlobalHandlers(final GlobalDataChangedEventHandler handler) {
-        repository.watch(NodePathGenerator.toPath(handler.getSubscribedNodePath(), false), new GlobalMetaDataChangedListener(contextManager, handler));
+        repository.watch(NodePathGenerator.toPath(handler.getSubscribedNodePath()), new GlobalMetaDataChangedListener(contextManager, handler));
     }
 }

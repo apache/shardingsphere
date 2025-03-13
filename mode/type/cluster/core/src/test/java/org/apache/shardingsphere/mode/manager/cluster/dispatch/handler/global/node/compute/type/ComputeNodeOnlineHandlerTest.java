@@ -48,7 +48,7 @@ class ComputeNodeOnlineHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/nodes/compute_nodes/online")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/compute_nodes/online")).findFirst().orElse(null);
     }
     
     @Test

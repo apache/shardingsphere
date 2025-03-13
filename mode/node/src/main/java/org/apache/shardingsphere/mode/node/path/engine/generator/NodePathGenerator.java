@@ -38,29 +38,18 @@ public final class NodePathGenerator {
      * Generate to path.
      *
      * @param nodePath node path
-     * @param trimEmptyNode null variable should trim parent node if true
      * @return path
      */
-    public static String toPath(final NodePath nodePath, final boolean trimEmptyNode) {
+    public static String toPath(final NodePath nodePath) {
         String templatePath = Objects.requireNonNull(nodePath.getClass().getAnnotation(NodePathEntity.class), "NodePathEntity annotation is missing").value();
         LinkedList<String> nodeSegments = new LinkedList<>();
         for (String each : templatePath.split(PATH_DELIMITER)) {
-            Optional<String> segmentLiteral = new NodePathSegment(each, trimEmptyNode).getLiteral(nodePath);
-            if (segmentLiteral.isPresent()) {
-                nodeSegments.add(segmentLiteral.get());
-                continue;
+            Optional<String> segmentLiteral = new NodePathSegment(each).getLiteral(nodePath);
+            if (!segmentLiteral.isPresent()) {
+                break;
             }
-            if (trimEmptyNode) {
-                trimLastParentNode(nodeSegments);
-            }
-            break;
+            nodeSegments.add(segmentLiteral.get());
         }
         return String.join(PATH_DELIMITER, nodeSegments);
-    }
-    
-    private static void trimLastParentNode(final LinkedList<String> nodeSegments) {
-        if (!nodeSegments.isEmpty()) {
-            nodeSegments.removeLast();
-        }
     }
 }

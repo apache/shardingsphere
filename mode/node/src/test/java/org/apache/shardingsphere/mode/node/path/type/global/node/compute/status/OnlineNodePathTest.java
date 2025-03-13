@@ -31,9 +31,9 @@ class OnlineNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new OnlineNodePath(null, null), false), is("/nodes/compute_nodes/online"));
-        assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.JDBC, null), false), is("/nodes/compute_nodes/online/jdbc"));
-        assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id"), false), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
+        assertThat(NodePathGenerator.toPath(new OnlineNodePath(null, null)), is("/nodes/compute_nodes/online"));
+        assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.JDBC, null)), is("/nodes/compute_nodes/online/jdbc"));
+        assertThat(NodePathGenerator.toPath(new OnlineNodePath(InstanceType.PROXY, "foo_instance_id")), is("/nodes/compute_nodes/online/proxy/foo_instance_id"));
     }
     
     @Test

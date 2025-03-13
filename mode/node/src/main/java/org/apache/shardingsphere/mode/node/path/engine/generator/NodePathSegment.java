@@ -31,8 +31,6 @@ public final class NodePathSegment {
     
     private final String input;
     
-    private final boolean trimEmptyNode;
-    
     /**
      * Get segment literal.
      *
@@ -47,7 +45,7 @@ public final class NodePathSegment {
                 return Optional.empty();
             }
             if (variableValue instanceof NodePath) {
-                return Optional.of(NodePathGenerator.toPath((NodePath) variableValue, trimEmptyNode));
+                return Optional.of(NodePathGenerator.toPath((NodePath) variableValue));
             }
             return Optional.of(variableValue.toString());
         }

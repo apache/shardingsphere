@@ -59,7 +59,7 @@ public final class DatabaseListenerChangedHandler implements GlobalDataChangedEv
     
     private void handle(final ContextManager contextManager, final String databaseName, final ClusterDatabaseListenerCoordinatorType type) {
         ClusterPersistRepository repository = (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
-        String databasePath = NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName), false);
+        String databasePath = NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName));
         switch (type) {
             case CREATE:
                 repository.watch(databasePath, new DatabaseMetaDataChangedListener(contextManager));

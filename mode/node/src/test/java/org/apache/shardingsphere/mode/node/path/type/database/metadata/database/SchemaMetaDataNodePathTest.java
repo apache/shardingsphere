@@ -30,7 +30,7 @@ class SchemaMetaDataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new SchemaMetaDataNodePath("foo_db", null), false), is("/metadata/foo_db/schemas"));
+        assertThat(NodePathGenerator.toPath(new SchemaMetaDataNodePath("foo_db", null)), is("/metadata/foo_db/schemas"));
     }
     
     @Test

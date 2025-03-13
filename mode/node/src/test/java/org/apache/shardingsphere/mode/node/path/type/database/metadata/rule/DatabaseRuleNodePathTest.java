@@ -30,11 +30,11 @@ class DatabaseRuleNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", null, null), false), is("/metadata/foo_db/rules"));
-        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", null), false), is("/metadata/foo_db/rules/foo_rule"));
-        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("unique_rule_item")), false),
+        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", null, null)), is("/metadata/foo_db/rules"));
+        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", null)), is("/metadata/foo_db/rules/foo_rule"));
+        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("unique_rule_item"))),
                 is("/metadata/foo_db/rules/foo_rule/unique_rule_item"));
-        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item")), false),
+        assertThat(NodePathGenerator.toPath(new DatabaseRuleNodePath("foo_db", "foo_rule", new DatabaseRuleItem("named_rule_item/item"))),
                 is("/metadata/foo_db/rules/foo_rule/named_rule_item/item"));
     }
     

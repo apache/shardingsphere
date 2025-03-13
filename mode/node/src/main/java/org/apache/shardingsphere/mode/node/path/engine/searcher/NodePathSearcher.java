@@ -70,6 +70,6 @@ public final class NodePathSearcher {
     
     private static Pattern createPattern(final NodePath searchExample, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample, false) + endPattern, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample) + endPattern, Pattern.CASE_INSENSITIVE);
     }
 }
