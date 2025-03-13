@@ -43,7 +43,7 @@ public final class NodePathSearcher {
      */
     public static Optional<String> find(final String path, final NodePathSearchCriteria criteria) {
         Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isContainsChildPath()).matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(criteria.getSearchSegmentIndex())) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(criteria.getGroupIndex())) : Optional.empty();
     }
     
     /**
