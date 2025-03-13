@@ -19,42 +19,42 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="insert_set_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = ?, certificate_number = ?, password = ?, amount = ?, status = ?" parameters="1, 111X, aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account SET account_id = ?, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = ?, assisted_query_password = ?, like_query_password = ?, cipher_amount = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account SET account_id = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_set_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" />
+        <output sql="INSERT INTO t_account SET account_id = 1, `cipher_certificate_number` = 'encrypt_111X', `assisted_query_certificate_number` = 'assisted_query_111X', `like_query_certificate_number` = 'like_query_111X', `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_set_with_plain_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = ?, certificate_number = ?, password = ?, amount = ?, status = ?" parameters="1, 111X, aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account_bak SET account_id = ?, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = ?, assisted_query_password = ?, like_query_password = ?, cipher_amount = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account_bak SET account_id = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_set_with_plain_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" />
+        <output sql="INSERT INTO t_account_bak SET account_id = 1, `cipher_certificate_number` = 'encrypt_111X', `assisted_query_certificate_number` = 'assisted_query_111X', `like_query_certificate_number` = 'like_query_111X', `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="mixed_insert_set_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = 1, certificate_number = ?, password = ?, amount = ?, status = ?" parameters="111X, aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account SET account_id = 1, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = ?, assisted_query_password = ?, like_query_password = ?, cipher_amount = ?, status = ?" parameters="encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account SET account_id = 1, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = ?, `assisted_query_password` = ?, `like_query_password` = ?, `cipher_amount` = ?, status = ?" parameters="encrypt_111X, assisted_query_111X, like_query_111X, encrypt_aaa, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
 
     <rewrite-assertion id="mixed_insert_set_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = 1, certificate_number = ?, password = 'aaa', amount = 1000, status = 'OK'" parameters="111X" />
-        <output sql="INSERT INTO t_account SET account_id = 1, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" parameters="encrypt_111X, assisted_query_111X, like_query_111X" />
+        <output sql="INSERT INTO t_account SET account_id = 1, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK'" parameters="encrypt_111X, assisted_query_111X, like_query_111X" />
     </rewrite-assertion>
 
     <rewrite-assertion id="mixed_insert_set_with_plain_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = ?, certificate_number = ?, password = 'aaa', amount = ?, status = ?" parameters="1, 111X, 1000, OK" />
-        <output sql="INSERT INTO t_account_bak SET account_id = ?, cipher_certificate_number = ?, assisted_query_certificate_number = ?, like_query_certificate_number = ?, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account_bak SET account_id = ?, `cipher_certificate_number` = ?, `assisted_query_certificate_number` = ?, `like_query_certificate_number` = ?, `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = ?, status = ?" parameters="1, encrypt_111X, assisted_query_111X, like_query_111X, encrypt_1000, OK" />
     </rewrite-assertion>
 
     <rewrite-assertion id="mixed_insert_set_with_plain_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = ?, status = 'OK'" parameters="1000" />
-        <output sql="INSERT INTO t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = ?, status = 'OK'" parameters="encrypt_1000" />
+        <output sql="INSERT INTO t_account_bak SET account_id = 1, `cipher_certificate_number` = 'encrypt_111X', `assisted_query_certificate_number` = 'assisted_query_111X', `like_query_certificate_number` = 'like_query_111X', `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `like_query_password` = 'like_query_aaa', `cipher_amount` = ?, status = 'OK'" parameters="encrypt_1000" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_account_bak_set_for_parameters_and_quote" db-types="MySQL">

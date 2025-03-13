@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -66,7 +66,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createDatabaseSearchCriteria());
+        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), DatabaseMetaDataNodePath.createDatabaseSearchCriteria());
         if (!databaseName.isPresent()) {
             return;
         }
@@ -89,7 +89,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
         }
         if (handler instanceof DatabaseNodeValueChangedHandler) {
-            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), true, false, 1));
+            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1));
         }
         return false;
     }

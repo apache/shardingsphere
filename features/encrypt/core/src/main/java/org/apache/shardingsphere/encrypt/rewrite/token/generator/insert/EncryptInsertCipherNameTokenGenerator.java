@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -66,6 +68,7 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<ColumnSegment> insertColumns = insertColumnsSegment.get().getColumns();
         if (null != insertStatementContext.getInsertSelectContext()) {
             checkInsertSelectEncryptor(insertStatementContext.getInsertSelectContext().getSelectStatementContext(), insertColumns);
@@ -78,7 +81,7 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         for (ColumnSegment each : insertColumns) {
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.get().isEncryptColumn(columnName)) {
-                IdentifierValue name = new IdentifierValue(encryptTable.get().getEncryptColumn(columnName).getCipher().getName(), each.getIdentifier().getQuoteCharacter());
+                IdentifierValue name = new IdentifierValue(encryptTable.get().getEncryptColumn(columnName).getCipher().getName(), quoteCharacter);
                 Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, name, null, insertStatementContext.getDatabaseType()));
                 result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections, insertStatementContext.getDatabaseType()));
             }

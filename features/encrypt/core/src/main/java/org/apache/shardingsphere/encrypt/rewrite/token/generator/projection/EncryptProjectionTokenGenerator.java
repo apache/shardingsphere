@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
@@ -170,10 +171,16 @@ public final class EncryptProjectionTokenGenerator {
     
     private ColumnProjection generateProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
         String encryptColumnName = getEncryptColumnName(columnProjection, encryptColumn);
-        IdentifierValue cipherColumnName = new IdentifierValue(encryptColumnName, columnProjection.getName().getQuoteCharacter());
+        QuoteCharacter quoteCharacter = getQuoteCharacter(columnProjection);
+        IdentifierValue cipherColumnName = new IdentifierValue(encryptColumnName, quoteCharacter);
         IdentifierValue cipherColumnAlias = columnProjection.getAlias().orElse(columnProjection.getName());
         return new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, cipherColumnAlias,
                 databaseType, columnProjection.getLeftParentheses().orElse(null), columnProjection.getRightParentheses().orElse(null));
+    }
+    
+    private QuoteCharacter getQuoteCharacter(final ColumnProjection columnProjection) {
+        QuoteCharacter databaseQuoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
+        return TableSourceType.PHYSICAL_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType() ? databaseQuoteCharacter : columnProjection.getName().getQuoteCharacter();
     }
     
     private String getEncryptColumnName(final ColumnProjection columnProjection, final EncryptColumn encryptColumn) {

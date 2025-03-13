@@ -18,23 +18,27 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
  * Storage node node path.
  */
-@NodePathEntity("/metadata/${databaseName}/data_sources/nodes/${storageNodeName}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/data_sources/nodes/${storageNodeName}")
 @Getter
 public final class StorageNodeNodePath implements NodePath {
     
-    private final String databaseName;
+    private final DatabaseMetaDataNodePath database;
     
     private final String storageNodeName;
+    
+    public StorageNodeNodePath(final String databaseName, final String storageNodeName) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.storageNodeName = storageNodeName;
+    }
     
     /**
      * Create storage node search criteria.
@@ -43,6 +47,6 @@ public final class StorageNodeNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createStorageNodeSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER), false, true, 1);
+        return new NodePathSearchCriteria(new StorageNodeNodePath(databaseName, NodePathPattern.IDENTIFIER), true, 1);
     }
 }

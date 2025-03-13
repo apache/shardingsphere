@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
 import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.mode.state.cluster.ClusterStatePersistService;
-import org.apache.shardingsphere.mode.state.node.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.state.node.QualifiedDataSourceStatePersistService;
+import org.apache.shardingsphere.mode.state.StatePersistService;
+import org.apache.shardingsphere.mode.node.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.node.QualifiedDataSourceStatePersistService;
 
 /**
  * Persist service facade.
@@ -43,7 +43,7 @@ public final class PersistServiceFacade {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final ClusterStatePersistService clusterStatePersistService;
+    private final StatePersistService statePersistService;
     
     private final MetaDataManagerPersistService metaDataManagerPersistService;
     
@@ -55,7 +55,7 @@ public final class PersistServiceFacade {
         this.repository = repository;
         metaDataPersistFacade = new MetaDataPersistFacade(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        clusterStatePersistService = new ClusterStatePersistService(repository);
+        statePersistService = new StatePersistService(repository);
         qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
         PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);

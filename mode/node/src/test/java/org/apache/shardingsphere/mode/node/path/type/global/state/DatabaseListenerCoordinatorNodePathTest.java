@@ -29,8 +29,8 @@ class DatabaseListenerCoordinatorNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(null), false), is("/states/database_listener_coordinator"));
-        assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath("foo_db"), false), is("/states/database_listener_coordinator/foo_db"));
+        assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath(null)), is("/states/database_listener_coordinator"));
+        assertThat(NodePathGenerator.toPath(new DatabaseListenerCoordinatorNodePath("foo_db")), is("/states/database_listener_coordinator/foo_db"));
     }
     
     @Test

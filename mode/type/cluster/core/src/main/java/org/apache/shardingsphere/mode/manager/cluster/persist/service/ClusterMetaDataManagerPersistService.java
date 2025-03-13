@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
-import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadTableMetaFailedException;
+import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -138,8 +138,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     @Override
     public void dropTables(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tableNames) {
+        boolean isNeedRefresh = TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, tableNames);
         tableNames.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(database.getName(), schemaName, each));
-        if (TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, tableNames) && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
+        if (isNeedRefresh && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
             alterSingleRuleConfiguration(database, database.getRuleMetaData());
         }
     }
@@ -183,13 +184,23 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterStorageUnitsDropped(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
-        reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getAllSchemas().forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade()
-                .getSchema().alterByRuleDropped(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), each));
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        try {
+            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
+            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey()));
+                tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
+            }
+        } catch (final SQLException ex) {
+            log.error("Reload table meta failed, databaseName:{}", databaseName, ex);
+            throw new LoadTableMetaDataFailedException();
+        }
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseStatistics(databaseName))
                 .ifPresent(optional -> optional.getSchemaStatisticsMap().forEach((schemaName, schemaStatistics) -> metaDataPersistFacade.getStatisticsService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaStatistics)));
-        metaDataPersistFacade.persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
-                originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
@@ -234,7 +245,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
             }
         } catch (final SQLException ex) {
             log.error("Reload table meta failed, databaseName:{}, needReloadTables:{}", databaseName, needReloadTables, ex);
-            throw new ReloadTableMetaFailedException();
+            throw new LoadTableMetaDataFailedException();
         }
     }
     

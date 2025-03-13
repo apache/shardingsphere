@@ -51,7 +51,7 @@ public final class OnlineNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceTypeSearchCriteria() {
-        return new NodePathSearchCriteria(new OnlineNodePath(), false, false, 1);
+        return new NodePathSearchCriteria(new OnlineNodePath(), false, 1);
     }
     
     /**
@@ -60,6 +60,6 @@ public final class OnlineNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
-        return new NodePathSearchCriteria(new OnlineNodePath(), false, false, 2);
+        return new NodePathSearchCriteria(new OnlineNodePath(), false, 2);
     }
 }

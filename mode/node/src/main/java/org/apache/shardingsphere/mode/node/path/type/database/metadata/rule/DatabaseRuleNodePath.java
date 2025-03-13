@@ -18,25 +18,30 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
  * Database rule node path.
  */
-@NodePathEntity("/metadata/${databaseName}/rules/${ruleType}/${databaseRuleItem}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/rules/${ruleType}/${databaseRuleItem}")
 @Getter
 public final class DatabaseRuleNodePath implements NodePath {
     
-    private final String databaseName;
+    private final DatabaseMetaDataNodePath database;
     
     private final String ruleType;
     
     private final DatabaseRuleItem databaseRuleItem;
+    
+    public DatabaseRuleNodePath(final String databaseName, final String ruleType, final DatabaseRuleItem databaseRuleItem) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.ruleType = ruleType;
+        this.databaseRuleItem = databaseRuleItem;
+    }
     
     /**
      * Create rule type search criteria.
@@ -45,7 +50,7 @@ public final class DatabaseRuleNodePath implements NodePath {
      * @return create search criteria
      */
     public static NodePathSearchCriteria createRuleTypeSearchCriteria(final String databaseName) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null), false, true, 1);
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null), true, 1);
     }
     
     /**
@@ -57,6 +62,6 @@ public final class DatabaseRuleNodePath implements NodePath {
      * @return create search criteria
      */
     public static NodePathSearchCriteria createRuleItemNameSearchCriteria(final String databaseName, final String ruleType, final String ruleItemType) {
-        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), false, true, 1);
+        return new NodePathSearchCriteria(new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType, NodePathPattern.QUALIFIED_IDENTIFIER)), true, 1);
     }
 }
