@@ -40,6 +40,6 @@ public final class DatabaseListenerCoordinatorNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria() {
-        return new NodePathSearchCriteria(new DatabaseListenerCoordinatorNodePath(NodePathPattern.IDENTIFIER), false, false, 1);
+        return new NodePathSearchCriteria(new DatabaseListenerCoordinatorNodePath(NodePathPattern.IDENTIFIER), false, 1);
     }
 }

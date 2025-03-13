@@ -89,7 +89,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
         }
         if (handler instanceof DatabaseNodeValueChangedHandler) {
-            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, false, 1));
+            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1));
         }
         return false;
     }

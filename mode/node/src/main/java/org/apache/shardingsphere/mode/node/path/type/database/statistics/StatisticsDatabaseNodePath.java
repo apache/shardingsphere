@@ -41,6 +41,6 @@ public final class StatisticsDatabaseNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createDatabaseSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new StatisticsDatabaseNodePath(NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
+        return new NodePathSearchCriteria(new StatisticsDatabaseNodePath(NodePathPattern.IDENTIFIER), containsChildPath, 1);
     }
 }

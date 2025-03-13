@@ -42,7 +42,7 @@ public final class NodePathSearcher {
      * @return found node segment
      */
     public static Optional<String> find(final String path, final NodePathSearchCriteria criteria) {
-        Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path);
+        Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isContainsChildPath()).matcher(path);
         return matcher.find() ? Optional.of(matcher.group(criteria.getSearchSegmentIndex())) : Optional.empty();
     }
     
@@ -65,11 +65,11 @@ public final class NodePathSearcher {
      * @return is matched path or not
      */
     public static boolean isMatchedPath(final String path, final NodePathSearchCriteria criteria) {
-        return createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
+        return createPattern(criteria.getSearchExample(), criteria.isContainsChildPath()).matcher(path).find();
     }
     
-    private static Pattern createPattern(final NodePath searchExample, final boolean trimEmptyNode, final boolean containsChildPath) {
+    private static Pattern createPattern(final NodePath searchExample, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample, false) + endPattern, Pattern.CASE_INSENSITIVE);
     }
 }

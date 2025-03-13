@@ -40,6 +40,6 @@ public final class GlobalRuleNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createRuleTypeSearchCriteria() {
-        return new NodePathSearchCriteria(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER), false, true, 1);
+        return new NodePathSearchCriteria(new GlobalRuleNodePath(NodePathPattern.IDENTIFIER), true, 1);
     }
 }

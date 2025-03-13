@@ -47,6 +47,6 @@ public final class StatisticsDataNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createRowUniqueKeySearchCriteria() {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, false, 4);
+        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, 4);
     }
 }

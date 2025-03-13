@@ -44,7 +44,7 @@ public final class KillProcessTriggerNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createInstanceIdSearchCriteria() {
-        return new NodePathSearchCriteria(new KillProcessTriggerNodePath(), false, false, 1);
+        return new NodePathSearchCriteria(new KillProcessTriggerNodePath(), false, 1);
     }
     
     /**
@@ -53,6 +53,6 @@ public final class KillProcessTriggerNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createProcessIdSearchCriteria() {
-        return new NodePathSearchCriteria(new KillProcessTriggerNodePath(), false, false, 2);
+        return new NodePathSearchCriteria(new KillProcessTriggerNodePath(), false, 2);
     }
 }
