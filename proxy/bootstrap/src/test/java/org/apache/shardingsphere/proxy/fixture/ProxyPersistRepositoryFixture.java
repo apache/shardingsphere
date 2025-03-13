@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
+public final class ProxyPersistRepositoryFixture implements ClusterPersistRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -96,6 +96,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public String getType() {
-        return "GOV_FIXTURE";
+        return "PROXY_FIXTURE";
     }
 }
