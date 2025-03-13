@@ -18,37 +18,35 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 
 /**
- * View metadata node path.
+ * Table meta data node path.
  */
-@NodePathEntity("${schema}/views/${viewName}")
-@RequiredArgsConstructor
+@NodePathEntity("${schema}/tables/${tableName}")
 @Getter
-public final class ViewMetadataNodePath implements NodePath {
+public final class TableMetaDataNodePath implements NodePath {
     
-    private final SchemaMetadataNodePath schema;
+    private final SchemaMetaDataNodePath schema;
     
-    private final String viewName;
+    private final String tableName;
     
-    public ViewMetadataNodePath(final String databaseName, final String schemaName, final String viewName) {
-        schema = new SchemaMetadataNodePath(databaseName, schemaName);
-        this.viewName = viewName;
+    public TableMetaDataNodePath(final String databaseName, final String schemaName, final String tableName) {
+        schema = new SchemaMetaDataNodePath(databaseName, schemaName);
+        this.tableName = tableName;
     }
     
     /**
-     * Create view search criteria.
+     * Create table search criteria.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createTableSearchCriteria(final String databaseName, final String schemaName) {
+        return new NodePathSearchCriteria(new TableMetaDataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
     }
 }

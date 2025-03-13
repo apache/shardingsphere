@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRe
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 
 /**
  * Table changed handler.
@@ -44,13 +44,13 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
     
     @Override
     public NodePath getSubscribedNodePath(final String databaseName) {
-        return new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+        return new TableMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
+        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetaDataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String tableName = NodePathSearcher.get(event.getKey(), TableMetaDataNodePath.createTableSearchCriteria(databaseName, schemaName));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
