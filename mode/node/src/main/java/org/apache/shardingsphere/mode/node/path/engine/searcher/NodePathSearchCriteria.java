@@ -32,5 +32,5 @@ public final class NodePathSearchCriteria {
     
     private final boolean containsChildPath;
     
-    private final int searchSegmentIndex;
+    private final int groupIndex;
 }
