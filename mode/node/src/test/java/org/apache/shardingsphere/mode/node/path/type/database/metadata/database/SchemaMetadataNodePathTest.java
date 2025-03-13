@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.database.statistics;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata.database;
 
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetadataNodePath;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class StatisticsDataNodePathTest {
+class SchemaMetadataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
-                is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
+        assertThat(NodePathGenerator.toPath(new SchemaMetadataNodePath("foo_db", null), false), is("/metadata/foo_db/schemas"));
     }
     
     @Test
-    void assertCreateRowUniqueKeySearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()), is("key"));
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()).isPresent());
+    void assertCreateSchemaSearchCriteria() {
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", false)), is("foo_schema"));
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema/tables", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", true)), is("foo_schema"));
+        assertFalse(NodePathSearcher.find("/metadata/foo_db/schemas/foo_schema/tables", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", false)).isPresent());
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema/tables", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", true)).isPresent());
+        assertFalse(NodePathSearcher.find("/metadata/bar_db/schemas/foo_schema", SchemaMetadataNodePath.createSchemaSearchCriteria("foo_db", false)).isPresent());
     }
 }

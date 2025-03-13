@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node.path.type.database.statistics;
+package org.apache.shardingsphere.mode.node.path.type.database.metadata;
 
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.junit.jupiter.api.Test;
 
@@ -25,17 +24,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class StatisticsDataNodePathTest {
+class DatabaseMetaDataNodePathTest {
     
     @Test
-    void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
-                is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
-    }
-    
-    @Test
-    void assertCreateRowUniqueKeySearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()), is("key"));
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()).isPresent());
+    void assertCreateDatabaseSearchCriteria() {
+        assertThat(NodePathSearcher.get("/metadata/foo_db/schemas/foo_schema", DatabaseMetaDataNodePath.createDatabaseSearchCriteria()), is("foo_db"));
+        assertFalse(NodePathSearcher.find("/xxx/foo_db/schemas/foo_schema", DatabaseMetaDataNodePath.createDatabaseSearchCriteria()).isPresent());
     }
 }

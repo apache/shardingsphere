@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public final class TableRowDataPersistService {
      */
     public void persist(final String databaseName, final String schemaName, final String tableName, final Collection<YamlRowStatistics> rows) {
         if (rows.isEmpty()) {
-            repository.persist(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, tableName.toLowerCase(), null), false), "");
+            repository.persist(NodePathGenerator.toPath(new StatisticsTableNodePath(databaseName, schemaName, tableName.toLowerCase()), false), "");
         } else {
             rows.forEach(each -> repository.persist(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey()), false),
                     YamlEngine.marshal(each)));
@@ -79,7 +80,7 @@ public final class TableRowDataPersistService {
     public TableStatistics load(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         TableStatistics result = new TableStatistics(table.getName());
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, table.getName(), null), false))) {
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsTableNodePath(databaseName, schemaName, table.getName()), false))) {
             String yamlRow = repository.query(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, table.getName(), each), false));
             if (!Strings.isNullOrEmpty(yamlRow)) {
                 result.getRows().add(swapper.swapToObject(YamlEngine.unmarshal(yamlRow, YamlRowStatistics.class)));

@@ -27,47 +27,18 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCr
 /**
  * Statistics data node path.
  */
-@NodePathEntity("/statistics/databases/${databaseName}/schemas/${schemaName}/tables/${tableName}/${uniqueKey}")
+@NodePathEntity("${table}/${uniqueKey}")
 @RequiredArgsConstructor
 @Getter
 public final class StatisticsDataNodePath implements NodePath {
     
-    private final String databaseName;
-    
-    private final String schemaName;
-    
-    private final String tableName;
+    private final StatisticsTableNodePath table;
     
     private final String uniqueKey;
     
-    /**
-     * Create database search criteria.
-     *
-     * @param containsChildPath contains child path
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createDatabaseSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, null, null, null), true, containsChildPath, 1);
-    }
-    
-    /**
-     * Create schema search criteria.
-     *
-     * @param containsChildPath contains child path
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createSchemaSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null, null), true, containsChildPath, 2);
-    }
-    
-    /**
-     * Create table search criteria.
-     *
-     * @param containsChildPath contains child path
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createTableSearchCriteria(final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new StatisticsDataNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER, null), false, containsChildPath, 3);
+    public StatisticsDataNodePath(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
+        table = new StatisticsTableNodePath(databaseName, schemaName, tableName);
+        this.uniqueKey = uniqueKey;
     }
     
     /**

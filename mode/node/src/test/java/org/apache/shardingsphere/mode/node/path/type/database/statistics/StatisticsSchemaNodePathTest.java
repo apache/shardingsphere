@@ -25,17 +25,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class StatisticsDataNodePathTest {
+class StatisticsSchemaNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
-                is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
+        assertThat(NodePathGenerator.toPath(new StatisticsSchemaNodePath("foo_db", null), false), is("/statistics/databases/foo_db/schemas"));
+        assertThat(NodePathGenerator.toPath(new StatisticsSchemaNodePath("foo_db", "foo_schema"), false), is("/statistics/databases/foo_db/schemas/foo_schema"));
     }
     
     @Test
-    void assertCreateRowUniqueKeySearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()), is("key"));
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createRowUniqueKeySearchCriteria()).isPresent());
+    void assertCreateSchemaSearchCriteria() {
+        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema", StatisticsSchemaNodePath.createSchemaSearchCriteria(false)), is("foo_schema"));
+        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema", StatisticsSchemaNodePath.createSchemaSearchCriteria(true)), is("foo_schema"));
+        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", StatisticsSchemaNodePath.createSchemaSearchCriteria(true)), is("foo_schema"));
+        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsSchemaNodePath.createSchemaSearchCriteria(false)).isPresent());
+        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsSchemaNodePath.createSchemaSearchCriteria(true)).isPresent());
     }
 }

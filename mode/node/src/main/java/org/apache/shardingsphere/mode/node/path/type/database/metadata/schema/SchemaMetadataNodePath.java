@@ -18,37 +18,36 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 
 /**
- * View metadata node path.
+ * Schema metadata node path.
  */
-@NodePathEntity("${schema}/views/${viewName}")
-@RequiredArgsConstructor
+@NodePathEntity("${database}/schemas/${schemaName}")
 @Getter
-public final class ViewMetadataNodePath implements NodePath {
+public final class SchemaMetadataNodePath implements NodePath {
     
-    private final SchemaMetadataNodePath schema;
+    private final DatabaseMetaDataNodePath database;
     
-    private final String viewName;
+    private final String schemaName;
     
-    public ViewMetadataNodePath(final String databaseName, final String schemaName, final String viewName) {
-        schema = new SchemaMetadataNodePath(databaseName, schemaName);
-        this.viewName = viewName;
+    public SchemaMetadataNodePath(final String databaseName, final String schemaName) {
+        database = new DatabaseMetaDataNodePath(databaseName);
+        this.schemaName = schemaName;
     }
     
     /**
-     * Create view search criteria.
+     * Create schema search criteria.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param containsChildPath contains child path
      * @return created search criteria
      */
-    public static NodePathSearchCriteria createViewSearchCriteria(final String databaseName, final String schemaName) {
-        return new NodePathSearchCriteria(new ViewMetadataNodePath(databaseName, schemaName, NodePathPattern.IDENTIFIER), false, true, 1);
+    public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
+        return new NodePathSearchCriteria(new SchemaMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER), false, containsChildPath, 1);
     }
 }

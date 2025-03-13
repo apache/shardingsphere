@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.node.path.type.database.metadata.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
@@ -27,35 +26,17 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCr
 /**
  * Table metadata node path.
  */
-@NodePathEntity("/metadata/${databaseName}/schemas/${schemaName}/tables/${tableName}")
-@RequiredArgsConstructor
+@NodePathEntity("${schema}/tables/${tableName}")
 @Getter
 public final class TableMetadataNodePath implements NodePath {
     
-    private final String databaseName;
-    
-    private final String schemaName;
+    private final SchemaMetadataNodePath schema;
     
     private final String tableName;
     
-    /**
-     * Create database search criteria.
-     *
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createDatabaseSearchCriteria() {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(NodePathPattern.IDENTIFIER, null, null), true, true, 1);
-    }
-    
-    /**
-     * Create schema search criteria.
-     *
-     * @param databaseName database name
-     * @param containsChildPath contains child path
-     * @return created search criteria
-     */
-    public static NodePathSearchCriteria createSchemaSearchCriteria(final String databaseName, final boolean containsChildPath) {
-        return new NodePathSearchCriteria(new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, null), true, containsChildPath, 1);
+    public TableMetadataNodePath(final String databaseName, final String schemaName, final String tableName) {
+        schema = new SchemaMetadataNodePath(databaseName, schemaName);
+        this.tableName = tableName;
     }
     
     /**

@@ -57,7 +57,7 @@ public final class DatabaseRuleItemManager {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));
         String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(new VersionNodePath(databaseRuleNodePath));
-        String databaseName = databaseRuleNodePath.getDatabaseName();
+        String databaseName = databaseRuleNodePath.getDatabase().getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
@@ -74,7 +74,7 @@ public final class DatabaseRuleItemManager {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void drop(final DatabaseRuleNodePath databaseRuleNodePath) throws SQLException {
-        String databaseName = databaseRuleNodePath.getDatabaseName();
+        String databaseName = databaseRuleNodePath.getDatabase().getDatabaseName();
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));

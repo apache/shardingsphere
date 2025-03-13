@@ -28,7 +28,9 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlRowStatisticsSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableRowDataPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsDatabaseNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsSchemaNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsTableNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ public final class StatisticsPersistService {
      * @return statistics
      */
     public ShardingSphereStatistics load(final ShardingSphereMetaData metaData) {
-        Collection<String> databaseNames = repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false));
+        Collection<String> databaseNames = repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsDatabaseNodePath(null), false));
         if (databaseNames.isEmpty()) {
             return new ShardingSphereStatistics();
         }
@@ -70,7 +72,7 @@ public final class StatisticsPersistService {
     
     private DatabaseStatistics load(final ShardingSphereDatabase database) {
         DatabaseStatistics result = new DatabaseStatistics();
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsDataNodePath(database.getName(), null, null, null), false)).stream()
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsSchemaNodePath(database.getName(), null), false)).stream()
                 .filter(database::containsSchema).collect(Collectors.toList())) {
             result.putSchemaStatistics(each, load(database.getName(), database.getSchema(each)));
         }
@@ -79,7 +81,7 @@ public final class StatisticsPersistService {
     
     private SchemaStatistics load(final String databaseName, final ShardingSphereSchema schema) {
         SchemaStatistics result = new SchemaStatistics();
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false)).stream()
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsTableNodePath(databaseName, schema.getName(), null), false)).stream()
                 .filter(schema::containsTable).collect(Collectors.toList())) {
             result.putTableStatistics(each, tableRowDataPersistService.load(databaseName, schema.getName(), schema.getTable(each)));
             
@@ -102,7 +104,7 @@ public final class StatisticsPersistService {
     }
     
     private void persistSchema(final String databaseName, final String schemaName) {
-        repository.persist(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, null, null), true), "");
+        repository.persist(NodePathGenerator.toPath(new StatisticsSchemaNodePath(databaseName, schemaName), false), "");
     }
     
     private void persistTableData(final ShardingSphereDatabase database, final String schemaName, final SchemaStatistics schemaStatistics) {
@@ -139,6 +141,6 @@ public final class StatisticsPersistService {
      * @param databaseName database name
      */
     public void delete(final String databaseName) {
-        repository.delete(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, null, null, null), true));
+        repository.delete(NodePathGenerator.toPath(new StatisticsDatabaseNodePath(databaseName), false));
     }
 }
