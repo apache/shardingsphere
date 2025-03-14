@@ -102,7 +102,7 @@ public final class DriverExecuteExecutor {
             return null != resultSet;
         }
         FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(
-                connection.getContextManager().getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService(), database);
+                connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService(), database);
         if (sqlFederationEngine.enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
             federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;

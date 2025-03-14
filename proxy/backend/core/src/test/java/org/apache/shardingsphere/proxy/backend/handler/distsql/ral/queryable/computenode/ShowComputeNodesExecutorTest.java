@@ -53,7 +53,7 @@ class ShowComputeNodesExecutorTest {
         MetaDataContextManager metaDataContextManager = mock(MetaDataContextManager.class, RETURNS_DEEP_STUBS);
         when(metaDataContextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         StandalonePersistServiceFacade standalonePersistServiceFacade = new StandalonePersistServiceFacade(metaDataContextManager);
-        when(contextManager.getPersistServiceFacade().getModePersistServiceFacade()).thenReturn(standalonePersistServiceFacade);
+        when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(standalonePersistServiceFacade);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -109,7 +109,7 @@ class ShowComputeNodesExecutorTest {
         when(result.getClusterInstanceRegistry().getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
         when(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
-        when(contextManager.getPersistServiceFacade().getModePersistServiceFacade()).thenReturn(clusterPersistServiceFacade);
+        when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
         return result;
     }
 }

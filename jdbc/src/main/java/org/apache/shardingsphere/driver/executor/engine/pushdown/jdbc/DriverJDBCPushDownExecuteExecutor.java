@@ -107,7 +107,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
                 connection.commit();
             }
-            new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
+            new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService(), database, metaData.getProps())
                     .refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {

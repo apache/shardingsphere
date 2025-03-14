@@ -62,7 +62,7 @@ public final class StatisticsStorageEngine {
             changedTableStatistics.getRows().add(new RowStatistics(RowStatisticsCollectorUtils.createRowValues(each, table)));
         }
         AlteredDatabaseStatistics alteredDatabaseStatistics = createAlteredDatabaseStatistics(table, getCurrentTableStatistics(), changedTableStatistics);
-        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().update(alteredDatabaseStatistics);
+        contextManager.getPersistServiceFacade().getMetaDataFacade().getStatisticsService().update(alteredDatabaseStatistics);
     }
     
     private TableStatistics getCurrentTableStatistics() {

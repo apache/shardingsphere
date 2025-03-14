@@ -62,12 +62,12 @@ public final class StorageUnitChangedHandler implements DatabaseLeafValueChanged
     }
     
     private void handleRegistered(final String databaseName, final String storageUnitName) {
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
     
     private void handleAltered(final String databaseName, final String storageUnitName) {
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
         contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
     }
     
