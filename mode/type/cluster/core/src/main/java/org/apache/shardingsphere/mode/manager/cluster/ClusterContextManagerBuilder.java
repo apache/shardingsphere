@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.DataChan
 import org.apache.shardingsphere.mode.manager.cluster.exception.MissingRequiredClusterRepositoryConfigurationException;
 import org.apache.shardingsphere.mode.manager.cluster.lock.ClusterLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.lock.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.manager.cluster.workerid.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
@@ -75,9 +76,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
-        contextManager.getPersistServiceFacade().getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
+        ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
+        clusterPersistServiceFacade.getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances()
-                .addAll(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances());
+                .addAll(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataPersistFacade())).register();
     }
     

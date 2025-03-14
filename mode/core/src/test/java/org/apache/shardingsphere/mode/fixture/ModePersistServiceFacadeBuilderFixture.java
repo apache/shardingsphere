@@ -18,30 +18,21 @@
 package org.apache.shardingsphere.mode.fixture;
 
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-public final class PersistServiceBuilderFixture implements PersistServiceBuilder {
+import static org.mockito.Mockito.mock;
+
+public final class ModePersistServiceFacadeBuilderFixture implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return null;
-    }
-    
-    @Override
-    public ProcessPersistService buildProcessPersistService(final PersistRepository repository) {
-        return null;
+    public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        return mock();
     }
     
     @Override
     public Object getType() {
-        return "foo_type";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "FIXTURE";
     }
 }

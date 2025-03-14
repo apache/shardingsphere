@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,16 +45,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ComputeNodePersistServiceTest {
+class ClusterComputeNodePersistServiceTest {
     
-    private ComputeNodePersistService computeNodePersistService;
+    private ClusterComputeNodePersistService computeNodePersistService;
     
     @Mock
-    private PersistRepository repository;
+    private ClusterPersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        computeNodePersistService = new ComputeNodePersistService(repository);
+        computeNodePersistService = new ClusterComputeNodePersistService(repository);
     }
     
     @Test

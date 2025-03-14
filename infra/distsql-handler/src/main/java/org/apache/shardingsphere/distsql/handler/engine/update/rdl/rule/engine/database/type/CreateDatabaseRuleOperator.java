@@ -48,7 +48,7 @@ public final class CreateDatabaseRuleOperator implements DatabaseRuleOperator {
     @SuppressWarnings("unchecked")
     public void operate(final DatabaseRuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) throws SQLException {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService();
         metaDataManagerPersistService.alterRuleConfiguration(database, decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     

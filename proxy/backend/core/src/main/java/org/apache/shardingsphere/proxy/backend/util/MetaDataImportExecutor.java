@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,9 +52,8 @@ public final class MetaDataImportExecutor {
      * Import cluster configurations.
      *
      * @param exportedMetaData exported metadata
-     * @throws SQLException SQL exception
      */
-    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) throws SQLException {
+    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
         Map<String, YamlProxyDatabaseConfiguration> databaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
         YamlProxyServerConfiguration yamlServerConfig = getYamlServerConfig(exportedMetaData);
         importServerConfiguration(yamlServerConfig);
@@ -73,12 +71,12 @@ public final class MetaDataImportExecutor {
     private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) {
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
         for (RuleConfiguration each : rules) {
-            contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
+            contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
         }
     }
     
     private void importProps(final YamlProxyServerConfiguration yamlServerConfig) {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
+        contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
     }
     
     private Map<String, YamlProxyDatabaseConfiguration> getYamlProxyDatabaseConfigurations(final ExportedMetaData exportedMetaData) {

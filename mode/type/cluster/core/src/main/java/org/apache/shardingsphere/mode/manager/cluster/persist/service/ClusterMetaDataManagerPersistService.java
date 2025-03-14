@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
 import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
+import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -65,7 +65,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private final ClusterDatabaseListenerPersistCoordinator clusterDatabaseListenerPersistCoordinator;
     
-    public ClusterMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+    public ClusterMetaDataManagerPersistService(final MetaDataContextManager metaDataContextManager, final ClusterPersistRepository repository) {
         this.metaDataContextManager = metaDataContextManager;
         metaDataPersistFacade = metaDataContextManager.getMetaDataPersistFacade();
         clusterDatabaseListenerPersistCoordinator = new ClusterDatabaseListenerPersistCoordinator(repository);

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.datab
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.global.state.DatabaseListenerCoordinatorNodePath;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Cluster database listener persist coordinator.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 @RequiredArgsConstructor
 public final class ClusterDatabaseListenerPersistCoordinator {
     
-    private final PersistRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Persist database listener assisted state.

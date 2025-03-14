@@ -71,7 +71,7 @@ class CreateBroadcastTableRuleExecutorTest {
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(),
                 ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
     }
@@ -84,7 +84,7 @@ class CreateBroadcastTableRuleExecutorTest {
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(),
                 ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
     }
@@ -95,7 +95,7 @@ class CreateBroadcastTableRuleExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ContextManager contextManager = mockContextManager(database, null);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(),
                 ArgumentMatchers.<BroadcastRuleConfiguration>argThat(x -> x.getTables().equals(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl")))));
     }

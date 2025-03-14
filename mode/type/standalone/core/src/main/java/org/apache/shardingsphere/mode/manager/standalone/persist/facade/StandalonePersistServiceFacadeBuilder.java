@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist.builder;
+package org.apache.shardingsphere.mode.manager.standalone.persist.facade;
 
-import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
- * Standalone meta data manager persist service builder.
+ * Standalone persist service facade builder.
  */
-public final class StandalonePersistServiceBuilder implements PersistServiceBuilder {
+public final class StandalonePersistServiceFacadeBuilder implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public MetaDataManagerPersistService buildMetaDataManagerPersistService(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return new StandaloneMetaDataManagerPersistService(metaDataContextManager);
-    }
-    
-    @Override
-    public ProcessPersistService buildProcessPersistService(final PersistRepository repository) {
-        return new StandaloneProcessPersistService();
+    public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        return new StandalonePersistServiceFacade(metaDataContextManager);
     }
     
     @Override

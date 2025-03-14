@@ -15,31 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.persist.service;
+package org.apache.shardingsphere.mode.persist.mode;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 
 /**
- * Persist service builder.
+ * Mode persist service facade.
  */
-public interface PersistServiceBuilder extends TypedSPI {
+public interface ModePersistServiceFacade extends AutoCloseable {
     
     /**
-     * Build meta data manager persist service.
+     * Get meta data manager persist service.
      *
-     * @param repository persist repository
-     * @param metaDataContextManager meta data context manager
      * @return meta data manager persist service
      */
-    MetaDataManagerPersistService buildMetaDataManagerPersistService(PersistRepository repository, MetaDataContextManager metaDataContextManager);
+    MetaDataManagerPersistService getMetaDataManagerPersistService();
     
     /**
-     * Build process persist service.
+     * Get compute node persist service.
      *
-     * @param repository persist repository
+     * @return compute node persist service
+     */
+    ComputeNodePersistService getComputeNodePersistService();
+    
+    /**
+     * Get process persist service.
+     *
      * @return process persist service
      */
-    ProcessPersistService buildProcessPersistService(PersistRepository repository);
+    ProcessPersistService getProcessPersistService();
+    
+    @Override
+    void close();
 }
