@@ -56,7 +56,7 @@ class ComputeNodeOnlineHandlerTest {
     @Test
     void assertHandleWithInvalidInstanceOnlinePath() {
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/foo", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
-        verify(contextManager, times(0)).getComputeNodeInstanceContext();
+        verify(contextManager.getComputeNodeInstanceContext(), times(0)).getClusterInstanceRegistry();
     }
     
     @Test
