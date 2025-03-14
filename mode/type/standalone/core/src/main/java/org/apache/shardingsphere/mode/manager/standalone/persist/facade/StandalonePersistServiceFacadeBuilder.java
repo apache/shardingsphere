@@ -35,4 +35,9 @@ public final class StandalonePersistServiceFacadeBuilder implements ModePersistS
     public Object getType() {
         return "Standalone";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
