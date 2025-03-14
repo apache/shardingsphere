@@ -35,7 +35,7 @@ public interface ModePersistServiceFacade extends AutoCloseable {
     
     /**
      * Get compute node persist service.
-     * 
+     *
      * @return compute node persist service
      */
     ComputeNodePersistService getComputeNodePersistService();
