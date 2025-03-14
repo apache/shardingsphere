@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -35,10 +35,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Rule configuration check engine.
+ * Database rule configuration check engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RuleConfigurationCheckEngine {
+public final class DatabaseRuleConfigurationCheckEngine {
     
     /**
      * Check rule configuration.
@@ -48,7 +48,7 @@ public final class RuleConfigurationCheckEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void check(final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         if (null == checker) {
             // TODO Remove after implementing the checker of BroadcastRuleConfiguration and SingleRuleConfiguration
             return;

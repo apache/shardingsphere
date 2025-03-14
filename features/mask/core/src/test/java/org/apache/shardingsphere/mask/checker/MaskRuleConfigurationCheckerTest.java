@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
@@ -37,11 +37,11 @@ import static org.mockito.Mockito.when;
 class MaskRuleConfigurationCheckerTest {
     
     @SuppressWarnings("rawtypes")
-    private RuleConfigurationChecker checker;
+    private DatabaseRuleConfigurationChecker checker;
     
     @BeforeEach
     void setUp() {
-        checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(MaskRuleConfiguration.class)).get(MaskRuleConfiguration.class);
+        checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(MaskRuleConfiguration.class)).get(MaskRuleConfiguration.class);
     }
     
     @SuppressWarnings("unchecked")
