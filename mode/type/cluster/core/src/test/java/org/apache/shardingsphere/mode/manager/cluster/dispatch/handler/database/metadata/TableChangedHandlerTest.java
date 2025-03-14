@@ -48,7 +48,7 @@ class TableChangedHandlerTest {
     @Test
     void assertHandleTableCreated() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterTable("foo_db", "foo_schema", table);
     }
@@ -56,7 +56,7 @@ class TableChangedHandlerTest {
     @Test
     void assertHandleTableAltered() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load("foo_db", "foo_schema", "foo_tbl")).thenReturn(table);
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/tables/foo_tbl/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterTable("foo_db", "foo_schema", table);
     }

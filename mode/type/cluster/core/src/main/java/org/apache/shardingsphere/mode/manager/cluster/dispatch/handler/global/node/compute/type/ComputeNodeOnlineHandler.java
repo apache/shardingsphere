@@ -65,7 +65,7 @@ public final class ComputeNodeOnlineHandler implements ComputeNodeChangedHandler
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);
         switch (event.getType()) {
             case ADDED:
-                ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
+                ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
                 clusterInstanceRegistry.add(clusterPersistServiceFacade.getComputeNodePersistService().loadInstance(instanceMetaData));
                 break;
             case DELETED:

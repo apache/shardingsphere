@@ -48,7 +48,7 @@ public final class GlobalRuleDefinitionExecuteEngine {
         ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService()
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService()
                 .alterGlobalRuleConfiguration(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
     }
 }

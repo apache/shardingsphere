@@ -137,8 +137,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
-                contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
-        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService(), database);
+                contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
+        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService(), database);
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {

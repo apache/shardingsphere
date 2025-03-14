@@ -65,7 +65,7 @@ public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String viewName) {
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
+        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();
     }

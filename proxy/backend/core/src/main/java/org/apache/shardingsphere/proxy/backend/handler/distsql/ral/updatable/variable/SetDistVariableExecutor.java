@@ -71,7 +71,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
-        contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService().alterProperties(props);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().alterProperties(props);
         refreshRootLogger(props);
         syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
         syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
@@ -119,7 +119,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     
     private void persistGlobalRuleConfigurations(final ContextManager contextManager) {
         Collection<RuleConfiguration> globalRuleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().persist(globalRuleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService().persist(globalRuleConfigs);
     }
     
     @Override

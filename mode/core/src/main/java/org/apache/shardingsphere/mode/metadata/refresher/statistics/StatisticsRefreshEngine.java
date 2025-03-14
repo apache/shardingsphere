@@ -127,7 +127,7 @@ public final class StatisticsRefreshEngine {
             ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
             for (Entry<String, DatabaseStatistics> entry : statistics.getDatabaseStatisticsMap().entrySet()) {
                 if (!metaData.containsDatabase(entry.getKey())) {
-                    contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
+                    contextManager.getPersistServiceFacade().getMetaDataFacade().getStatisticsService().delete(entry.getKey());
                 }
             }
             // CHECKSTYLE:OFF
