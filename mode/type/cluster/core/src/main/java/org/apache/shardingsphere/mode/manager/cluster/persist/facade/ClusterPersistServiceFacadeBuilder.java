@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.persist.facade;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
@@ -29,7 +30,7 @@ public final class ClusterPersistServiceFacadeBuilder implements ModePersistServ
     
     @Override
     public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
-        return new ClusterPersistServiceFacade(metaDataContextManager, repository);
+        return new ClusterPersistServiceFacade(metaDataContextManager, (ClusterPersistRepository) repository);
     }
     
     @Override

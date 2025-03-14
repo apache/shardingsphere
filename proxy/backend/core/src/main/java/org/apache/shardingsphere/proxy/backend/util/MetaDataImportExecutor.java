@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -51,15 +50,14 @@ public final class MetaDataImportExecutor {
      * Import cluster configurations.
      *
      * @param exportedMetaData exported metadata
-     * @throws SQLException SQL exception
      */
-    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) throws SQLException {
+    public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
         importServerConfiguration(exportedMetaData);
         importDatabaseConfigurations(databaseConfigs);
     }
     
-    private void importServerConfiguration(final ExportedMetaData exportedMetaData) throws SQLException {
+    private void importServerConfiguration(final ExportedMetaData exportedMetaData) {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
         if (null == yamlServerConfig) {
             return;

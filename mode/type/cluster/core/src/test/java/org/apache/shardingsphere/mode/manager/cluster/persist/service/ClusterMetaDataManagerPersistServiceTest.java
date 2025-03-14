@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
@@ -68,7 +68,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeEach
     void setUp() {
-        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, mock(PersistRepository.class));
+        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, mock(ClusterPersistRepository.class));
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("metaDataPersistFacade"), metaDataManagerPersistService, metaDataPersistFacade);
         Plugins.getMemberAccessor().set(ClusterMetaDataManagerPersistService.class.getDeclaredField("clusterDatabaseListenerPersistCoordinator"),
                 metaDataManagerPersistService, clusterDatabaseListenerPersistCoordinator);

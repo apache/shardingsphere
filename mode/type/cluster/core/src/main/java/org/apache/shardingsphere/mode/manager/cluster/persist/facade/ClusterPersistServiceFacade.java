@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMet
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Cluster persist service facade.
@@ -42,7 +42,7 @@ public final class ClusterPersistServiceFacade implements ModePersistServiceFaca
     @Getter(AccessLevel.NONE)
     private final ComputeNodeInstance computeNodeInstance;
     
-    public ClusterPersistServiceFacade(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+    public ClusterPersistServiceFacade(final MetaDataContextManager metaDataContextManager, final ClusterPersistRepository repository) {
         metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, repository);
         computeNodePersistService = new ClusterComputeNodePersistService(repository);
         processPersistService = new ClusterProcessPersistService(repository);

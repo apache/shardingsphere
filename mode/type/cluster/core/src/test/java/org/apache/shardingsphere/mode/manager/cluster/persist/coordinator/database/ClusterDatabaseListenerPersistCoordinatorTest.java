@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database;
 
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 class ClusterDatabaseListenerPersistCoordinatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private PersistRepository repository;
+    private ClusterPersistRepository repository;
     
     @Test
     void assertPersist() {

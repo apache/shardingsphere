@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath;
 import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class ClusterComputeNodePersistService implements ComputeNodePersistService {
     
-    private final PersistRepository repository;
+    private final ClusterPersistRepository repository;
     
     /**
      * Register compute node online.
