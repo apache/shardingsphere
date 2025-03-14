@@ -28,12 +28,12 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Rule configuration checker.
+ * Database rule configuration checker.
  * 
  * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface RuleConfigurationChecker<T extends RuleConfiguration> extends OrderedSPI<T> {
+public interface DatabaseRuleConfigurationChecker<T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
      * Check rule configuration.

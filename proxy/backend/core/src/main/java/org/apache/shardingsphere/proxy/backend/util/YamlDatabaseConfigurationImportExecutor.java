@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckEngine;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -130,7 +130,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        RuleConfigurationCheckEngine.check(ruleConfig, database);
+        DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
     }

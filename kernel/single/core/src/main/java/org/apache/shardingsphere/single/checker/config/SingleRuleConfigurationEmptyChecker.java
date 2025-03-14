@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.checker.config;
 
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 
 /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.checker.config;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -54,7 +54,7 @@ class ShardingRuleConfigurationCheckerTest {
     @BeforeEach
     void setUp() {
         checker = (ShardingRuleConfigurationChecker) OrderedSPILoader.getServicesByClass(
-                RuleConfigurationChecker.class, Collections.singleton(ShardingRuleConfiguration.class)).get(ShardingRuleConfiguration.class);
+                DatabaseRuleConfigurationChecker.class, Collections.singleton(ShardingRuleConfiguration.class)).get(ShardingRuleConfiguration.class);
     }
     
     @Test
