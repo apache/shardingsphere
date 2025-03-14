@@ -17,20 +17,25 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.persist.facade;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneComputeNodePersistService;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Standalone persist service facade.
  */
-@RequiredArgsConstructor
+@Getter
 public final class StandalonePersistServiceFacade implements ModePersistServiceFacade {
     
-    private final PersistRepository repository;
+    private final StandaloneComputeNodePersistService computeNodePersistService;
+    
+    public StandalonePersistServiceFacade(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
+        computeNodePersistService = new StandaloneComputeNodePersistService(computeNodeInstance);
+    }
     
     @Override
-    public void close(final ComputeNodeInstance computeNodeInstance) {
+    public void close() {
     }
 }

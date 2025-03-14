@@ -26,17 +26,20 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 /**
  * Cluster persist service facade.
  */
-@Getter
 public final class ClusterPersistServiceFacade implements ModePersistServiceFacade {
     
+    @Getter
     private final ClusterComputeNodePersistService computeNodePersistService;
     
-    public ClusterPersistServiceFacade(final PersistRepository repository) {
+    private final ComputeNodeInstance computeNodeInstance;
+    
+    public ClusterPersistServiceFacade(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
         computeNodePersistService = new ClusterComputeNodePersistService(repository);
+        this.computeNodeInstance = computeNodeInstance;
     }
     
     @Override
-    public void close(final ComputeNodeInstance computeNodeInstance) {
+    public void close() {
         computeNodePersistService.offline(computeNodeInstance);
     }
 }

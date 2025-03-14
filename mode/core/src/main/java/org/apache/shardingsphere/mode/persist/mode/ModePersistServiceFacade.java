@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.mode.persist.mode;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
 
 /**
  * Mode persist service facade.
  */
-public interface ModePersistServiceFacade {
+public interface ModePersistServiceFacade extends AutoCloseable {
     
     /**
-     * Close mode persist service facade.
-     *
-     * @param computeNodeInstance compute node instance
+     * Get compute node persist service.
+     * 
+     * @return compute node persist service
      */
-    void close(ComputeNodeInstance computeNodeInstance);
+    ComputeNodePersistService getComputeNodePersistService();
+    
+    @Override
+    void close();
 }

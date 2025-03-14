@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.facade;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -27,8 +28,8 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 public final class ClusterPersistServiceFacadeBuilder implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public ModePersistServiceFacade build(final PersistRepository repository) {
-        return new ClusterPersistServiceFacade(repository);
+    public ModePersistServiceFacade build(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
+        return new ClusterPersistServiceFacade(repository, computeNodeInstance);
     }
     
     @Override

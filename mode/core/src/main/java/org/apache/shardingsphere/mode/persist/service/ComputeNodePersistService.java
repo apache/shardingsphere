@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.persist.facade;
+package org.apache.shardingsphere.mode.persist.service;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
-import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+
+import java.util.Collection;
 
 /**
- * Standalone persist service facade builder.
+ * Compute node persist service.
  */
-public final class StandalonePersistServiceFacadeBuilder implements ModePersistServiceFacadeBuilder {
+public interface ComputeNodePersistService {
     
-    @Override
-    public ModePersistServiceFacade build(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
-        return new StandalonePersistServiceFacade(repository, computeNodeInstance);
-    }
-    
-    @Override
-    public Object getType() {
-        return "Standalone";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Load all compute node instances.
+     *
+     * @return loaded instances
+     */
+    Collection<ComputeNodeInstance> loadAllInstances();
 }

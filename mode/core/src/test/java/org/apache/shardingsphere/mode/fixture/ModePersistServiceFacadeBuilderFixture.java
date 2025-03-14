@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.fixture;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.mock;
 public final class ModePersistServiceFacadeBuilderFixture implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public ModePersistServiceFacade build(final PersistRepository repository) {
+    public ModePersistServiceFacade build(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
         return mock();
     }
     

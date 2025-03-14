@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist.mode;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -29,7 +30,8 @@ public interface ModePersistServiceFacadeBuilder extends TypedSPI {
      * Build mode persist service facade.
      *
      * @param repository persist repository
+     * @param computeNodeInstance compute node instance
      * @return built facade
      */
-    ModePersistServiceFacade build(PersistRepository repository);
+    ModePersistServiceFacade build(PersistRepository repository, ComputeNodeInstance computeNodeInstance);
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -36,7 +35,7 @@ import org.apache.shardingsphere.mode.state.StatePersistService;
  * Persist service facade.
  */
 @Getter
-public final class PersistServiceFacade {
+public final class PersistServiceFacade implements AutoCloseable {
     
     private final PersistRepository repository;
     
@@ -60,16 +59,13 @@ public final class PersistServiceFacade {
         PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
         metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
         processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
-        modePersistServiceFacade = TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(repository);
+        modePersistServiceFacade = TypedSPILoader.getService(
+                ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(repository, metaDataContextManager.getComputeNodeInstanceContext().getInstance());
     }
     
-    /**
-     * Close persist service facade.
-     *
-     * @param computeNodeInstance compute node instance
-     */
-    public void close(final ComputeNodeInstance computeNodeInstance) {
-        modePersistServiceFacade.close(computeNodeInstance);
+    @Override
+    public void close() {
+        modePersistServiceFacade.close();
         repository.close();
     }
 }

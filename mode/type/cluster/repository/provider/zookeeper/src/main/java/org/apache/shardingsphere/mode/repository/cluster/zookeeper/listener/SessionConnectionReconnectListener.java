@@ -42,7 +42,7 @@ public final class SessionConnectionReconnectListener implements ConnectionState
     
     public SessionConnectionReconnectListener(final ComputeNodeInstanceContext computeNodeInstanceContext, final ClusterPersistRepository repository) {
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.computeNodePersistService = new ClusterComputeNodePersistService(repository);
+        computeNodePersistService = new ClusterComputeNodePersistService(repository);
     }
     
     @Override
