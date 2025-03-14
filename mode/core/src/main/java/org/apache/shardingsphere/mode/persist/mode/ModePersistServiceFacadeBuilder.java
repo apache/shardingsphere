@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.persist.mode;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
@@ -30,8 +30,8 @@ public interface ModePersistServiceFacadeBuilder extends TypedSPI {
      * Build mode persist service facade.
      *
      * @param repository persist repository
-     * @param computeNodeInstance compute node instance
+     * @param metaDataContextManager meta data context manager
      * @return built facade
      */
-    ModePersistServiceFacade build(PersistRepository repository, ComputeNodeInstance computeNodeInstance);
+    ModePersistServiceFacade build(PersistRepository repository, MetaDataContextManager metaDataContextManager);
 }

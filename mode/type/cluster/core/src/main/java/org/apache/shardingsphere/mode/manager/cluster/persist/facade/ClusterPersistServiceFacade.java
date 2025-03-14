@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.persist.facade;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
@@ -26,11 +27,12 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 /**
  * Cluster persist service facade.
  */
+@Getter
 public final class ClusterPersistServiceFacade implements ModePersistServiceFacade {
     
-    @Getter
     private final ClusterComputeNodePersistService computeNodePersistService;
     
+    @Getter(AccessLevel.NONE)
     private final ComputeNodeInstance computeNodeInstance;
     
     public ClusterPersistServiceFacade(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
