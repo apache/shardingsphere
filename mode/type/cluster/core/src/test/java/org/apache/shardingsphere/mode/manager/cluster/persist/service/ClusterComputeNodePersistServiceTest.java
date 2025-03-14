@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -45,16 +45,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ComputeNodePersistServiceTest {
+class ClusterComputeNodePersistServiceTest {
     
-    private ComputeNodePersistService computeNodePersistService;
+    private ClusterComputeNodePersistService computeNodePersistService;
     
     @Mock
     private PersistRepository repository;
     
     @BeforeEach
     void setUp() {
-        computeNodePersistService = new ComputeNodePersistService(repository);
+        computeNodePersistService = new ClusterComputeNodePersistService(repository);
     }
     
     @Test

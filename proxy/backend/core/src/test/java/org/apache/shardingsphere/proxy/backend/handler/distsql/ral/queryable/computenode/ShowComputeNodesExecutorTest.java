@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -100,7 +101,9 @@ class ShowComputeNodesExecutorTest {
         when(computeNodeInstance.getState()).thenReturn(new InstanceStateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getClusterInstanceRegistry().getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
-        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
+        when(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        when(contextManager.getPersistServiceFacade().getModePersistServiceFacade()).thenReturn(clusterPersistServiceFacade);
         return result;
     }
 }

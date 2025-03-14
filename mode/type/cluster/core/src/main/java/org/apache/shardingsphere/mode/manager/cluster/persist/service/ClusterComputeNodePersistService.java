@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -45,11 +45,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Compute node persist service.
+ * Cluster compute node persist service.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComputeNodePersistService {
+public final class ClusterComputeNodePersistService {
     
     private final PersistRepository repository;
     

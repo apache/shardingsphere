@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +46,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
         String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
         Collection<ComputeNodeInstance> instances = "Standalone".equals(modeType)
                 ? Collections.singleton(contextManager.getComputeNodeInstanceContext().getInstance())
-                : contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances();
+                : ((ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade()).getComputeNodePersistService().loadAllInstances();
         return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.compute.ComputeNodeChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
@@ -64,7 +65,8 @@ public final class ComputeNodeOnlineHandler implements ComputeNodeChangedHandler
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);
         switch (event.getType()) {
             case ADDED:
-                clusterInstanceRegistry.add(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(instanceMetaData));
+                ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
+                clusterInstanceRegistry.add(clusterPersistServiceFacade.getComputeNodePersistService().loadInstance(instanceMetaData));
                 break;
             case DELETED:
                 clusterInstanceRegistry.delete(new ComputeNodeInstance(instanceMetaData));

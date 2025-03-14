@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,15 +38,19 @@ public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<U
     
     @Override
     public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
+        if (!contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
+            return;
+        }
         String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find(instanceId);
         if (computeNodeInstance.isPresent()) {
+            ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
             if (sqlStatement.getLabels().isEmpty()) {
-                contextManager.getPersistServiceFacade().getComputeNodePersistService().persistLabels(instanceId, Collections.emptyList());
+                clusterPersistServiceFacade.getComputeNodePersistService().persistLabels(instanceId, Collections.emptyList());
             } else {
                 labels.removeAll(sqlStatement.getLabels());
-                contextManager.getPersistServiceFacade().getComputeNodePersistService().persistLabels(instanceId, new ArrayList<>(labels));
+                clusterPersistServiceFacade.getComputeNodePersistService().persistLabels(instanceId, new ArrayList<>(labels));
             }
         }
     }
