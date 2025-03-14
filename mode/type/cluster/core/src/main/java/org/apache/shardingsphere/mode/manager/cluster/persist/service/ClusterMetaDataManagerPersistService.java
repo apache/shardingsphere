@@ -276,7 +276,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     private MetaDataContexts getReloadMetaDataContexts(final MetaDataContexts originalMetaDataContexts) {
         Thread.sleep(3000L);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
-        if (reloadMetaDataContexts.getMetaData() != originalMetaDataContexts.getMetaData() && reloadMetaDataContexts.getStatistics() != reloadMetaDataContexts.getStatistics()) {
+        if (reloadMetaDataContexts.getMetaData() != originalMetaDataContexts.getMetaData() && reloadMetaDataContexts.getStatistics() != originalMetaDataContexts.getStatistics()) {
             return reloadMetaDataContexts;
         }
         long startTime = System.currentTimeMillis();
