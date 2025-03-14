@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist.facade;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneComputeNodePersistService;
+import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneProcessPersistService;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Standalone persist service facade.
@@ -29,10 +30,16 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 @Getter
 public final class StandalonePersistServiceFacade implements ModePersistServiceFacade {
     
+    private final StandaloneMetaDataManagerPersistService metaDataManagerPersistService;
+    
     private final StandaloneComputeNodePersistService computeNodePersistService;
     
-    public StandalonePersistServiceFacade(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
-        computeNodePersistService = new StandaloneComputeNodePersistService(computeNodeInstance);
+    private final StandaloneProcessPersistService processPersistService;
+    
+    public StandalonePersistServiceFacade(final MetaDataContextManager metaDataContextManager) {
+        metaDataManagerPersistService = new StandaloneMetaDataManagerPersistService(metaDataContextManager);
+        computeNodePersistService = new StandaloneComputeNodePersistService(metaDataContextManager.getComputeNodeInstanceContext().getInstance());
+        processPersistService = new StandaloneProcessPersistService();
     }
     
     @Override

@@ -29,9 +29,9 @@ public interface ModePersistServiceFacadeBuilder extends TypedSPI {
     /**
      * Build mode persist service facade.
      *
-     * @param repository persist repository
      * @param metaDataContextManager meta data context manager
+     * @param repository persist repository
      * @return built facade
      */
-    ModePersistServiceFacade build(PersistRepository repository, MetaDataContextManager metaDataContextManager);
+    ModePersistServiceFacade build(MetaDataContextManager metaDataContextManager, PersistRepository repository);
 }

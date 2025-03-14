@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.persist.mode;
 
 import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 
 /**
  * Mode persist service facade.
@@ -25,11 +27,25 @@ import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
 public interface ModePersistServiceFacade extends AutoCloseable {
     
     /**
+     * Get meta data manager persist service.
+     *
+     * @return meta data manager persist service
+     */
+    MetaDataManagerPersistService getMetaDataManagerPersistService();
+    
+    /**
      * Get compute node persist service.
      * 
      * @return compute node persist service
      */
     ComputeNodePersistService getComputeNodePersistService();
+    
+    /**
+     * Get process persist service.
+     *
+     * @return process persist service
+     */
+    ProcessPersistService getProcessPersistService();
     
     @Override
     void close();

@@ -2108,7 +2108,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.PersistServiceFacade"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.persist.builder.ClusterPersistServiceBuilder",
+  "name":"org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacadeBuilder",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -2117,7 +2117,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.persist.PersistServiceFacade"},
-  "name":"org.apache.shardingsphere.mode.manager.standalone.persist.builder.StandalonePersistServiceBuilder",
+  "name":"org.apache.shardingsphere.mode.manager.standalone.persist.facade.StandalonePersistServiceFacadeBuilder",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

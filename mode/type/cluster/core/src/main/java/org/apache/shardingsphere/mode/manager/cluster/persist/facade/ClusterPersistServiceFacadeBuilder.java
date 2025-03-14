@@ -28,8 +28,8 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 public final class ClusterPersistServiceFacadeBuilder implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public ModePersistServiceFacade build(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
-        return new ClusterPersistServiceFacade(repository, metaDataContextManager.getComputeNodeInstanceContext().getInstance());
+    public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        return new ClusterPersistServiceFacade(metaDataContextManager, repository);
     }
     
     @Override

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 public final class ModePersistServiceFacadeBuilderFixture implements ModePersistServiceFacadeBuilder {
     
     @Override
-    public ModePersistServiceFacade build(final PersistRepository repository, final MetaDataContextManager metaDataContextManager) {
+    public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
         return mock();
     }
     

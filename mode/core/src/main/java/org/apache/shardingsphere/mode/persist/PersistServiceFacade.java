@@ -25,9 +25,6 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.node.QualifiedDataSourceStatePersistService;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.mode.persist.service.PersistServiceBuilder;
-import org.apache.shardingsphere.mode.persist.service.ProcessPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.StatePersistService;
 
@@ -43,10 +40,6 @@ public final class PersistServiceFacade implements AutoCloseable {
     
     private final StatePersistService statePersistService;
     
-    private final MetaDataManagerPersistService metaDataManagerPersistService;
-    
-    private final ProcessPersistService processPersistService;
-    
     private final QualifiedDataSourceStatePersistService qualifiedDataSourceStatePersistService;
     
     private final ModePersistServiceFacade modePersistServiceFacade;
@@ -56,11 +49,7 @@ public final class PersistServiceFacade implements AutoCloseable {
         metaDataPersistFacade = new MetaDataPersistFacade(repository);
         statePersistService = new StatePersistService(repository);
         qualifiedDataSourceStatePersistService = new QualifiedDataSourceStatePersistService(repository);
-        PersistServiceBuilder persistServiceBuilder = TypedSPILoader.getService(PersistServiceBuilder.class, modeConfig.getType());
-        metaDataManagerPersistService = persistServiceBuilder.buildMetaDataManagerPersistService(repository, metaDataContextManager);
-        processPersistService = persistServiceBuilder.buildProcessPersistService(repository);
-        modePersistServiceFacade = TypedSPILoader.getService(
-                ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(repository, metaDataContextManager);
+        modePersistServiceFacade = TypedSPILoader.getService(ModePersistServiceFacadeBuilder.class, modeConfig.getType()).build(metaDataContextManager, repository);
     }
     
     @Override

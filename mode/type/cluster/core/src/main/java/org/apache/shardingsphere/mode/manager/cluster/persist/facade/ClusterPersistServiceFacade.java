@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -30,14 +33,20 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 @Getter
 public final class ClusterPersistServiceFacade implements ModePersistServiceFacade {
     
+    private final ClusterMetaDataManagerPersistService metaDataManagerPersistService;
+    
     private final ClusterComputeNodePersistService computeNodePersistService;
+    
+    private final ClusterProcessPersistService processPersistService;
     
     @Getter(AccessLevel.NONE)
     private final ComputeNodeInstance computeNodeInstance;
     
-    public ClusterPersistServiceFacade(final PersistRepository repository, final ComputeNodeInstance computeNodeInstance) {
+    public ClusterPersistServiceFacade(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, repository);
         computeNodePersistService = new ClusterComputeNodePersistService(repository);
-        this.computeNodeInstance = computeNodeInstance;
+        processPersistService = new ClusterProcessPersistService(repository);
+        computeNodeInstance = metaDataContextManager.getComputeNodeInstanceContext().getInstance();
     }
     
     @Override
