@@ -43,10 +43,10 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param, final EventBusContext eventBusContext) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
-        StandalonePersistRepository repository = TypedSPILoader.getService(
-                StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), param.getModeConfiguration(), eventBusContext);
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), new StandaloneLockContext());
+        StandalonePersistRepository repository = TypedSPILoader.getService(
+                StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
     }
