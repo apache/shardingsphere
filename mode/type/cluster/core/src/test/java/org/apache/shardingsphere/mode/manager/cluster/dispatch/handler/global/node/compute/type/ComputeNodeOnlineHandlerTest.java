@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.GlobalDataChangedEventHandler;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,7 +62,9 @@ class ComputeNodeOnlineHandlerTest {
     @Test
     void assertHandleWithInstanceOnlineEvent() {
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
-        when(contextManager.getPersistServiceFacade().getComputeNodePersistService().loadInstance(any())).thenReturn(computeNodeInstance);
+        ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
+        when(clusterPersistServiceFacade.getComputeNodePersistService().loadInstance(any())).thenReturn(computeNodeInstance);
+        when(contextManager.getPersistServiceFacade().getModePersistServiceFacade()).thenReturn(clusterPersistServiceFacade);
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);
     }

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.label;
 
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,6 +38,9 @@ public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<Lab
     
     @Override
     public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+        if (!contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
+            return;
+        }
         String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find(instanceId);
         if (computeNodeInstance.isPresent()) {
@@ -44,7 +48,8 @@ public final class LabelComputeNodeExecutor implements DistSQLUpdateExecutor<Lab
             if (!sqlStatement.isOverwrite()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
-            contextManager.getPersistServiceFacade().getComputeNodePersistService().persistLabels(instanceId, new LinkedList<>(labels));
+            ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
+            clusterPersistServiceFacade.getComputeNodePersistService().persistLabels(instanceId, new LinkedList<>(labels));
         }
     }
     

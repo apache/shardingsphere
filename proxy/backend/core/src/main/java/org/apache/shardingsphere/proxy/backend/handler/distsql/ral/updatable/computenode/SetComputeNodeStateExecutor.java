@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;
 
 /**
  * Set compute node state executor.
@@ -38,8 +39,11 @@ public final class SetComputeNodeStateExecutor implements DistSQLUpdateExecutor<
         } else {
             checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
-        contextManager.getPersistServiceFacade().getComputeNodePersistService().updateState(sqlStatement.getInstanceId(),
-                "DISABLE".equals(sqlStatement.getState()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
+        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
+            ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModePersistServiceFacade();
+            clusterPersistServiceFacade.getComputeNodePersistService().updateState(sqlStatement.getInstanceId(),
+                    "DISABLE".equals(sqlStatement.getState()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
+        }
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {

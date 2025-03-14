@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.mode.node.ComputeNodePersistService;
+import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ class SessionConnectionReconnectListenerTest {
     
     @Test
     void assertChangeToLostStateWithGenerateWorkerId() throws InterruptedException {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
+        ClusterComputeNodePersistService computeNodePersistService = mock(ClusterComputeNodePersistService.class);
         when(client.getZookeeperClient().blockUntilConnectedOrTimedOut()).thenReturn(false, true);
         getSessionConnectionReconnectListener(computeNodePersistService).stateChanged(client, ConnectionState.LOST);
         verify(computeNodeInstanceContext).generateWorkerId(new Properties());
@@ -67,7 +67,7 @@ class SessionConnectionReconnectListenerTest {
     
     @Test
     void assertChangeToLostStateWithoutGenerateWorkerId() throws InterruptedException {
-        ComputeNodePersistService computeNodePersistService = mock(ComputeNodePersistService.class);
+        ClusterComputeNodePersistService computeNodePersistService = mock(ClusterComputeNodePersistService.class);
         when(client.getZookeeperClient().blockUntilConnectedOrTimedOut()).thenReturn(true);
         when(computeNodeInstanceContext.getInstance().getWorkerId()).thenReturn(-1);
         getSessionConnectionReconnectListener(computeNodePersistService).stateChanged(client, ConnectionState.LOST);
@@ -76,7 +76,7 @@ class SessionConnectionReconnectListenerTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private SessionConnectionReconnectListener getSessionConnectionReconnectListener(final ComputeNodePersistService computeNodePersistService) {
+    private SessionConnectionReconnectListener getSessionConnectionReconnectListener(final ClusterComputeNodePersistService computeNodePersistService) {
         SessionConnectionReconnectListener result = new SessionConnectionReconnectListener(computeNodeInstanceContext, repository);
         Plugins.getMemberAccessor().set(SessionConnectionReconnectListener.class.getDeclaredField("computeNodePersistService"), result, computeNodePersistService);
         return result;

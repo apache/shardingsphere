@@ -109,7 +109,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
                     .newInstance(database, executionContext.getSqlStatementContext().getSqlStatement(), updateCallback);
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
-                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, props);
+                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService(), database, props);
             if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
                 if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
                     connection.commit();

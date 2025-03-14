@@ -71,7 +71,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterProperties(props);
+        contextManager.getPersistServiceFacade().getModePersistServiceFacade().getMetaDataManagerPersistService().alterProperties(props);
         refreshRootLogger(props);
         syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
         syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);

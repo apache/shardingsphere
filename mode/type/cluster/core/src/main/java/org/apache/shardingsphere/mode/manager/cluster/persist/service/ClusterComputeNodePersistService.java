@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.node;
+package org.apache.shardingsphere.mode.manager.cluster.persist.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.node.path.type.global.node.compute.label.L
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.OnlineNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.status.StatusNodePath;
 import org.apache.shardingsphere.mode.node.path.type.global.node.compute.workerid.ComputeNodeWorkerIDNodePath;
+import org.apache.shardingsphere.mode.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Arrays;
@@ -45,11 +46,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Compute node persist service.
+ * Cluster compute node persist service.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComputeNodePersistService {
+public final class ClusterComputeNodePersistService implements ComputeNodePersistService {
     
     private final PersistRepository repository;
     
@@ -78,26 +79,6 @@ public final class ComputeNodePersistService {
      */
     public void offline(final ComputeNodeInstance computeNodeInstance) {
         repository.delete(NodePathGenerator.toPath(new OnlineNodePath(computeNodeInstance.getMetaData().getType(), computeNodeInstance.getMetaData().getId())));
-    }
-    
-    /**
-     * Load all compute node instances.
-     *
-     * @return loaded instances
-     */
-    public Collection<ComputeNodeInstance> loadAllInstances() {
-        return Arrays.stream(InstanceType.values()).flatMap(each -> loadInstances(each).stream()).collect(Collectors.toList());
-    }
-    
-    private Collection<ComputeNodeInstance> loadInstances(final InstanceType instanceType) {
-        Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(instanceType, null)))) {
-            String value = repository.query(NodePathGenerator.toPath(new OnlineNodePath(instanceType, each)));
-            if (!Strings.isNullOrEmpty(value)) {
-                result.add(loadInstance(InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
-            }
-        }
-        return result;
     }
     
     /**
@@ -179,5 +160,21 @@ public final class ComputeNodePersistService {
         Collection<String> instanceIds = repository.getChildrenKeys(NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath(null)));
         return instanceIds.stream().map(each -> repository.query(NodePathGenerator.toPath(new ComputeNodeWorkerIDNodePath(each))))
                 .filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toSet());
+    }
+    
+    @Override
+    public Collection<ComputeNodeInstance> loadAllInstances() {
+        return Arrays.stream(InstanceType.values()).flatMap(each -> loadInstances(each).stream()).collect(Collectors.toList());
+    }
+    
+    private Collection<ComputeNodeInstance> loadInstances(final InstanceType instanceType) {
+        Collection<ComputeNodeInstance> result = new LinkedList<>();
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new OnlineNodePath(instanceType, null)))) {
+            String value = repository.query(NodePathGenerator.toPath(new OnlineNodePath(instanceType, each)));
+            if (!Strings.isNullOrEmpty(value)) {
+                result.add(loadInstance(InstanceMetaDataFactory.create(each, instanceType, new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(value, YamlComputeNodeData.class)))));
+            }
+        }
+        return result;
     }
 }

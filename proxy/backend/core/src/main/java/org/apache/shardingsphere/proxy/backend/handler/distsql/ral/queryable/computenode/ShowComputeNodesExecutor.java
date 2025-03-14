@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +42,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ContextManager contextManager) {
         String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
-        Collection<ComputeNodeInstance> instances = "Standalone".equals(modeType)
-                ? Collections.singleton(contextManager.getComputeNodeInstanceContext().getInstance())
-                : contextManager.getPersistServiceFacade().getComputeNodePersistService().loadAllInstances();
+        Collection<ComputeNodeInstance> instances = contextManager.getPersistServiceFacade().getModePersistServiceFacade().getComputeNodePersistService().loadAllInstances();
         return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     

@@ -236,6 +236,6 @@ public final class ContextManager implements AutoCloseable {
         }
         executorEngine.close();
         metaDataContexts.getMetaData().close();
-        persistServiceFacade.close(computeNodeInstanceContext.getInstance());
+        persistServiceFacade.close();
     }
 }
