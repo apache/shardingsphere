@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
@@ -68,5 +70,24 @@ public final class DatabaseMetaDataPersistFacade {
         view.persist(database.getName(), schemaName, alteredViews);
         droppedTables.forEach(each -> table.drop(database.getName(), schemaName, each));
         droppedViews.forEach(each -> view.drop(database.getName(), schemaName, each));
+    }
+    
+    /**
+     * Rename schema.
+     *
+     * @param metaData meta data
+     * @param database database
+     * @param schemaName schema name
+     * @param renameSchemaName rename schema name
+     */
+    public void renameSchema(final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName) {
+        ShardingSphereSchema schema = metaData.getDatabase(database.getName()).getSchema(schemaName);
+        if (schema.isEmpty()) {
+            this.schema.add(database.getName(), renameSchemaName);
+        } else {
+            table.persist(database.getName(), renameSchemaName, schema.getAllTables());
+            view.persist(database.getName(), renameSchemaName, schema.getAllViews());
+        }
+        this.schema.drop(database.getName(), schemaName);
     }
 }
