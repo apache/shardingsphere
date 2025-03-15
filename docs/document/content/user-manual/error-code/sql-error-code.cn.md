@@ -21,6 +21,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10004       | 42S02     | Index '%s' does not exist.                                                          |
 | 10005       | 42S01     | Index '%s' already exists.                                                          |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
+| 10012       | HY000     | Load table meta data failed for database '%s' and tables '%s'.                      |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |
