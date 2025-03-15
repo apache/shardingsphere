@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.persist.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -60,7 +59,6 @@ import java.util.stream.Collectors;
 /**
  * Standalone meta data manager persist service.
  */
-@Slf4j
 public final class StandaloneMetaDataManagerPersistService implements MetaDataManagerPersistService {
     
     private final MetaDataContextManager metaDataContextManager;
@@ -215,7 +213,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
             }
         } catch (final SQLException ex) {
-            log.error("Reload table meta failed, databaseName:{}", databaseName, ex);
             throw new LoadTableMetaDataFailedException();
         }
     }
@@ -281,7 +278,6 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 tables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, entry.getKey(), each));
             }
         } catch (final SQLException ex) {
-            log.error("Load table meta failed, databaseName: {}, needReloadTables: {}", databaseName, needReloadTables, ex);
             throw new LoadTableMetaDataFailedException();
         }
     }
