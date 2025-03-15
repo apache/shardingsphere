@@ -213,7 +213,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
             }
         } catch (final SQLException ex) {
-            throw new LoadTableMetaDataFailedException();
+            throw new LoadTableMetaDataFailedException(databaseName, ex);
         }
     }
     
@@ -278,7 +278,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 tables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, entry.getKey(), each));
             }
         } catch (final SQLException ex) {
-            throw new LoadTableMetaDataFailedException();
+            throw new LoadTableMetaDataFailedException(databaseName, needReloadTables, ex);
         }
     }
     

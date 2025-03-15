@@ -22,6 +22,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10005       | 42S01     | Index '%s' already exists.                                                          |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
+| 10012       | HY000     | Load table meta data failed for database '%s' and tables '%s'.                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |
 | 10103       | 44000     | Storage unit '%s' still used by '%s'.                                               |
