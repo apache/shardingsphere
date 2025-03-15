@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+
+import java.util.Collection;
 
 /**
  * Database meta data persist facade.
@@ -44,5 +49,24 @@ public final class DatabaseMetaDataPersistFacade {
         schema = new SchemaMetaDataPersistService(repository, versionPersistService);
         table = new TableMetaDataPersistService(repository, versionPersistService);
         view = new ViewMetaDataPersistService(repository, versionPersistService);
+    }
+    
+    /**
+     * Persist schema.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param alteredTables altered tables
+     * @param alteredViews altered views
+     * @param droppedTables dropped tables
+     * @param droppedViews dropped views
+     */
+    public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
+                            final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
+                            final Collection<String> droppedTables, final Collection<String> droppedViews) {
+        table.persist(database.getName(), schemaName, alteredTables);
+        view.persist(database.getName(), schemaName, alteredViews);
+        droppedTables.forEach(each -> table.drop(database.getName(), schemaName, each));
+        droppedViews.forEach(each -> view.drop(database.getName(), schemaName, each));
     }
 }
