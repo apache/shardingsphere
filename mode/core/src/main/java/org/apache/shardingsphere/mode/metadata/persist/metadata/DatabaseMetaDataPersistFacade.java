@@ -53,7 +53,7 @@ public final class DatabaseMetaDataPersistFacade {
     
     /**
      * Persist schema.
-     * 
+     *
      * @param database database
      * @param schemaName schema name
      * @param alteredTables altered tables
