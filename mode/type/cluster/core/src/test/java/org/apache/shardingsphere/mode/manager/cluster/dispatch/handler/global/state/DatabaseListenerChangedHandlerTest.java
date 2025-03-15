@@ -72,7 +72,6 @@ class DatabaseListenerChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "CREATE", Type.ADDED));
         verify(repository).watch(eq("/metadata/foo_db"), any());
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).addDatabase("foo_db");
-        verify(repository).delete("/states/database_listener_coordinator/foo_db");
     }
     
     @Test
@@ -81,6 +80,5 @@ class DatabaseListenerChangedHandlerTest {
         handler.handle(contextManager, new DataChangedEvent("/states/database_listener_coordinator/foo_db", "DROP", Type.ADDED));
         verify(repository).removeDataListener("/metadata/foo_db");
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).dropDatabase("foo_db");
-        verify(repository).delete("/states/database_listener_coordinator/foo_db");
     }
 }

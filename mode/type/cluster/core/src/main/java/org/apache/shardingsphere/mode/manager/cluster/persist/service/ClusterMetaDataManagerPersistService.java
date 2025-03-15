@@ -81,6 +81,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     
     private void afterDatabaseCreated(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
         MetaDataContexts reloadMetaDataContexts = getReloadMetaDataContexts(originalMetaDataContexts);
+        clusterDatabaseListenerPersistCoordinator.delete(databaseName);
         metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
@@ -89,6 +90,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void dropDatabase(final ShardingSphereDatabase database) {
         clusterDatabaseListenerPersistCoordinator.persist(database.getName(), ClusterDatabaseListenerCoordinatorType.DROP);
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(database.getName());
+        clusterDatabaseListenerPersistCoordinator.delete(database.getName());
     }
     
     @Override
