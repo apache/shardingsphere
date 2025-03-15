@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.scope;
+package org.apache.shardingsphere.mode.fixture;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacadeBuilder;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
-/**
- * Database rule configuration empty checker.
- * 
- * @param <T> type of database rule configuration
- */
-@SingletonSPI
-public interface DatabaseRuleConfigurationEmptyChecker<T extends DatabaseRuleConfiguration> extends TypedSPI {
-    
-    /**
-     * Whether rule configuration empty.
-     *
-     * @param ruleConfig rule configuration
-     * @return is empty or not
-     */
-    boolean isEmpty(T ruleConfig);
+import static org.mockito.Mockito.mock;
+
+public final class ModePersistServiceFacadeBuilderFixture implements ModePersistServiceFacadeBuilder {
     
     @Override
-    Class<T> getType();
+    public ModePersistServiceFacade build(final MetaDataContextManager metaDataContextManager, final PersistRepository repository) {
+        return mock();
+    }
+    
+    @Override
+    public Object getType() {
+        return "FIXTURE";
+    }
 }

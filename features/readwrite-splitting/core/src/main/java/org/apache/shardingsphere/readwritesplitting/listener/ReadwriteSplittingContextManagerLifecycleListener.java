@@ -43,7 +43,7 @@ public class ReadwriteSplittingContextManagerLifecycleListener implements Contex
     }
     
     private void updateQualifiedDataSourceState(final ContextManager contextManager) {
-        Map<String, QualifiedDataSourceState> qualifiedDataSourceStateMap = contextManager.getPersistServiceFacade().getQualifiedDataSourceStatePersistService().load();
+        Map<String, QualifiedDataSourceState> qualifiedDataSourceStateMap = contextManager.getPersistServiceFacade().getQualifiedDataSourceStateService().load();
         qualifiedDataSourceStateMap.forEach((key, value) -> updateQualifiedDataSourceState(contextManager.getMetaDataContexts().getMetaData(), new QualifiedDataSource(key), value));
     }
     

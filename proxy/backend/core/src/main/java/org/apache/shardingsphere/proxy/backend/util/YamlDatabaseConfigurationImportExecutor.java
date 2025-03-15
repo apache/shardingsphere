@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckEngine;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
@@ -98,7 +98,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addDatabase(final String databaseName) {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
@@ -110,7 +110,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             propsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
         }
         validateHandler.validate(propsMap);
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
@@ -126,11 +126,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRule(ruleConfigs, each, database));
-        contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
+        contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        RuleConfigurationCheckEngine.check(ruleConfig, database);
+        DatabaseRuleConfigurationCheckEngine.check(ruleConfig, database);
         ruleConfigs.add(ruleConfig);
         database.getRuleMetaData().getRules().add(buildRule(ruleConfig, database));
     }
@@ -154,6 +154,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void dropDatabase(final ShardingSphereDatabase database) {
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().dropDatabase(database);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().dropDatabase(database);
     }
 }

@@ -195,14 +195,13 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) {
         for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
-            MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
-            afterStorageUnitsUnregistered(database.getName(), originalMetaDataContexts, each);
+            afterStorageUnitsUnregistered(database.getName(), each);
         }
         clearServiceCache();
     }
     
-    private void afterStorageUnitsUnregistered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final String storageUnitName) {
+    private void afterStorageUnitsUnregistered(final String databaseName, final String storageUnitName) {
         metaDataContextManager.getStorageUnitManager().unregister(databaseName, storageUnitName);
         MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);

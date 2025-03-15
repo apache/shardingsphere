@@ -42,7 +42,7 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
         if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
             try {
                 checkState(contextManager);
-                contextManager.getPersistServiceFacade().getStatePersistService().update(ShardingSphereState.OK);
+                contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.OK);
                 // TODO unlock snapshot info if locked
             } finally {
                 lockContext.unlock(lockDefinition);

@@ -36,6 +36,14 @@ public interface ClusterPersistRepository extends PersistRepository {
     void init(ClusterPersistRepositoryConfiguration config, ComputeNodeInstanceContext computeNodeInstanceContext);
     
     /**
+     * Persist ephemeral data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persistEphemeral(String key, String value);
+    
+    /**
      * Persist exclusive ephemeral data.
      *
      * @param key key of data

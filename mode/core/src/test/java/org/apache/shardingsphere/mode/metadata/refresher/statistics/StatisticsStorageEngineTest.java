@@ -46,7 +46,7 @@ class StatisticsStorageEngineTest {
         ShardingSphereTable table = mockTable();
         when(contextManager.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_table")).thenReturn(table);
         new StatisticsStorageEngine(contextManager, "foo_db", "foo_schema", "foo_table", Collections.emptyList()).storage();
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService()).update(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getStatisticsService()).update(any());
     }
     
     private ShardingSphereStatistics mockStatistics() {
