@@ -56,7 +56,7 @@ public final class MetaDataPersistFacade {
     
     private final PersistRepository repository;
     
-    private final VersionPersistService metaDataVersionService;
+    private final VersionPersistService versionService;
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
@@ -72,12 +72,12 @@ public final class MetaDataPersistFacade {
     
     public MetaDataPersistFacade(final PersistRepository repository) {
         this.repository = repository;
-        metaDataVersionService = new VersionPersistService(repository);
+        versionService = new VersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, metaDataVersionService);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionService);
         databaseRuleService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionService);
-        propsService = new PropertiesPersistService(repository, metaDataVersionService);
+        globalRuleService = new GlobalRulePersistService(repository, versionService);
+        propsService = new PropertiesPersistService(repository, versionService);
         statisticsService = new StatisticsPersistService(repository);
     }
     

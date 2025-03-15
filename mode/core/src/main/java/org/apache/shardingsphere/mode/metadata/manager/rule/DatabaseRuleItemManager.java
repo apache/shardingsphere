@@ -56,7 +56,7 @@ public final class DatabaseRuleItemManager {
     public void alter(final DatabaseRuleNodePath databaseRuleNodePath) throws SQLException {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
                 new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));
-        String yamlContent = metaDataPersistFacade.getMetaDataVersionService().loadContent(new VersionNodePath(databaseRuleNodePath));
+        String yamlContent = metaDataPersistFacade.getVersionService().loadContent(new VersionNodePath(databaseRuleNodePath));
         String databaseName = databaseRuleNodePath.getDatabase().getDatabaseName();
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
         String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
