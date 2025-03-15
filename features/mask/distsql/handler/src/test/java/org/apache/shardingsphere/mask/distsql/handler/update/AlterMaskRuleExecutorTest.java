@@ -67,7 +67,7 @@ class AlterMaskRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
     }

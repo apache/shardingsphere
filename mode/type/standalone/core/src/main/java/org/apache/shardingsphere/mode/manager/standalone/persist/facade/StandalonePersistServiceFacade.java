@@ -30,16 +30,16 @@ import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 @Getter
 public final class StandalonePersistServiceFacade implements ModePersistServiceFacade {
     
-    private final StandaloneMetaDataManagerPersistService metaDataManagerPersistService;
+    private final StandaloneMetaDataManagerPersistService metaDataManagerService;
     
-    private final StandaloneComputeNodePersistService computeNodePersistService;
+    private final StandaloneComputeNodePersistService computeNodeService;
     
-    private final StandaloneProcessPersistService processPersistService;
+    private final StandaloneProcessPersistService processService;
     
     public StandalonePersistServiceFacade(final MetaDataContextManager metaDataContextManager) {
-        metaDataManagerPersistService = new StandaloneMetaDataManagerPersistService(metaDataContextManager);
-        computeNodePersistService = new StandaloneComputeNodePersistService(metaDataContextManager.getComputeNodeInstanceContext().getInstance());
-        processPersistService = new StandaloneProcessPersistService();
+        metaDataManagerService = new StandaloneMetaDataManagerPersistService(metaDataContextManager);
+        computeNodeService = new StandaloneComputeNodePersistService(metaDataContextManager.getComputeNodeInstanceContext().getInstance());
+        processService = new StandaloneProcessPersistService();
     }
     
     @Override

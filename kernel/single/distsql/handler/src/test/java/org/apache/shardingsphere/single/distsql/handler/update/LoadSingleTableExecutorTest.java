@@ -145,7 +145,7 @@ class LoadSingleTableExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }
     
@@ -164,7 +164,7 @@ class LoadSingleTableExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(null);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), any());
     }
 }

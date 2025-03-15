@@ -56,7 +56,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
         }
         if (ProxyContext.getInstance().databaseExists(sqlStatement.getDatabaseName())) {
             ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(sqlStatement.getDatabaseName());
-            ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().dropDatabase(database);
+            ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService().dropDatabase(database);
         }
         return new UpdateResponseHeader(sqlStatement);
     }

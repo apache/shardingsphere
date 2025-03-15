@@ -77,9 +77,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
-        clusterPersistServiceFacade.getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
+        clusterPersistServiceFacade.getComputeNodeService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances()
-                .addAll(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances());
+                .addAll(clusterPersistServiceFacade.getComputeNodeService().loadAllInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataFacade())).register();
     }
     

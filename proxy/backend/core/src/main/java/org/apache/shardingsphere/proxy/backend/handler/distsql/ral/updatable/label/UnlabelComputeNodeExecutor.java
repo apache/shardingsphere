@@ -47,10 +47,10 @@ public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<U
             ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
             if (sqlStatement.getLabels().isEmpty()) {
-                clusterPersistServiceFacade.getComputeNodePersistService().persistLabels(instanceId, Collections.emptyList());
+                clusterPersistServiceFacade.getComputeNodeService().persistLabels(instanceId, Collections.emptyList());
             } else {
                 labels.removeAll(sqlStatement.getLabels());
-                clusterPersistServiceFacade.getComputeNodePersistService().persistLabels(instanceId, new ArrayList<>(labels));
+                clusterPersistServiceFacade.getComputeNodeService().persistLabels(instanceId, new ArrayList<>(labels));
             }
         }
     }

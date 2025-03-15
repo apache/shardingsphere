@@ -103,7 +103,7 @@ class CreateEncryptRuleExecutorTest {
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertIfNotExistsRuleConfiguration));
     }
     
