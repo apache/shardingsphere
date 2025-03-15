@@ -166,7 +166,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertAlterNullRuleConfiguration() throws SQLException {
         metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
-        verify(metaDataPersistFacade, times(0)).getMetaDataVersionService();
+        verify(metaDataPersistFacade, times(0)).getVersionService();
     }
     
     @Test
@@ -195,7 +195,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     @Test
     void assertRemoveNullRuleConfigurationItem() throws SQLException {
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
-        verify(metaDataPersistFacade, times(0)).getMetaDataVersionService();
+        verify(metaDataPersistFacade, times(0)).getVersionService();
     }
     
     @Test
