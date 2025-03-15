@@ -38,9 +38,6 @@ public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<U
     
     @Override
     public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
-        if (!contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            return;
-        }
         String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find(instanceId);
         if (computeNodeInstance.isPresent()) {
