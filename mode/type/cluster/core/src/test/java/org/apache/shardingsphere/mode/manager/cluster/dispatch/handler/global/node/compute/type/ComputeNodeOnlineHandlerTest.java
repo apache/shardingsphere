@@ -63,7 +63,7 @@ class ComputeNodeOnlineHandlerTest {
     void assertHandleWithInstanceOnlineEvent() {
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
-        when(clusterPersistServiceFacade.getComputeNodePersistService().loadInstance(any())).thenReturn(computeNodeInstance);
+        when(clusterPersistServiceFacade.getComputeNodeService().loadInstance(any())).thenReturn(computeNodeInstance);
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
         handler.handle(contextManager, new DataChangedEvent("/nodes/compute_nodes/online/proxy/foo_instance_id", "{attribute: 127.0.0.1@3307,version: 1}", Type.ADDED));
         verify(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry()).add(computeNodeInstance);

@@ -108,7 +108,7 @@ class ShowComputeNodesExecutorTest {
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getClusterInstanceRegistry().getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
-        when(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
+        when(clusterPersistServiceFacade.getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
         return result;
     }

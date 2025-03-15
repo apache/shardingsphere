@@ -41,7 +41,7 @@ public final class SetComputeNodeStateExecutor implements DistSQLUpdateExecutor<
         }
         if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
             ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
-            clusterPersistServiceFacade.getComputeNodePersistService().updateState(sqlStatement.getInstanceId(),
+            clusterPersistServiceFacade.getComputeNodeService().updateState(sqlStatement.getInstanceId(),
                     "DISABLE".equals(sqlStatement.getState()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK);
         }
     }

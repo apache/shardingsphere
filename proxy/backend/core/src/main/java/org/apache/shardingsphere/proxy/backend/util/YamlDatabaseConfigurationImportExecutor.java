@@ -98,7 +98,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addDatabase(final String databaseName) {
-        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().createDatabase(databaseName);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
@@ -110,7 +110,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             propsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
         }
         validateHandler.validate(propsMap);
-        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().registerStorageUnits(databaseName, propsMap);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().registerStorageUnits(databaseName, propsMap);
         Map<String, StorageUnit> storageUnits = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapCreator.create(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
@@ -154,6 +154,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void dropDatabase(final ShardingSphereDatabase database) {
-        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().dropDatabase(database);
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().dropDatabase(database);
     }
 }

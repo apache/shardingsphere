@@ -63,10 +63,10 @@ public final class ComputeNodeOnlineHandler implements ComputeNodeChangedHandler
         String instanceId = NodePathSearcher.get(event.getKey(), OnlineNodePath.createInstanceIdSearchCriteria());
         ComputeNodeData computeNodeData = new YamlComputeNodeDataSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlComputeNodeData.class));
         InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(instanceId, instanceType, computeNodeData);
+        ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
         switch (event.getType()) {
             case ADDED:
-                ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
-                clusterInstanceRegistry.add(clusterPersistServiceFacade.getComputeNodePersistService().loadInstance(instanceMetaData));
+                clusterInstanceRegistry.add(clusterPersistServiceFacade.getComputeNodeService().loadInstance(instanceMetaData));
                 break;
             case DELETED:
                 clusterInstanceRegistry.delete(new ComputeNodeInstance(instanceMetaData));

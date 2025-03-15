@@ -42,7 +42,7 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ContextManager contextManager) {
         String modeType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType();
-        Collection<ComputeNodeInstance> instances = contextManager.getPersistServiceFacade().getModeFacade().getComputeNodePersistService().loadAllInstances();
+        Collection<ComputeNodeInstance> instances = contextManager.getPersistServiceFacade().getModeFacade().getComputeNodeService().loadAllInstances();
         return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
