@@ -105,6 +105,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         databaseMetaDataFacade.getView().persist(database.getName(), schemaName, alteredViews);
         droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(database.getName(), schemaName, each));
         droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(database.getName(), schemaName, each));
+        afterAlterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
+    }
+    
+    private void afterAlterSchema(final ShardingSphereDatabase database, final String schemaName,
+                                  final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
+                                  final Collection<String> droppedTables, final Collection<String> droppedViews) {
         alteredTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), schemaName, each));
         alteredViews.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterView(database.getName(), schemaName, each));
         droppedTables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().dropTable(database.getName(), schemaName, each));
