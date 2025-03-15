@@ -38,7 +38,6 @@ import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBu
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
@@ -100,11 +99,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
                             final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
                             final Collection<String> droppedTables, final Collection<String> droppedViews) {
-        DatabaseMetaDataPersistFacade databaseMetaDataFacade = metaDataPersistFacade.getDatabaseMetaDataFacade();
-        databaseMetaDataFacade.getTable().persist(database.getName(), schemaName, alteredTables);
-        databaseMetaDataFacade.getView().persist(database.getName(), schemaName, alteredViews);
-        droppedTables.forEach(each -> databaseMetaDataFacade.getTable().drop(database.getName(), schemaName, each));
-        droppedViews.forEach(each -> databaseMetaDataFacade.getView().drop(database.getName(), schemaName, each));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().alterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
         afterAlterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
     }
     
