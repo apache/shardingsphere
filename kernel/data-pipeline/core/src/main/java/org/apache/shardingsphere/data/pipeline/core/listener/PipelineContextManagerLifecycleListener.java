@@ -32,7 +32,6 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
@@ -48,17 +47,12 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     
     @Override
     public void onInitialized(final ContextManager contextManager) {
-        ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
-        if (!contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
-            return;
-        }
         String preSelectedDatabaseName = contextManager.getPreSelectedDatabaseName();
         if (DefaultDatabase.LOGIC_NAME.equals(preSelectedDatabaseName)) {
             return;
         }
         PipelineContextKey contextKey = new PipelineContextKey(preSelectedDatabaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
-        PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
+        PipelineContextManager.putContext(contextKey, new PipelineContext(contextManager.getComputeNodeInstanceContext().getModeConfiguration(), contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
