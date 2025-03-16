@@ -35,7 +35,7 @@ class StatisticsCollectContextManagerLifecycleListenerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         new StatisticsCollectContextManagerLifecycleListener().onInitialized(contextManager);
-        verify(contextManager.getComputeNodeInstanceContext(), times(2)).getModeConfiguration();
+        verify(contextManager.getComputeNodeInstanceContext()).getModeConfiguration();
     }
     
     @Test
@@ -44,7 +44,7 @@ class StatisticsCollectContextManagerLifecycleListenerTest {
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
         when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()).thenReturn(InstanceType.PROXY);
         new StatisticsCollectContextManagerLifecycleListener().onInitialized(contextManager);
-        verify(contextManager.getComputeNodeInstanceContext(), times(3)).getModeConfiguration();
+        verify(contextManager.getComputeNodeInstanceContext(), times(2)).getModeConfiguration();
     }
     
     @Test
