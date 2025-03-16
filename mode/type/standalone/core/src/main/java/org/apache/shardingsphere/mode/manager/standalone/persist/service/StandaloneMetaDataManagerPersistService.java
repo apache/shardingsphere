@@ -188,27 +188,10 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) {
         for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
-            afterStorageUnitsUnregistered(database.getName(), each);
+            metaDataContextManager.getStorageUnitManager().unregister(database.getName(), each);
+            metaDataPersistFacade.getDatabaseMetaDataFacade().unregisterStorageUnits(database.getName(), metaDataContextManager.getMetaDataContexts());
         }
         OrderedServicesCache.clearCache();
-    }
-    
-    private void afterStorageUnitsUnregistered(final String databaseName, final String storageUnitName) {
-        metaDataContextManager.getStorageUnitManager().unregister(databaseName, storageUnitName);
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
-                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
-        try {
-            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
-            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey()));
-                tables.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().drop(databaseName, entry.getKey(), each.getName()));
-            }
-        } catch (final SQLException ex) {
-            throw new LoadTableMetaDataFailedException(databaseName, ex);
-        }
     }
     
     private Collection<String> getToBeDroppedResourceNames(final String databaseName, final Collection<String> toBeDroppedResourceNames) {

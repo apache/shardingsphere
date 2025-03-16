@@ -103,12 +103,12 @@ public final class MetaDataPersistFacade {
             databaseMetaDataFacade.getDatabase().add(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
-            databaseRuleService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
+            databaseRuleService.persist(databaseName, decorateRuleConfigurations(databaseName, dataSources, rules));
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<RuleConfiguration> decorateRuleConfigs(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+    private Collection<RuleConfiguration> decorateRuleConfigurations(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             RuleConfiguration ruleConfig = each.getConfiguration();
