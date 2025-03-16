@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -139,7 +140,8 @@ public final class DatabaseMetaDataPersistFacade {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
                 database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
         try {
-            for (Entry<String, ShardingSphereSchema> entry : GenericSchemaBuilder.build(database.getProtocolType(), material).entrySet()) {
+            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(database.getProtocolType(), material);
+            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
                 GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey())).forEach(each -> table.drop(databaseName, entry.getKey(), each.getName()));
             }
         } catch (final SQLException ex) {

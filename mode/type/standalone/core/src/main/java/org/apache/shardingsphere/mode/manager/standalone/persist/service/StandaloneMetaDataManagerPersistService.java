@@ -189,7 +189,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
             metaDataContextManager.getStorageUnitManager().unregister(database.getName(), each);
-            metaDataPersistFacade.getDatabaseMetaDataFacade().unregisterStorageUnits(database.getName(), metaDataContextManager.getMetaDataContexts());
+            MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
+            metaDataPersistFacade.getDatabaseMetaDataFacade().unregisterStorageUnits(database.getName(), reloadMetaDataContexts);
         }
         OrderedServicesCache.clearCache();
     }
