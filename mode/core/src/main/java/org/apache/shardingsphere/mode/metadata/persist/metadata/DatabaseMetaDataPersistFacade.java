@@ -132,6 +132,7 @@ public final class DatabaseMetaDataPersistFacade {
      *
      * @param databaseName database name
      * @param reloadMetaDataContexts reload meta data contexts
+     * @throws LoadTableMetaDataFailedException if an error occurs while loading table metadata
      */
     public void unregisterStorageUnits(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
