@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -51,6 +52,34 @@ public final class DatabaseMetaDataPersistFacade {
         schema = new SchemaMetaDataPersistService(repository, versionPersistService);
         table = new TableMetaDataPersistService(repository, versionPersistService);
         view = new ViewMetaDataPersistService(repository, versionPersistService);
+    }
+    
+    /**
+     * Persist reload meta data by alter.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> schema.alterByRuleAltered(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
+    }
+    
+    /**
+     * Persist reload meta data by drop.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> schema.alterByRuleDropped(databaseName, each));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
     }
     
     /**

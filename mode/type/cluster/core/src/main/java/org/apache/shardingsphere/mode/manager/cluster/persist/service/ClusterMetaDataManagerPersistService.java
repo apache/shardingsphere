@@ -75,7 +75,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
-        metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(databaseName),
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(databaseName, getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
@@ -161,7 +161,7 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseStatistics(databaseName))
                 .ifPresent(optional -> optional.getSchemaStatisticsMap().forEach((schemaName, schemaStatistics) -> metaDataPersistFacade.getStatisticsService()
                         .persist(originalMetaDataContexts.getMetaData().getDatabase(databaseName), schemaName, schemaStatistics)));
-        metaDataPersistFacade.persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
                 originalMetaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
