@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine.ProjectionEngine;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
@@ -241,8 +242,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 ShardingSphereTable table = schema.getTable(((ColumnProjection) each).getOriginalTable().getValue());
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(buffer, requestedItems, table, column, (ColumnProjection) each, ++columnCount);
-            } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection(((ExpressionProjection) each).getExpressionSegment().getExpr(), buffer, requestedItems, ++columnCount);
+            }
+            if (each instanceof ExpressionProjection) {
+                processExpressionProjection(((ExpressionProjection) each).getExpressionSegment().getExpr(), each, buffer, requestedItems, ++columnCount);
+            }
+            if (each instanceof AggregationProjection) {
+                String functionName = ((AggregationProjection) each).getType().name();
+                processCustomColumn(null, functionName , getFunctionType(functionName), each, buffer, requestedItems, ++columnCount);
             }
         }
         return columnCount;
@@ -272,7 +278,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
-            processCustomColumn(null, null, 12, buffer, requestedItems, ++columnCount);
+            processCustomColumn(null, null, 12, null, buffer, requestedItems, ++columnCount);
         }
         return columnCount;
     }
@@ -353,10 +359,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return expr instanceof ParameterMarkerExpressionSegment;
     }
     
-    private void processExpressionProjection(ExpressionSegment expr, ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, int columnCount) {
+    private void processExpressionProjection(ExpressionSegment expr, Projection projection, ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, int columnCount) {
         if (expr instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) expr).getFunctionName();
-            processCustomColumn(null, functionName, getFunctionType(functionName), buffer, requestedItems, columnCount);
+            processCustomColumn(null, functionName, getFunctionType(functionName), projection, buffer, requestedItems, columnCount);
         }
     }
     
@@ -371,13 +377,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
-    private void processCustomColumn(String tableName, String columnName, int dataType, ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, int columnCount) {
+    private void processCustomColumn(String tableName, String columnName, int dataType, Projection projection, ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
-        processColumn(buffer, requestedItems, table, column, null, columnCount);
+        processColumn(buffer, requestedItems, table, column, projection, columnCount);
     }
     
-    private void processColumn(ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, ShardingSphereTable table, ShardingSphereColumn column, ColumnProjection projection, int idx) {
+    private void processColumn(ByteBuf buffer, List<FirebirdSQLInfoPacketType> requestedItems, ShardingSphereTable table, ShardingSphereColumn column, Projection projection, int idx) {
         //SQLDA_SEQ uses 1-based index
         for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
             switch (requestedItem) {
