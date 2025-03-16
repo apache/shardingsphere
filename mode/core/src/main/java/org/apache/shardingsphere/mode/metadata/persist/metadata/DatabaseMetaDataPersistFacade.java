@@ -129,7 +129,7 @@ public final class DatabaseMetaDataPersistFacade {
     
     /**
      * Register storage units.
-     * 
+     *
      * @param databaseName database name
      * @param reloadMetaDataContexts reload meta data contexts
      */
