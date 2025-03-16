@@ -157,6 +157,7 @@ public final class DatabaseMetaDataPersistFacade {
      * @param reloadMetaDataContexts reload meta data contexts
      * @param needReloadTables need reload tables
      * @return altered schema and tables map
+     * @throws LoadTableMetaDataFailedException if an error occurs while loading table metadata
      */
     public Map<String, Collection<ShardingSphereTable>> persistAlteredTables(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final Collection<String> needReloadTables) {
         ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
