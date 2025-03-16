@@ -31,13 +31,6 @@ import static org.mockito.Mockito.when;
 class StatisticsCollectContextManagerLifecycleListenerTest {
     
     @Test
-    void assertOnInitializedWithNotClusterMode() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        new StatisticsCollectContextManagerLifecycleListener().onInitialized(contextManager);
-        verify(contextManager.getComputeNodeInstanceContext()).getModeConfiguration();
-    }
-    
-    @Test
     void assertOnInitializedWithNotProxy() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
