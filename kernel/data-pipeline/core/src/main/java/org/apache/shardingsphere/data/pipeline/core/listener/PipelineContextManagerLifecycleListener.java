@@ -35,6 +35,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Pipeline context manager lifecycle listener.
  */
+@ContextManagerLifecycleListenerModeRequired("Cluster")
 @Slf4j
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     

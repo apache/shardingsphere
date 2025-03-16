@@ -23,12 +23,14 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
 
 import java.util.Map;
 
 /**
  * Readwrite splitting context manager lifecycle listener.
  */
+@ContextManagerLifecycleListenerModeRequired("Cluster")
 public class ReadwriteSplittingContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
