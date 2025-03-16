@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.mode.metadata.persist.metadata;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
@@ -31,7 +36,9 @@ import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMeta
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map.Entry;
 
 /**
  * Database meta data persist facade.
@@ -118,5 +125,25 @@ public final class DatabaseMetaDataPersistFacade {
             view.persist(database.getName(), renameSchemaName, schema.getAllViews());
         }
         this.schema.drop(database.getName(), schemaName);
+    }
+    
+    /**
+     * Register storage units.
+     *
+     * @param databaseName database name
+     * @param reloadMetaDataContexts reload meta data contexts
+     * @throws LoadTableMetaDataFailedException if an error occurs while loading table metadata
+     */
+    public void unregisterStorageUnits(final String databaseName, final MetaDataContexts reloadMetaDataContexts) {
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        try {
+            for (Entry<String, ShardingSphereSchema> entry : GenericSchemaBuilder.build(database.getProtocolType(), material).entrySet()) {
+                GenericSchemaManager.getToBeDroppedTables(entry.getValue(), database.getSchema(entry.getKey())).forEach(each -> table.drop(databaseName, entry.getKey(), each.getName()));
+            }
+        } catch (final SQLException ex) {
+            throw new LoadTableMetaDataFailedException(databaseName, ex);
+        }
     }
 }
