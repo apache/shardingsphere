@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -146,6 +147,34 @@ public final class DatabaseMetaDataPersistFacade {
             }
         } catch (final SQLException ex) {
             throw new LoadTableMetaDataFailedException(databaseName, ex);
+        }
+    }
+    
+    /**
+     * Persist altered tables.
+     *
+     * @param databaseName database name
+     * @param reloadMetaDataContexts reload meta data contexts
+     * @param needReloadTables need reload tables
+     * @return altered schema and tables map
+     * @throws LoadTableMetaDataFailedException if an error occurs while loading table metadata
+     */
+    public Map<String, Collection<ShardingSphereTable>> persistAlteredTables(final String databaseName, final MetaDataContexts reloadMetaDataContexts, final Collection<String> needReloadTables) {
+        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
+                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
+                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        try {
+            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReloadTables, database.getProtocolType(), material);
+            Map<String, Collection<ShardingSphereTable>> result = new HashMap<>(schemas.size(), 1F);
+            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
+                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeAddedTables(entry.getValue(), database.getSchema(entry.getKey()));
+                table.persist(databaseName, entry.getKey(), tables);
+                result.put(entry.getKey(), tables);
+            }
+            return result;
+        } catch (final SQLException ex) {
+            throw new LoadTableMetaDataFailedException(databaseName, needReloadTables, ex);
         }
     }
 }
