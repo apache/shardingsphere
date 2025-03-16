@@ -39,11 +39,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
-import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -80,9 +79,7 @@ public final class ContextManager implements AutoCloseable {
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
-            ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class).forEach(each -> each.onInitialized(this));
-        }
+        ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
     }
     
     /**
@@ -231,9 +228,7 @@ public final class ContextManager implements AutoCloseable {
     
     @Override
     public void close() {
-        if (computeNodeInstanceContext.getModeConfiguration().isCluster()) {
-            ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class).forEach(each -> each.onDestroyed(this));
-        }
+        ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onDestroyed(this));
         executorEngine.close();
         metaDataContexts.getMetaData().close();
         persistServiceFacade.close();
