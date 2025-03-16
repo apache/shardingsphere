@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
@@ -48,9 +47,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
+import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
@@ -173,16 +172,11 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        MetaDataVersion metaDataVersion = mock(MetaDataVersion.class);
-        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("foo_type"));
-        when(metaDataVersion.getNodePath()).thenReturn(databaseRuleNodePath);
-        when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(metaDataVersion));
-        RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
-        when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
-        setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
-        when(metaDataPersistFacade.getRepository().query("/metadata/foo_db/rules/fixture/foo_type/active_version")).thenReturn("0");
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"));
+        when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
+        when(metaDataPersistFacade.getRepository().query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(databaseRuleNodePath);
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(deepEq(databaseRuleNodePath));
     }
     
     @Test
@@ -201,15 +195,10 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class, RETURNS_DEEP_STUBS);
-        MetaDataVersion metaDataVersion = mock(MetaDataVersion.class);
-        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(metaDataVersion));
-        RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = mock(RuleItemChangedNodePathBuilder.class);
-        DatabaseRuleNodePath databaseRuleNodePath = mock(DatabaseRuleNodePath.class);
-        when(metaDataVersion.getNodePath()).thenReturn(databaseRuleNodePath);
-        when(ruleItemChangedNodePathBuilder.build(eq("foo_db"), any())).thenReturn(Optional.of(databaseRuleNodePath));
-        setRuleItemChangedBuildExecutor(ruleItemChangedNodePathBuilder);
+        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"));
+        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(databaseRuleNodePath);
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(databaseRuleNodePath));
     }
     
     @Test
@@ -246,11 +235,5 @@ class StandaloneMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.dropTables(new ShardingSphereDatabase(
                 "foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", Collections.singleton("foo_tbl"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setRuleItemChangedBuildExecutor(final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder) {
-        Plugins.getMemberAccessor().set(
-                StandaloneMetaDataManagerPersistService.class.getDeclaredField("ruleItemChangedNodePathBuilder"), metaDataManagerPersistService, ruleItemChangedNodePathBuilder);
     }
 }

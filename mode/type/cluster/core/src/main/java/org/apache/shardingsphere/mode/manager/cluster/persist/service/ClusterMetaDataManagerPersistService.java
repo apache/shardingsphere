@@ -195,9 +195,9 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
     }
     
-    private Collection<String> getNeedReloadTables(final ShardingSphereDatabase originalShardingDatabase, final RuleConfiguration toBeAlteredRuleConfig) {
+    private Collection<String> getNeedReloadTables(final ShardingSphereDatabase originalDatabase, final RuleConfiguration toBeAlteredRuleConfig) {
         if (toBeAlteredRuleConfig instanceof SingleRuleConfiguration) {
-            Collection<String> originalSingleTables = originalShardingDatabase.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration().getLogicTableNames();
+            Collection<String> originalSingleTables = originalDatabase.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration().getLogicTableNames();
             return toBeAlteredRuleConfig.getLogicTableNames().stream().filter(each -> !originalSingleTables.contains(each)).collect(Collectors.toList());
         }
         return toBeAlteredRuleConfig.getLogicTableNames();
