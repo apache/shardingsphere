@@ -18,21 +18,15 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist.service;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
-import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
@@ -221,7 +215,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
             }
         }
-        reloadAlteredTables(database.getName(), needReloadTables);
+        Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
+                database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
+        alterTables(database, schemaAndTablesMap);
         OrderedServicesCache.clearCache();
     }
     
@@ -238,25 +234,17 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
                 metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
             }
         }
-        reloadAlteredTables(database.getName(), needReloadTables);
+        Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
+                database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
+        alterTables(database, schemaAndTablesMap);
         OrderedServicesCache.clearCache();
     }
     
-    private void reloadAlteredTables(final String databaseName, final Collection<String> needReloadTables) {
-        MetaDataContexts reloadMetaDataContexts = metaDataContextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = reloadMetaDataContexts.getMetaData().getDatabase(databaseName);
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(),
-                database.getRuleMetaData().getRules(), reloadMetaDataContexts.getMetaData().getProps(),
-                new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
-        try {
-            Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(needReloadTables, database.getProtocolType(), material);
-            for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-                Collection<ShardingSphereTable> tables = GenericSchemaManager.getToBeAddedTables(entry.getValue(), database.getSchema(entry.getKey()));
-                metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(databaseName, entry.getKey(), tables);
-                tables.forEach(each -> metaDataContextManager.getDatabaseMetaDataManager().alterTable(databaseName, entry.getKey(), each));
+    private void alterTables(final ShardingSphereDatabase database, final Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap) {
+        for (Entry<String, Collection<ShardingSphereTable>> entry : schemaAndTablesMap.entrySet()) {
+            for (ShardingSphereTable each : entry.getValue()) {
+                metaDataContextManager.getDatabaseMetaDataManager().alterTable(database.getName(), entry.getKey(), each);
             }
-        } catch (final SQLException ex) {
-            throw new LoadTableMetaDataFailedException(databaseName, needReloadTables, ex);
         }
     }
     
