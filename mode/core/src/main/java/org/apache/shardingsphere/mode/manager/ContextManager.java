@@ -75,10 +75,10 @@ public final class ContextManager implements AutoCloseable {
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
+        executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
-        executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
     }
     
@@ -90,7 +90,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public ShardingSphereDatabase getDatabase(final String name) {
         ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
-        ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
         return metaData.getDatabase(name);
     }
