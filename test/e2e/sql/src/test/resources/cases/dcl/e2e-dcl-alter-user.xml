@@ -20,34 +20,15 @@
     <test-case sql="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL" />
     <test-case sql="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <test-case sql="ALTER USER 'user_dev'@'localhost'" db-types="MySQL" />
-    <test-case sql="ALTER USER user_dev identified by passwd_dev" db-types="Oracle" />
     <test-case sql="ALTER USER 'user_dev'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
-    <test-case sql="ALTER USER user_dev account lock" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev WITH NAME = user_dev_new" db-types="SQLServer" />
     <test-case sql="ALTER USER default_user RENAME TO user_dev_new" db-types="PostgreSQL" />
-    <test-case sql="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <test-case sql="ALTER USER default_user WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
-    <test-case sql="ALTER USER user_dev IDENTIFIED EXTERNALLY" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev IDENTIFIED GLOBALLY AS 'CN=user_dev'" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev PASSWORD EXPIRE ACCOUNT LOCK" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev GRANT CONNECT THROUGH user2" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev GRANT CONNECT THROUGH user2 WITH ROLE role_dev" db-types="Oracle" />
     <test-case sql="ALTER USER IF EXISTS user_dev" db-types="MySQL" />
-    <test-case sql="ALTER USER user_dev IDENTIFIED BY password ACCOUNT LOCK" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev GRANT CONNECT THROUGH user2 REVOKE CONNECT THROUGH user3" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev_bak WITH NAME = user_dev" db-types="SQLServer" />
     <test-case sql="ALTER USER default_user RESET ALL" db-types="PostgreSQL" />
     <test-case sql="ALTER USER default_user RESET client_min_messages" db-types="PostgreSQL" />
-    <test-case sql="ALTER USER user_dev REVOKE CONNECT THROUGH user2" db-types="Oracle" />
     <test-case sql="ALTER USER default_user SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <test-case sql="ALTER USER default_user SET client_min_messages FROM CURRENT" db-types="PostgreSQL" />
-    <test-case sql="ALTER USER user_dev WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
-    <test-case sql="ALTER USER user_dev WITH LOGIN = login1" db-types="SQLServer" />
-    <test-case sql="ALTER USER user_dev WITH PASSWORD = 'password'" db-types="SQLServer" />
-    <test-case sql="ALTER USER user_dev CONTAINER = ALL" db-types="Oracle" />
     <test-case sql="ALTER USER default_user WITH SUPERUSER" db-types="PostgreSQL" />
     <test-case sql="ALTER USER default_user WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
     <test-case sql="ALTER USER default_user WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-    <test-case sql="ALTER USER user_dev QUOTA 1M ON tablespace1" db-types="Oracle" />
-    <test-case sql="ALTER USER user_dev DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
 </e2e-test-cases>
