@@ -20,6 +20,7 @@
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 1. SQL Binder: Support case when then else segment bind - [#34600](https://github.com/apache/shardingsphere/pull/34600)
+1. SQL Binder: Support outer join expression bind - [#35019](https://github.com/apache/shardingsphere/pull/35019)
 1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
 1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)
 1. SQL Parser: Support MySQL INSERT with GEOMCOLLECTION function parse - [#34654](https://github.com/apache/shardingsphere/pull/34654)
