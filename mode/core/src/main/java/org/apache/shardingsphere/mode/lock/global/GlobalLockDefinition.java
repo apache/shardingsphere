@@ -34,7 +34,7 @@ public final class GlobalLockDefinition implements LockDefinition {
     
     /**
      * Get lock key.
-     * 
+     *
      * @return lock key
      */
     public String getLockKey() {
