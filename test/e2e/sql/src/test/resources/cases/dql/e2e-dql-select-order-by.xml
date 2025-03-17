@@ -67,11 +67,7 @@
     <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
+
     <test-case sql="SELECT * FROM t_order o ORDER BY order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -84,11 +80,11 @@
     <!--<test-case sql="SELECT * FROM t_order o ORDER BY ?" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="order_id:String" expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->
-    
+
     <test-case sql="SELECT * FROM t_order ORDER BY order_id" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
+
     <test-case sql="SELECT * FROM &quot;t_order_item&quot; WHERE &quot;item_id&quot; != ? ORDER BY &quot;item_id&quot;" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -104,7 +100,7 @@
     </test-case>-->
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl" />
-    
+
     <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
