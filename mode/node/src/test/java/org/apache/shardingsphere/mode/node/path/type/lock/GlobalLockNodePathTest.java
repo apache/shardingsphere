@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.mode.node.path.type.lock;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.lock.GlobalLockNodePath;
+import org.junit.jupiter.api.Test;
 
-/**
- * Global lock definition.
- */
-public final class GlobalLockDefinition implements LockDefinition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class GlobalLockNodePathTest {
     
-    private final GlobalLockNodePath nodePath;
-    
-    public GlobalLockDefinition(final GlobalLock globalLock) {
-        nodePath = new GlobalLockNodePath(globalLock.getName());
-    }
-    
-    /**
-     * Get lock key.
-     *
-     * @return lock key
-     */
-    public String getLockKey() {
-        return NodePathGenerator.toPath(nodePath);
+    @Test
+    void assertToPath() {
+        assertThat(NodePathGenerator.toPath(new GlobalLockNodePath("foo_lock")), is("/lock/global/locks/foo_lock"));
     }
 }

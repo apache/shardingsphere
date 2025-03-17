@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.mode.node.path.type.lock;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.lock.GlobalLockNodePath;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Global lock definition.
+ * Global lock node path.
  */
-public final class GlobalLockDefinition implements LockDefinition {
+@NodePathEntity("/lock/global/locks/${name}")
+@RequiredArgsConstructor
+@Getter
+public final class GlobalLockNodePath implements NodePath {
     
-    private final GlobalLockNodePath nodePath;
-    
-    public GlobalLockDefinition(final GlobalLock globalLock) {
-        nodePath = new GlobalLockNodePath(globalLock.getName());
-    }
-    
-    /**
-     * Get lock key.
-     *
-     * @return lock key
-     */
-    public String getLockKey() {
-        return NodePathGenerator.toPath(nodePath);
-    }
+    private final String name;
 }
