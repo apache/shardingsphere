@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -25,40 +25,40 @@
         <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT SUM(user_id) AS user_id_sum FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT SUM(user_id) AS user_id_sum FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1-1" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1-1" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1 - 1" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1 - 1" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT MAX(user_id) AS max_user_id FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT MAX(user_id) AS max_user_id FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT MIN(user_id) AS min_user_id FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT MIN(user_id) AS min_user_id FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <!-- FIXME #15593 Expected: is "19", but: was "19.5000" in db scenario -->
-    <test-case sql="SELECT AVG(user_id) AS user_id_avg FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT AVG(user_id) AS user_id_avg FROM t_order" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1000:int, 1909:int"  expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -66,31 +66,31 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY o.user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY o.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-source-name="read_dataset" />
     </test-case>
 

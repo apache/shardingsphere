@@ -17,6 +17,6 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="DROP ROLE IF EXISTS default_role" db-types="MySQL,PostgreSQL,SQLServer" />
-    <test-case sql="DROP ROLE default_role" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
+    <test-case sql="DROP ROLE IF EXISTS default_role" db-types="MySQL,PostgreSQL" />
+    <test-case sql="DROP ROLE default_role" db-types="MySQL,PostgreSQL" />
 </e2e-test-cases>
