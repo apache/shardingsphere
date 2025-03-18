@@ -49,6 +49,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
             "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARCHAR2", "VARIADIC", "VERBOSE", "VERIFY", "WHEN", "WHERE", "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS",
             "XMLFOREST", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE"));
     
+    private String defaultSchema;
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
@@ -68,8 +70,6 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
         result.put("CHARACTER VARYING", Types.VARCHAR);
         return result;
     }
-    
-    private String defaultSchema = null;
     
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
@@ -92,7 +92,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public String getSchema(Connection connection) {
+    public String getSchema(final Connection connection) {
         this.defaultSchema = DialectDatabaseMetaData.super.getSchema(connection);
         return this.defaultSchema;
     }

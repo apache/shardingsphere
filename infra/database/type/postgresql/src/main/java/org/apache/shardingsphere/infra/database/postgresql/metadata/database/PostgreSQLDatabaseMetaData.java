@@ -46,7 +46,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
             "TABLESAMPLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARIADIC", "VERBOSE", "WHEN", "WHERE",
             "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS", "XMLFOREST", "XMLNAMESPACES", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE", "XMLTABLE"));
     
-    private String defaultSchema = null;
+    private String defaultSchema;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -89,7 +89,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public String getSchema(Connection connection) {
+    public String getSchema(final Connection connection) {
         this.defaultSchema = DialectDatabaseMetaData.super.getSchema(connection);
         return this.defaultSchema;
     }
