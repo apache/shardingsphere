@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 class OuterJoinExpressionBinderTest {
     
     @Test
-    public void assertBindOuterJoinExpression() {
+    void assertBindOuterJoinExpression() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("t_order"), new IdentifierValue("order_id"));

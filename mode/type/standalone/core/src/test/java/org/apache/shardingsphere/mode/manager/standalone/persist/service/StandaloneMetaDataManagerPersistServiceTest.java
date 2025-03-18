@@ -157,7 +157,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertAlterNullRuleConfiguration() throws SQLException {
+    void assertAlterNullRuleConfiguration() {
         metaDataManagerPersistService.alterRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
         verify(metaDataPersistFacade, times(0)).getVersionService();
     }
@@ -180,7 +180,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertRemoveNullRuleConfigurationItem() throws SQLException {
+    void assertRemoveNullRuleConfigurationItem() {
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), null);
         verify(metaDataPersistFacade, times(0)).getVersionService();
     }
@@ -224,14 +224,14 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertCreateTable() throws SQLException {
+    void assertCreateTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
         metaDataManagerPersistService.createTable(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", table);
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }
     
     @Test
-    void assertDropTables() throws SQLException {
+    void assertDropTables() {
         metaDataManagerPersistService.dropTables(new ShardingSphereDatabase(
                 "foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_schema", Collections.singleton("foo_tbl"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getTable()).drop("foo_db", "foo_schema", "foo_tbl");
