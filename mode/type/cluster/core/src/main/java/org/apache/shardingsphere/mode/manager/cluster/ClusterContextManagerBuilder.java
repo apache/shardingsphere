@@ -65,7 +65,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
         registerOnline(computeNodeInstanceContext, param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
-        return result; 
+        return result;
     }
     
     private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
