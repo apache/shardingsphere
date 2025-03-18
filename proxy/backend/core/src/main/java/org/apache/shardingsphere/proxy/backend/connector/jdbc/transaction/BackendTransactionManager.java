@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -25,10 +26,10 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
-import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
@@ -96,9 +97,9 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void commit() throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+        LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
         for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-            entry.getValue().beforeCommit(entry.getKey(), databaseType,
-                    connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getLockContext());
+            entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
         }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
@@ -109,8 +110,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
             } finally {
                 for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-                    entry.getValue().afterCommit(entry.getKey(), databaseType,
-                            connection.getCachedConnections().values(), getTransactionContext(), ProxyContext.getInstance().getContextManager().getLockContext());
+                    entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
                 }
                 for (Connection each : connection.getCachedConnections().values()) {
                     ConnectionSavepointManager.getInstance().transactionFinished(each);
