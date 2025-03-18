@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -60,7 +61,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()));
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, new ClusterLockContext(new GlobalLockPersistService(repository)), repository);
+        LockContext lockContext = new ClusterLockContext(new GlobalLockPersistService(repository));
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
         registerOnline(computeNodeInstanceContext, param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
         return result;
