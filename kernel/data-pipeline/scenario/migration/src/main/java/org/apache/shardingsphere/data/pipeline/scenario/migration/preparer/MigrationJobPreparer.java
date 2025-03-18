@@ -113,7 +113,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         String jobId = jobConfig.getJobId();
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-        LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
+        LockContext lockContext = contextManager.getLockContext();
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }
