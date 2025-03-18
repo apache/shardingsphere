@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushD
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDat
     
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                        final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         metaDataManagerPersistService.dropTables(database, schemaName, tableNames);
     }

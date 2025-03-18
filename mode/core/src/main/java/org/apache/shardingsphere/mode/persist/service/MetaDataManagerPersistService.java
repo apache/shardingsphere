@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -92,9 +91,8 @@ public interface MetaDataManagerPersistService {
      * @param database database
      * @param schemaName schema name
      * @param table table
-     * @throws SQLException SQL exception
      */
-    void createTable(ShardingSphereDatabase database, String schemaName, ShardingSphereTable table) throws SQLException;
+    void createTable(ShardingSphereDatabase database, String schemaName, ShardingSphereTable table);
     
     /**
      * Drop tables.
@@ -102,9 +100,8 @@ public interface MetaDataManagerPersistService {
      * @param database database
      * @param schemaName schema name
      * @param tableNames table names
-     * @throws SQLException SQL exception
      */
-    void dropTables(ShardingSphereDatabase database, String schemaName, Collection<String> tableNames) throws SQLException;
+    void dropTables(ShardingSphereDatabase database, String schemaName, Collection<String> tableNames);
     
     /**
      * Register storage units.
@@ -134,27 +131,24 @@ public interface MetaDataManagerPersistService {
      *
      * @param database database
      * @param ruleMetaData rule meta data
-     * @throws SQLException SQL exception
      */
-    void alterSingleRuleConfiguration(ShardingSphereDatabase database, RuleMetaData ruleMetaData) throws SQLException;
+    void alterSingleRuleConfiguration(ShardingSphereDatabase database, RuleMetaData ruleMetaData);
     
     /**
      * Alter rule configuration.
      *
      * @param database database
      * @param toBeAlteredRuleConfig to be altered rule config
-     * @throws SQLException SQL exception
      */
-    void alterRuleConfiguration(ShardingSphereDatabase database, RuleConfiguration toBeAlteredRuleConfig) throws SQLException;
+    void alterRuleConfiguration(ShardingSphereDatabase database, RuleConfiguration toBeAlteredRuleConfig);
     
     /**
      * Remove rule configuration item.
      *
      * @param database database
      * @param toBeRemovedRuleConfig to be removed rule config
-     * @throws SQLException SQL exception
      */
-    void removeRuleConfigurationItem(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleConfig) throws SQLException;
+    void removeRuleConfigurationItem(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleConfig);
     
     /**
      * Remove rule configuration.

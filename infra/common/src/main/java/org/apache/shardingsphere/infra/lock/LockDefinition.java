@@ -25,7 +25,7 @@ public interface LockDefinition {
     /**
      * Get lock key.
      *
-     * @return lockKey
+     * @return lock key
      */
     String getLockKey();
 }
