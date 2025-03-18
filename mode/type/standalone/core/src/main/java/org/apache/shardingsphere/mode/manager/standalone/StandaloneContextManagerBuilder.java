@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -47,8 +48,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
+        LockContext lockContext = new StandaloneLockContext();
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, new StandaloneLockContext(), repository);
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
     }
     
     @Override
