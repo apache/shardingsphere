@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -68,6 +69,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
         return result;
     }
     
+    private String defaultSchema = null;
+    
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.HIGH;
@@ -85,7 +88,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return Optional.of("public");
+        return this.defaultSchema != null ? Optional.of(this.defaultSchema) : Optional.of("public");
+    }
+    
+    @Override
+    public String getSchema(Connection connection) {
+        this.defaultSchema = DialectDatabaseMetaData.super.getSchema(connection);
+        return this.defaultSchema;
     }
     
     @Override

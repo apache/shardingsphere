@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,6 +45,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
             "POSITION", "PRECISION", "PRIMARY", "REAL", "REFERENCES", "RETURNING", "RIGHT", "ROW", "SELECT", "SESSION_USER", "SETOF", "SIMILAR", "SMALLINT", "SOME", "SUBSTRING", "SYMMETRIC", "TABLE",
             "TABLESAMPLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARIADIC", "VERBOSE", "WHEN", "WHERE",
             "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS", "XMLFOREST", "XMLNAMESPACES", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE", "XMLTABLE"));
+    
+    private String defaultSchema = null;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -82,7 +85,13 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return Optional.of("public");
+        return this.defaultSchema != null ? Optional.of(this.defaultSchema) : Optional.of("public");
+    }
+    
+    @Override
+    public String getSchema(Connection connection) {
+        this.defaultSchema = DialectDatabaseMetaData.super.getSchema(connection);
+        return this.defaultSchema;
     }
     
     @Override
