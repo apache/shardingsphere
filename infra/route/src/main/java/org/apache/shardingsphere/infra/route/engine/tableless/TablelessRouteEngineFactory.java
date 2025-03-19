@@ -72,14 +72,14 @@ public final class TablelessRouteEngineFactory {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         // TODO remove this logic when proxy and jdbc support all dal statement @duanzhengqiang
         if (sqlStatement instanceof DALStatement) {
-            return getDALRouteEngine(sqlStatement, database);
+            return getDALRouteEngine(sqlStatement, database, queryContext.getConnectionContext());
         }
         // TODO Support more TCL statements by transaction module, then remove this.
         if (sqlStatement instanceof TCLStatement) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceBroadcastRouteEngine(queryContext.getConnectionContext());
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLRouteEngine(queryContext.getSqlStatementContext(), database);
+            return getDDLRouteEngine(queryContext.getSqlStatementContext(), database, queryContext.getConnectionContext());
         }
         if (sqlStatement instanceof DMLStatement) {
             return getDMLRouteEngine(queryContext.getSqlStatementContext(), queryContext.getConnectionContext());
@@ -87,12 +87,12 @@ public final class TablelessRouteEngineFactory {
         return new TablelessIgnoreRouteEngine();
     }
     
-    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database) {
+    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
         if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof SetStatement) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceBroadcastRouteEngine(connectionContext);
         }
         if (sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceBroadcastRouteEngine(connectionContext);
         }
         if (isResourceGroupStatement(sqlStatement)) {
             return new TablelessInstanceBroadcastRouteEngine(database);
@@ -105,13 +105,13 @@ public final class TablelessRouteEngineFactory {
                 || sqlStatement instanceof SetResourceGroupStatement;
     }
     
-    private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+    private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
         if (sqlStatementContext instanceof CursorAvailable) {
-            return getCursorRouteEngine(sqlStatementContext, database);
+            return getCursorRouteEngine(sqlStatementContext, database, connectionContext);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (isFunctionDDLStatement(sqlStatement) || isSchemaDDLStatement(sqlStatement)) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceBroadcastRouteEngine(connectionContext);
         }
         return new TablelessIgnoreRouteEngine();
     }
@@ -124,9 +124,9 @@ public final class TablelessRouteEngineFactory {
         return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
     }
     
-    private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+    private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-            return new TablelessDataSourceBroadcastRouteEngine();
+            return new TablelessDataSourceBroadcastRouteEngine(connectionContext);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
