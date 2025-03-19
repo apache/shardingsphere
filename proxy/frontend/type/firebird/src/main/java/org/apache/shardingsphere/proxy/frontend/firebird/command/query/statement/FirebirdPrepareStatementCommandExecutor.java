@@ -364,6 +364,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             String functionName = ((FunctionSegment) expr).getFunctionName();
             processCustomColumn(null, functionName, getFunctionType(functionName), projection, buffer, requestedItems, columnCount);
         }
+        if (expr instanceof BinaryOperationExpression) {
+            String operationName = getOperationName(((BinaryOperationExpression) expr).getOperator());
+            int operationType = getOperationType(((BinaryOperationExpression) expr).getOperator());
+            processCustomColumn(null, operationName, operationType, projection, buffer, requestedItems, columnCount);
+        }
     }
     
     private int getFunctionType(String functionName) {
@@ -371,6 +376,24 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "substring":
             case "current_role":
             case "current_user":
+                return 12;
+            default:
+                return 4;
+        }
+    }
+    
+    private String getOperationName(String operationType) {
+        switch (operationType) {
+            case "||":
+                return "CONCATENATION";
+            default:
+                return operationType;
+        }
+    }
+    
+    private int getOperationType(String operationType) {
+        switch (operationType) {
+            case "||":
                 return 12;
             default:
                 return 4;

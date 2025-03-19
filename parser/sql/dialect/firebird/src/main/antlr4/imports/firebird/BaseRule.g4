@@ -222,7 +222,7 @@ andOperator
     ;
 
 orOperator
-    : OR | CONCAT_
+    : OR
     ;
 
 notOperator
@@ -273,6 +273,7 @@ simpleExpr
     : functionCall
     | parameterMarker
     | literals
+    | simpleExpr CONCAT_ simpleExpr
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
     | variable
@@ -352,10 +353,6 @@ regularFunctionName
     | NULLIF
     | COALESCE
     ;
-
-//timeConstants
-//    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP
-//    ;
 
 matchExpression
     : literals MATCH UNIQUE? (PARTIAL | FULL)  subquery
