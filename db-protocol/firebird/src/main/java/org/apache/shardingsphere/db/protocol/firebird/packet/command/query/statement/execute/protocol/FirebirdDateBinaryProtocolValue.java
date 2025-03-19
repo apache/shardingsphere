@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,11 +31,11 @@ import java.util.Date;
 public final class FirebirdDateBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
     @Override
-    public Object read(final FirebirdPacketPayload payload) throws SQLException {
+    public Object read(final FirebirdPacketPayload payload) {
         int length = payload.readInt1();
         switch (length) {
-            case 0:
-                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent.");
+//            case 0:
+//                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent.");
             case 4:
                 return getTimestampForDate(payload);
             case 7:
@@ -47,7 +45,8 @@ public final class FirebirdDateBinaryProtocolValue implements FirebirdBinaryProt
                 result.setNanos(payload.readInt4() * 1000);
                 return result;
             default:
-                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_TIME", length));
+                return null;
+//                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_TIME", length));
         }
     }
     

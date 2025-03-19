@@ -45,6 +45,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     private final int transactionId;
     private final List<FirebirdBinaryColumnType> parameterTypes;
     private final int message;
+    private final List<Object> parameterValues = new ArrayList<>();
     private final FirebirdPacketPayload payload;
     
     public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload) {
@@ -58,6 +59,10 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             int length = (parameterTypes.size() + 7) / 8;
             payload.skipReserved(length);
             payload.skipPadding(length);
+        }
+        for (FirebirdBinaryColumnType type : parameterTypes) {
+            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(type);
+            parameterValues.add(binaryProtocolValue.read(payload));
         }
         this.payload = payload;
         //        while (msgCount-- != 0) {
@@ -114,17 +119,18 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      * @throws SQLException SQL exception
      */
     public List<Object> readParameters(final List<FirebirdBinaryColumnType> paramTypes, final Set<Integer> longDataIndexes) throws SQLException {
-        List<Object> result = new ArrayList<>(paramTypes.size());
-        for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
-            if (longDataIndexes.contains(paramIndex)) {
-                result.add(null);
-                continue;
-            }
-            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex));
-            Object value = binaryProtocolValue.read(payload);
-            result.add(value);
-        }
-        return result;
+//        List<Object> result = new ArrayList<>(paramTypes.size());
+//        for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
+//            if (longDataIndexes.contains(paramIndex)) {
+//                result.add(null);
+//                continue;
+//            }
+//            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex));
+//            Object value = binaryProtocolValue.read(payload);
+//            result.add(value);
+//        }
+//        return result;
+        return parameterValues;
     }
     
     /**

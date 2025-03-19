@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -34,7 +32,7 @@ import java.time.ZoneId;
 public final class FirebirdTimeBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
     @Override
-    public Object read(final FirebirdPacketPayload payload) throws SQLException {
+    public Object read(final FirebirdPacketPayload payload) {
         int length = payload.readInt1();
         payload.readInt1();
         payload.readInt4();
@@ -48,7 +46,8 @@ public final class FirebirdTimeBinaryProtocolValue implements FirebirdBinaryProt
                 result.setNanos(payload.readInt4());
                 return result;
             default:
-                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_DATE", length));
+                return null;
+//                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_DATE", length));
         }
     }
     

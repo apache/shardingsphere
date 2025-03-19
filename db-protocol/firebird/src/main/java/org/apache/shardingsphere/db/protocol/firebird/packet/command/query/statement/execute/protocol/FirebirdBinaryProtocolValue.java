@@ -33,7 +33,7 @@ public interface FirebirdBinaryProtocolValue {
      * @return binary value result
      * @throws SQLException SQL exception
      */
-    Object read(FirebirdPacketPayload payload) throws SQLException;
+    Object read(FirebirdPacketPayload payload);
     
     /**
      * Write binary protocol value.
