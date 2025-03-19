@@ -234,12 +234,12 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfigurationItem(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig) {
-        if (null == toBeRemovedRuleConfig) {
+    public void removeRuleConfigurationItem(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleItemConfig) {
+        if (null == toBeRemovedRuleItemConfig) {
             return;
         }
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
-        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
+        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleItemConfig);
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
         removeRuleItem(database.getName(), metaDataVersions);
         Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
                 database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
@@ -278,10 +278,14 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     }
     
     @Override
-    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleType) {
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig, final String ruleType) {
+        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
         try {
             metaDataContextManager.getDatabaseRuleItemManager().drop(new DatabaseRuleNodePath(database.getName(), ruleType, null));
+            Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
+                    database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
+            alterTables(database, schemaAndTablesMap);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

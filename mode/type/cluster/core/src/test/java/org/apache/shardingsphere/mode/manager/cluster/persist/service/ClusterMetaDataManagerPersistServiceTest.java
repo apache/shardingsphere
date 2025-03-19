@@ -157,7 +157,8 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveRuleConfiguration() {
-        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "fixtureRule");
+        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
+                mock(RuleConfiguration.class), "fixtureRule");
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "fixtureRule");
     }
     

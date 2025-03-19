@@ -203,7 +203,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveRuleConfiguration() {
-        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), "foo_rule");
+        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
+                mock(RuleConfiguration.class), "foo_rule");
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "foo_rule");
     }
     

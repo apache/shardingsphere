@@ -185,13 +185,13 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void removeRuleConfigurationItem(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig) {
-        if (null == toBeRemovedRuleConfig) {
+    public void removeRuleConfigurationItem(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleItemConfig) {
+        if (null == toBeRemovedRuleItemConfig) {
             return;
         }
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
+        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleItemConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
-        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
     }
     
@@ -204,8 +204,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void removeRuleConfiguration(final ShardingSphereDatabase database, final String ruleType) {
+    public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig, final String ruleType) {
+        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
     }
     
     @Override
