@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -44,7 +43,7 @@ class MaskAlgorithmChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "mask.mask_algorithms");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("mask", "mask_algorithms"));
     
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
@@ -59,11 +58,9 @@ class MaskAlgorithmChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("bar_algo");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         AlgorithmConfiguration toBeChangedItemConfig = new AlgorithmConfiguration("BAR_FIXTURE", new Properties());
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration("bar_algo", currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getMaskAlgorithms().size(), is(2));
         assertThat(currentRuleConfig.getMaskAlgorithms().get("foo_algo").getType(), is("FOO_FIXTURE"));
         assertThat(currentRuleConfig.getMaskAlgorithms().get("bar_algo").getType(), is("BAR_FIXTURE"));
@@ -71,10 +68,8 @@ class MaskAlgorithmChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
-        when(dropNamedRuleItem.getItemName()).thenReturn("foo_algo");
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration("foo_algo", currentRuleConfig);
         assertTrue(currentRuleConfig.getMaskAlgorithms().isEmpty());
     }
     

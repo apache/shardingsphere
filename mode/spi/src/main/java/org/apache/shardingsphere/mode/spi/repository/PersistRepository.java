@@ -35,7 +35,7 @@ public interface PersistRepository extends TypedSPI, AutoCloseable {
      * Query data.
      *
      * @param key key to be queried
-     * @return queryed data
+     * @return queried data
      */
     String query(String key);
     
@@ -62,15 +62,6 @@ public interface PersistRepository extends TypedSPI, AutoCloseable {
      * @param value value of data
      */
     void persist(String key, String value);
-    
-    /**
-     * Persist ephemeral data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    default void persistEphemeral(String key, String value) {
-    }
     
     /**
      * Update data.

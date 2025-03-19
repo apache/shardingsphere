@@ -66,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -359,22 +360,22 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     }
     
     /**
-     * Find column projection.
+     * Find column bound info.
      *
      * @param columnIndex column index
-     * @return find column projection
+     * @return column bound info
      */
-    public Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
+    public Optional<ColumnSegmentBoundInfo> findColumnBoundInfo(final int columnIndex) {
         List<Projection> expandProjections = projectionsContext.getExpandProjections();
         if (expandProjections.size() < columnIndex) {
             return Optional.empty();
         }
         Projection projection = expandProjections.get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
-            return Optional.of((ColumnProjection) projection);
+            return Optional.of(((ColumnProjection) projection).getColumnBoundInfo());
         }
         if (projection instanceof SubqueryProjection && ((SubqueryProjection) projection).getProjection() instanceof ColumnProjection) {
-            return Optional.of((ColumnProjection) ((SubqueryProjection) projection).getProjection());
+            return Optional.of(((ColumnProjection) ((SubqueryProjection) projection).getProjection()).getColumnBoundInfo());
         }
         return Optional.empty();
     }

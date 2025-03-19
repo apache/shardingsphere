@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.node.path.NodePath;
 
 import java.util.Collection;
 
@@ -31,11 +32,11 @@ import java.util.Collection;
 public interface GlobalDataChangedEventHandler {
     
     /**
-     * Get subscribed key.
+     * Get subscribed node path.
      *
-     * @return subscribed key
+     * @return subscribed node path
      */
-    String getSubscribedKey();
+    NodePath getSubscribedNodePath();
     
     /**
      * Get subscribed types.

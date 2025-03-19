@@ -42,23 +42,34 @@ public final class NodePathSearcher {
      * @return found node segment
      */
     public static Optional<String> find(final String path, final NodePathSearchCriteria criteria) {
-        Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(criteria.getSearchSegmentIndex())) : Optional.empty();
+        Matcher matcher = createPattern(criteria.getSearchExample(), criteria.isContainsChildPath()).matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(criteria.getGroupIndex())) : Optional.empty();
     }
     
     /**
-     * Whether to matched path.
+     * Get node segment.
+     *
+     * @param path to be searched path
+     * @param criteria node path search criteria
+     * @return got node segment
+     */
+    public static String get(final String path, final NodePathSearchCriteria criteria) {
+        return find(path, criteria).orElseThrow(() -> new IllegalArgumentException(String.format("Can not find node segment in path: %s", path)));
+    }
+    
+    /**
+     * Whether to match the path.
      *
      * @param path to be searched path
      * @param criteria node path search criteria
      * @return is matched path or not
      */
     public static boolean isMatchedPath(final String path, final NodePathSearchCriteria criteria) {
-        return createPattern(criteria.getSearchExample(), criteria.isTrimEmptyNode(), criteria.isContainsChildPath()).matcher(path).find();
+        return createPattern(criteria.getSearchExample(), criteria.isContainsChildPath()).matcher(path).find();
     }
     
-    private static Pattern createPattern(final NodePath nodePathCriteria, final boolean trimEmptyNode, final boolean containsChildPath) {
+    private static Pattern createPattern(final NodePath searchExample, final boolean containsChildPath) {
         String endPattern = containsChildPath ? "?" : "$";
-        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(nodePathCriteria, trimEmptyNode) + endPattern, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(START_PATTERN + NodePathGenerator.toPath(searchExample) + endPattern, Pattern.CASE_INSENSITIVE);
     }
 }

@@ -22,8 +22,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -35,7 +34,7 @@ public final class BroadcastTableChangedProcessor implements RuleItemConfigurati
     
     @SuppressWarnings("unchecked")
     @Override
-    public BroadcastRuleConfiguration swapRuleItemConfiguration(final AlterRuleItem alterRuleItem, final String yamlContent) {
+    public BroadcastRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new BroadcastRuleConfiguration(YamlEngine.unmarshal(yamlContent, LinkedHashSet.class));
     }
     
@@ -45,18 +44,18 @@ public final class BroadcastTableChangedProcessor implements RuleItemConfigurati
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItem alterRuleItem, final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final BroadcastRuleConfiguration currentRuleConfig, final BroadcastRuleConfiguration toBeChangedItemConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeChangedItemConfig.getTables());
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItem dropRuleItem, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final String itemName, final BroadcastRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getTables().clear();
     }
     
     @Override
-    public String getType() {
-        return "broadcast.tables";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("broadcast", "tables");
     }
 }

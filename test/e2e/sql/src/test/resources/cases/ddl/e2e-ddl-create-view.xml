@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="CREATE VIEW t_order_sharding_view AS SELECT o.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id" scenario-types="db,tbl" db-types="MySQL">
+    <test-case sql="CREATE VIEW t_order_sharding_view AS SELECT o.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id" db-types="MySQL" scenario-types="db,tbl">
         <assertion expected-data-file="create_view_with_sharding_table.xml">
             <initial-sql affected-table="t_order_sharding_view" />
             <destroy-sql sql="DROP VIEW t_order_sharding_view" />

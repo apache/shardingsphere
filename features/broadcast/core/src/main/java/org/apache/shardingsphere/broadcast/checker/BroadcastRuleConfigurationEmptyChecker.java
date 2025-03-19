@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.checker;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 
 /**
  * Broadcast rule configuration empty checker.

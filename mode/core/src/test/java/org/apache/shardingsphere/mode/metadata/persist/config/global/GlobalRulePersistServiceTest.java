@@ -18,88 +18,75 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.test.fixture.infra.yaml.global.MockedYamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.fixture.infra.rule.global.MockedGlobalRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(OrderedSPILoader.class)
+@ExtendWith(MockitoExtension.class)
 class GlobalRulePersistServiceTest {
-    
-    private GlobalRulePersistService globalRulePersistService;
     
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private MetaDataVersionPersistService metaDataVersionPersistService;
-    
-    @Mock
-    private GlobalRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
+    private GlobalRulePersistService globalRulePersistService;
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
-        globalRulePersistService = new GlobalRulePersistService(repository, metaDataVersionPersistService);
-        Plugins.getMemberAccessor().set(GlobalRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), globalRulePersistService, ruleRepositoryTuplePersistService);
+    void setUp() {
+        globalRulePersistService = new GlobalRulePersistService(repository, new VersionPersistService(repository));
+    }
+    
+    @Test
+    void assertLoadAll() {
+        when(repository.getChildrenKeys("/rules")).thenReturn(Collections.singletonList("global_fixture"));
+        when(repository.query("/rules/global_fixture/active_version")).thenReturn("0");
+        when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: foo_value");
+        List<RuleConfiguration> actual = new ArrayList<>(globalRulePersistService.load());
+        assertThat(actual.size(), is(1));
+        assertThat(((MockedGlobalRuleConfiguration) actual.get(0)).getName(), is("foo_value"));
     }
     
     @Test
     void assertLoad() {
-        assertTrue(globalRulePersistService.load().isEmpty());
-        verify(ruleRepositoryTuplePersistService).load();
+        when(repository.query("/rules/global_fixture/active_version")).thenReturn("0");
+        when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: foo_value");
+        RuleConfiguration actual = globalRulePersistService.load("global_fixture");
+        assertThat(((MockedGlobalRuleConfiguration) actual).getName(), is("foo_value"));
     }
     
     @Test
-    void assertLoadWithRuleType() {
-        assertFalse(globalRulePersistService.load("foo_rule").isPresent());
-        verify(ruleRepositoryTuplePersistService).load("foo_rule");
+    void assertLoadWithoutVersions() {
+        assertThrows(NullPointerException.class, () -> globalRulePersistService.load("global_fixture"));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertPersistWithVersions() {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
-        when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new MockedYamlGlobalRuleConfiguration();
-        when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.singletonList("10"));
-        globalRulePersistService.persist(Collections.singleton(ruleConfig));
-        verify(repository).persist("/rules/global_fixture/versions/11", "{}" + System.lineSeparator());
+        globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
+        verify(repository).persist("/rules/global_fixture/versions/11", "name: foo_value" + System.lineSeparator());
         verify(repository, times(0)).persist("/rules/global_fixture/active_version", "0");
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertPersistWithoutVersions() {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
-        when(OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, swapper));
-        YamlRuleConfiguration yamlRuleConfig = new MockedYamlGlobalRuleConfiguration();
-        when(swapper.swapToYamlConfiguration(ruleConfig)).thenReturn(yamlRuleConfig);
         when(repository.getChildrenKeys("/rules/global_fixture/versions")).thenReturn(Collections.emptyList());
-        globalRulePersistService.persist(Collections.singleton(ruleConfig));
-        verify(repository).persist("/rules/global_fixture/versions/0", "{}" + System.lineSeparator());
+        globalRulePersistService.persist(Collections.singleton(new MockedGlobalRuleConfiguration("foo_value")));
+        verify(repository).persist("/rules/global_fixture/versions/0", "name: foo_value" + System.lineSeparator());
         verify(repository).persist("/rules/global_fixture/active_version", "0");
     }
 }

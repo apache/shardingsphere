@@ -23,10 +23,8 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
@@ -53,7 +51,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -142,27 +139,5 @@ class MetaDataPersistServiceTest {
         Map<String, DataSourceConfiguration> actual = metaDataPersistFacade.loadDataSourceConfigurations("foo_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_ds"), is(dataSourceConfig));
-    }
-    
-    @Test
-    void assertPersistReloadDatabaseByAlter() {
-        ShardingSphereSchema toBeDeletedSchema = new ShardingSphereSchema("to_be_deleted");
-        ShardingSphereSchema toBeAddedSchema = new ShardingSphereSchema("to_be_added");
-        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any())).thenReturn(Collections.singleton(toBeDeletedSchema));
-        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any())).thenReturn(Collections.singleton(toBeAddedSchema));
-        metaDataPersistFacade.persistReloadDatabaseByAlter("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataFacade.getSchema()).alterByRuleAltered("foo_db", toBeAddedSchema);
-        verify(databaseMetaDataFacade.getTable()).drop(eq("foo_db"), eq("to_be_deleted"), anyCollection());
-    }
-    
-    @Test
-    void assertPersistReloadDatabaseByDrop() {
-        ShardingSphereSchema toBeDeletedSchema = new ShardingSphereSchema("to_be_deleted");
-        ShardingSphereSchema toBeAlterSchema = new ShardingSphereSchema("to_be_altered");
-        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any())).thenReturn(Collections.singleton(toBeDeletedSchema));
-        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any())).thenReturn(Collections.singleton(toBeAlterSchema));
-        metaDataPersistFacade.persistReloadDatabaseByDrop("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(databaseMetaDataFacade.getSchema()).alterByRuleDropped("foo_db", toBeAlterSchema);
-        verify(databaseMetaDataFacade.getTable()).drop(eq("foo_db"), eq("to_be_deleted"), anyCollection());
     }
 }

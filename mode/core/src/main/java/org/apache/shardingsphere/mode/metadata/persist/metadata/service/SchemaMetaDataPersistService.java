@@ -19,9 +19,10 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.metadata.persist.version.MetaDataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
-import org.apache.shardingsphere.mode.node.path.type.metadata.database.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
@@ -39,10 +40,10 @@ public final class SchemaMetaDataPersistService {
     
     private final ViewMetaDataPersistService viewMetaDataPersistService;
     
-    public SchemaMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
+    public SchemaMetaDataPersistService(final PersistRepository repository, final VersionPersistService versionPersistService) {
         this.repository = repository;
-        tableMetaDataPersistService = new TableMetaDataPersistService(repository, metaDataVersionPersistService);
-        viewMetaDataPersistService = new ViewMetaDataPersistService(repository, metaDataVersionPersistService);
+        tableMetaDataPersistService = new TableMetaDataPersistService(repository, versionPersistService);
+        viewMetaDataPersistService = new ViewMetaDataPersistService(repository, versionPersistService);
     }
     
     /**
@@ -52,7 +53,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, schemaName, null), false), "");
+        repository.persist(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, null)), "");
     }
     
     /**
@@ -62,7 +63,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be dropped schema name
      */
     public void drop(final String databaseName, final String schemaName) {
-        repository.delete(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, schemaName, null), true));
+        repository.delete(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, schemaName)));
     }
     
     /**
@@ -112,7 +113,7 @@ public final class SchemaMetaDataPersistService {
      * @return schemas
      */
     public Collection<ShardingSphereSchema> load(final String databaseName) {
-        return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetadataNodePath(databaseName, null, null), false)).stream()
+        return repository.getChildrenKeys(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, null))).stream()
                 .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))).collect(Collectors.toList());
     }
 }

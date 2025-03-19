@@ -68,7 +68,7 @@ public final class StatisticsRefreshEngine {
     public void refresh() {
         try {
             if (contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)) {
-                LockContext lockContext = contextManager.getComputeNodeInstanceContext().getLockContext();
+                LockContext lockContext = contextManager.getLockContext();
                 GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new StatisticsLock());
                 if (lockContext.tryLock(lockDefinition, 5000L)) {
                     try {
@@ -127,7 +127,7 @@ public final class StatisticsRefreshEngine {
             ShardingSphereStatistics statistics = contextManager.getMetaDataContexts().getStatistics();
             for (Entry<String, DatabaseStatistics> entry : statistics.getDatabaseStatisticsMap().entrySet()) {
                 if (!metaData.containsDatabase(entry.getKey())) {
-                    contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getStatisticsService().delete(entry.getKey());
+                    contextManager.getPersistServiceFacade().getMetaDataFacade().getStatisticsService().delete(entry.getKey());
                 }
             }
             // CHECKSTYLE:OFF

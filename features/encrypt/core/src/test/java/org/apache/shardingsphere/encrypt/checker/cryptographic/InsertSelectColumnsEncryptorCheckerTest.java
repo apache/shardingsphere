@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -59,14 +60,16 @@ class InsertSelectColumnsEncryptorCheckerTest {
     }
     
     private ColumnProjection getSelectProjection(final String pwd, final IdentifierValue databaseValue, final IdentifierValue schemaValue) {
+        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(databaseValue, schemaValue);
         return new ColumnProjection(new IdentifierValue("table2"), new IdentifierValue(pwd), null, null, null, null,
-                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseValue, schemaValue), new IdentifierValue("table2"), new IdentifierValue(pwd)));
+                new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("table2"), new IdentifierValue(pwd), TableSourceType.TEMPORARY_TABLE));
     }
     
     private ColumnSegment getInsertColumnSegment(final IdentifierValue databaseValue, final IdentifierValue schemaValue, final String tableName, final String columnName) {
         ColumnSegment result = mock(ColumnSegment.class);
+        TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(databaseValue, schemaValue);
         when(result.getColumnBoundInfo())
-                .thenReturn(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseValue, schemaValue), new IdentifierValue(tableName), new IdentifierValue(columnName)));
+                .thenReturn(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue(tableName), new IdentifierValue(columnName), TableSourceType.TEMPORARY_TABLE));
         return result;
     }
     

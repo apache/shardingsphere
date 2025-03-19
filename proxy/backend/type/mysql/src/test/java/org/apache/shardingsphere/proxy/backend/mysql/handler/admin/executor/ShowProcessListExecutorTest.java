@@ -49,7 +49,7 @@ class ShowProcessListExecutorTest {
     void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(contextManager.getPersistServiceFacade().getProcessPersistService().getProcessList()).thenReturn(mockProcessList());
+        when(contextManager.getPersistServiceFacade().getModeFacade().getProcessService().getProcessList()).thenReturn(mockProcessList());
         ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor(false);
         showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), new DefaultAttributeMap()));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));

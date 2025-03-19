@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.algorithm.core.processor.fixture;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public final class FixtureAlgorithmChangedProcessor extends AlgorithmChangedProc
     }
     
     @Override
-    public Object getType() {
-        return "FIXTURE";
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("fixture", "algorithm");
     }
 }

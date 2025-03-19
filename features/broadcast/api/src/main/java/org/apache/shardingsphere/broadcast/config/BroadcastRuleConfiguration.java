@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.config;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
@@ -32,4 +33,9 @@ import java.util.Collection;
 public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private final Collection<String> tables;
+    
+    @Override
+    public Collection<String> getLogicTableNames() {
+        return new CaseInsensitiveSet<>(tables);
+    }
 }

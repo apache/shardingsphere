@@ -17,24 +17,21 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
-import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.mode.metadata.persist.fixture.NoTupleRuleConfigurationFixture;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,23 +44,35 @@ class DatabaseRulePersistServiceTest {
     @Mock
     private PersistRepository repository;
     
-    @Mock
-    private DatabaseRuleRepositoryTuplePersistService ruleRepositoryTuplePersistService;
-    
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
+    void setUp() {
         persistService = new DatabaseRulePersistService(repository);
-        Plugins.getMemberAccessor().set(DatabaseRulePersistService.class.getDeclaredField("ruleRepositoryTuplePersistService"), persistService, ruleRepositoryTuplePersistService);
     }
     
     @Test
     void assertLoad() {
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.singletonList("fixture"));
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/unique/versions/0")).thenReturn("unique_content");
+        when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/named")).thenReturn(Collections.singletonList("rule_item"));
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/rules/fixture/named/rule_item/versions/0")).thenReturn("named_content");
+        Collection<RuleConfiguration> actual = persistService.load("foo_db");
+        assertThat(actual.size(), is(1));
+        MockedRuleConfiguration ruleConfig = (MockedRuleConfiguration) actual.iterator().next();
+        assertThat(ruleConfig.getUnique(), is("unique_content"));
+        assertThat(ruleConfig.getNamed(), is(Collections.singletonMap("rule_item", "named_content")));
+    }
+    
+    @Test
+    void assertLoadWithEmptyDatabase() {
+        when(repository.getChildrenKeys("/metadata/foo_db/rules")).thenReturn(Collections.emptyList());
         assertTrue(persistService.load("foo_db").isEmpty());
     }
     
     @Test
     void assertPersistWithoutActiveVersion() {
-        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Arrays.asList(new MockedRuleConfiguration("test"), new NoTupleRuleConfigurationFixture("test")));
+        Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getActiveVersion(), is(0));
     }
@@ -84,8 +93,8 @@ class DatabaseRulePersistServiceTest {
     
     @Test
     void assertDeleteWithRuleConfigurations() {
-        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Arrays.asList(new MockedRuleConfiguration("test"), new NoTupleRuleConfigurationFixture("test")));
+        Collection<MetaDataVersion> actual = persistService.delete("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
-        assertNull(actual.iterator().next().getActiveVersion());
+        assertThat(actual.iterator().next().getActiveVersion(), is(0));
     }
 }

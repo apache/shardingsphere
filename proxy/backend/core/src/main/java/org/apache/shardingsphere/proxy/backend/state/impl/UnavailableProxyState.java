@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataS
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mode.exception.ClusterStateException;
+import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -49,7 +49,7 @@ public final class UnavailableProxyState implements ProxyClusterState {
     
     @Override
     public void check(final SQLStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ClusterStateException(getType(), sqlStatement));
+        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ShardingSphereStateException(getType(), sqlStatement));
     }
     
     @Override

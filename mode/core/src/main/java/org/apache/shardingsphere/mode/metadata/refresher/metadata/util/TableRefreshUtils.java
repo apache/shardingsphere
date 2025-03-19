@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -74,11 +73,11 @@ public final class TableRefreshUtils {
      *
      * @param ruleMetaData rule meta data
      * @param schemaName schema name
-     * @param tableSegments table segments
+     * @param tableNames table names
      * @return need to refresh or not
      */
-    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
-        return tableSegments.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue()));
+    public static boolean isNeedRefresh(final RuleMetaData ruleMetaData, final String schemaName, final Collection<String> tableNames) {
+        return tableNames.stream().anyMatch(each -> isNeedRefresh(ruleMetaData, schemaName, each));
     }
     
     /**

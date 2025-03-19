@@ -22,8 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
-import org.apache.shardingsphere.mode.spi.rule.item.alter.AlterNamedRuleItem;
-import org.apache.shardingsphere.mode.spi.rule.item.drop.DropNamedRuleItem;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -44,13 +43,11 @@ class ShadowDataSourceChangedProcessorTest {
     
     @SuppressWarnings("unchecked")
     private final RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowDataSourceConfiguration> processor = TypedSPILoader.getService(
-            RuleItemConfigurationChangedProcessor.class, "shadow.data_sources");
+            RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("shadow", "data_sources"));
     
     @Test
     void assertSwapRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
-        when(alterNamedRuleItem.getItemName()).thenReturn("foo_ds");
-        ShadowDataSourceConfiguration actual = processor.swapRuleItemConfiguration(alterNamedRuleItem, createYAMLContent());
+        ShadowDataSourceConfiguration actual = processor.swapRuleItemConfiguration("foo_ds", createYAMLContent());
         assertThat(actual, deepEqual(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
     }
     
@@ -77,10 +74,9 @@ class ShadowDataSourceChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        AlterNamedRuleItem alterNamedRuleItem = mock(AlterNamedRuleItem.class);
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         ShadowDataSourceConfiguration toBeChangedItemConfig = new ShadowDataSourceConfiguration("foo_ds", "new_prod_ds", "new_shadow_ds");
-        processor.changeRuleItemConfiguration(alterNamedRuleItem, currentRuleConfig, toBeChangedItemConfig);
+        processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getDataSources().size(), is(1));
         assertThat(new ArrayList<>(currentRuleConfig.getDataSources()).get(0).getProductionDataSourceName(), is("new_prod_ds"));
         assertThat(new ArrayList<>(currentRuleConfig.getDataSources()).get(0).getShadowDataSourceName(), is("new_shadow_ds"));
@@ -88,10 +84,8 @@ class ShadowDataSourceChangedProcessorTest {
     
     @Test
     void assertDropRuleItemConfiguration() {
-        DropNamedRuleItem dropNamedRuleItem = mock(DropNamedRuleItem.class);
-        when(dropNamedRuleItem.getItemName()).thenReturn("foo_tbl");
         ShadowRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        processor.dropRuleItemConfiguration(dropNamedRuleItem, currentRuleConfig);
+        processor.dropRuleItemConfiguration("foo_tbl", currentRuleConfig);
         assertTrue(currentRuleConfig.getTables().isEmpty());
     }
     

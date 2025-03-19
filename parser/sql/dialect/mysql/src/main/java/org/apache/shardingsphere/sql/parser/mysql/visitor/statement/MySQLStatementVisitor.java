@@ -1613,12 +1613,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
         if (null != expr) {
-            ASTNode result = visit(expr);
-            if (result instanceof ColumnSegment) {
-                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-            } else {
-                return result;
-            }
+            return visit(expr);
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
@@ -1648,6 +1643,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+        }
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
         return result;
     }
