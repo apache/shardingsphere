@@ -16,3 +16,5 @@
 #
 
 org.apache.shardingsphere.broadcast.rule.changed.BroadcastTableChangedProcessor
+org.apache.shardingsphere.broadcast.rule.changed.BroadcastRuleChangedProcessor
+

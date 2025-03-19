@@ -77,9 +77,9 @@ public final class DatabaseRuleItemManager {
         String databaseName = databaseRuleNodePath.getDatabase().getDatabaseName();
         Preconditions.checkState(metaDataContexts.getMetaData().containsDatabase(databaseName), "No database '%s' exists.", databaseName);
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class,
-                new RuleChangedItemType(databaseRuleNodePath.getRuleType(), databaseRuleNodePath.getDatabaseRuleItem().getType()));
+                new RuleChangedItemType(databaseRuleNodePath.getRuleType(), null == databaseRuleNodePath.getDatabaseRuleItem() ? null : databaseRuleNodePath.getDatabaseRuleItem().getType()));
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName));
-        String itemName = databaseRuleNodePath.getDatabaseRuleItem().getName();
+        String itemName = null == databaseRuleNodePath.getDatabaseRuleItem() ? null : databaseRuleNodePath.getDatabaseRuleItem().getName();
         synchronized (this) {
             processor.dropRuleItemConfiguration(itemName, currentRuleConfig);
             databaseRuleConfigManager.refresh(databaseName, currentRuleConfig,
