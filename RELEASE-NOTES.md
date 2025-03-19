@@ -27,6 +27,7 @@
 1. SQL Parser: Support MySQL DELETE with statement parse - [#34817](https://github.com/apache/shardingsphere/pull/34817) 
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
+1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 
 ### Bug Fixes
 

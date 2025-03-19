@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingPrepa
 import org.apache.shardingsphere.sharding.route.engine.checker.ddl.ShardingRenameTableRouteContextChecker;
 import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingDeleteRouteContextChecker;
 import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingInsertRouteContextChecker;
+import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingSelectRouteContextChecker;
 import org.apache.shardingsphere.sharding.route.engine.checker.dml.ShardingUpdateRouteContextChecker;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameT
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Optional;
@@ -103,6 +105,9 @@ public final class ShardingRouteContextCheckerFactory {
         }
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new ShardingDeleteRouteContextChecker());
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of(new ShardingSelectRouteContextChecker());
         }
         return Optional.empty();
     }
