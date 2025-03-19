@@ -146,17 +146,18 @@ public interface MetaDataManagerPersistService {
      * Remove rule configuration item.
      *
      * @param database database
-     * @param toBeRemovedRuleConfig to be removed rule config
+     * @param toBeRemovedRuleItemConfig to be removed rule item config
      */
-    void removeRuleConfigurationItem(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleConfig);
+    void removeRuleConfigurationItem(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleItemConfig);
     
     /**
      * Remove rule configuration.
      *
      * @param database database
+     * @param toBeRemovedRuleConfig to be removed rule config
      * @param ruleType rule type
      */
-    void removeRuleConfiguration(ShardingSphereDatabase database, String ruleType);
+    void removeRuleConfiguration(ShardingSphereDatabase database, RuleConfiguration toBeRemovedRuleConfig, String ruleType);
     
     /**
      * Alter global rule configuration.
