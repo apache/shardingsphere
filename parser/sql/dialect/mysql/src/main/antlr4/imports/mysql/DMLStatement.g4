@@ -88,7 +88,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : valueReference? SET assignment (COMMA_ assignment)*
+    : SET assignment (COMMA_ assignment)*
     ;
 
 assignmentValues
@@ -202,7 +202,7 @@ loadStatement
 
 loadDataStatement
     : LOAD DATA
-      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
+      (LOW_PRIORITY | CONCURRENT)? LOCAL?
       INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName partitionNames?
@@ -216,7 +216,7 @@ loadDataStatement
 
 loadXmlStatement
     : LOAD XML
-      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
+      (LOW_PRIORITY | CONCURRENT)? LOCAL?
       INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
@@ -288,8 +288,10 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames? (AS? alias)? indexHintList?
+    : tableName
+    | tableName partitionNames? (AS? alias)? indexHintList?
     | subquery AS? alias (LP_ columnNames RP_)?
+    | expr
     | expr (AS? alias)?
     | LATERAL subquery AS? alias (LP_ columnNames RP_)?
     | LP_ tableReferences RP_
