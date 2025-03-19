@@ -169,14 +169,17 @@ public final class SQLUtils {
     }
     
     private static int getParenthesesOffset(final String value) {
-        int result = 0;
+        int left = 0;
         if (Strings.isNullOrEmpty(value)) {
-            return result;
+            return left;
         }
-        while (Paren.PARENTHESES.getLeftParen() == value.charAt(result)) {
-            result++;
+        
+        int right = value.length() - 1;
+        while (Paren.PARENTHESES.getLeftParen() == value.charAt(left) && Paren.PARENTHESES.getRightParen() == value.charAt(right)) {
+            left++;
+            right--;
         }
-        return result;
+        return left;
     }
     
     /**
