@@ -142,4 +142,8 @@
     AS SELECT * FROM sh.customers@remote
           UNION
        SELECT * FROM sh.customers@local;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_key_exists" value="CREATE MATERIALIZED VIEW mv1 KEY(k1, k2) AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
+    <sql-case id="create_materialized_view_refresh_on_schedule" value="CREATE MATERIALIZED VIEW mv1 REFRESH ON SCHEDULE EVERY 2 HOUR STARTS '2023-12-13 21:07:09' AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
+    <sql-case id="create_materialized_view_refresh_complete" value="CREATE MATERIALIZED VIEW mv1 REFRESH COMPLETE AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
+    <sql-case id="create_materialized_view_build_immediate" value="CREATE MATERIALIZED VIEW mv1 BUILD IMMEDIATE AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
 </sql-cases>
