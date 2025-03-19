@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <calcite.version>1.38.0</calcite.version>
+        <calcite.version>1.39.0</calcite.version>
     </properties>
     
     <dependencies>
