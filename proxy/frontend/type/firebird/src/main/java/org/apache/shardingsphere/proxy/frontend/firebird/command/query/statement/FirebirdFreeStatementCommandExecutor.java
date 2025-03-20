@@ -46,8 +46,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
-                connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-                //TODO add close cursor
+                connectionSession.getConnectionContext().clearCursorContext();
                 break;
             default:
                 throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
