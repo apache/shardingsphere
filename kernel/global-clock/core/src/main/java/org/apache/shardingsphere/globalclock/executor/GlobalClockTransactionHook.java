@@ -84,7 +84,7 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. 
+        // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
         if (!lockContext.tryLock(lockDefinition, 200L)) {
             return;
         }
