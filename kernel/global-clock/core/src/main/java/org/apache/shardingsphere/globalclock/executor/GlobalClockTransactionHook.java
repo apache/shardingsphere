@@ -84,25 +84,26 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        if (lockContext.tryLock(lockDefinition, 200L)) {
-            Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
-            if (!globalClockTransactionExecutor.isPresent()) {
-                return;
-            }
-            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-            Preconditions.checkState(globalClockProvider.isPresent());
-            globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
+        // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
+        if (!lockContext.tryLock(lockDefinition, 200L)) {
+            return;
         }
+        Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
+        Preconditions.checkArgument(globalClockTransactionExecutor.isPresent());
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        Preconditions.checkState(globalClockProvider.isPresent());
+        globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
     }
     
     @Override
     public void afterCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext,
                             final LockContext lockContext) {
-        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-        if (!globalClockProvider.isPresent()) {
+        if (!rule.getConfiguration().isEnabled()) {
             return;
         }
         try {
+            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+            Preconditions.checkState(globalClockProvider.isPresent());
             globalClockProvider.get().getNextTimestamp();
         } finally {
             lockContext.unlock(lockDefinition);

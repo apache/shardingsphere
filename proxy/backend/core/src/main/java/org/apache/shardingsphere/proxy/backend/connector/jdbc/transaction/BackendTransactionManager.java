@@ -98,26 +98,27 @@ public final class BackendTransactionManager implements TransactionManager {
     public void commit() throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
         LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
-        for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-            entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return;
         }
-        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
-                    localTransactionManager.commit();
-                } else {
-                    distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
-                }
-            } finally {
-                for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-                    entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
-                }
-                for (Connection each : connection.getCachedConnections().values()) {
-                    ConnectionSavepointManager.getInstance().transactionFinished(each);
-                }
-                connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getConnectionContext().close();
+        try {
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
             }
+            if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
+                localTransactionManager.commit();
+            } else {
+                distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
+            }
+        } finally {
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
+            }
+            for (Connection each : connection.getCachedConnections().values()) {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
+            }
+            connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
+            connection.getConnectionSession().getConnectionContext().close();
         }
     }
     
