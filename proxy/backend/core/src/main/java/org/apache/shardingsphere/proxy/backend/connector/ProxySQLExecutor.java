@@ -68,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStateme
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngineFactory;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
@@ -113,7 +114,8 @@ public final class ProxySQLExecutor {
                 ? databaseConnectionManager.getConnectionSession().getUsedDatabaseName()
                 : databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
         String currentSchemaName = getSchemaName(queryContext.getSqlStatementContext(), metaDataContexts.getMetaData().getDatabase(currentDatabaseName));
-        sqlFederationEngine = new SQLFederationEngine(currentDatabaseName, currentSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
+        sqlFederationEngine =
+                SQLFederationEngineFactory.getInstance().newInstance(currentDatabaseName, currentSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
