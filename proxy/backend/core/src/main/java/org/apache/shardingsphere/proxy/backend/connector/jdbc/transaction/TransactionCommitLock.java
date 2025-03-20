@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.executor;
+package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
 /**
- * Global clock lock.
+ * Transaction commit lock.
  */
-public final class GlobalClockLock implements GlobalLock {
+public final class TransactionCommitLock implements GlobalLock {
     
     @Override
     public String getName() {
-        return "global_clock";
+        return "transaction_commit";
     }
 }

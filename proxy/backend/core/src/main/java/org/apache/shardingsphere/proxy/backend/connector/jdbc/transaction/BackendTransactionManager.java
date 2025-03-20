@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
-import org.apache.shardingsphere.globalclock.executor.GlobalClockLock;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.lock.LockDefinition;
@@ -105,7 +104,7 @@ public final class BackendTransactionManager implements TransactionManager {
             return;
         }
         boolean isNeedLock = transactionHooks.values().stream().anyMatch(TransactionHook::isNeedLockWhenCommit);
-        LockDefinition lockDefinition = new GlobalLockDefinition(new GlobalClockLock());
+        LockDefinition lockDefinition = new GlobalLockDefinition(new TransactionCommitLock());
         try {
             // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
             if (isNeedLock && !lockContext.tryLock(lockDefinition, 200L)) {
