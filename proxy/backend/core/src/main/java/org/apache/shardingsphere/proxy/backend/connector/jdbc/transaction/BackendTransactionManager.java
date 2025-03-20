@@ -112,7 +112,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 return;
             }
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-                entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
+                entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
             }
             if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
                 localTransactionManager.commit();
@@ -121,7 +121,7 @@ public final class BackendTransactionManager implements TransactionManager {
             }
         } finally {
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-                entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
+                entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
             }
             if (isNeedLock) {
                 lockContext.unlock(lockDefinition);
