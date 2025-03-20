@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.lock;
 
 /**
  * Lock context.

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;

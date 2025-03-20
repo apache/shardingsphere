@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.globalclock.executor.GlobalClockLock;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;

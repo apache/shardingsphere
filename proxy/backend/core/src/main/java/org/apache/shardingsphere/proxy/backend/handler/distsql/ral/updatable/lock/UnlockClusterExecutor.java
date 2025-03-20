@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.lock.exception.NotLockedClusterException;
 import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;

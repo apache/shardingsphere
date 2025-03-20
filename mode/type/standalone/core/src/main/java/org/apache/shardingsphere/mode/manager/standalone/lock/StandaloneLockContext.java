@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockDefinition;
 
 /**
  * Standalone lock context.

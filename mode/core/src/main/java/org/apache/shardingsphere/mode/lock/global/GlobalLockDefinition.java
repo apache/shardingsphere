@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.lock.global;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.lock.GlobalLockNodePath;
 
