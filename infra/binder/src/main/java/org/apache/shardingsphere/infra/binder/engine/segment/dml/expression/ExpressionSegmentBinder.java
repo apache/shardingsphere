@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.FunctionExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.InExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.NotExpressionBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.OuterJoinExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotE
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
 
 /**
  * Expression segment binder.
@@ -103,6 +105,9 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof CaseWhenExpression) {
             return CaseWhenExpressionBinder.bind((CaseWhenExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof OuterJoinExpression) {
+            return OuterJoinExpressionBinder.bind((OuterJoinExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bound
         return segment;

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -110,7 +109,7 @@ class SetDistVariableExecutorTest {
         when(metaDataPersistFacade.getPropsService()).thenReturn(mock(PropertiesPersistService.class));
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
-        computeNodeInstanceContext.init(mock(WorkerIdGenerator.class), mock(LockContext.class));
-        return new ContextManager(new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics()), computeNodeInstanceContext, mock());
+        computeNodeInstanceContext.init(mock(WorkerIdGenerator.class));
+        return new ContextManager(new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics()), computeNodeInstanceContext, mock(), mock());
     }
 }

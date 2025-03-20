@@ -59,10 +59,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepositoryConfiguration config = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
         ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
+        computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()));
         LockContext lockContext = new ClusterLockContext(new GlobalLockPersistService(repository));
-        computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()), lockContext);
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository);
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
         registerOnline(computeNodeInstanceContext, param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
         return result;
@@ -77,9 +77,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
-        clusterPersistServiceFacade.getComputeNodePersistService().registerOnline(computeNodeInstanceContext.getInstance());
+        clusterPersistServiceFacade.getComputeNodeService().registerOnline(computeNodeInstanceContext.getInstance());
         contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances()
-                .addAll(clusterPersistServiceFacade.getComputeNodePersistService().loadAllInstances());
+                .addAll(clusterPersistServiceFacade.getComputeNodeService().loadAllInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataFacade())).register();
     }
     

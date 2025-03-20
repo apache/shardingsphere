@@ -24,17 +24,14 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -56,7 +53,7 @@ public final class MetaDataPersistFacade {
     
     private final PersistRepository repository;
     
-    private final VersionPersistService metaDataVersionService;
+    private final VersionPersistService versionService;
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
@@ -72,12 +69,12 @@ public final class MetaDataPersistFacade {
     
     public MetaDataPersistFacade(final PersistRepository repository) {
         this.repository = repository;
-        metaDataVersionService = new VersionPersistService(repository);
+        versionService = new VersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, metaDataVersionService);
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(repository, versionService);
         databaseRuleService = new DatabaseRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository, metaDataVersionService);
-        propsService = new PropertiesPersistService(repository, metaDataVersionService);
+        globalRuleService = new GlobalRulePersistService(repository, versionService);
+        propsService = new PropertiesPersistService(repository, versionService);
         statisticsService = new StatisticsPersistService(repository);
     }
     
@@ -106,12 +103,12 @@ public final class MetaDataPersistFacade {
             databaseMetaDataFacade.getDatabase().add(databaseName);
         } else {
             dataSourceUnitService.persist(databaseName, propsMap);
-            databaseRuleService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
+            databaseRuleService.persist(databaseName, decorateRuleConfigurations(databaseName, dataSources, rules));
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<RuleConfiguration> decorateRuleConfigs(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+    private Collection<RuleConfiguration> decorateRuleConfigurations(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             RuleConfiguration ruleConfig = each.getConfiguration();
@@ -135,33 +132,5 @@ public final class MetaDataPersistFacade {
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String databaseName) {
         return dataSourceUnitService.load(databaseName).entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> DataSourcePoolPropertiesCreator.createConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    /**
-     * Persist reload meta data by alter.
-     *
-     * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     */
-    public void persistReloadDatabaseByAlter(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleAltered(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
-    }
-    
-    /**
-     * Persist reload meta data by drop.
-     *
-     * @param databaseName database name
-     * @param reloadDatabase reload database
-     * @param currentDatabase current database
-     */
-    public void persistReloadDatabaseByDrop(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
-        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> databaseMetaDataFacade.getSchema().alterByRuleDropped(databaseName, each));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> databaseMetaDataFacade.getTable().drop(databaseName, each.getName(), each.getAllTables()));
     }
 }

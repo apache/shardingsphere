@@ -708,4 +708,66 @@
             </simple-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_with_outer_join_operator">
+        <from start-index="23" stop-index="47">
+            <join-table join-type="COMMA" start-index="23" stop-index="47">
+                <left start-index="23" stop-index="31">
+                    <simple-table alias="o" name="t_order" start-index="23" stop-index="31">
+                        <table-bound start-index="0" stop-index="0">
+                            <original-database name="foo_db_1" start-index="0" stop-index="0"/>
+                            <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                        </table-bound>
+                    </simple-table>
+                </left>
+                <right start-index="34" stop-index="47">
+                    <simple-table alias="i" name="t_order_item" start-index="34" stop-index="47">
+                        <table-bound start-index="0" stop-index="0">
+                            <original-database name="foo_db_1" start-index="0" stop-index="0"/>
+                            <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                        </table-bound>
+                    </simple-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="16">
+            <column-projection name="order_id" start-index="7" stop-index="16">
+                <owner name="o" start-index="7" stop-index="7"/>
+            </column-projection>
+        </projections>
+        <where start-index="49" stop-index="80">
+            <expr start-index="55" stop-index="80">
+                <binary-operation-expression start-index="55" stop-index="80">
+                    <left start-index="55" stop-index="64">
+                        <column name="order_id" start-index="55" stop-index="64">
+                            <owner name="o" start-index="55" stop-index="55"/>
+                            <column-bound start-index="0" stop-index="0">
+                                <original-database name="foo_db_1" start-index="0" stop-index="0"/>
+                                <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                                <original-table name="t_order" start-index="0" stop-index="0"/>
+                                <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="0" stop-index="0"/>
+                                <table-source-type name="PHYSICAL_TABLE" start-index="0" stop-index="0"/>
+                            </column-bound>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right start-index="68" stop-index="80">
+                        <outer-join-expression text="i.order_id(+)" start-index="68" stop-index="80">
+                            <column name="order_id" start-index="68" stop-index="77">
+                                <owner name="i" start-index="68" stop-index="68"/>
+                                <column-bound start-index="0" stop-index="0">
+                                    <original-database name="foo_db_1" start-index="0" stop-index="0"/>
+                                    <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                                    <original-table name="t_order_item" start-index="0" stop-index="0"/>
+                                    <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="0" stop-index="0"/>
+                                    <table-source-type name="PHYSICAL_TABLE" start-index="0" stop-index="0"/>
+                                </column-bound>
+                            </column>
+                            <join-operator>(+)</join-operator>
+                        </outer-join-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -39,11 +40,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
-import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -65,24 +65,25 @@ public final class ContextManager implements AutoCloseable {
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
     
-    private final ExecutorEngine executorEngine;
+    private final LockContext lockContext;
     
     private final StateContext stateContext;
+    
+    private final ExecutorEngine executorEngine;
     
     private final PersistServiceFacade persistServiceFacade;
     
     private final MetaDataContextManager metaDataContextManager;
     
-    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
+    public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final LockContext lockContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
+        this.lockContext = lockContext;
+        executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
-        executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onInitialized(this);
-        }
+        ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
     }
     
     /**
@@ -93,7 +94,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public ShardingSphereDatabase getDatabase(final String name) {
         ShardingSpherePreconditions.checkNotEmpty(name, NoDatabaseSelectedException::new);
-        ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
         ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
         return metaData.getDatabase(name);
     }
@@ -231,9 +232,7 @@ public final class ContextManager implements AutoCloseable {
     
     @Override
     public void close() {
-        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
-            each.onDestroyed(this);
-        }
+        ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onDestroyed(this));
         executorEngine.close();
         metaDataContexts.getMetaData().close();
         persistServiceFacade.close();

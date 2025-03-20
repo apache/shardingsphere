@@ -40,7 +40,7 @@ public final class EncryptorComparator {
     public static boolean isSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo) {
         EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
         EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
-        return EncryptorComparator.isSame(leftColumnEncryptor, rightColumnEncryptor);
+        return isSame(leftColumnEncryptor, rightColumnEncryptor);
     }
     
     /**

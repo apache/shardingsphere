@@ -63,7 +63,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement(null), "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).removeRuleConfigurationItem(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> !x.getDefaultDataSource().isPresent()));
     }
@@ -79,7 +79,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.empty());
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, null);
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));
     }

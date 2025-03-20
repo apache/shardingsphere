@@ -71,12 +71,12 @@ public final class MetaDataImportExecutor {
     private void importGlobalRules(final YamlProxyServerConfiguration yamlServerConfig) {
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
         for (RuleConfiguration each : rules) {
-            contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(each);
+            contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterGlobalRuleConfiguration(each);
         }
     }
     
     private void importProps(final YamlProxyServerConfiguration yamlServerConfig) {
-        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerPersistService().alterProperties(yamlServerConfig.getProps());
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterProperties(yamlServerConfig.getProps());
     }
     
     private Map<String, YamlProxyDatabaseConfiguration> getYamlProxyDatabaseConfigurations(final ExportedMetaData exportedMetaData) {

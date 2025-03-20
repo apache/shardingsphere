@@ -16,6 +16,15 @@
   ~ limitations under the License.
   -->
 
-<e2e-test-cases>
-    <test-case sql="DROP LOGIN login1" db-types="SQLServer" />
-</e2e-test-cases>
+<distsql-rule-query-executor-test-cases>
+    <test-case dist-sql="SHOW STATUS FROM READWRITE_SPLITTING RULES" current-rule-config-yaml-file="cases/show-status-from-readwrite-splitting-rules-current-config.yaml">
+        <expected-query-result-rows>
+            <expected-query-result-row>
+                read_ds_0|ENABLED
+            </expected-query-result-row>
+            <expected-query-result-row>
+                read_ds_1|DISABLED
+            </expected-query-result-row>
+        </expected-query-result-rows>
+    </test-case>
+</distsql-rule-query-executor-test-cases>

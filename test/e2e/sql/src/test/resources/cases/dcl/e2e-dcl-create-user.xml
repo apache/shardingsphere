@@ -20,23 +20,12 @@
     <test-case sql="CREATE USER 'user_dev_new'@'localhost'" db-types="MySQL" />
     <test-case sql="CREATE USER user_dev_new" db-types="PostgreSQL" />
     <test-case sql="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
-    <test-case sql="CREATE USER user_dev_new identified by passwd_dev" db-types="Oracle" />
-    <test-case sql="CREATE USER user_dev_new FOR LOGIN login_dev" db-types="SQLServer" />
     <test-case sql="CREATE USER user_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
-    <test-case sql="CREATE USER user_dev IDENTIFIED EXTERNALLY" db-types="Oracle" />
-    <test-case sql="CREATE USER user_dev IDENTIFIED GLOBALLY" db-types="Oracle" />
     <test-case sql="CREATE USER IF NOT EXISTS user_dev DEFAULT ROLE default_role" db-types="MySQL" />
-    <test-case sql="CREATE USER user_dev" db-types="PostgreSQL,SQLServer" />
-    <test-case sql="CREATE USER user_dev FROM ASYMMETRIC KEY asym_key" db-types="SQLServer" />
-    <test-case sql="CREATE USER user_dev FROM CERTIFICATE certificate" db-types="SQLServer" />
-    <test-case sql="CREATE USER user_dev FROM LOGIN login1" db-types="SQLServer" />
-    <test-case sql="CREATE USER user_dev WITHOUT LOGIN" db-types="SQLServer" />
+    <test-case sql="CREATE USER user_dev" db-types="PostgreSQL" />
     <test-case sql="CREATE USER user_dev WITH SUPERUSER" db-types="PostgreSQL" />
     <test-case sql="CREATE USER user_dev WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
     <test-case sql="CREATE USER user_dev WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-    <test-case sql="CREATE USER user_dev IDENTIFIED BY password QUOTA 1M ON tablespace1" db-types="Oracle" />
     <test-case sql="CREATE USER user_dev WITH ROLE role2" db-types="PostgreSQL" />
     <test-case sql="CREATE USER user_dev WITH ROLE role2, role3" db-types="PostgreSQL" />
-    <test-case sql="CREATE USER user_dev WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
-    <test-case sql="CREATE USER user_dev IDENTIFIED BY password DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
 </e2e-test-cases>

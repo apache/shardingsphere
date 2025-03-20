@@ -17,42 +17,42 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="CREATE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE INDEX t_details_idx ON t_order_details (id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_index.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE INDEX t_broadcast_table_for_ddl_index ON t_broadcast_table_for_ddl (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="CREATE INDEX t_broadcast_table_for_ddl_idx ON t_broadcast_table_for_ddl (id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-file="create_broadcast_index.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-    
-    <test-case sql="CREATE INDEX t_user_details_index ON t_user_details (user_id)"  scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL,PostgreSQL,openGauss">
+
+    <test-case sql="CREATE INDEX t_user_details_index ON t_user_details (user_id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_index.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE UNIQUE INDEX t_broadcast_table_for_ddl_index ON t_broadcast_table_for_ddl (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE UNIQUE INDEX t_broadcast_table_for_ddl_idx ON t_broadcast_table_for_ddl (id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_broadcast_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE UNIQUE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE UNIQUE INDEX t_details_idx ON t_order_details (id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
-    
-    <test-case sql="CREATE UNIQUE INDEX t_user_details_index ON t_user_details (user_id)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL,PostgreSQL,openGauss">
+
+    <test-case sql="CREATE UNIQUE INDEX t_user_details_index ON t_user_details (user_id)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />

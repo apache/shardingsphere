@@ -204,7 +204,7 @@ public final class ShardingConditions {
     
     private boolean isBindingTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
-        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
+        return bindingRule.isPresent() && !shardingValue1.getTableName().equals(shardingValue2.getTableName()) && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {

@@ -22,6 +22,6 @@
     </test-case>
     
     <test-case sql="DELETE FROM t_single_table WHERE id in (SELECT order_id FROM t_order)">
-        <assertion expected-result="EnumerableModify(table=[[federate_jdbc, t_single_table]], operation=[DELETE], flattened=[false])   EnumerableCalc(expr#0..3=[{inputs}], proj#0..2=[{exprs}])     EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_single_table]], sql=[SELECT * FROM `federate_jdbc`.`t_single_table`], dynamicParameters=[null])       EnumerableAggregate(group=[{0}])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT `order_id` FROM `federate_jdbc`.`t_order`], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableModify(table=[[federate_jdbc, t_single_table]], operation=[DELETE], flattened=[false])   EnumerableCalc(expr#0..3=[{inputs}], proj#0..2=[{exprs}])     EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_single_table]], sql=[SELECT * FROM `federate_jdbc`.`t_single_table`], dynamicParameters=[null])       EnumerableAggregate(group=[{0}])         EnumerableCalc(expr#0..5=[{inputs}], expr#6=[CAST($t0):INTEGER], order_id=[$t6])           EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null]) " />
     </test-case>
 </test-cases>

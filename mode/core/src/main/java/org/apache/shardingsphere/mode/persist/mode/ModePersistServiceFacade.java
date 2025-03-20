@@ -31,21 +31,21 @@ public interface ModePersistServiceFacade extends AutoCloseable {
      *
      * @return meta data manager persist service
      */
-    MetaDataManagerPersistService getMetaDataManagerPersistService();
+    MetaDataManagerPersistService getMetaDataManagerService();
     
     /**
      * Get compute node persist service.
      *
      * @return compute node persist service
      */
-    ComputeNodePersistService getComputeNodePersistService();
+    ComputeNodePersistService getComputeNodeService();
     
     /**
      * Get process persist service.
      *
      * @return process persist service
      */
-    ProcessPersistService getProcessPersistService();
+    ProcessPersistService getProcessService();
     
     @Override
     void close();

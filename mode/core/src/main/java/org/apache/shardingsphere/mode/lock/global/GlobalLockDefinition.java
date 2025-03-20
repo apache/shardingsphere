@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.mode.lock.global;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.lock.GlobalLockNodePath;
 
 /**
  * Global lock definition.
  */
-@Getter
 public final class GlobalLockDefinition implements LockDefinition {
     
-    private static final String KEY_PATTERN = "/lock/global/locks/%s";
-    
-    private final String lockKey;
+    private final GlobalLockNodePath nodePath;
     
     public GlobalLockDefinition(final GlobalLock globalLock) {
-        lockKey = String.format(KEY_PATTERN, globalLock.getName());
+        nodePath = new GlobalLockNodePath(globalLock.getName());
+    }
+    
+    /**
+     * Get lock key.
+     *
+     * @return lock key
+     */
+    public String getLockKey() {
+        return NodePathGenerator.toPath(nodePath);
     }
 }

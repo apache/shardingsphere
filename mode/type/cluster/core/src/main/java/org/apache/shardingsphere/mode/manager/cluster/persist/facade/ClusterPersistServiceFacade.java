@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMet
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -33,24 +34,24 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 @Getter
 public final class ClusterPersistServiceFacade implements ModePersistServiceFacade {
     
-    private final ClusterMetaDataManagerPersistService metaDataManagerPersistService;
+    private final MetaDataManagerPersistService metaDataManagerService;
     
-    private final ClusterComputeNodePersistService computeNodePersistService;
+    private final ClusterComputeNodePersistService computeNodeService;
     
-    private final ClusterProcessPersistService processPersistService;
+    private final ClusterProcessPersistService processService;
     
     @Getter(AccessLevel.NONE)
     private final ComputeNodeInstance computeNodeInstance;
     
     public ClusterPersistServiceFacade(final MetaDataContextManager metaDataContextManager, final ClusterPersistRepository repository) {
-        metaDataManagerPersistService = new ClusterMetaDataManagerPersistService(metaDataContextManager, repository);
-        computeNodePersistService = new ClusterComputeNodePersistService(repository);
-        processPersistService = new ClusterProcessPersistService(repository);
+        metaDataManagerService = new ClusterMetaDataManagerPersistService(metaDataContextManager, repository);
+        computeNodeService = new ClusterComputeNodePersistService(repository);
+        processService = new ClusterProcessPersistService(repository);
         computeNodeInstance = metaDataContextManager.getComputeNodeInstanceContext().getInstance();
     }
     
     @Override
     public void close() {
-        computeNodePersistService.offline(computeNodeInstance);
+        computeNodeService.offline(computeNodeInstance);
     }
 }

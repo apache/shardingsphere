@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -124,7 +123,7 @@ class PostgreSQLCommandExecuteEngineTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(
-                new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics()), computeNodeInstanceContext, mock(PersistRepository.class));
+                new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics()), computeNodeInstanceContext, mock(), mock());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         commandExecuteEngine.writeQueryData(channelHandlerContext, databaseConnectionManager, queryCommandExecutor, 0);
         verify(connectionResourceLock).doAwait(channelHandlerContext);
