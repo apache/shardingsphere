@@ -99,6 +99,6 @@
 
     <rewrite-assertion id="select_sub_query_with_group_by" db-types="MySQL">
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a GROUP BY a.amount DESC ) AS tmp" />
-        <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount AS amount_CIPHER FROM t_account a GROUP BY a.cipher_amount DESC ) AS tmp" />
+        <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount AS amount_CIPHER FROM t_account a GROUP BY a.`cipher_amount` DESC ) AS tmp" />
     </rewrite-assertion>
 </rewrite-assertions>
