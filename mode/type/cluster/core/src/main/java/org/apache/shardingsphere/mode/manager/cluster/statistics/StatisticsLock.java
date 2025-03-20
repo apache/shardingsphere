@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics.collect;
+package org.apache.shardingsphere.mode.manager.cluster.statistics;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.lock.global.GlobalLock;
 
 /**
- * Statistics collect job.
+ * Statistics lock.
  */
-@RequiredArgsConstructor
-public final class StatisticsCollectJob implements SimpleJob {
-    
-    private final ContextManager contextManager;
+public final class StatisticsLock implements GlobalLock {
     
     @Override
-    public void execute(final ShardingContext shardingContext) {
-        if (contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()) {
-            new StatisticsRefreshEngine(contextManager).refresh();
-        }
+    public String getName() {
+        return "statistics";
     }
 }
