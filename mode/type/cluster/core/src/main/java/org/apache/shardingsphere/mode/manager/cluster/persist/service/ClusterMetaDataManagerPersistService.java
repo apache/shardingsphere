@@ -178,10 +178,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeAlteredRuleConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
+        MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(
+                database.getName(), reloadMetaDataContexts.getMetaData().getDatabase(database.getName()), originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
     }
     
     @Override
