@@ -12,6 +12,10 @@
     "interfaces":["org.apache.hive.service.rpc.thrift.TCLIService$Iface"]
   },
   {
+    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+    "interfaces":["org.apache.hive.service.rpc.thrift.TCLIService$Iface"]
+  },
+  {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "interfaces":["org.apache.seata.config.Configuration"]
   }

@@ -4,5 +4,9 @@
   "name":"org.apache.hadoop.security.UserGroupInformation$UgiMetrics",
   "allDeclaredFields": true,
   "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.hadoop.security.UserGroupInformation"},
+  "name":"com.sun.security.auth.NTUserPrincipal"
 }
 ]

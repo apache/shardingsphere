@@ -482,6 +482,10 @@ HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执�
 ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set`，`create table`，`truncate table` 和 `drop table` 语句。
 用户应考虑为 ShardingSphere 提交包含单元测试的 PR。
 
+#### 使用 `initFile` 参数部分绕开 SQL 限制
+
+受 https://issues.apache.org/jira/browse/HIVE-28835 影响，HiveServer2 JDBC Driver 的`initFile` 参数仅可在 Linux 环境下使用。
+
 以 `set` 为代表的 SQL 语句很容易在 HiveServer2 Client 级别被动态配置。
 即便 ShardingSphere JDBC 不支持在虚拟 DataSource 上执行 HiveServer2 的 `set` 语句，
 用户也可以通过 `initFile` 的 Hive Session 参数来直接为真实 DataSource 执行一系列 SQL。
