@@ -489,6 +489,11 @@ ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `set
 and `drop table` statements.
 Users should consider submitting a PR containing unit tests for ShardingSphere.
 
+#### Use `initFile` parameter to partially bypass SQL restrictions
+
+Affected by https://issues.apache.org/jira/browse/HIVE-28835 , 
+the `initFile` parameter of HiveServer2 JDBC Driver is only available in Linux environment.
+
 SQL statements represented by `set` can be easily configured dynamically at the HiveServer2 Client level.
 Even though ShardingSphere JDBC does not support executing HiveServer2's `set` statement on a virtual DataSource,
 users can directly execute a series of SQLs for the real DataSource through the Hive Session parameter of `initFile`.
