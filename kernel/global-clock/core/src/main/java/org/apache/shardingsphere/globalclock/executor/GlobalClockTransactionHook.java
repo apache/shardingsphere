@@ -24,9 +24,7 @@ import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
@@ -39,8 +37,6 @@ import java.util.Optional;
  * Global clock transaction hook.
  */
 public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
-    
-    private final LockDefinition lockDefinition = new GlobalLockDefinition(new GlobalClockLock());
     
     @Override
     public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
@@ -84,10 +80,6 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
-        if (!lockContext.tryLock(lockDefinition, 200L)) {
-            return;
-        }
         Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
         Preconditions.checkArgument(globalClockTransactionExecutor.isPresent());
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
@@ -101,13 +93,14 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
-        try {
-            Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
-            Preconditions.checkState(globalClockProvider.isPresent());
-            globalClockProvider.get().getNextTimestamp();
-        } finally {
-            lockContext.unlock(lockDefinition);
-        }
+        Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
+        Preconditions.checkState(globalClockProvider.isPresent());
+        globalClockProvider.get().getNextTimestamp();
+    }
+    
+    @Override
+    public boolean isNeedLockWhenCommit() {
+        return true;
     }
     
     @Override
