@@ -74,7 +74,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections, final TransactionConnectionContext transactionContext) throws SQLException {
+    public void beforeCommit(final GlobalClockRule rule, final DatabaseType databaseType, final Collection<Connection> connections,
+                             final TransactionConnectionContext transactionContext) throws SQLException {
         if (!rule.getConfiguration().isEnabled()) {
             return;
         }
