@@ -15,6 +15,9 @@
   }, {
     "condition":{"typeReachable":"com.clickhouse.client.internal.jpountz.lz4.LZ4JNI"},
     "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/linux/amd64/liblz4-java.so\\E"
+  }, {
+    "condition":{"typeReachable":"com.clickhouse.client.internal.jpountz.lz4.LZ4JNI"},
+    "pattern":"\\Qcom/clickhouse/client/internal/jpountz/util/win32/amd64/liblz4-java.so\\E"
   }]},
   "bundles":[]
 }

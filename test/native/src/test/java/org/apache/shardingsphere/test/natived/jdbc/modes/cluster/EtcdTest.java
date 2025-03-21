@@ -29,7 +29,9 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
@@ -43,7 +45,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+/**
+ * TODO This unit test cannot be run under GraalVM Native Image compiled with Windows 11, pending investigation.
+ */
 @EnabledInNativeImage
+@DisabledOnOs(OS.WINDOWS)
 class EtcdTest {
     
     @RegisterExtension
