@@ -41,22 +41,29 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationListStatement sqlStatement) {
-        return Arrays.asList("id", "tables", "active", "create_time", "stop_time", "job_item_count", "job_sharding_info");
+        return Arrays.asList("id", "tables", "active", "create_time", "stop_time", "job_item_count", "job_sharding_nodes");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ContextManager contextManager) {
-        return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(this::getRow).collect(Collectors.toList());
+        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
+        return pipelineJobManager.getJobInfos(contextKey).stream().map(each -> getRow(contextKey, each)).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow getRow(final PipelineJobInfo jobInfo) {
+    private LocalDataQueryResultRow getRow(final PipelineContextKey contextKey, final PipelineJobInfo jobInfo) {
         return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getTableName(), jobInfo.getJobMetaData().isActive(), jobInfo.getJobMetaData().getCreateTime(),
-                jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), getJobShardingInfo(jobInfo.getJobMetaData().getJobId()));
+                jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), getJobShardingNodes(contextKey, jobInfo.getJobMetaData().getJobId()));
     }
     
-    private String getJobShardingInfo(final String jobId) {
-        Collection<ShardingInfo> shardingInfos = pipelineJobManager.getJobShardingInfos(new PipelineContextKey(InstanceType.PROXY), jobId);
-        return shardingInfos.isEmpty() ? "" : shardingInfos.stream().map(each -> each.getItem() + "=" + each.getInstanceId()).collect(Collectors.joining(","));
+    private String getJobShardingNodes(final PipelineContextKey contextKey, final String jobId) {
+        Collection<ShardingInfo> shardingInfos = pipelineJobManager.getJobShardingInfos(contextKey, jobId);
+        return shardingInfos.isEmpty() ? "" : getJobShardingNodes(shardingInfos);
+    }
+    
+    private String getJobShardingNodes(final Collection<ShardingInfo> shardingInfos) {
+        return 1 == shardingInfos.size()
+                ? shardingInfos.iterator().next().getInstanceId()
+                : shardingInfos.stream().map(each -> each.getItem() + "=" + each.getInstanceId()).collect(Collectors.joining(","));
     }
     
     @Override
