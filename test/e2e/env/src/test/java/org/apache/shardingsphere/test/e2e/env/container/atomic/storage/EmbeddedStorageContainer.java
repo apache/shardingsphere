@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.Database
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,5 +74,10 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     @Override
     public final String getAbbreviation() {
         return databaseType.getType().toLowerCase();
+    }
+    
+    @Override
+    public Map<String, String> getLinkReplacements() {
+        return Collections.emptyMap();
     }
 }

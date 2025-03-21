@@ -30,6 +30,7 @@ import org.testcontainers.containers.BindMode;
 import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -160,5 +161,16 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Override
     public final String getAbbreviation() {
         return databaseType.getType().toLowerCase();
+    }
+    
+    @Override
+    public Map<String, String> getLinkReplacements() {
+        Map<String, String> replacements = new HashMap<>();
+        for (String each : getNetworkAliases()) {
+            for (Integer exposedPort : getExposedPorts()) {
+                replacements.put(each + ":" + exposedPort, getHost() + ":" + getMappedPort(exposedPort));
+            }
+        }
+        return replacements;
     }
 }

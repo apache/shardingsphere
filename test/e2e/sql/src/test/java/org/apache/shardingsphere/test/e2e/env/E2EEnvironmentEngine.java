@@ -18,23 +18,16 @@
 package org.apache.shardingsphere.test.e2e.env;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.h2.util.ScriptReader;
-import org.h2.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,7 +60,6 @@ public final class E2EEnvironmentEngine {
         executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType, targetDataSource);
     }
     
-    @SneakyThrows({SQLException.class, IOException.class})
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType, final DataSource targetDataSource) {
         Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
@@ -77,29 +69,9 @@ public final class E2EEnvironmentEngine {
         if (!INITIALIZED_SUITES.contains(cacheKey)) {
             synchronized (INITIALIZED_SUITES) {
                 if (!INITIALIZED_SUITES.contains(cacheKey)) {
-                    executeInitSQL(targetDataSource, logicDatabaseInitSQLFile.get());
+                    SQLScriptUtils.execute(targetDataSource, logicDatabaseInitSQLFile.get());
                     INITIALIZED_SUITES.add(cacheKey);
                 }
-            }
-        }
-    }
-    
-    private void executeInitSQL(final DataSource dataSource, final String logicDatabaseInitSQLFile) throws SQLException, IOException {
-        try (
-                Connection connection = dataSource.getConnection();
-                FileReader reader = new FileReader(logicDatabaseInitSQLFile)) {
-            Statement stat = connection.createStatement();
-            ScriptReader r = new ScriptReader(reader);
-            r.setSkipRemarks(true);
-            while (true) {
-                String sql = r.readStatement();
-                if (null == sql) {
-                    break;
-                }
-                if (StringUtils.isWhitespaceOrEmpty(sql)) {
-                    continue;
-                }
-                stat.execute(sql);
             }
         }
     }
