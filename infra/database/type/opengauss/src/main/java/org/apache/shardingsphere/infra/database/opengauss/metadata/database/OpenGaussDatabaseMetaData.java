@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,6 +48,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
             "SUBSTRING", "SYMMETRIC", "SYSDATE", "TABLE", "TABLESAMPLE", "THEN", "TIME", "TIMECAPSULE", "TIMESTAMP", "TIMESTAMPDIFF", "TINYINT", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION",
             "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARCHAR2", "VARIADIC", "VERBOSE", "VERIFY", "WHEN", "WHERE", "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS",
             "XMLFOREST", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE"));
+    
+    private String defaultSchema;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -85,7 +88,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return Optional.of("public");
+        return this.defaultSchema != null ? Optional.of(this.defaultSchema) : Optional.of("public");
+    }
+    
+    @Override
+    public String getSchema(final Connection connection) {
+        this.defaultSchema = DialectDatabaseMetaData.super.getSchema(connection);
+        return this.defaultSchema;
     }
     
     @Override
