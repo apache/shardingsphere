@@ -33,6 +33,9 @@ import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
+import org.apache.calcite.rel.metadata.ProxyingMetadataHandlerProvider;
+import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectRemoveRule;
@@ -264,6 +267,8 @@ public final class SQLFederationPlannerUtils {
      * @return rel opt cluster
      */
     public static RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory) {
-        return RelOptCluster.create(createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
+        RelOptCluster relOptCluster = RelOptCluster.create(createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
+        relOptCluster.setMetadataQuerySupplier(() -> new RelMetadataQuery(new ProxyingMetadataHandlerProvider(DefaultRelMetadataProvider.INSTANCE)));
+        return relOptCluster;
     }
 }
