@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.lock;
+package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

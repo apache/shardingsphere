@@ -32,11 +32,7 @@ public final class GlobalLockDefinition implements LockDefinition {
         nodePath = new GlobalLockNodePath(globalLock.getName());
     }
     
-    /**
-     * Get lock key.
-     *
-     * @return lock key
-     */
+    @Override
     public String getLockKey() {
         return NodePathGenerator.toPath(nodePath);
     }
