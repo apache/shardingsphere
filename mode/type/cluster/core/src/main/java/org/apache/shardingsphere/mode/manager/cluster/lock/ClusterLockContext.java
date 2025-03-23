@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.lock;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Cluster lock context.
  */
-@RequiredArgsConstructor
 public final class ClusterLockContext implements LockContext {
     
     private final GlobalLockPersistService globalLockPersistService;
+    
+    public ClusterLockContext(final ClusterPersistRepository repository) {
+        globalLockPersistService = new GlobalLockPersistService(repository);
+    }
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
