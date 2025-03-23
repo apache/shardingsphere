@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
-import org.apache.shardingsphere.mode.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
 
 /**
  * Transaction commit lock.

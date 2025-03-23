@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.statistics;
 
-import org.apache.shardingsphere.mode.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
 
 /**
  * Statistics lock.

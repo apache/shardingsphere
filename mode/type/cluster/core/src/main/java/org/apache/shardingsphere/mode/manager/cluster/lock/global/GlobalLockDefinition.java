@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;

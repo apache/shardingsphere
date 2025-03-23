@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.exception;
+package org.apache.shardingsphere.mode.lock.global;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.LockSQLException;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
+import org.junit.jupiter.api.Test;
 
-/**
- * Locked cluster exception.
- */
-public final class LockedClusterException extends LockSQLException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class GlobalLockDefinitionTest {
     
-    private static final long serialVersionUID = 122184861309346827L;
-    
-    public LockedClusterException() {
-        super(XOpenSQLState.GENERAL_ERROR, 30, "Cluster is already locked.");
+    @Test
+    void assertGetLockKey() {
+        GlobalLock globalLock = mock(GlobalLock.class);
+        when(globalLock.getName()).thenReturn("foo_lock");
+        assertThat(new GlobalLockDefinition(globalLock).getLockKey(), is("/lock/global/locks/foo_lock"));
     }
 }
