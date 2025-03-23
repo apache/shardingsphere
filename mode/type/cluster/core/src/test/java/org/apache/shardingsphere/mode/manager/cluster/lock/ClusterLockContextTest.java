@@ -24,9 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,13 +43,13 @@ class ClusterLockContextTest {
     
     private GlobalLockDefinition lockDefinition;
     
-    private ClusterLockContext lockContext;
+    private final ClusterLockContext lockContext = new ClusterLockContext(mock());
     
     @BeforeEach
-    void init() {
+    void setUp() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(ClusterLockContext.class.getDeclaredField("globalLockPersistService"), lockContext, globalLockPersistService);
         when(globalLock.getName()).thenReturn("foo_lock");
         lockDefinition = new GlobalLockDefinition(globalLock);
-        lockContext = new ClusterLockContext(globalLockPersistService);
     }
     
     @Test
