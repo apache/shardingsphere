@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.lock;
+package org.apache.shardingsphere.mode.manager.cluster.lock.persist;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
