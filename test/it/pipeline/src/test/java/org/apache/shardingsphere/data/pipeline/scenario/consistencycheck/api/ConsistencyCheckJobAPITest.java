@@ -59,7 +59,7 @@ class ConsistencyCheckJobAPITest {
     private final YamlMigrationJobConfigurationSwapper jobConfigSwapper = new YamlMigrationJobConfigurationSwapper();
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
