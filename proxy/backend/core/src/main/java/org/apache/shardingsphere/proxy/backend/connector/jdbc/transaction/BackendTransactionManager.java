@@ -98,11 +98,11 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
-        LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             return;
         }
+        DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
+        LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
         boolean isNeedLock = transactionHooks.values().stream().anyMatch(TransactionHook::isNeedLockWhenCommit);
         LockDefinition lockDefinition = new GlobalLockDefinition(new TransactionCommitLock());
         try {
