@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.lock;
 
-import org.apache.shardingsphere.mode.lock.global.GlobalLock;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

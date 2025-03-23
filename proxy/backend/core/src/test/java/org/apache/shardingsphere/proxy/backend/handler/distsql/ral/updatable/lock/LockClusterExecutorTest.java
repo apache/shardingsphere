@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
-import org.apache.shardingsphere.mode.lock.exception.LockedClusterException;
+import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 /**
  * Global lock.

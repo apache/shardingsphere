@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQ
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
-import org.apache.shardingsphere.mode.lock.exception.LockedClusterException;
-import org.apache.shardingsphere.mode.lock.global.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
