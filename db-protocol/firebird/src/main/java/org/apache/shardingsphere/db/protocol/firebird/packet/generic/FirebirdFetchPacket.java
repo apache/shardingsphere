@@ -46,9 +46,17 @@ public final class FirebirdFetchPacket extends FirebirdPacket {
         int nullBits = (row.getCells().size() + 7) / 8;
         nullBits += (4 - nullBits) & 3;
         writePayload.getByteBuf().writeZero(nullBits);
+        int i = 0;
         for (BinaryCell cell : row.getCells()) {
-            FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
-            type.write(writePayload, cell.getData());
+            if (cell.getData() != null) {
+                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
+                type.write(writePayload, cell.getData());
+            }
+            else {
+                byte nullBitsByte = writePayload.getByteBuf().getByte(i / 8);
+                writePayload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
+            }
+            i++;
         }
         data = writeBuffer;
     }
