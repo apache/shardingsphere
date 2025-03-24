@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *     1 bit sign bit.
  *     41 bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  *     10 bits worker process id.
- *     12 bits auto increment offset in one mills
+ *     12 bits auto increment offset in one millis
  * </pre>
  */
 public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ComputeNodeInstanceContextAware {

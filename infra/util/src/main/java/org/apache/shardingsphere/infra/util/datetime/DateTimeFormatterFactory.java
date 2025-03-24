@@ -34,9 +34,9 @@ public final class DateTimeFormatterFactory {
     
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
     
-    private static final DateTimeFormatter SHORT_MILLS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+    private static final DateTimeFormatter SHORT_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
-    private static final DateTimeFormatter LONG_MILLS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter LONG_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
     /**
      * Get standard date time formatter.
@@ -66,20 +66,20 @@ public final class DateTimeFormatterFactory {
     }
     
     /**
-     * Get short mills date time formatter.
+     * Get short millis date time formatter.
      *
-     * @return short mills date time formatter
+     * @return short millis date time formatter
      */
-    public static DateTimeFormatter getShortMillsFormatter() {
-        return SHORT_MILLS;
+    public static DateTimeFormatter getShortMillisFormatter() {
+        return SHORT_MILLIS;
     }
     
     /**
-     * Get long mills date time formatter.
+     * Get long millis date time formatter.
      *
-     * @return long mills date time formatter
+     * @return long millis date time formatter
      */
-    public static DateTimeFormatter getLongMillsFormatter() {
-        return LONG_MILLS;
+    public static DateTimeFormatter getLongMillisFormatter() {
+        return LONG_MILLIS;
     }
 }
