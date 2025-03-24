@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.statement;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.adapter.enumerable.EnumerableConvention;
+import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.operator.util.LogicalScanRelShuttle;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.builder.SQLFederationPlannerBuilder;
 
 import java.util.Objects;
 
@@ -41,6 +41,8 @@ import java.util.Objects;
 public final class SQLStatementCompiler {
     
     private final SqlToRelConverter converter;
+    
+    private final Convention convention;
     
     /**
      * Compile sql statement to execution plan.
@@ -55,7 +57,7 @@ public final class SQLStatementCompiler {
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
         RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
-        RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerUtils.createHepPlanner());
+        RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerBuilder.buildHepPlanner());
         RelNode physicalPlan = optimize(rewritePlan, converter);
         RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
@@ -68,10 +70,10 @@ public final class SQLStatementCompiler {
     
     private RelNode optimize(final RelNode rewritePlan, final SqlToRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (rewritePlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
+        if (rewritePlan.getTraitSet().equals(converter.getCluster().traitSet().replace(convention))) {
             planner.setRoot(rewritePlan);
         } else {
-            planner.setRoot(planner.changeTraits(rewritePlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
+            planner.setRoot(planner.changeTraits(rewritePlan, converter.getCluster().traitSet().replace(convention)));
         }
         return planner.findBestExp();
     }
