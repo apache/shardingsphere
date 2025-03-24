@@ -65,7 +65,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     
     private static final Collection<Class<?>> INVALID_FEDERATION_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class));
     
-    private final Enumerator<Object> enumerator;
+    private final Enumerator<?> enumerator;
     
     private final Map<String, Integer> columnLabelAndIndexes;
     
@@ -79,7 +79,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object> enumerator, final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
+    public SQLFederationResultSet(final Enumerator<?> enumerator, final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
         DatabaseType databaseType = selectStatementContext.getDatabaseType().getTrunkDatabaseType().orElse(selectStatementContext.getDatabaseType());
         columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
@@ -103,11 +103,15 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     public boolean next() {
         boolean result = enumerator.moveNext();
         if (result && null != enumerator.current()) {
-            currentRows = enumerator.current().getClass().isArray() && !(enumerator.current() instanceof byte[]) ? (Object[]) enumerator.current() : new Object[]{enumerator.current()};
+            currentRows = getCurrentRows(enumerator.current());
         } else {
             currentRows = new Object[]{null};
         }
         return result;
+    }
+    
+    private Object[] getCurrentRows(final Object current) {
+        return current.getClass().isArray() && !(current instanceof byte[]) ? (Object[]) current : new Object[]{current};
     }
     
     @Override

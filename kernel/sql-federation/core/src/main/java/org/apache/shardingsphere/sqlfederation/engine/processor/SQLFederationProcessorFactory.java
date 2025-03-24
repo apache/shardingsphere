@@ -15,44 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.engine;
+package org.apache.shardingsphere.sqlfederation.engine.processor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.sqlfederation.engine.impl.StandardSQLFederationEngine;
+import org.apache.shardingsphere.sqlfederation.engine.processor.impl.StandardSQLFederationProcessor;
 
 /**
- * SQL federation engine factory.
+ * SQL federation processor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLFederationEngineFactory {
+public final class SQLFederationProcessorFactory {
     
-    private static final SQLFederationEngineFactory INSTANCE = new SQLFederationEngineFactory();
+    private static final SQLFederationProcessorFactory INSTANCE = new SQLFederationProcessorFactory();
     
     /**
-     * Get backend handler factory instance.
+     * Get sql federation processor factory instance.
      *
-     * @return backend handler factory
+     * @return sql federation processor factory instance
      */
-    public static SQLFederationEngineFactory getInstance() {
+    public static SQLFederationProcessorFactory getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Create new instance of {@link SQLFederationEngine}.
+     * Create new instance of {@link SQLFederationProcessor}.
      *
-     * @param currentDatabaseName current database name
-     * @param currentSchemaName current schema name
      * @param metaData shardingSphere meta data
      * @param statistics shardingSphere statistics
      * @param jdbcExecutor JDBC executor
      * @return created instance
      */
-    public SQLFederationEngine newInstance(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
-                                           final JDBCExecutor jdbcExecutor) {
-        return new StandardSQLFederationEngine(currentDatabaseName, currentSchemaName, metaData, statistics, jdbcExecutor);
+    public SQLFederationProcessor newInstance(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
+        return new StandardSQLFederationProcessor(metaData, statistics, jdbcExecutor);
     }
 }
