@@ -95,7 +95,7 @@ public final class StorageUnitManager {
         try {
             closeStaleRules(database);
             SwitchingResource switchingResource = resourceSwitchManager.switchByUnregisterStorageUnit(database.getResourceMetaData(), Collections.singleton(storageUnitName));
-            buildNewMetaDataContext(databaseName, switchingResource, true);
+            buildNewMetaDataContext(databaseName, switchingResource, false);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed.", databaseName, ex);
         }

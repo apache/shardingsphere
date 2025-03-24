@@ -30,9 +30,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -90,11 +92,12 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
         EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
+        QuoteCharacter quoteCharacter = getQuoteCharacter(columnSegment, databaseType);
         return Optional.of(encryptColumn.getAssistedQuery()
-                .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType),
+                .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional.getName(), quoteCharacter, databaseType),
                         databaseType))
                 .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex,
-                        createColumnProjections(encryptColumn.getCipher().getName(), columnSegment.getIdentifier().getQuoteCharacter(), databaseType), databaseType)));
+                        createColumnProjections(encryptColumn.getCipher().getName(), quoteCharacter, databaseType), databaseType)));
     }
     
     private Collection<OrderByItem> getGroupByItems(final SelectStatementContext sqlStatementContext) {
@@ -103,6 +106,11 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
             result.addAll(getGroupByItems(each));
         }
         return result;
+    }
+    
+    private QuoteCharacter getQuoteCharacter(final ColumnSegment columnSegment, final DatabaseType databaseType) {
+        return TableSourceType.PHYSICAL_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType() ? new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter()
+                : columnSegment.getIdentifier().getQuoteCharacter();
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter, final DatabaseType databaseType) {

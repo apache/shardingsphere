@@ -21,7 +21,7 @@ import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -148,26 +148,8 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertBeforeCommitWhenDisabledGlobalClockRule() throws SQLException {
         LockContext lockContext = mock(LockContext.class);
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(lockContext, times(0)).tryLock(any(), anyLong());
-    }
-    
-    @Test
-    void assertBeforeCommitWhenTryLockFailed() throws SQLException {
-        when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        LockContext lockContext = mock(LockContext.class);
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
-        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
-    }
-    
-    @Test
-    void assertBeforeCommitWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
-        when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        LockContext lockContext = mock(LockContext.class);
-        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
-        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
-        verify(globalClockTransactionExecutor, times(0)).sendCommitTimestamp(any(), anyLong());
     }
     
     @Test
@@ -175,23 +157,22 @@ class GlobalClockTransactionHookTest {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
-        LockContext lockContext = mock(LockContext.class);
-        when(lockContext.tryLock(any(), anyLong())).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
-        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext, lockContext);
+        transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
     }
     
     @Test
     void assertAfterCommitWhenGlobalClockProviderAbsent() {
-        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider, times(0)).getNextTimestamp();
     }
     
     @Test
     void assertAfterCommitWhenGlobalClockProviderPresent() {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
-        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext, mock(LockContext.class));
+        transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider).getNextTimestamp();
     }
     

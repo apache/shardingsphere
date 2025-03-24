@@ -58,6 +58,7 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngineFactory;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
@@ -114,7 +115,8 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
                                                         final QueryContext queryContext) {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getQueryContext().getConnectionContext());
-        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
+        SQLFederationEngine federationEngine =
+                SQLFederationEngineFactory.getInstance().newInstance(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
         if (federationEngine.decide(queryContext, metaData.getGlobalRuleMetaData())) {
             return getFederationExecutionUnits(queryContext, metaData, federationEngine);
         }

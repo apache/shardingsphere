@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -149,10 +149,12 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     @Override
     public void unregisterStorageUnits(final ShardingSphereDatabase database, final Collection<String> toBeDroppedStorageUnitNames) {
         for (String each : getToBeDroppedResourceNames(database.getName(), toBeDroppedStorageUnitNames)) {
+            String databaseName = database.getName();
             MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
             metaDataPersistFacade.getDataSourceUnitService().delete(database.getName(), each);
             MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
-            metaDataPersistFacade.getDatabaseMetaDataFacade().unregisterStorageUnits(database.getName(), reloadMetaDataContexts);
+            metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByDrop(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName),
+                    originalMetaDataContexts.getMetaData().getDatabase(databaseName));
             DatabaseStatistics databaseStatistics = reloadMetaDataContexts.getStatistics().getDatabaseStatistics(database.getName());
             if (null != databaseStatistics) {
                 for (Entry<String, SchemaStatistics> entry : databaseStatistics.getSchemaStatisticsMap().entrySet()) {
@@ -178,10 +180,11 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeAlteredRuleConfig) {
             return;
         }
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeAlteredRuleConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(toBeAlteredRuleConfig));
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
+        MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByAlter(
+                database.getName(), reloadMetaDataContexts.getMetaData().getDatabase(database.getName()), originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
     }
     
     @Override

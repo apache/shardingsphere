@@ -31,9 +31,11 @@ import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.Pi
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.ShardingStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.operate.JobOperateAPIImpl;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.statistics.JobStatisticsAPIImpl;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.statistics.ShardingStatisticsAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -100,6 +102,16 @@ public final class PipelineAPIFactory {
     }
     
     /**
+     * Get sharding statistics API.
+     *
+     * @param contextKey context key
+     * @return sharding statistics API
+     */
+    public static ShardingStatisticsAPI getShardingStatisticsAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).shardingStatisticsAPI;
+    }
+    
+    /**
      * Get registry center.
      *
      * @param contextKey context key
@@ -119,11 +131,14 @@ public final class PipelineAPIFactory {
         
         private final JobOperateAPI jobOperateAPI;
         
+        private final ShardingStatisticsAPI shardingStatisticsAPI;
+        
         private ElasticJobAPIHolder(final PipelineContextKey contextKey) {
             CoordinatorRegistryCenter registryCenter = getRegistryCenter(contextKey);
             jobStatisticsAPI = new JobStatisticsAPIImpl(registryCenter);
             jobConfigurationAPI = new JobConfigurationAPIImpl(registryCenter);
             jobOperateAPI = new JobOperateAPIImpl(registryCenter);
+            shardingStatisticsAPI = new ShardingStatisticsAPIImpl(registryCenter);
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {

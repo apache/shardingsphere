@@ -80,6 +80,7 @@ public final class RedisTSOProvider implements TSOProvider {
     @Override
     public long getCurrentTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
+            // TODO use redis lock to instead of reg center's lock. lock here #35041
             return Long.parseLong(jedis.get(CSN_KEY));
         }
     }
@@ -88,6 +89,7 @@ public final class RedisTSOProvider implements TSOProvider {
     public long getNextTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.incr(CSN_KEY);
+            // TODO use redis lock to instead of reg center's lock. unlock here #35041
         }
     }
     

@@ -57,7 +57,7 @@ class CipherColumnItemTest {
     
     @Test
     void assertDecryptNullValue() {
-        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).decrypt("foo-db", "foo_schema", "foo_tbl", "foo_col", (Object) null));
+        assertNull(new CipherColumnItem("foo_col", mock(EncryptAlgorithm.class)).decrypt("foo-db", "foo_schema", "foo_tbl", "foo_col", null));
     }
     
     @Test

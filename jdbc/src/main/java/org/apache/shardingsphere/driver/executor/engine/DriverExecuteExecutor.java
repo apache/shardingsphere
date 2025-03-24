@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -103,7 +103,7 @@ public final class DriverExecuteExecutor {
         }
         FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(
                 connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
-        if (sqlFederationEngine.enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
+        if (sqlFederationEngine.isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
             federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return true;
         }

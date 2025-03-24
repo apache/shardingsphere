@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock;
 
-import org.apache.shardingsphere.mode.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
 
 /**
  * Cluster lock.

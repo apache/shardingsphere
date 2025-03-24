@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -96,28 +98,38 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
+        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return;
+        }
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
         LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
-        for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-            entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
-        }
-        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            try {
-                if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
-                    localTransactionManager.commit();
-                } else {
-                    distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
-                }
-            } finally {
-                for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-                    entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext(), lockContext);
-                }
-                for (Connection each : connection.getCachedConnections().values()) {
-                    ConnectionSavepointManager.getInstance().transactionFinished(each);
-                }
-                connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
-                connection.getConnectionSession().getConnectionContext().close();
+        boolean isNeedLock = transactionHooks.values().stream().anyMatch(TransactionHook::isNeedLockWhenCommit);
+        LockDefinition lockDefinition = new GlobalLockDefinition(new TransactionCommitLock());
+        try {
+            // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
+            if (isNeedLock && !lockContext.tryLock(lockDefinition, 200L)) {
+                return;
             }
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
+            }
+            if (TransactionType.LOCAL == TransactionUtils.getTransactionType(getTransactionContext()) || null == distributedTransactionManager) {
+                localTransactionManager.commit();
+            } else {
+                distributedTransactionManager.commit(getTransactionContext().isExceptionOccur());
+            }
+        } finally {
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
+            }
+            if (isNeedLock) {
+                lockContext.unlock(lockDefinition);
+            }
+            for (Connection each : connection.getCachedConnections().values()) {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
+            }
+            connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
+            connection.getConnectionSession().getConnectionContext().close();
         }
     }
     
