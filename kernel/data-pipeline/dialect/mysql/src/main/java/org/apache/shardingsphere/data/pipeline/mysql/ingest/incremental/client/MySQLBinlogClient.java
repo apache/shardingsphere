@@ -189,7 +189,7 @@ public final class MySQLBinlogClient {
     }
     
     private void configureHeartbeat() {
-        execute("SET @master_heartbeat_period=15000000000");
+        execute("SET @master_heartbeat_period=" + TimeUnit.SECONDS.toNanos(15L));
     }
     
     private void registerSlave() {
