@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ProcessOperationLock {
     
-    private static final long TIMEOUT_MILLS = 5000L;
+    private static final long TIMEOUT_MILLIS = 5000L;
     
     private final Lock lock = new ReentrantLock();
     
@@ -58,7 +58,7 @@ public final class ProcessOperationLock {
     @SneakyThrows(InterruptedException.class)
     public boolean awaitDefaultTime(final ProcessOperationLockReleaseStrategy releaseStrategy) {
         while (!releaseStrategy.isReadyToRelease()) {
-            if (condition.await(TIMEOUT_MILLS, TimeUnit.MILLISECONDS)) {
+            if (condition.await(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
                 return false;
             }
         }

@@ -24,22 +24,19 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * CDC ack position.
+ * CDC ACK position.
  */
-@Getter
 public final class CDCAckPosition {
-    
-    @Setter
-    private Record lastRecord;
     
     private final AtomicInteger dataRecordCount = new AtomicInteger();
     
-    private final long createTimeMills;
+    @Getter
+    @Setter
+    private Record lastRecord;
     
     public CDCAckPosition(final Record lastRecord, final int dataRecordCount) {
         this.lastRecord = lastRecord;
         this.dataRecordCount.set(dataRecordCount);
-        createTimeMills = System.currentTimeMillis();
     }
     
     /**

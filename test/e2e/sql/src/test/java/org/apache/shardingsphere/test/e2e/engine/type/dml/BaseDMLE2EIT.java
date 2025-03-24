@@ -276,7 +276,7 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
             if ("Oracle".equals(databaseType.getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex)) || "openGauss".equals(databaseType.getType())) {
                 assertThat(DateTimeFormatterFactory.getDateFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));
             } else {
-                assertThat(DateTimeFormatterFactory.getShortMillsFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+                assertThat(DateTimeFormatterFactory.getShortMillisFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType())
