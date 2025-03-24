@@ -187,7 +187,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())) {
             return processExecuteFederation(doExecuteFederation());
         }
-        if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
+        if (proxySQLExecutor.getSqlFederationEngine().enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
             federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
