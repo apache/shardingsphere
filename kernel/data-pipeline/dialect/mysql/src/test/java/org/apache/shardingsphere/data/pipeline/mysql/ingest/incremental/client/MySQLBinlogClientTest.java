@@ -144,7 +144,7 @@ class MySQLBinlogClientTest {
             } catch (final ReflectiveOperationException ex) {
                 throw new RuntimeException(ex);
             }
-            if (null != responseCallback) {
+            if (null != responseCallback && !responseCallback.isDone()) {
                 responseCallback.setSuccess(response);
             }
             TimeUnit.SECONDS.sleep(1L);
