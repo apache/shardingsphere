@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Colu
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ContextVariablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeNameContext;
@@ -59,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Stri
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
@@ -73,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -84,11 +87,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -573,6 +578,27 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (numbers.size() == 2) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
             result.setScale(Integer.parseInt(numbers.get(1).getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWithClause(final WithClauseContext ctx) {
+        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
+        for (CteClauseContext each : ctx.cteClause()) {
+            commonTableExpressions.add((CommonTableExpressionSegment) visit(each));
+        }
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions, null != ctx.RECURSIVE());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCteClause(final CteClauseContext ctx) {
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
+                new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (FirebirdSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            result.getColumns().addAll(columns.getValue());
         }
         return result;
     }
