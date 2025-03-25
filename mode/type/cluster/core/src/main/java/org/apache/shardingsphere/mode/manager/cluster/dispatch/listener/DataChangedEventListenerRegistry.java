@@ -50,14 +50,14 @@ public final class DataChangedEventListenerRegistry {
      */
     public void register() {
         databaseNames.forEach(this::registerDatabaseListeners);
-        ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).forEach(this::registerGlobalHandlers);
+        ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).forEach(this::registerGlobalListeners);
     }
     
     private void registerDatabaseListeners(final String databaseName) {
         repository.watch(NodePathGenerator.toPath(new DatabaseMetaDataNodePath(databaseName)), new DatabaseMetaDataChangedListener(contextManager));
     }
     
-    private void registerGlobalHandlers(final GlobalDataChangedEventHandler handler) {
+    private void registerGlobalListeners(final GlobalDataChangedEventHandler handler) {
         repository.watch(NodePathGenerator.toPath(handler.getSubscribedNodePath()), new GlobalMetaDataChangedListener(contextManager, handler));
     }
 }
