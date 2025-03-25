@@ -52,7 +52,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @param value 1 byte fixed length integer
      */
     public void writeInt1(final int value) {
-        byteBuf.writeByte(value);
+        byteBuf.writeShort(value);
     }
     
     /**
@@ -70,7 +70,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @param value 2 byte fixed length integer
      */
     public void writeInt2(final int value) {
-        byteBuf.writeShort(value);
+        byteBuf.writeInt(value);
     }
     
     /**
