@@ -20,7 +20,7 @@ grammar PLSQL;
 import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
 call
-    : CALL 
+    : CALL
     ;
 
 alterProcedure
@@ -515,7 +515,7 @@ cursorVariableDeclaration
     ;
 
 exceptionDeclaration
-    : variableName (EXCEPTION SEMI_)?
+    : variableName EXCEPTION SEMI_
     ;
 
 recordVariableDeclaration
@@ -579,7 +579,7 @@ pragma
     ;
 
 exceptionInitPragma
-    : (PRAGMA EXCEPTION_INIT LP_ exceptionDeclaration COMMA_ errorCode RP_ SEMI_)+
+    : (PRAGMA EXCEPTION_INIT LP_ (exceptionDeclaration | variableName) COMMA_ errorCode RP_ SEMI_)+
     ;
 
 errorCode

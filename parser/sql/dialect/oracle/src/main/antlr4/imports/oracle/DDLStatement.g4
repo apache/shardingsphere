@@ -151,7 +151,7 @@ alterTrigger
     | RENAME TO name
     | (EDITIONABLE | NONEDITIONABLE)
     )
-    ;    
+    ;
 
 triggerCompileClause
     : COMPILE (
@@ -258,8 +258,8 @@ xmlTypeStorageClause
     ;
 
 xmlSchemaSpecClause
-    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)? 
-      (STORE ALL VARRAYS AS (LOBS | TABLES))? 
+    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)?
+      (STORE ALL VARRAYS AS (LOBS | TABLES))?
       ((ALLOW | DISALLOW) NONSCHEMA)?
       ((ALLOW | DISALLOW) ANYSCHEMA)?
     ;
@@ -294,7 +294,7 @@ createParentClause
     ;
 
 createObjectTableClause
-    : OF objectName objectTableSubstitution? 
+    : OF objectName objectTableSubstitution?
     (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     oidClause? oidIndexClause? physicalProperties? tableProperties?
     ;
@@ -340,7 +340,7 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName REF? (dataType (COLLATE columnCollationName)?)? SORT? visibleClause (DEFAULT (ON NULL)? expr | identityClause)? 
+    : columnName REF? (dataType (COLLATE columnCollationName)?)? SORT? visibleClause (DEFAULT (ON NULL)? expr | identityClause)?
     ( ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
     | SCOPE FOR LP_ columnName RP_ IS identifier
@@ -412,7 +412,7 @@ virtualColumnDefinition
 outOfLineConstraint
     : (CONSTRAINT constraintName)?
     (UNIQUE columnNames
-    | primaryKey columnNames 
+    | primaryKey columnNames
     | FOREIGN KEY columnNames referencesClause
     | CHECK LP_ expr RP_
     ) constraintState?
@@ -610,9 +610,9 @@ tableAlias
 
 alterDefinitionClause
     : (alterTableProperties
+    | constraintClauses
     | columnClauses
     | moveTableClause
-    | constraintClauses
     | alterTablePartitioning invalidationSpecification?
     | alterExternalTable)?
     ;
@@ -670,7 +670,7 @@ addColumnSpecification
     ;
 
 columnOrVirtualDefinitions
-    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* 
+    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)*
     ;
 
 columnOrVirtualDefinition
@@ -775,7 +775,7 @@ dropConstraintClause
     : DROP
     (
     constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT constraintName CASCADE?)
-    ) 
+    )
     ;
 
 alterExternalTable
@@ -1055,9 +1055,9 @@ ilmInmemoryPolicy
     ;
 
 organizationClause
-    : ORGANIZATION 
-    ( HEAP segmentAttributesClause? heapOrgTableClause 
-    | INDEX segmentAttributesClause? indexOrgTableClause 
+    : ORGANIZATION
+    ( HEAP segmentAttributesClause? heapOrgTableClause
+    | INDEX segmentAttributesClause? indexOrgTableClause
     | EXTERNAL externalTableClause)
     ;
 
@@ -1104,7 +1104,7 @@ tableProperties
     ;
 
 readOnlyClause
-    : READ ONLY | READ WRITE 
+    : READ ONLY | READ WRITE
     ;
 
 indexingClause
@@ -1187,7 +1187,7 @@ lobParameters
         | lobDeduplicateClause
         | lobCompressionClause
         | (ENCRYPT encryptionSpecification | DECRYPT)
-        | (CACHE | NOCACHE | CACHE READS) loggingClause? 
+        | (CACHE | NOCACHE | CACHE READS) loggingClause?
       )+
     ;
 
@@ -1262,9 +1262,9 @@ lobPartitioningStorage
     ;
 
 compositeRangePartitions
-    : PARTITION BY RANGE columnNames 
+    : PARTITION BY RANGE columnNames
       (INTERVAL LP_ expr RP_ (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
-      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      (subpartitionByRange | subpartitionByList | subpartitionByHash)
       LP_? rangePartitionDesc (COMMA_ rangePartitionDesc)* RP_?
     ;
 
@@ -1307,9 +1307,9 @@ rangePartitionDesc
     ;
 
 compositeListPartitions
-    : PARTITION BY LIST columnNames 
+    : PARTITION BY LIST columnNames
       (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
-      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      (subpartitionByRange | subpartitionByList | subpartitionByHash)
       LP_? listPartitionDesc (COMMA_ listPartitionDesc)* RP_?
     ;
 
@@ -1513,7 +1513,7 @@ modifyListPartition
 
 modifyTableSubpartition
     : MODIFY subpartitionExtendedName (allocateExtentClause
-    | deallocateUnusedClause | shrinkClause | ((LOB lobItem | VARRAY varrayType) LP_ modifylobParameters RP_)+ | REBUILD? UNUSABLE LOCAL INDEXES 
+    | deallocateUnusedClause | shrinkClause | ((LOB lobItem | VARRAY varrayType) LP_ modifylobParameters RP_)+ | REBUILD? UNUSABLE LOCAL INDEXES
     | (ADD | DROP) VALUES LP_ listValues RP_ | readOnlyClause | indexingClause)
     ;
 
@@ -1558,10 +1558,10 @@ alterMappingTableClauses
 alterView
     : ALTER VIEW viewName (
     | ADD LP_? outOfLineConstraint RP_?
-    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
-    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
-    | COMPILE 
-    | READ (ONLY | WRITE) 
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY)
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames)
+    | COMPILE
+    | READ (ONLY | WRITE)
     | (EDITIONABLE | NONEDITIONABLE)
     )
     ;
@@ -1617,9 +1617,9 @@ coalesceTablePartition
     ;
 
 addTablePartition
-    : ADD (PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)* 
-    | PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)* 
-    | PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)* (BEFORE? (partitionName | NUMBER_)?) 
+    : ADD (PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)*
+    | PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)*
+    | PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)* (BEFORE? (partitionName | NUMBER_)?)
     | PARTITION partitionName? addHashPartitionClause) dependentTablesClause?
     ;
 
@@ -2051,7 +2051,7 @@ defaultSettingsClauses
     ;
 
 setTimeZoneClause
-    : SET TIME_ZONE EQ_ ((PLUS_ | MINUS_) dateValue | timeZoneRegion) 
+    : SET TIME_ZONE EQ_ ((PLUS_ | MINUS_) dateValue | timeZoneRegion)
     ;
 
 timeZoneRegion
@@ -2419,7 +2419,7 @@ defaultSelectivityClause
     ;
 
 disassociateStatistics
-    : DISASSOCIATE STATISTICS FROM 
+    : DISASSOCIATE STATISTICS FROM
     (COLUMNS tableName DOT_ columnName (COMMA_ tableName DOT_ columnName)*
     | FUNCTIONS function (COMMA_ function)*
     | PACKAGES packageName (COMMA_ packageName)*
@@ -2433,7 +2433,7 @@ audit
     ;
 
 auditTraditional
-    : AUDIT (auditOperationClause (auditingByClause | IN SESSION CURRENT)? | auditSchemaObjectClause | NETWORK | DIRECT_PATH LOAD auditingByClause?) 
+    : AUDIT (auditOperationClause (auditingByClause | IN SESSION CURRENT)? | auditSchemaObjectClause | NETWORK | DIRECT_PATH LOAD auditingByClause?)
     ( BY (SESSION | ACCESS))? (WHENEVER NOT? SUCCESSFUL)? (CONTAINER EQ_ (CURRENT | ALL))?
     ;
 
@@ -2447,19 +2447,19 @@ auditOperationClause
     ;
 
 sqlStatementShortcut
-    : ALTER SYSTEM | CLUSTER | CREATE CLUSTER | ALTER CLUSTER | DROP CLUSTER | TRUNCATE CLUSTER | CONTEXT | CREATE CONTEXT | DROP CONTEXT 
-    | DATABASE LINK | CREATE DATABASE LINK | ALTER DATABASE LINK | DROP DATABASE LINK | DIMENSION | CREATE DIMENSION | ALTER DIMENSION | DROP DIMENSION 
-    | DIRECTORY | CREATE DIRECTORY | DROP DIRECTORY | INDEX | CREATE INDEX | ALTER INDEX | ANALYZE INDEX | DROP INDEX 
-    | MATERIALIZED VIEW | CREATE MATERIALIZED VIEW | ALTER MATERIALIZED VIEW | DROP MATERIALIZED VIEW | NOT EXISTS | OUTLINE | CREATE OUTLINE | ALTER OUTLINE | DROP OUTLINE 
-    | PLUGGABLE DATABASE | CREATE PLUGGABLE DATABASE | ALTER PLUGGABLE DATABASE | DROP PLUGGABLE DATABASE 
-    | PROCEDURE | CREATE FUNCTION | CREATE LIBRARY | CREATE PACKAGE | CREATE PACKAGE BODY | CREATE PROCEDURE | DROP FUNCTION | DROP LIBRARY | DROP PACKAGE | DROP PROCEDURE 
-    | PROFILE | CREATE PROFILE | ALTER PROFILE | DROP PROFILE | PUBLIC DATABASE LINK | CREATE PUBLIC DATABASE LINK | ALTER PUBLIC DATABASE LINK | DROP PUBLIC DATABASE LINK 
-    | PUBLIC SYNONYM | CREATE PUBLIC SYNONYM | DROP PUBLIC SYNONYM | ROLE | CREATE ROLE | ALTER ROLE | DROP ROLE | SET ROLE 
-    | ROLLBACK SEGMENT | CREATE ROLLBACK SEGMENT | ALTER ROLLBACK SEGMENT | DROP ROLLBACK SEGMENT | SEQUENCE | CREATE SEQUENCE | DROP SEQUENCE | SESSION | SYNONYM | CREATE SYNONYM | DROP SYNONYM 
-    | SYSTEM AUDIT | SYSTEM GRANT | TABLE | CREATE TABLE | DROP TABLE | TRUNCATE TABLE | TABLESPACE | CREATE TABLESPACE | ALTER TABLESPACE | DROP TABLESPACE 
-    | TRIGGER | CREATE TRIGGER | ALTER TRIGGER | DROP TRIGGER | ALTER TABLE | TYPE | CREATE TYPE | CREATE TYPE BODY | ALTER TYPE | DROP TYPE | DROP TYPE BODY 
-    | USER | CREATE USER | ALTER USER | DROP USER | VIEW | CREATE VIEW | DROP VIEW 
-    | ALTER SEQUENCE | COMMENT TABLE | DELETE TABLE | EXECUTE DIRECTORY | EXECUTE PROCEDURE | GRANT DIRECTORY | GRANT PROCEDURE | GRANT SEQUENCE | GRANT TABLE | GRANT TYPE 
+    : ALTER SYSTEM | CLUSTER | CREATE CLUSTER | ALTER CLUSTER | DROP CLUSTER | TRUNCATE CLUSTER | CONTEXT | CREATE CONTEXT | DROP CONTEXT
+    | DATABASE LINK | CREATE DATABASE LINK | ALTER DATABASE LINK | DROP DATABASE LINK | DIMENSION | CREATE DIMENSION | ALTER DIMENSION | DROP DIMENSION
+    | DIRECTORY | CREATE DIRECTORY | DROP DIRECTORY | INDEX | CREATE INDEX | ALTER INDEX | ANALYZE INDEX | DROP INDEX
+    | MATERIALIZED VIEW | CREATE MATERIALIZED VIEW | ALTER MATERIALIZED VIEW | DROP MATERIALIZED VIEW | NOT EXISTS | OUTLINE | CREATE OUTLINE | ALTER OUTLINE | DROP OUTLINE
+    | PLUGGABLE DATABASE | CREATE PLUGGABLE DATABASE | ALTER PLUGGABLE DATABASE | DROP PLUGGABLE DATABASE
+    | PROCEDURE | CREATE FUNCTION | CREATE LIBRARY | CREATE PACKAGE | CREATE PACKAGE BODY | CREATE PROCEDURE | DROP FUNCTION | DROP LIBRARY | DROP PACKAGE | DROP PROCEDURE
+    | PROFILE | CREATE PROFILE | ALTER PROFILE | DROP PROFILE | PUBLIC DATABASE LINK | CREATE PUBLIC DATABASE LINK | ALTER PUBLIC DATABASE LINK | DROP PUBLIC DATABASE LINK
+    | PUBLIC SYNONYM | CREATE PUBLIC SYNONYM | DROP PUBLIC SYNONYM | ROLE | CREATE ROLE | ALTER ROLE | DROP ROLE | SET ROLE
+    | ROLLBACK SEGMENT | CREATE ROLLBACK SEGMENT | ALTER ROLLBACK SEGMENT | DROP ROLLBACK SEGMENT | SEQUENCE | CREATE SEQUENCE | DROP SEQUENCE | SESSION | SYNONYM | CREATE SYNONYM | DROP SYNONYM
+    | SYSTEM AUDIT | SYSTEM GRANT | TABLE | CREATE TABLE | DROP TABLE | TRUNCATE TABLE | TABLESPACE | CREATE TABLESPACE | ALTER TABLESPACE | DROP TABLESPACE
+    | TRIGGER | CREATE TRIGGER | ALTER TRIGGER | DROP TRIGGER | ALTER TABLE | TYPE | CREATE TYPE | CREATE TYPE BODY | ALTER TYPE | DROP TYPE | DROP TYPE BODY
+    | USER | CREATE USER | ALTER USER | DROP USER | VIEW | CREATE VIEW | DROP VIEW
+    | ALTER SEQUENCE | COMMENT TABLE | DELETE TABLE | EXECUTE DIRECTORY | EXECUTE PROCEDURE | GRANT DIRECTORY | GRANT PROCEDURE | GRANT SEQUENCE | GRANT TABLE | GRANT TYPE
     | INSERT TABLE | LOCK TABLE | READ DIRECTORY | SELECT SEQUENCE | SELECT TABLE | UPDATE TABLE | WRITE DIRECTORY
     ;
 
@@ -2518,7 +2518,7 @@ comment
 
 flashbackDatabase
     : FLASHBACK STANDBY? PLUGGABLE? DATABASE databaseName?
-    ( TO (scnTimestampClause | restorePointClause) 
+    ( TO (scnTimestampClause | restorePointClause)
     | TO BEFORE (scnTimestampClause | RESETLOGS))
     ;
 
@@ -2598,7 +2598,7 @@ defaultTablespace
     ;
 
 defaultTempTablespace
-    : bigOrSmallFiles? DEFAULT 
+    : bigOrSmallFiles? DEFAULT
     (TEMPORARY TABLESPACE | LOCAL TEMPORARY TABLESPACE FOR (ALL | LEAF)) tablespaceName
     (TEMPFILE fileSpecifications)? extentManagementClause?
     ;
@@ -2616,7 +2616,7 @@ extentManagementClause
     ;
 
 enablePluggableDatabase
-    : ENABLE PLUGGABLE DATABASE 
+    : ENABLE PLUGGABLE DATABASE
     (SEED fileNameConvert? (SYSTEM tablespaceDatafileClauses)? (SYSAUX tablespaceDatafileClauses)?)? undoModeClause?
     ;
 
@@ -2625,7 +2625,7 @@ fileNameConvert
     ;
 
 replaceFileNamePattern
-    : filenamePattern COMMA_ filenamePattern 
+    : filenamePattern COMMA_ filenamePattern
     ;
 
 tablespaceDatafileClauses
@@ -2633,7 +2633,7 @@ tablespaceDatafileClauses
     ;
 
 createDatabaseLink
-    : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
+    : CREATE SHARED? PUBLIC? DATABASE LINK dbLink
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
 
@@ -2645,7 +2645,7 @@ alterDatabaseLink
     ;
 
 dropDatabaseLink
-    : DROP PUBLIC? DATABASE LINK dbLink 
+    : DROP PUBLIC? DATABASE LINK dbLink
     ;
 
 connectToClause
@@ -2689,8 +2689,8 @@ alterDimensionAddClause
     ;
 
 alterDimensionDropClause
-    : DROP (LEVEL level (RESTRICT | CASCADE)? 
-    | HIERARCHY hierarchyName 
+    : DROP (LEVEL level (RESTRICT | CASCADE)?
+    | HIERARCHY hierarchyName
     | ATTRIBUTE attributeName (LEVEL level (COLUMN columnName (COMMA_ COLUMN columnName)*)?)?)
     ;
 
@@ -2743,7 +2743,7 @@ deterministicClause
     ;
 
 parallelEnableClause
-    : PARALLEL_ENABLE (LP_ PARTITION argument BY (ANY 
+    : PARALLEL_ENABLE (LP_ PARTITION argument BY (ANY
     | (HASH | RANGE) LP_ columnName (COMMA_ columnName)* RP_ streamingCluase?
     | VALUE LP_ columnName RP_) RP_)?
     ;
@@ -2761,7 +2761,7 @@ aggregateClause
     ;
 
 pipelinedClause
-    : PIPELINED ((USING implementationType)? 
+    : PIPELINED ((USING implementationType)?
     | (ROW | TABLE) POLYMORPHIC (USING implementationPackage)?)
     ;
 
@@ -2778,15 +2778,15 @@ javaDeclaration
     ;
 
 cDeclaration
-    : (LANGUAGE SINGLE_C | EXTERNAL) 
-    ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?) 
+    : (LANGUAGE SINGLE_C | EXTERNAL)
+    ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?)
     (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
     (WITH CONTEXT)?
     (PARAMETERS LP_ externalParameter (COMMA_ externalParameter)* RP_)?
     ;
 
 externalParameter
-    : (CONTEXT 
+    : (CONTEXT
     | SELF (TDO | property)?
     | (parameterName | RETURN) property? (BY REFERENCE)? externalDatatype)
     ;

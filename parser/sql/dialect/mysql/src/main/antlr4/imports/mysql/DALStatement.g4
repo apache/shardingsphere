@@ -107,7 +107,7 @@ showCreateDatabase
     ;
 
 showCreateEvent
-    : SHOW CREATE EVENT eventName 
+    : SHOW CREATE EVENT eventName
     ;
 
 showCreateFunction
@@ -359,7 +359,7 @@ cacheTableIndexList
     ;
 
 partitionList
-    : partitionName (COMMA_ partitionName)* | ALL
+    : ALL | partitionName (COMMA_ partitionName)*
     ;
 
 flush
@@ -368,7 +368,7 @@ flush
 
 flushOption
     : BINARY LOGS | ENGINE LOGS | ERROR LOGS | GENERAL LOGS | HOSTS | LOGS | PRIVILEGES | OPTIMIZER_COSTS
-    | RELAY LOGS (FOR CHANNEL channelName)? | SLOW LOGS | STATUS | USER_RESOURCES 
+    | RELAY LOGS (FOR CHANNEL channelName)? | SLOW LOGS | STATUS | USER_RESOURCES
     ;
 
 tablesOption
