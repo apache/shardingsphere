@@ -43,7 +43,7 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     
     @Override
     public void afterBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
-        rule.getGlobalClockProvider().ifPresent(optional -> transactionContext.setBeginMills(optional.getCurrentTimestamp()));
+        rule.getGlobalClockProvider().ifPresent(optional -> transactionContext.setBeginMillis(optional.getCurrentTimestamp()));
     }
     
     @Override
@@ -54,7 +54,7 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         }
         Optional<GlobalClockTransactionExecutor> globalClockTransactionExecutor = DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType);
         if (globalClockTransactionExecutor.isPresent()) {
-            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
+            globalClockTransactionExecutor.get().sendSnapshotTimestamp(connections, transactionContext.getBeginMillis());
         }
     }
     

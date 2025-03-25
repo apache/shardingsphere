@@ -123,10 +123,10 @@ selectClauseN
     ;
 
 simpleSelect
-    : SELECT ALL? targetList? intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
-    | SELECT distinctClause targetList intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
+    : SELECT distinctClause targetList intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
     | valuesClause
     | TABLE relationExpr
+    | SELECT ALL? targetList? intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
     ;
 
 withClause
@@ -228,8 +228,8 @@ offsetClause
     ;
 
 selectLimitValue
-    : cExpr
-    | ALL
+    : ALL
+    | cExpr
     ;
 
 selectOffsetValue
@@ -360,15 +360,24 @@ fromList
     ;
 
 tableReference
-    : relationExpr aliasClause?
+    : tableReference joinedTable
+    | relationExpr
+    | relationExpr aliasClause?
+    | relationExpr tablesampleClause
     | relationExpr aliasClause? tablesampleClause
+    | functionTable
     | functionTable funcAliasClause?
+    | LATERAL functionTable
     | LATERAL functionTable funcAliasClause?
+    | xmlTable
     | xmlTable aliasClause?
+    | LATERAL xmlTable
     | LATERAL xmlTable aliasClause?
+    | selectWithParens
     | selectWithParens aliasClause?
+    | LATERAL selectWithParens
     | LATERAL selectWithParens aliasClause?
-    | tableReference joinedTable
+    | LP_ tableReference joinedTable RP_
     | LP_ tableReference joinedTable RP_ aliasClause?
     ;
 

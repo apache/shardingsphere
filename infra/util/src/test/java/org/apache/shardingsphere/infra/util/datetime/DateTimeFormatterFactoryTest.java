@@ -40,12 +40,12 @@ class DateTimeFormatterFactoryTest {
     }
     
     @Test
-    void assertGetShortMillsFormatter() {
-        assertThat(DateTimeFormatterFactory.getShortMillsFormatter().parse("1970-01-01 00:00:00.0").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    void assertGetShortMillisFormatter() {
+        assertThat(DateTimeFormatterFactory.getShortMillisFormatter().parse("1970-01-01 00:00:00.0").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
     }
     
     @Test
-    void assertGetLongMillsFormatter() {
-        assertThat(DateTimeFormatterFactory.getLongMillsFormatter().parse("1970-01-01 00:00:00.000").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    void assertGetLongMillisFormatter() {
+        assertThat(DateTimeFormatterFactory.getLongMillisFormatter().parse("1970-01-01 00:00:00.000").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
     }
 }

@@ -80,7 +80,7 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertAfterBeginWhenGlobalClockProviderAbsent() {
         transactionHook.afterBegin(rule, databaseType, transactionContext);
-        verify(transactionContext, times(0)).setBeginMills(anyLong());
+        verify(transactionContext, times(0)).setBeginMillis(anyLong());
     }
     
     @Test
@@ -88,7 +88,7 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
         transactionHook.afterBegin(rule, databaseType, transactionContext);
-        verify(transactionContext).setBeginMills(10L);
+        verify(transactionContext).setBeginMillis(10L);
     }
     
     @Test

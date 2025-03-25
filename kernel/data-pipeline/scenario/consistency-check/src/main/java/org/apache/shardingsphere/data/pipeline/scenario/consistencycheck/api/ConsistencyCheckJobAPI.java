@@ -235,13 +235,13 @@ public final class ConsistencyCheckJobAPI {
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
-        result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillsFormatter().format(checkBeginTime));
+        result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillisFormatter().format(checkBeginTime));
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
             result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
-            result.setCheckEndTime(DateTimeFormatterFactory.getLongMillsFormatter().format(checkEndTime));
+            result.setCheckEndTime(DateTimeFormatterFactory.getLongMillisFormatter().format(checkEndTime));
             result.setInventoryRemainingSeconds(0L);
         } else if (0L != recordsCount && 0L != checkedRecordsCount) {
             result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100L / recordsCount));
@@ -252,8 +252,8 @@ public final class ConsistencyCheckJobAPI {
             if (null != stopTime) {
                 result.setCheckEndTime(jobConfigPOJO.getProps().getProperty("stop_time"));
             }
-            long remainingMills = Math.max(0L, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
-            result.setInventoryRemainingSeconds(remainingMills / 1000L);
+            long remainingMillis = Math.max(0L, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
+            result.setInventoryRemainingSeconds(remainingMillis / 1000L);
         }
     }
     

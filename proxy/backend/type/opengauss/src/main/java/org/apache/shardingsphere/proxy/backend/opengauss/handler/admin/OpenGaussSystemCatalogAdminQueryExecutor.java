@@ -48,7 +48,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngineFactory;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
@@ -85,9 +84,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
-        try (
-                SQLFederationEngine sqlFederationEngine =
-                        SQLFederationEngineFactory.getInstance().newInstance(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
+        try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
             DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContexts, connectionSession);
             SQLFederationContext context = new SQLFederationContext(false,
                     new QueryContext(sqlStatementContext, sql, parameters, SQLHintUtils.extractHint(sql), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),

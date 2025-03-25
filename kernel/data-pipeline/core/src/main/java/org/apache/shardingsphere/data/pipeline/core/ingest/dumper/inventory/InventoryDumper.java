@@ -203,15 +203,16 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private void setParameters(final PreparedStatement preparedStatement, final InventoryQueryParameter<?> queryParam) throws SQLException {
         if (queryParam instanceof InventoryRangeQueryParameter) {
+            int parameterIndex = 1;
             Object lower = ((InventoryRangeQueryParameter) queryParam).getValue().getLower();
             if (null != lower) {
-                preparedStatement.setObject(1, lower);
+                preparedStatement.setObject(parameterIndex++, lower);
             }
             Object upper = ((InventoryRangeQueryParameter) queryParam).getValue().getUpper();
             if (null != upper) {
-                preparedStatement.setObject(2, upper);
+                preparedStatement.setObject(parameterIndex++, upper);
             }
-            preparedStatement.setInt(3, dumperContext.getBatchSize());
+            preparedStatement.setInt(parameterIndex, dumperContext.getBatchSize());
         } else if (queryParam instanceof InventoryPointQueryParameter) {
             preparedStatement.setObject(1, queryParam.getValue());
         } else {

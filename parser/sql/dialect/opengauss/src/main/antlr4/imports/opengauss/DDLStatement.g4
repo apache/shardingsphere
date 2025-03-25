@@ -190,7 +190,7 @@ createDefinitionClause
     ;
 
 createDefinition
-    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    : tableConstraint | LIKE tableName likeOption* | columnDefinition
     ;
 
 columnDefinition
@@ -379,9 +379,7 @@ alterTableActions
     ;
 
 alterTableAction
-    : addColumnSpecification
-    | dropColumnSpecification
-    | modifyColumnSpecification
+    : modifyColumnSpecification
     | addConstraintSpecification
     | modifyConstraintSpecification
     | validateConstraintSpecification
@@ -404,6 +402,8 @@ alterTableAction
     | NOT OF
     | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
+    | addColumnSpecification
+    | dropColumnSpecification
     ;
 
 addColumnSpecification
@@ -1199,7 +1199,7 @@ alterViewClauses
     ;
 
 close
-    : CLOSE (cursorName | ALL)
+    : CLOSE (ALL | cursorName)
     ;
 
 cluster
@@ -1302,7 +1302,7 @@ createCast
     : CREATE CAST LP_ typeName AS typeName RP_ (
     | WITH FUNCTION (funcName | dataTypeName) funcArgs
     | WITHOUT FUNCTION
-    | WITH INOUT 
+    | WITH INOUT
     ) castContext?
     ;
 

@@ -1281,7 +1281,7 @@ ROWDEPENDENCIES
 
 NOROWDEPENDENCIES
     : N O R O W D E P E N D E N C I E S
-    ; 
+    ;
 
 ARCHIVAL
     : A R C H I V A L
@@ -2745,6 +2745,34 @@ CHARSETFORM
 
 SINGLE_C
     : C
+    ;
+
+SINGLE_K
+    : K
+    ;
+
+SINGLE_M
+    : M
+    ;
+
+SINGLE_G
+    : G
+    ;
+
+SINGLE_T
+    : T
+    ;
+
+SINGLE_P
+    : P
+    ;
+
+SINGLE_E
+    : E
+    ;
+
+SINGLE_H
+    : H
     ;
 
 SYSTIMESTAMP

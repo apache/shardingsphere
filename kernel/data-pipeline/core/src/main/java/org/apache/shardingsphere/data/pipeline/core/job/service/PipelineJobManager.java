@@ -186,7 +186,7 @@ public final class PipelineJobManager {
     public Collection<ShardingInfo> getJobShardingInfos(final PipelineContextKey contextKey, final String jobId) {
         try {
             return PipelineAPIFactory.getShardingStatisticsAPI(contextKey).getShardingInfo(jobId);
-        } catch (final NullPointerException | UnsupportedOperationException ex) {
+        } catch (final UnsupportedOperationException ex) {
             return Collections.emptyList();
         }
     }

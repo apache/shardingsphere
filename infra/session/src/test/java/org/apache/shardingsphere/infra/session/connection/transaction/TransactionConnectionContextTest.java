@@ -73,7 +73,7 @@ class TransactionConnectionContextTest {
         transactionConnectionContext.close();
         assertFalse(transactionConnectionContext.getTransactionType().isPresent());
         assertFalse(transactionConnectionContext.isInTransaction());
-        assertThat(transactionConnectionContext.getBeginMills(), is(0L));
+        assertThat(transactionConnectionContext.getBeginMillis(), is(0L));
         assertFalse(transactionConnectionContext.isExceptionOccur());
         assertFalse(transactionConnectionContext.getReadWriteSplitReplicaRoute().isPresent());
     }

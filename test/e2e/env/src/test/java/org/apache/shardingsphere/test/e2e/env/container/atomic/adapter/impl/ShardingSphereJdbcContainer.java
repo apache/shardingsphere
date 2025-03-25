@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,23 +66,13 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     private DataSource createTargetDataSource() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, getLinkReplacements()));
+        result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements()));
         result.setUsername("root");
         result.setPassword("Root@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setLeakDetectionThreshold(10000L);
         return result;
-    }
-    
-    private Map<String, String> getLinkReplacements() {
-        Map<String, String> replacements = new HashMap<>();
-        for (String each : ((DockerITContainer) storageContainer).getNetworkAliases()) {
-            for (Integer exposedPort : ((DockerITContainer) storageContainer).getExposedPorts()) {
-                replacements.put(each + ":" + exposedPort, "127.0.0.1:" + ((DockerITContainer) storageContainer).getMappedPort(exposedPort));
-            }
-        }
-        return replacements;
     }
     
     private String processFile(final String filePath, final Map<String, String> replacements) throws IOException {
