@@ -51,6 +51,7 @@ public final class DatabaseRuleItemManager {
      * Alter rule item.
      *
      * @param databaseRuleNodePath database rule node path
+     * @throws SQLWrapperException SQL wrapper exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void alter(final DatabaseRuleNodePath databaseRuleNodePath) {
@@ -74,6 +75,7 @@ public final class DatabaseRuleItemManager {
      * Drop rule item.
      *
      * @param databaseRuleNodePath database rule node path
+     * @throws SQLWrapperException SQL wrapper exception
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void drop(final DatabaseRuleNodePath databaseRuleNodePath) {
