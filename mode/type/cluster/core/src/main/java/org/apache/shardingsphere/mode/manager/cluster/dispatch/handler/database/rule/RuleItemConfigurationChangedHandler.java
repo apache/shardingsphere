@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -38,7 +37,7 @@ public abstract class RuleItemConfigurationChangedHandler implements DatabaseLea
     private final RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
     
     @Override
-    public final void handle(final String databaseName, final DataChangedEvent event) throws SQLException {
+    public final void handle(final String databaseName, final DataChangedEvent event) {
         Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, event.getKey());
         if (!databaseRuleNodePath.isPresent()) {
             return;

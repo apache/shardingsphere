@@ -163,7 +163,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertAlterRuleConfiguration() throws SQLException {
+    void assertAlterRuleConfiguration() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -186,7 +186,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
-    void assertRemoveRuleConfigurationItem() throws SQLException {
+    void assertRemoveRuleConfigurationItem() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
