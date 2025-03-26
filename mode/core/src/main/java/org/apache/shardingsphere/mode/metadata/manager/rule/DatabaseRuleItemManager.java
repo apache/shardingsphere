@@ -86,7 +86,7 @@ public final class DatabaseRuleItemManager {
         synchronized (this) {
             processor.dropRuleItemConfiguration(itemName, currentRuleConfig);
             try {
-                databaseRuleConfigManager.refresh(databaseName, currentRuleConfig, 
+                databaseRuleConfigManager.refresh(databaseName, currentRuleConfig,
                         !TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, currentRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) currentRuleConfig));
             } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
