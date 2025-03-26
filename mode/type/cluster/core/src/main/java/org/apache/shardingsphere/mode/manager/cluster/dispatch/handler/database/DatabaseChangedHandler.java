@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 
-import java.sql.SQLException;
-
 /**
  * Database changed handler.
  */
@@ -40,7 +38,6 @@ public interface DatabaseChangedHandler {
      *
      * @param databaseName database name
      * @param event data changed event
-     * @throws SQLException SQL exception
      */
-    void handle(String databaseName, DataChangedEvent event) throws SQLException;
+    void handle(String databaseName, DataChangedEvent event);
 }
