@@ -63,7 +63,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
-        log.info("ShardingSphere-Driver `{}` started successfully.", contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
+        printDriverInstanceId(contextManager);
     }
     
     private ContextManager createContextManager(final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -75,6 +75,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), Collections.emptyMap(), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData);
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param, new EventBusContext());
+    }
+    
+    private void printDriverInstanceId(final ContextManager contextManager) {
+        log.info("ShardingSphere-Driver `{}` started successfully.", contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
     }
     
     @HighFrequencyInvocation(canBeCached = true)
