@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere data source.
  */
+@Slf4j
 public final class ShardingSphereDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final String databaseName;
@@ -61,6 +63,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
+        log.info("ShardingSphere-Driver `{}` started successfully.", contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
     }
     
     private ContextManager createContextManager(final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
