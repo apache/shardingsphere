@@ -407,6 +407,10 @@ FIRST
     : F I R S T
     ;
 
+SKIP_
+    : S K I P
+    ;
+
 FOUND
     : F O U N D
     ;
