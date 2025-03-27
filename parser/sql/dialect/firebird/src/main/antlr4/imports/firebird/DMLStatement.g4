@@ -82,7 +82,11 @@ selectClause
 
 
 selectSpecification
-    : duplicateSpecification
+    : duplicateSpecification | firstSkipClause
+    ;
+
+firstSkipClause
+    : (FIRST | SKIP_) bitExpr*
     ;
 
 duplicateSpecification
