@@ -135,10 +135,11 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isValidExecutePrerequisites(final ExecutionContext executionContext) {
-        if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        if (isExecuteDDLInXATransaction(sqlStatement)) {
             return false;
         }
-        return !isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement());
+        return !isExecuteDDLInPostgreSQLOpenGaussTransaction(sqlStatement);
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
