@@ -139,7 +139,7 @@ public final class ProxySQLExecutor {
         if (isExecuteDDLInXATransaction(sqlStatement)) {
             return false;
         }
-        if (sqlStatement instanceof DDLStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+        if (isExecuteDDLInLocalTransaction(sqlStatement)) {
             return isSupportExecuteDDLTransaction(sqlStatement);
         }
         return true;
@@ -149,6 +149,10 @@ public final class ProxySQLExecutor {
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
         return TransactionType.XA == transactionType && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement);
+    }
+    
+    private boolean isExecuteDDLInLocalTransaction(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DDLStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
     private boolean isSupportExecuteDDLTransaction(final SQLStatement sqlStatement) {
