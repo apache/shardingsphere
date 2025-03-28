@@ -66,9 +66,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -136,29 +134,25 @@ public final class ProxySQLExecutor {
     
     private boolean isValidExecutePrerequisites(final ExecutionContext executionContext) {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        if (isExecuteDDLInXATransaction(sqlStatement)) {
+        boolean isSupportDDLInTransaction = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType()).isSupportDDLInTransaction();
+        if (isExecuteDDLInXATransaction(sqlStatement, isSupportDDLInTransaction)) {
             return false;
         }
         if (isExecuteDDLInLocalTransaction(sqlStatement)) {
-            return isSupportExecuteDDLTransaction(sqlStatement);
+            // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
+            return isSupportedSQLStatement(sqlStatement) || isSupportDDLInTransaction;
         }
         return true;
     }
     
-    private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
+    private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement, final boolean isSupportDDLInTransaction) {
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
-        return TransactionType.XA == transactionType && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement);
+        return TransactionType.XA == transactionType && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement, isSupportDDLInTransaction);
     }
     
     private boolean isExecuteDDLInLocalTransaction(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DDLStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
-    }
-    
-    private boolean isSupportExecuteDDLTransaction(final SQLStatement sqlStatement) {
-        // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
-        boolean isSupportDDLInTransaction = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType()).isSupportDDLInTransaction();
-        return isSupportedSQLStatement(sqlStatement) || isSupportDDLInTransaction;
     }
     
     private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
@@ -169,15 +163,11 @@ public final class ProxySQLExecutor {
         return sqlStatement instanceof OpenGaussCursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
     }
     
-    private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
-        if (isPostgreSQLOrOpenGaussStatement(sqlStatement) && isSupportedSQLStatement(sqlStatement)) {
+    private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement, final boolean isSupportDDLInTransaction) {
+        if (!isSupportDDLInTransaction && isSupportedSQLStatement(sqlStatement)) {
             return false;
         }
         return sqlStatement instanceof DDLStatement;
-    }
-    
-    private boolean isPostgreSQLOrOpenGaussStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
     }
     
     private String getTableName(final ExecutionContext executionContext) {
