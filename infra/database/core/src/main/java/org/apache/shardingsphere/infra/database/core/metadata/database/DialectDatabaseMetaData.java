@@ -149,7 +149,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Whether support DDL in trrasaction.
+     * Whether support DDL in trasaction.
      *
      * @return support or not
      */
