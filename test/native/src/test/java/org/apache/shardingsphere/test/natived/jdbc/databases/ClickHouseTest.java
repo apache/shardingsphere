@@ -136,7 +136,7 @@ class ClickHouseTest {
         try (
                 Connection connection = openConnection(databaseName);
                 Statement statement = connection.createStatement()) {
-            statement.executeUpdate("create table IF NOT EXISTS t_order\n"
+            statement.execute("create table IF NOT EXISTS t_order\n"
                     + "(\n"
                     + "    order_id   Int64 NOT NULL,\n"
                     + "    order_type Int32,\n"
@@ -146,7 +146,7 @@ class ClickHouseTest {
                     + ") engine = MergeTree\n"
                     + "      primary key (order_id)\n"
                     + "      order by (order_id)");
-            statement.executeUpdate("create table IF NOT EXISTS t_order_item\n"
+            statement.execute("create table IF NOT EXISTS t_order_item\n"
                     + "(\n"
                     + "    order_item_id Int64 NOT NULL,\n"
                     + "    order_id      Int64 NOT NULL,\n"
@@ -156,15 +156,15 @@ class ClickHouseTest {
                     + ") engine = MergeTree\n"
                     + "      primary key (order_item_id)\n"
                     + "      order by (order_item_id)");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS t_address\n"
+            statement.execute("CREATE TABLE IF NOT EXISTS t_address\n"
                     + "(\n"
                     + "    address_id   BIGINT NOT NULL,\n"
                     + "    address_name VARCHAR(100) NOT NULL,\n"
                     + "    PRIMARY      KEY (address_id)\n"
                     + ")");
-            statement.executeUpdate("TRUNCATE TABLE t_order");
-            statement.executeUpdate("TRUNCATE TABLE t_order_item");
-            statement.executeUpdate("TRUNCATE TABLE t_address");
+            statement.execute("TRUNCATE TABLE t_order");
+            statement.execute("TRUNCATE TABLE t_order_item");
+            statement.execute("TRUNCATE TABLE t_address");
         } catch (final SQLException exception) {
             throw new RuntimeException(exception);
         }
