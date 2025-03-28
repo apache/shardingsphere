@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -133,8 +135,10 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isValidExecutePrerequisites(final ExecutionContext executionContext) {
-        return !isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())
-                && !isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement());
+        if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
+            return false;
+        }
+        return !isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement());
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
@@ -145,10 +149,10 @@ public final class ProxySQLExecutor {
     
     private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
-        boolean isPostgreSQLOpenGaussStatement = isPostgreSQLOrOpenGaussStatement(sqlStatement);
+        boolean isSupportDDLInTransaction = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType()).isSupportDDLInTransaction();
         boolean isSupportedStatement = isSupportedSQLStatement(sqlStatement);
         return sqlStatement instanceof DDLStatement
-                && !isSupportedStatement && isPostgreSQLOpenGaussStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
+                && !isSupportedStatement && !isSupportDDLInTransaction && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
     private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
