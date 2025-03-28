@@ -36,7 +36,8 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
     private AlgorithmSegment shardingAlgorithmSegment;
     
-    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final KeyGenerateStrategySegment keyGenerateStrategySegment, final AuditStrategySegment auditStrategySegment ) {
+    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final KeyGenerateStrategySegment keyGenerateStrategySegment,
+                                final AuditStrategySegment auditStrategySegment) {
         super(logicTable, dataSources, keyGenerateStrategySegment, auditStrategySegment);
     }
 }
