@@ -139,7 +139,10 @@ public final class ProxySQLExecutor {
         if (isExecuteDDLInXATransaction(sqlStatement)) {
             return false;
         }
-        return !isExecuteDDLInPostgreSQLOpenGaussTransaction(sqlStatement);
+        if (sqlStatement instanceof DDLStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return isSupportExecuteDDLTransaction(sqlStatement);
+        }
+        return true;
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
@@ -148,12 +151,10 @@ public final class ProxySQLExecutor {
         return TransactionType.XA == transactionType && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement);
     }
     
-    private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
+    private boolean isSupportExecuteDDLTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
         boolean isSupportDDLInTransaction = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType()).isSupportDDLInTransaction();
-        boolean isSupportedStatement = isSupportedSQLStatement(sqlStatement);
-        return sqlStatement instanceof DDLStatement
-                && !isSupportedStatement && !isSupportDDLInTransaction && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
+        return isSupportedSQLStatement(sqlStatement) || isSupportDDLInTransaction;
     }
     
     private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
@@ -161,8 +162,7 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isCursorStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof OpenGaussCursorStatement
-                || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
+        return sqlStatement instanceof OpenGaussCursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
     }
     
     private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
