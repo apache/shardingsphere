@@ -22,6 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 
 import java.util.Collection;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
 
 /**
  * Auto table rule segment.
@@ -34,7 +36,8 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
     private AlgorithmSegment shardingAlgorithmSegment;
     
-    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources) {
-        super(logicTable, dataSources);
+    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final KeyGenerateStrategySegment keyGenerateStrategySegment,
+                                final AuditStrategySegment auditStrategySegment) {
+        super(logicTable, dataSources, keyGenerateStrategySegment, auditStrategySegment);
     }
 }
