@@ -99,7 +99,12 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public boolean isSupportDDLInTransaction() {
+    public boolean isSupportDDLInXATransaction() {
+        return true;
+    }
+    
+    @Override
+    public boolean isSupportMetaDataRefreshInTransaction() {
         return false;
     }
     
