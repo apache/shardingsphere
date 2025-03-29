@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -69,7 +68,6 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     
     private CuratorFramework client;
     
-    @Getter
     private DistributedLockHolder distributedLockHolder;
     
     @Override
@@ -222,6 +220,11 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
             // CHECKSTYLE:ON
         }
         return true;
+    }
+    
+    @Override
+    public Optional<DistributedLockHolder> getDistributedLockHolder() {
+        return Optional.of(distributedLockHolder);
     }
     
     @Override

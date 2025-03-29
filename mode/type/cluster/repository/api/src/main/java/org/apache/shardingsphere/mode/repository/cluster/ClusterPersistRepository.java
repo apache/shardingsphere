@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
+import java.util.Optional;
+
 /**
  * Cluster persist repository.
  */
@@ -57,7 +59,7 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @return distributed lock holder
      */
-    DistributedLockHolder getDistributedLockHolder();
+    Optional<DistributedLockHolder> getDistributedLockHolder();
     
     /**
      * Watch key or path of governance server.

@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+
+import java.util.Properties;
 
 /**
  * Global lock persist service.
@@ -28,7 +31,7 @@ public final class GlobalLockPersistService {
     private final DistributedLockHolder lockHolder;
     
     public GlobalLockPersistService(final ClusterPersistRepository repository) {
-        lockHolder = repository.getDistributedLockHolder();
+        lockHolder = repository.getDistributedLockHolder().orElseGet(() -> new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
     }
     
     /**

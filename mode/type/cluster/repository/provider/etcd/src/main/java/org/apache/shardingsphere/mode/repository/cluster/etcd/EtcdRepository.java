@@ -32,7 +32,6 @@ import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -47,6 +46,7 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.holder.Distributed
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +65,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProps;
     
-    @Getter
     private DistributedLockHolder distributedLockHolder;
     
     @Override
@@ -131,6 +130,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public boolean persistExclusiveEphemeral(final String key, final String value) {
         persistEphemeral(key, value);
         return true;
+    }
+    
+    @Override
+    public Optional<DistributedLockHolder> getDistributedLockHolder() {
+        return Optional.of(distributedLockHolder);
     }
     
     private void buildParentPath(final String key) throws ExecutionException, InterruptedException {
