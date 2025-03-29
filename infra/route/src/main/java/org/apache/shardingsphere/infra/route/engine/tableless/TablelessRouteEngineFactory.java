@@ -113,7 +113,7 @@ public final class TablelessRouteEngineFactory {
         if (isFunctionDDLStatement(sqlStatement) || isSchemaDDLStatement(sqlStatement)) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        return new TablelessIgnoreRouteEngine();
+        return new TablelessDataSourceBroadcastRouteEngine();
     }
     
     private static boolean isFunctionDDLStatement(final SQLStatement sqlStatement) {

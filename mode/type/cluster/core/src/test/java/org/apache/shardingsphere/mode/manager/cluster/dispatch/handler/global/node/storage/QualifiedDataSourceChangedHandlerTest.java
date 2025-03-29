@@ -54,7 +54,7 @@ class QualifiedDataSourceChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/qualified_data_sources")).findFirst().orElse(null);
+                .filter(each -> "/nodes/qualified_data_sources".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test

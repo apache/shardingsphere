@@ -147,4 +147,13 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default boolean isDDLNeedImplicitCommit() {
         return false;
     }
+    
+    /**
+     * Whether support DDL in transaction.
+     *
+     * @return support or not
+     */
+    default boolean isSupportDDLInTransaction() {
+        return true;
+    }
 }

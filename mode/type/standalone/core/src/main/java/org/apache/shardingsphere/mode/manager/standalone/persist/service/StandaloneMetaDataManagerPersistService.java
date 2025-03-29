@@ -224,11 +224,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         for (MetaDataVersion each : metaDataVersions) {
             Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath());
             if (databaseRuleNodePath.isPresent() && activeVersionChecker.checkSame(new VersionNodePath(databaseRuleNodePath.get()), each.getActiveVersion())) {
-                try {
-                    metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
-                } catch (final SQLException ex) {
-                    throw new SQLWrapperException(ex);
-                }
+                metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
             }
         }
     }
@@ -250,14 +246,8 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private void removeRuleItem(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath());
-            if (databaseRuleNodePath.isPresent()) {
-                try {
-                    metaDataContextManager.getDatabaseRuleItemManager().drop(databaseRuleNodePath.get());
-                } catch (final SQLException ex) {
-                    throw new SQLWrapperException(ex);
-                }
-            }
+            ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath())
+                    .ifPresent(optional -> metaDataContextManager.getDatabaseRuleItemManager().drop(optional));
         }
     }
     
@@ -281,14 +271,10 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig, final String ruleType) {
         Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
-        try {
-            metaDataContextManager.getDatabaseRuleItemManager().drop(new DatabaseRuleNodePath(database.getName(), ruleType, null));
-            Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
-                    database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
-            alterTables(database, schemaAndTablesMap);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
+        metaDataContextManager.getDatabaseRuleItemManager().drop(new DatabaseRuleNodePath(database.getName(), ruleType, null));
+        Map<String, Collection<ShardingSphereTable>> schemaAndTablesMap = metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(
+                database.getName(), metaDataContextManager.getMetaDataContexts(), needReloadTables);
+        alterTables(database, schemaAndTablesMap);
         OrderedServicesCache.clearCache();
     }
     
