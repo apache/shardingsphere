@@ -33,6 +33,6 @@ public enum ShardingSphereState {
      * @return state
      */
     public static ShardingSphereState valueFrom(final String value) {
-        return Strings.isNullOrEmpty(value) ? ShardingSphereState.OK : ShardingSphereState.valueOf(value);
+        return Strings.isNullOrEmpty(value) ? OK : valueOf(value);
     }
 }
