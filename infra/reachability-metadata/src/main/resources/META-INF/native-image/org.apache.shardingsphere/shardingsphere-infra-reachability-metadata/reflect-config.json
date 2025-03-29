@@ -85,6 +85,11 @@
   "allPublicMethods": true
 },
 {
+  "condition":{"typeReachable":"com.sun.management.OperatingSystemMXBean"},
+  "name":"com.sun.management.OperatingSystemMXBean",
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"com.sun.management.internal.OperatingSystemImpl"},
   "name":"com.sun.management.internal.OperatingSystemImpl",
   "allPublicMethods": true,
@@ -265,6 +270,44 @@
   "allPublicMethods":true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration"},
+  "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration",
+  "allDeclaredFields": true,
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"},
+  "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration",
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration"},
+  "name":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration",
+  "allPublicMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
+  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"},
+  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer"},
   "name":"org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
   "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
@@ -310,39 +353,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration"},
-  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlBaseShardingStrategyConfiguration",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration"},
-  "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration",
-  "allDeclaredFields": true,
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"},
-  "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration",
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration"},
-  "name":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration",
-  "allPublicMethods": true,
-  "allDeclaredFields": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
-  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"},
-  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics",
-  "allPublicMethods": true
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
   "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
@@ -355,6 +365,11 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -385,6 +400,31 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement"},
   "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveSelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
