@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock.impl.props;
+package org.apache.shardingsphere.mode.repository.cluster.core.lock.props;
 
-import org.apache.shardingsphere.infra.props.TypedProperties;
-
-import java.util.Properties;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
- * Default lock typed properties.
+ * Default lock property key.
  */
-public final class DefaultLockTypedProperties extends TypedProperties<DefaultLockPropertyKey> {
+@RequiredArgsConstructor
+@Getter
+public enum DefaultLockPropertyKey implements TypedPropertyKey {
     
-    public DefaultLockTypedProperties(final Properties props) {
-        super(DefaultLockPropertyKey.class, props);
-    }
+    INSTANCE_ID("instanceId", "", String.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.cluster.lock.impl.DefaultDistributedLockCreator
+org.apache.shardingsphere.mode.repository.cluster.core.lock.DefaultDistributedLockCreator
