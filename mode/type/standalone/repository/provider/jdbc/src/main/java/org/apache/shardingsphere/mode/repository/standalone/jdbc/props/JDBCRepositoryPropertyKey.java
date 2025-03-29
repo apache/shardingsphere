@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
- * H2 repository property key.
+ * JDBC repository property key.
  */
 @RequiredArgsConstructor
 @Getter
