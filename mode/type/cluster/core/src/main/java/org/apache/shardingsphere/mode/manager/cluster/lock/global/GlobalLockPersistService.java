@@ -31,7 +31,7 @@ public final class GlobalLockPersistService {
     private final DistributedLockHolder lockHolder;
     
     public GlobalLockPersistService(final ClusterPersistRepository repository) {
-        lockHolder = repository.getDistributedLockHolder().orElse(new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
+        lockHolder = repository.getDistributedLockHolder().orElseGet(() -> new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
     }
     
     /**
