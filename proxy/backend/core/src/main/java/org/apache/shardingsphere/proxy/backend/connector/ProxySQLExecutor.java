@@ -158,7 +158,7 @@ public final class ProxySQLExecutor {
         return databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
-    // TODO should be removed after metadata refresh supported for all database. 
+    // TODO should be removed after metadata refresh supported for all database.
     private boolean isDDLWithoutMetaDataChanged(final DDLStatement sqlStatement) {
         return isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement;
     }
