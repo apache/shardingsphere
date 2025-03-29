@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,20 +45,24 @@ class GlobalLockPersistServiceTest {
     
     @BeforeEach
     void setUp() {
+        DistributedLockHolder distributedLockHolder = mock(DistributedLockHolder.class, RETURNS_DEEP_STUBS);
+        when(repository.getDistributedLockHolder()).thenReturn(Optional.of(distributedLockHolder));
         when(globalLock.getName()).thenReturn("foo_lock");
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void assertTryLock() {
-        when(repository.getDistributedLockHolder().getDistributedLock("/lock/global/locks/foo_lock").tryLock(1000L)).thenReturn(true);
+        when(repository.getDistributedLockHolder().get().getDistributedLock("/lock/global/locks/foo_lock").tryLock(1000L)).thenReturn(true);
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         assertTrue(new GlobalLockPersistService(repository).tryLock(lockDefinition, 1000L));
     }
     
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     void assertUnlock() {
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(globalLock);
         new GlobalLockPersistService(repository).unlock(lockDefinition);
-        verify(repository.getDistributedLockHolder().getDistributedLock("/lock/global/locks/foo_lock")).unlock();
+        verify(repository.getDistributedLockHolder().get().getDistributedLock("/lock/global/locks/foo_lock")).unlock();
     }
 }

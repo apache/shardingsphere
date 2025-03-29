@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.Default
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
@@ -67,8 +68,8 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public DistributedLockHolder getDistributedLockHolder() {
-        return new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties()));
+    public Optional<DistributedLockHolder> getDistributedLockHolder() {
+        return Optional.of(new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
     }
     
     @Override
