@@ -149,11 +149,21 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Whether support DDL in transaction.
+     * Whether support DDL in XA transaction.
      *
      * @return support or not
      */
-    default boolean isSupportDDLInTransaction() {
+    default boolean isSupportDDLInXATransaction() {
+        return false;
+    }
+    
+    /**
+     * Whether support meta data refresh in transaction.
+     *
+     * @return support or not
+     */
+    // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
+    default boolean isSupportMetaDataRefreshInTransaction() {
         return true;
     }
 }

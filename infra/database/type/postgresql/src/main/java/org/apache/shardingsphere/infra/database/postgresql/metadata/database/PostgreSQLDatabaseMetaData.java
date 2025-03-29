@@ -91,7 +91,12 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public boolean isSupportDDLInTransaction() {
+    public boolean isSupportDDLInXATransaction() {
+        return true;
+    }
+    
+    @Override
+    public boolean isSupportMetaDataRefreshInTransaction() {
         return false;
     }
     

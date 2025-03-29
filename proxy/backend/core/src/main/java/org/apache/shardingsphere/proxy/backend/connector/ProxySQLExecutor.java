@@ -129,45 +129,43 @@ public final class ProxySQLExecutor {
      * @param executionContext execution context
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
-        ShardingSpherePreconditions.checkState(isValidExecutePrerequisites(executionContext), () -> new TableModifyInTransactionException(getTableName(executionContext)));
+        ShardingSpherePreconditions.checkState(
+                isValidExecutePrerequisites(executionContext.getSqlStatementContext().getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(executionContext)));
     }
     
-    private boolean isValidExecutePrerequisites(final ExecutionContext executionContext) {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        boolean isSupportDDLInTransaction = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType()).isSupportDDLInTransaction();
-        if (isExecuteDDLInXATransaction(sqlStatement, isSupportDDLInTransaction)) {
-            return false;
+    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction((DDLStatement) sqlStatement);
+    }
+    
+    private boolean isSupportDDLInTransaction(final DDLStatement sqlStatement) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType());
+        boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
+        if (isInXATransaction()) {
+            return dialectDatabaseMetaData.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || dialectDatabaseMetaData.isSupportMetaDataRefreshInTransaction());
         }
-        if (isExecuteDDLInLocalTransaction(sqlStatement)) {
-            // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
-            return isSupportedSQLStatement(sqlStatement) || isSupportDDLInTransaction;
+        if (isInLocalTransaction()) {
+            return dialectDatabaseMetaData.isSupportMetaDataRefreshInTransaction() || isDDLWithoutMetaDataChanged;
         }
         return true;
     }
     
-    private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement, final boolean isSupportDDLInTransaction) {
+    private boolean isInXATransaction() {
         TransactionType transactionType = TransactionUtils.getTransactionType(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext());
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
-        return TransactionType.XA == transactionType && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement, isSupportDDLInTransaction);
+        return TransactionType.XA == transactionType && transactionStatus.isInTransaction();
     }
     
-    private boolean isExecuteDDLInLocalTransaction(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DDLStatement && databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
+    private boolean isInLocalTransaction() {
+        return databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     
-    private boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
+    // TODO should be removed after metadata refresh supported for all database.
+    private boolean isDDLWithoutMetaDataChanged(final DDLStatement sqlStatement) {
         return isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement;
     }
     
-    private boolean isCursorStatement(final SQLStatement sqlStatement) {
+    private boolean isCursorStatement(final DDLStatement sqlStatement) {
         return sqlStatement instanceof OpenGaussCursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
-    }
-    
-    private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement, final boolean isSupportDDLInTransaction) {
-        if (!isSupportDDLInTransaction && isSupportedSQLStatement(sqlStatement)) {
-            return false;
-        }
-        return sqlStatement instanceof DDLStatement;
     }
     
     private String getTableName(final ExecutionContext executionContext) {
