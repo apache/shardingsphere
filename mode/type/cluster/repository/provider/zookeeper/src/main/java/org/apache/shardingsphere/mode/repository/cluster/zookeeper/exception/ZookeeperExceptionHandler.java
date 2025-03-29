@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
+package org.apache.shardingsphere.mode.repository.cluster.zookeeper.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

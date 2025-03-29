@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
+package org.apache.shardingsphere.mode.repository.cluster.zookeeper.exception;
 
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
