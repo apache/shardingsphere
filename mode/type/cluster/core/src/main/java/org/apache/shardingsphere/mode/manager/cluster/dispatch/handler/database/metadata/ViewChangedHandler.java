@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
-import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath;
 
 /**
  * View changed handler.
@@ -44,13 +44,13 @@ public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler
     
     @Override
     public NodePath getSubscribedNodePath(final String databaseName) {
-        return new ViewMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+        return new ViewMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        String viewName = NodePathSearcher.get(event.getKey(), ViewMetadataNodePath.createViewSearchCriteria(databaseName, schemaName));
+        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetaDataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String viewName = NodePathSearcher.get(event.getKey(), ViewMetaDataNodePath.createViewSearchCriteria(databaseName, schemaName));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
@@ -65,7 +65,7 @@ public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String viewName) {
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
+        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
         statisticsRefreshEngine.asyncRefresh();
     }

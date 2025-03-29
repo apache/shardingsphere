@@ -264,11 +264,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
         handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+        sqlStatementContext = queryContext.getSqlStatementContext();
+        ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
         usedDatabaseName = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
                 : connection.getCurrentDatabaseName();
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
-        sqlStatementContext = queryContext.getSqlStatementContext();
         clearStatements();
     }
     

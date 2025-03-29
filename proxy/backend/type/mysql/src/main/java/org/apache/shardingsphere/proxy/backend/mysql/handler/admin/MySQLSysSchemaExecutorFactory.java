@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -37,12 +38,13 @@ public final class MySQLSysSchemaExecutorFactory {
     /**
      * Create executor.
      *
-     * @param sqlStatement SQL statement
+     * @param selectStatementContext select statement context
      * @param sql SQL being executed
      * @param parameters parameters
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatementContext selectStatementContext, final String sql, final List<Object> parameters) {
+        SelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         if (!sqlStatement.getFrom().isPresent() || !(sqlStatement.getFrom().get() instanceof SimpleTableSegment)) {
             return Optional.empty();
         }

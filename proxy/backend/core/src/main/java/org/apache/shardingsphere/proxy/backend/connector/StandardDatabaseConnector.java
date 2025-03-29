@@ -54,8 +54,8 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefreshEngine;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.federation.FederationMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -137,8 +137,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
-                contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
-        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getMetaDataManagerPersistService(), database);
+                contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, contextManager.getMetaDataContexts().getMetaData().getProps());
+        federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
@@ -187,7 +187,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (proxySQLExecutor.getSqlFederationEngine().decide(queryContext, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())) {
             return processExecuteFederation(doExecuteFederation());
         }
-        if (proxySQLExecutor.getSqlFederationEngine().enabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
+        if (proxySQLExecutor.getSqlFederationEngine().isSqlFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh(queryContext.getSqlStatementContext())) {
             federationMetaDataRefreshEngine.refresh(queryContext.getSqlStatementContext());
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }

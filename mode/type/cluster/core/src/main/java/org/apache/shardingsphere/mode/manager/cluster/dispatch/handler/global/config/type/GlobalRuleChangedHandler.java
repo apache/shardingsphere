@@ -52,7 +52,7 @@ public final class GlobalRuleChangedHandler implements GlobalConfigurationChange
             return;
         }
         String ruleType = NodePathSearcher.get(event.getKey(), GlobalRuleNodePath.createRuleTypeSearchCriteria());
-        RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load(ruleType);
+        RuleConfiguration ruleConfig = contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService().load(ruleType);
         contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterGlobalRuleConfiguration(ruleConfig);
     }
 }

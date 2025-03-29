@@ -101,7 +101,7 @@ class DistSQLBackendHandlerFactoryTest {
         MetaDataContexts metaDataContexts = mockMetaDataContexts(database);
         when(result.getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getPersistServiceFacade().getMetaDataManagerPersistService()).thenReturn(mock(MetaDataManagerPersistService.class));
+        when(result.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(mock(MetaDataManagerPersistService.class));
         when(result.getComputeNodeInstanceContext().getModeConfiguration().getType()).thenReturn("Cluster");
         return result;
     }

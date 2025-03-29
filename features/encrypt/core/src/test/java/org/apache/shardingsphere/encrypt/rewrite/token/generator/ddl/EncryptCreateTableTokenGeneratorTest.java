@@ -97,7 +97,7 @@ class EncryptCreateTableTokenGeneratorTest {
         assertThat(likeToken.getStartIndex(), is(25));
         assertThat(token.toString(), is("cipher_certificate_number VARCHAR(4000), assisted_certificate_number VARCHAR(4000), like_certificate_number VARCHAR(4000)"));
         assertThat(token.getStartIndex(), is(25));
-        assertThat(((SubstituteColumnDefinitionToken) token).getStopIndex(), is(78));
+        assertThat(token.getStopIndex(), is(78));
         assertTrue(((SubstituteColumnDefinitionToken) token).isLastColumn());
     }
     

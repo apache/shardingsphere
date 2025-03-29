@@ -18,7 +18,7 @@
 
 <e2e-test-cases>
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="SELECT order_id_sharding, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
+    <!--<test-case sql="SELECT order_id_sharding, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
         <assertion parameters="1010:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
@@ -32,84 +32,72 @@
         <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION (SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? UNION (SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? MINUS SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ? INTERSECT SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? MINUS SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    <test-case sql="(SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ?) INTERSECT (SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ?) ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ? INTERSECT SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ?) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="(SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ?) INTERSECT SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order MINUS (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS (SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ?) ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ? INTERSECT SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order MINUS SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    <test-case sql="(SELECT * FROM t_order WHERE user_id = ? MINUS SELECT * FROM t_order WHERE user_id = ?) INTERSECT (SELECT * FROM t_order WHERE user_id = ? UNION SELECT * FROM t_order WHERE user_id = ?) ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int,25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO support MySQL INTERSECT clause -->
-    <test-case sql="SELECT * FROM t_order INTERSECT ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
-        <assertion expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? INTERSECT ALL SELECT * FROM t_order WHERE user_id = ? ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
     <!-- TODO Replace with standard table structure -->
-    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " db-types="MySQL,PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order MINUS ALL SELECT * FROM t_order ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM t_order WHERE order_id > ? MINUS SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? MINUS ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS ALL SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

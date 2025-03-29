@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.lock.global.GlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
 
 /**
  * Migration prepare lock.

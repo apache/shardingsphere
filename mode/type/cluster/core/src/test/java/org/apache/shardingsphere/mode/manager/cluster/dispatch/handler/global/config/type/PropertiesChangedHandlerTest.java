@@ -48,19 +48,19 @@ class PropertiesChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/props")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/props")).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/props/xxx", "key=value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService(), times(0)).load();
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getPropsService(), times(0)).load();
     }
     
     @Test
     void assertHandle() {
         Properties props = mock(Properties.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load()).thenReturn(props);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getPropsService().load()).thenReturn(props);
         handler.handle(contextManager, new DataChangedEvent("/props/active_version", "key=value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterProperties(props);
     }

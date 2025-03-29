@@ -91,6 +91,11 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
+    public boolean isSupportDDLInTransaction() {
+        return false;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

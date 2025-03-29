@@ -29,42 +29,8 @@ class StatisticsDataNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath(null, null, null, null), false), is("/statistics/databases"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), true), is("/statistics/databases/foo_db"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", null, null, null), false), is("/statistics/databases/foo_db/schemas"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), true), is("/statistics/databases/foo_db/schemas/foo_schema"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", null, null), false), is("/statistics/databases/foo_db/schemas/foo_schema/tables"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", null), false),
-                is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl"));
-        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key"), false),
+        assertThat(NodePathGenerator.toPath(new StatisticsDataNodePath("foo_db", "foo_schema", "foo_tbl", "foo_key")),
                 is("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl/foo_key"));
-    }
-    
-    @Test
-    void assertCreateDatabaseSearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db", StatisticsDataNodePath.createDatabaseSearchCriteria(false)), is("foo_db"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db", StatisticsDataNodePath.createDatabaseSearchCriteria(true)), is("foo_db"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/db_schema", StatisticsDataNodePath.createDatabaseSearchCriteria(true)), is("foo_db"));
-        assertFalse(NodePathSearcher.find("/statistics/databases", StatisticsDataNodePath.createDatabaseSearchCriteria(false)).isPresent());
-        assertFalse(NodePathSearcher.find("/statistics/databases", StatisticsDataNodePath.createDatabaseSearchCriteria(true)).isPresent());
-    }
-    
-    @Test
-    void assertCreateSchemaSearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createSchemaSearchCriteria(false)), is("foo_schema"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createSchemaSearchCriteria(true)), is("foo_schema"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/foo_tbl", StatisticsDataNodePath.createSchemaSearchCriteria(true)), is("foo_schema"));
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createSchemaSearchCriteria(false)).isPresent());
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db", StatisticsDataNodePath.createSchemaSearchCriteria(true)).isPresent());
-    }
-    
-    @Test
-    void assertCreateTableSearchCriteria() {
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createTableSearchCriteria(false)), is("tbl_name"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name", StatisticsDataNodePath.createTableSearchCriteria(true)), is("tbl_name"));
-        assertThat(NodePathSearcher.get("/statistics/databases/foo_db/schemas/foo_schema/tables/tbl_name/key", StatisticsDataNodePath.createTableSearchCriteria(true)), is("tbl_name"));
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema", StatisticsDataNodePath.createTableSearchCriteria(false)).isPresent());
-        assertFalse(NodePathSearcher.find("/statistics/databases/foo_db/schemas/foo_schema/tables", StatisticsDataNodePath.createTableSearchCriteria(true)).isPresent());
     }
     
     @Test

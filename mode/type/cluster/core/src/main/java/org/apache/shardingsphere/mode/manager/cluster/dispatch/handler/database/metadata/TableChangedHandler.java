@@ -21,11 +21,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.DatabaseLeafValueChangedHandler;
-import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 
 /**
  * Table changed handler.
@@ -43,13 +44,13 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
     
     @Override
     public NodePath getSubscribedNodePath(final String databaseName) {
-        return new TableMetadataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+        return new TableMetaDataNodePath(databaseName, NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
     }
     
     @Override
     public void handle(final String databaseName, final DataChangedEvent event) {
-        String schemaName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createSchemaSearchCriteria(databaseName, true));
-        String tableName = NodePathSearcher.get(event.getKey(), TableMetadataNodePath.createTableSearchCriteria(databaseName, schemaName));
+        String schemaName = NodePathSearcher.get(event.getKey(), SchemaMetaDataNodePath.createSchemaSearchCriteria(databaseName, true));
+        String tableName = NodePathSearcher.get(event.getKey(), TableMetaDataNodePath.createTableSearchCriteria(databaseName, schemaName));
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
@@ -64,7 +65,7 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
+        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
         statisticsRefreshEngine.asyncRefresh();
     }

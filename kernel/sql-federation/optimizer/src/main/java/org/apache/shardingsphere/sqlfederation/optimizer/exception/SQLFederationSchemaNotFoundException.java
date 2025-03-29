@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
  */
 public final class SQLFederationSchemaNotFoundException extends SQLFederationSQLException {
     
-    private static final long serialVersionUID = 1273654561551534516L;
+    private static final long serialVersionUID = 557095726937326865L;
     
-    public SQLFederationSchemaNotFoundException(final String sql) {
-        super(XOpenSQLState.NOT_FOUND, 2, "SQL federation schema not found SQL '%s'.", sql);
+    public SQLFederationSchemaNotFoundException(final String schema, final String sql) {
+        super(XOpenSQLState.NOT_FOUND, 2, "SQL federation schema '%s' not found in SQL '%s'.", schema, sql);
     }
 }

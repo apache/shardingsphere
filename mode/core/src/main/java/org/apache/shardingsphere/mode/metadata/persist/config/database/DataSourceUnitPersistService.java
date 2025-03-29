@@ -56,7 +56,7 @@ public final class DataSourceUnitPersistService {
      * @return data source pool properties map
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null), false));
+        Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null)));
         return childrenKeys.stream().collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (a, b) -> b, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
     }
     
@@ -95,6 +95,6 @@ public final class DataSourceUnitPersistService {
      * @param dataSourceName data source name
      */
     public void delete(final String databaseName, final String dataSourceName) {
-        repository.delete(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, dataSourceName), false));
+        repository.delete(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, dataSourceName)));
     }
 }

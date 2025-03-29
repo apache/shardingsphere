@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -73,7 +73,7 @@ class PrometheusPluginLifecycleServiceTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
-        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator(), mock(LockContext.class));
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
+        computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(LockContext.class), mock(PersistRepository.class));
     }
 }

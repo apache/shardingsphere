@@ -18,7 +18,7 @@
 mode:
   type: Cluster
   repository:
-    type: GOV_FIXTURE
+    type: PROXY_FIXTURE
     props:
       namespace: governance_ds
       server-lists: localhost:2181

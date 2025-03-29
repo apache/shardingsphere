@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -93,6 +92,6 @@ class FrontDatabaseProtocolTypeFactoryTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, new ShardingSphereStatistics()));
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(), mock());
     }
 }

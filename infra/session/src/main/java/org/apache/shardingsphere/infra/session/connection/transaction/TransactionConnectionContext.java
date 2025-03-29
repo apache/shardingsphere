@@ -34,7 +34,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     private volatile boolean inTransaction;
     
     @Setter
-    private volatile long beginMills;
+    private volatile long beginMillis;
     
     @Setter
     private volatile boolean exceptionOccur;
@@ -96,7 +96,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     public void close() {
         transactionType = null;
         inTransaction = false;
-        beginMills = 0L;
+        beginMillis = 0L;
         exceptionOccur = false;
         readWriteSplitReplicaRoute = null;
         transactionManager = null;

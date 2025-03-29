@@ -30,9 +30,7 @@ public final class NodePathSearchCriteria {
     
     private final NodePath searchExample;
     
-    private final boolean trimEmptyNode;
-    
     private final boolean containsChildPath;
     
-    private final int searchSegmentIndex;
+    private final int groupIndex;
 }

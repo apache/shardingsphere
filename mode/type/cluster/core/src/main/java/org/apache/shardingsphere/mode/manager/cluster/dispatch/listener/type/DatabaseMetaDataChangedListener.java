@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.listener.type;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,11 +33,10 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetadataNodePath;
+import org.apache.shardingsphere.mode.node.path.type.database.metadata.DatabaseMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -66,7 +64,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     @Override
     public void onChange(final DataChangedEvent event) {
-        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), TableMetadataNodePath.createDatabaseSearchCriteria());
+        Optional<String> databaseName = NodePathSearcher.find(event.getKey(), DatabaseMetaDataNodePath.createDatabaseSearchCriteria());
         if (!databaseName.isPresent()) {
             return;
         }
@@ -79,7 +77,7 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
                     && !new ActiveVersionChecker(contextManager.getPersistServiceFacade().getRepository()).checkSame(event)) {
                 return;
             }
-            handle(each, databaseName.get(), event);
+            each.handle(databaseName.get(), event);
             return;
         }
     }
@@ -89,16 +87,8 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
             return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
         }
         if (handler instanceof DatabaseNodeValueChangedHandler) {
-            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), true, false, 1));
+            return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1));
         }
         return false;
-    }
-    
-    private void handle(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
-        try {
-            handler.handle(databaseName, event);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
     }
 }

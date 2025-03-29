@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
-import org.apache.shardingsphere.mode.metadata.refresher.metadata.pushdown.PushDownMetaDataRefreshEngine;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 import java.sql.Connection;
@@ -109,7 +109,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
                     .newInstance(database, executionContext.getSqlStatementContext().getSqlStatement(), updateCallback);
             List<Integer> updateCounts = jdbcExecutor.execute(executionGroupContext, callback);
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
-                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getMetaDataManagerPersistService(), database, props);
+                    new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props);
             if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
                 if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
                     connection.commit();

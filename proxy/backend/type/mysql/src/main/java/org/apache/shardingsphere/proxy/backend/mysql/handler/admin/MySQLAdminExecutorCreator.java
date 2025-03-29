@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -76,10 +77,10 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof SelectStatement) {
-            return create((SelectStatement) sqlStatement, sql, databaseName, parameters);
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return createExecutorForSelectStatement((SelectStatementContext) sqlStatementContext, sql, databaseName, parameters);
         }
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
         }
@@ -110,21 +111,22 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return Optional.empty();
     }
     
-    private Optional<DatabaseAdminExecutor> create(final SelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
-        if (!selectStatement.getFrom().isPresent()) {
-            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
+    private Optional<DatabaseAdminExecutor> createExecutorForSelectStatement(final SelectStatementContext selectStatementContext, final String sql,
+                                                                             final String databaseName, final List<Object> parameters) {
+        if (!selectStatementContext.getSqlStatement().getFrom().isPresent()) {
+            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatementContext.getSqlStatement());
         }
-        if (isQueryInformationSchema(databaseName)) {
-            return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        if (INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+            return MySQLInformationSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (isQueryPerformanceSchema(databaseName)) {
-            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        if (PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (isQueryMySQLSchema(databaseName)) {
-            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        if (MYSQL_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
-        if (isQuerySysSchema(databaseName)) {
-            return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        if (SYS_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
+            return MySQLSysSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
         }
         return Optional.empty();
     }
@@ -141,8 +143,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (isShowSpecialFunction(selectStatement, ShowVersionExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowVersionExecutor(selectStatement));
         }
-        if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
-                || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
+        if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME) || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
             return Optional.of(new ShowCurrentUserExecutor());
         }
         if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
@@ -154,25 +155,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
         Iterator<ProjectionSegment> segmentIterator = sqlStatement.getProjections().getProjections().iterator();
         ProjectionSegment firstProjection = segmentIterator.next();
-        return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment
-                && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
-    }
-    
-    private boolean isQueryInformationSchema(final String databaseName) {
-        // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
-        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete();
-    }
-    
-    private boolean isQueryPerformanceSchema(final String databaseName) {
-        return PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName);
-    }
-    
-    private boolean isQueryMySQLSchema(final String databaseName) {
-        return MYSQL_SCHEMA.equalsIgnoreCase(databaseName);
-    }
-    
-    private boolean isQuerySysSchema(final String databaseName) {
-        return SYS_SCHEMA.equalsIgnoreCase(databaseName);
+        return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {

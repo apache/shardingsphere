@@ -46,11 +46,12 @@ class DataSourceSegmentsConverterTest {
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getAllLocalProperties().get("username"), is("root0"));
         assertThat(actual.values().iterator().next().getAllStandardProperties().get("maxPoolSize"), is("30"));
+        assertThat(actual.values().iterator().next().getAllStandardProperties().get("minPoolSize"), is("10"));
     }
     
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
-        Properties customPoolProps = PropertiesBuilder.build(new Property("maxPoolSize", "30"));
+        Properties customPoolProps = PropertiesBuilder.build(new Property("maxPoolSize", "30"), new Property("min_pool_size", "10"));
         result.add(new HostnameAndPortBasedDataSourceSegment("ds0", "127.0.0.1", "3306", "demo_ds_0", "root0", "root0", customPoolProps));
         result.add(new URLBasedDataSourceSegment("ds1", "jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false", "root1", "root1", customPoolProps));
         return result;

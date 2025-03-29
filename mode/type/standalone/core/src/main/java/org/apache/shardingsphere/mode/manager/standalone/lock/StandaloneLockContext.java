@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.util.retry.RetryExecutor;
+import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.lock.LockDefinition;
+
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Standalone lock context.
  */
 public final class StandaloneLockContext implements LockContext {
     
+    private final Collection<String> lockedKeys = new CopyOnWriteArraySet<>();
+    
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return false;
+        return new RetryExecutor(timeoutMillis, 50L).execute(arg -> lockedKeys.add(lockDefinition.getLockKey()), null);
     }
     
     @Override
     public void unlock(final LockDefinition lockDefinition) {
+        lockedKeys.remove(lockDefinition.getLockKey());
     }
 }

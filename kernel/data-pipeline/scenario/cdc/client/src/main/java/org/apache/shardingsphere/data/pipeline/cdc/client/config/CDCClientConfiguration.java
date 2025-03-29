@@ -31,5 +31,5 @@ public final class CDCClientConfiguration {
     
     private final int port;
     
-    private final int timeoutMills;
+    private final int timeoutMillis;
 }

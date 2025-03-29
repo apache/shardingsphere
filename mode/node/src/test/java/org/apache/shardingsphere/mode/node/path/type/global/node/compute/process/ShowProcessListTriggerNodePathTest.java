@@ -30,8 +30,8 @@ class ShowProcessListTriggerNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null), false), is("/nodes/compute_nodes/show_process_list_trigger"));
-        assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id")), false),
+        assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(null)), is("/nodes/compute_nodes/show_process_list_trigger"));
+        assertThat(NodePathGenerator.toPath(new ShowProcessListTriggerNodePath(new InstanceProcessNodeValue("foo_instance_id", "foo_process_id"))),
                 is("/nodes/compute_nodes/show_process_list_trigger/foo_instance_id:foo_process_id"));
     }
     

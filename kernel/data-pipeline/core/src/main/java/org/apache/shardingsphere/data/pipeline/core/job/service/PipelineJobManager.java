@@ -32,11 +32,13 @@ import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.ShardingInfo;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -169,6 +171,21 @@ public final class PipelineJobManager {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream()
                     .filter(each -> !each.getJobName().startsWith("_") && jobType.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
                     .map(each -> jobType.getJobInfo(each.getJobName())).collect(Collectors.toList());
+        } catch (final UnsupportedOperationException ex) {
+            return Collections.emptyList();
+        }
+    }
+    
+    /**
+     * Get pipeline job sharding info.
+     *
+     * @param contextKey context key
+     * @param jobId job id
+     * @return job sharding info
+     */
+    public Collection<ShardingInfo> getJobShardingInfos(final PipelineContextKey contextKey, final String jobId) {
+        try {
+            return PipelineAPIFactory.getShardingStatisticsAPI(contextKey).getShardingInfo(jobId);
         } catch (final UnsupportedOperationException ex) {
             return Collections.emptyList();
         }

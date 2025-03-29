@@ -64,15 +64,6 @@ public interface PersistRepository extends TypedSPI, AutoCloseable {
     void persist(String key, String value);
     
     /**
-     * Persist ephemeral data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    default void persistEphemeral(String key, String value) {
-    }
-    
-    /**
      * Update data.
      *
      * @param key key

@@ -39,6 +39,6 @@ public final class RuleNodeTuple {
      * @return path
      */
     public String getPath() {
-        return NodePathGenerator.toPath(nodePath, false);
+        return NodePathGenerator.toPath(nodePath);
     }
 }

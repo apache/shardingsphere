@@ -31,8 +31,8 @@ class GlobalRuleNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath(null), false), is("/rules"));
-        assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath("foo_rule"), false), is("/rules/foo_rule"));
+        assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath(null)), is("/rules"));
+        assertThat(NodePathGenerator.toPath(new GlobalRuleNodePath("foo_rule")), is("/rules/foo_rule"));
     }
     
     @Test

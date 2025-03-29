@@ -48,25 +48,25 @@ class GlobalRuleChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath(), false).equals("/rules")).findFirst().orElse(null);
+                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/rules")).findFirst().orElse(null);
     }
     
     @Test
     void assertHandleWithInvalidEventKey() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/xxx", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
     void assertHandleWithEmptyRuleName() {
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version/foo", "rule_value", Type.ADDED));
-        verify(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService(), times(0)).load(any());
+        verify(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService(), times(0)).load(any());
     }
     
     @Test
     void assertHandle() {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getGlobalRuleService().load("foo_rule")).thenReturn(ruleConfig);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getGlobalRuleService().load("foo_rule")).thenReturn(ruleConfig);
         handler.handle(contextManager, new DataChangedEvent("/rules/foo_rule/active_version", "rule_value", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getGlobalConfigurationManager()).alterGlobalRuleConfiguration(ruleConfig);
     }

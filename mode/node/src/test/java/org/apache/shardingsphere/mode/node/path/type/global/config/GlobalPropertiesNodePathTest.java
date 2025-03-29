@@ -29,7 +29,7 @@ class GlobalPropertiesNodePathTest {
     
     @Test
     void assertToPath() {
-        assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath(), false), is("/props"));
+        assertThat(NodePathGenerator.toPath(new GlobalPropertiesNodePath()), is("/props"));
     }
     
     @Test

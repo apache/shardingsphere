@@ -52,7 +52,7 @@ public abstract class GlobalRuleDefinitionExecutorTest {
             return;
         }
         engine.executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getMetaDataManagerPersistService();
+        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(deepEq(matchedRuleConfig));
     }
     

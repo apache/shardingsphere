@@ -34,7 +34,7 @@ public final class VersionNodePath {
     private final String path;
     
     public VersionNodePath(final NodePath nodePath) {
-        path = NodePathGenerator.toPath(nodePath, false);
+        path = NodePathGenerator.toPath(nodePath);
     }
     
     /**

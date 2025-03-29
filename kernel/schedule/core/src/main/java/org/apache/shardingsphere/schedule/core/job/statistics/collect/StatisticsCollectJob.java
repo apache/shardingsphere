@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.refresher.statistics.StatisticsRefreshEngine;
+import org.apache.shardingsphere.mode.manager.cluster.statistics.StatisticsRefreshEngine;
 
 /**
  * Statistics collect job.

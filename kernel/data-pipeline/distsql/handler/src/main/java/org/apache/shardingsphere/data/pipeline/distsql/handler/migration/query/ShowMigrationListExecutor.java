@@ -19,9 +19,11 @@ package org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.queryable.ShowMigrationListStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.ShardingInfo;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -39,13 +41,29 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationListStatement sqlStatement) {
-        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
+        return Arrays.asList("id", "tables", "active", "create_time", "stop_time", "job_item_count", "job_sharding_nodes");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ContextManager contextManager) {
-        return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(), each.getTableName(),
-                each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive(), each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
+        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
+        return pipelineJobManager.getJobInfos(contextKey).stream().map(each -> getRow(contextKey, each)).collect(Collectors.toList());
+    }
+    
+    private LocalDataQueryResultRow getRow(final PipelineContextKey contextKey, final PipelineJobInfo jobInfo) {
+        return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getTableName(), jobInfo.getJobMetaData().isActive(), jobInfo.getJobMetaData().getCreateTime(),
+                jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), getJobShardingNodes(contextKey, jobInfo.getJobMetaData().getJobId()));
+    }
+    
+    private String getJobShardingNodes(final PipelineContextKey contextKey, final String jobId) {
+        Collection<ShardingInfo> shardingInfos = pipelineJobManager.getJobShardingInfos(contextKey, jobId);
+        return shardingInfos.isEmpty() ? "" : getJobShardingNodes(shardingInfos);
+    }
+    
+    private String getJobShardingNodes(final Collection<ShardingInfo> shardingInfos) {
+        return 1 == shardingInfos.size()
+                ? shardingInfos.iterator().next().getInstanceId()
+                : shardingInfos.stream().map(each -> each.getItem() + "=" + each.getInstanceId()).collect(Collectors.joining(","));
     }
     
     @Override

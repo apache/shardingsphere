@@ -41,7 +41,13 @@ public final class NodePathSegment {
         Optional<String> variableName = new NodePathVariable(input).findVariableName();
         if (variableName.isPresent()) {
             Object variableValue = ReflectionUtils.getFieldValue(nodePath, variableName.get()).orElse(null);
-            return null == variableValue ? Optional.empty() : Optional.of(variableValue.toString());
+            if (null == variableValue) {
+                return Optional.empty();
+            }
+            if (variableValue instanceof NodePath) {
+                return Optional.of(NodePathGenerator.toPath((NodePath) variableValue));
+            }
+            return Optional.of(variableValue.toString());
         }
         return Optional.of(input);
     }

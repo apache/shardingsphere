@@ -322,10 +322,6 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     
     @Override
     public String visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
-        if (null != ctx.valueReference()) {
-            visit(ctx.valueReference());
-            formatPrint(' ');
-        }
         indentCount++;
         visit(ctx.SET());
         formatPrint(' ');

@@ -20,12 +20,16 @@
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 1. SQL Binder: Support case when then else segment bind - [#34600](https://github.com/apache/shardingsphere/pull/34600)
+1. SQL Binder: Support outer join expression bind - [#35019](https://github.com/apache/shardingsphere/pull/35019)
 1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
 1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)
 1. SQL Parser: Support MySQL INSERT with GEOMCOLLECTION function parse - [#34654](https://github.com/apache/shardingsphere/pull/34654)
 1. SQL Parser: Support MySQL DELETE with statement parse - [#34817](https://github.com/apache/shardingsphere/pull/34817) 
 1. SQL Parser: Support Doris CREATE MATERIALIZED VIEW - [#31499](https://github.com/apache/shardingsphere/pull/31499)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
+1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
+1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
+1. DistSQL: Add job sharding nodes to the result set of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
 
 ### Bug Fixes
 
@@ -34,6 +38,8 @@
 1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
 1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on PostgreSQLInsertStatement - [#34425](https://github.com/apache/shardingsphere/pull/34425)
 1. SQL Parser: Fix mysql sql parser error when sql contains implicit concat expression - [#34660](https://github.com/apache/shardingsphere/pull/34660)
+1. JDBC: Fix wrong jdbc database metadata pass through logic - [#34959](https://github.com/apache/shardingsphere/pull/34959)
+1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
 
 ### Change Logs
 

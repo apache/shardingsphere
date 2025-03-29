@@ -48,6 +48,6 @@ public final class PropertiesChangedHandler implements GlobalConfigurationChange
         if (!new VersionNodePath(new GlobalPropertiesNodePath()).isActiveVersionPath(event.getKey())) {
             return;
         }
-        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataPersistFacade().getPropsService().load());
+        contextManager.getMetaDataContextManager().getGlobalConfigurationManager().alterProperties(contextManager.getPersistServiceFacade().getMetaDataFacade().getPropsService().load());
     }
 }

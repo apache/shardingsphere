@@ -193,7 +193,7 @@ public final class YamlRuleNodeTupleSwapperEngine {
     private void setNamedItemFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig,
                                         final String ruleType, final RuleNodeTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType, NodePathPattern.QUALIFIED_IDENTIFIER));
-        Optional<String> itemValue = NodePathSearcher.find(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1));
+        Optional<String> itemValue = NodePathSearcher.find(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, true, 1));
         if (!itemValue.isPresent()) {
             return;
         }
@@ -218,7 +218,7 @@ public final class YamlRuleNodeTupleSwapperEngine {
     private void setUniqueItemFieldValue(final String databaseName, final YamlRuleConfiguration yamlRuleConfig,
                                          final String ruleType, final RuleNodeTuple tuple, final String itemType, final Field field) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(itemType));
-        if (!NodePathSearcher.isMatchedPath(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, false, true, 1))) {
+        if (!NodePathSearcher.isMatchedPath(tuple.getPath(), new NodePathSearchCriteria(databaseRuleNodePath, true, 1))) {
             return;
         }
         if (field.getType().equals(Collection.class)) {

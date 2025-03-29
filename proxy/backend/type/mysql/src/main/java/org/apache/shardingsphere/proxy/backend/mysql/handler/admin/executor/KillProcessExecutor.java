@@ -47,6 +47,6 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
         ShardingSpherePreconditions.checkState(QUERY_SCOPE.equalsIgnoreCase(killStatement.getScope()),
                 () -> new UnsupportedSQLOperationException("Only `KILL QUERY <processId>` SQL syntax is supported"));
         String processId = killStatement.getProcessId();
-        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getProcessPersistService().killProcess(processId);
+        ProxyContext.getInstance().getContextManager().getPersistServiceFacade().getModeFacade().getProcessService().killProcess(processId);
     }
 }

@@ -408,7 +408,7 @@ class SelectStatementContextTest {
     }
     
     private void assertSetWhere(final SelectStatement selectStatement) {
-        WhereSegment whereSegment = mock(WhereSegment.class);
+        WhereSegment whereSegment = mock(WhereSegment.class, RETURNS_DEEP_STUBS);
         selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -446,7 +446,7 @@ class SelectStatementContextTest {
     }
     
     private void assertContainsSubquery(final SelectStatement selectStatement, final SelectStatement subSelectStatement) {
-        WhereSegment whereSegment = new WhereSegment(0, 0, null);
+        WhereSegment whereSegment = new WhereSegment(0, 0, mock(BinaryOperationExpression.class, RETURNS_DEEP_STUBS));
         subSelectStatement.setWhere(whereSegment);
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
