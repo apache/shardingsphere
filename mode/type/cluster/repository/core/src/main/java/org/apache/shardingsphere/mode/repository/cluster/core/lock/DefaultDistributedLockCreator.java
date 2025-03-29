@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock.impl;
+package org.apache.shardingsphere.mode.repository.cluster.core.lock;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
 
 /**
  * Default distributed lock creator.

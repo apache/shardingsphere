@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock.impl;
+package org.apache.shardingsphere.mode.repository.cluster.core.lock;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockPropertyKey;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
