@@ -134,11 +134,12 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof DDLStatement)) {
-            return true;
-        }
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction((DDLStatement) sqlStatement);
+    }
+    
+    private boolean isSupportDDLInTransaction(final DDLStatement sqlStatement) {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatement.getDatabaseType());
-        boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged((DDLStatement) sqlStatement);
+        boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
         if (isInXATransaction()) {
             return dialectDatabaseMetaData.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || dialectDatabaseMetaData.isSupportMetaDataRefreshInTransaction());
         }
