@@ -261,6 +261,7 @@ class ProxySQLExecutorTest {
     private CursorStatementContext createCursorStatementContext() {
         CursorStatementContext result = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     

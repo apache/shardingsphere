@@ -99,6 +99,11 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
+    public boolean isSupportDDLInTransaction() {
+        return false;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "openGauss";
     }
