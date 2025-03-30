@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
 
@@ -70,6 +71,11 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     @Override
     public Optional<DistributedLockHolder> getDistributedLockHolder() {
         return Optional.of(new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
+    }
+    
+    @Override
+    public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+        return Optional.empty();
     }
     
     @Override

@@ -33,9 +33,11 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.exception.ZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionReconnectListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -225,6 +227,11 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     @Override
     public Optional<DistributedLockHolder> getDistributedLockHolder() {
         return Optional.of(distributedLockHolder);
+    }
+    
+    @Override
+    public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+        return Optional.of(new ZookeeperDistributedLock(lockKey, client));
     }
     
     @Override
