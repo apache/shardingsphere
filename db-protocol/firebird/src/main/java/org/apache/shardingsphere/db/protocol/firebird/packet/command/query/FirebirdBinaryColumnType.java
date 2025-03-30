@@ -80,7 +80,8 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DOUBLE, DOUBLE);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NUMERIC, INT128);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DECIMAL, INT128);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, TEXT);
+        // replace VARYING with TEXT when add proper length
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, BLOB);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
