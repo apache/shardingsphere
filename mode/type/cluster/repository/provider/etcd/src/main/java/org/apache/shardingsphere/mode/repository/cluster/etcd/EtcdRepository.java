@@ -39,9 +39,11 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
@@ -135,6 +137,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Override
     public Optional<DistributedLockHolder> getDistributedLockHolder() {
         return Optional.of(distributedLockHolder);
+    }
+    
+    @Override
+    public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+        return Optional.of(new EtcdDistributedLock(lockKey, client, etcdProps));
     }
     
     private void buildParentPath(final String key) throws ExecutionException, InterruptedException {

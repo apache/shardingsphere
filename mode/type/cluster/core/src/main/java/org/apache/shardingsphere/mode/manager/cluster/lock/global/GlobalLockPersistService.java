@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.DefaultDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.util.Properties;
 
 /**
  * Global lock persist service.
  */
+@RequiredArgsConstructor
 public final class GlobalLockPersistService {
     
-    private final DistributedLockHolder lockHolder;
-    
-    public GlobalLockPersistService(final ClusterPersistRepository repository) {
-        lockHolder = repository.getDistributedLockHolder().orElseGet(() -> new DistributedLockHolder("default", this, new DefaultLockTypedProperties(new Properties())));
-    }
+    private final ClusterPersistRepository repository;
     
     /**
      * Try lock.
@@ -42,7 +42,8 @@ public final class GlobalLockPersistService {
      * @return is locked or not
      */
     public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
-        return lockHolder.getDistributedLock(lockDefinition.getLockKey()).tryLock(timeoutMillis);
+        String lockKey = lockDefinition.getLockKey();
+        return DistributedLockHolder.getDistributedLock(lockKey, () -> getDistributedLock(lockKey)).tryLock(timeoutMillis);
     }
     
     /**
@@ -51,6 +52,11 @@ public final class GlobalLockPersistService {
      * @param lockDefinition lock definition
      */
     public void unlock(final GlobalLockDefinition lockDefinition) {
-        lockHolder.getDistributedLock(lockDefinition.getLockKey()).unlock();
+        String lockKey = lockDefinition.getLockKey();
+        DistributedLockHolder.getDistributedLock(lockKey, () -> getDistributedLock(lockKey)).unlock();
+    }
+    
+    private DistributedLock getDistributedLock(final String lockKey) {
+        return repository.getDistributedLock(lockKey).orElseGet(() -> new DefaultDistributedLock(lockKey, repository, new DefaultLockTypedProperties(new Properties())));
     }
 }
