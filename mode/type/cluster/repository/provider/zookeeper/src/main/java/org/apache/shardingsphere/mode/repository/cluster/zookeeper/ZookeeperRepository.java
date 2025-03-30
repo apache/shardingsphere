@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.exception.ZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionReconnectListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
@@ -70,13 +69,10 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     
     private CuratorFramework client;
     
-    private DistributedLockHolder distributedLockHolder;
-    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        distributedLockHolder = new DistributedLockHolder(getType(), client, zookeeperProps);
         client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
         initCuratorClient(zookeeperProps);
     }
@@ -222,11 +218,6 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
             // CHECKSTYLE:ON
         }
         return true;
-    }
-    
-    @Override
-    public Optional<DistributedLockHolder> getDistributedLockHolder() {
-        return Optional.of(distributedLockHolder);
     }
     
     @Override

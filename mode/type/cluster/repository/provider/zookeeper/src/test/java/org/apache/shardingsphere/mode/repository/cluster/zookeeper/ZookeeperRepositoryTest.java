@@ -32,9 +32,6 @@ import org.apache.curator.framework.api.SetDataBuilder;
 import org.apache.curator.framework.listen.Listenable;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -51,7 +48,6 @@ import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +106,6 @@ class ZookeeperRepositoryTest {
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.init(config, mock(ComputeNodeInstanceContext.class));
-        mockDistributedLockHolder();
     }
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
@@ -126,13 +121,6 @@ class ZookeeperRepositoryTest {
         when(builder.aclProvider(any(ACLProvider.class))).thenReturn(builder);
         when(builder.build()).thenReturn(client);
         when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void mockDistributedLockHolder() {
-        DistributedLockHolder distributedLockHolder = new DistributedLockHolder("ZooKeeper", client, new ZookeeperProperties(new Properties()));
-        Plugins.getMemberAccessor().set(DistributedLockHolder.class.getDeclaredField("locks"), distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
-        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("distributedLockHolder"), REPOSITORY, distributedLockHolder);
     }
     
     private void mockBuilder() {
