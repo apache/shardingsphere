@@ -37,7 +37,8 @@ public final class DistributedLockHolder {
      * Get distributed lock.
      *
      * @param lockKey lock key
-     * @return distributed lock
+     * @param distributedLock distributed lock if absent
+     * @return got distributed lock
      */
     public static DistributedLock getDistributedLock(final String lockKey, final Supplier<DistributedLock> distributedLock) {
         return LOCKS.computeIfAbsent(lockKey, key -> distributedLock.get());
