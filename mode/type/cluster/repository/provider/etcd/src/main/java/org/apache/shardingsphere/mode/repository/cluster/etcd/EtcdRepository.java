@@ -44,7 +44,6 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperti
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -67,8 +66,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProps;
     
-    private DistributedLockHolder distributedLockHolder;
-    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         etcdProps = new EtcdProperties(config.getProps());
@@ -76,7 +73,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        distributedLockHolder = new DistributedLockHolder(getType(), client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -132,11 +128,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public boolean persistExclusiveEphemeral(final String key, final String value) {
         persistEphemeral(key, value);
         return true;
-    }
-    
-    @Override
-    public Optional<DistributedLockHolder> getDistributedLockHolder() {
-        return Optional.of(distributedLockHolder);
     }
     
     @Override

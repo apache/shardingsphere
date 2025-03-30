@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.repository.cluster;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Optional;
@@ -54,13 +53,6 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @return persist exclusive node success or not 
      */
     boolean persistExclusiveEphemeral(String key, String value);
-    
-    /**
-     * Get distributed lock holder.
-     *
-     * @return distributed lock holder
-     */
-    Optional<DistributedLockHolder> getDistributedLockHolder();
     
     /**
      * Get distributed lock.
