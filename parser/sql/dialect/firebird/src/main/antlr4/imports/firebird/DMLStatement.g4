@@ -77,16 +77,24 @@ combineClause
     ;
 
 selectClause
-    : SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT firstSkipClause? selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
     ;
 
-
 selectSpecification
-    : duplicateSpecification | firstSkipClause
+    : duplicateSpecification
     ;
 
 firstSkipClause
-    : (FIRST | SKIP_) bitExpr*
+    : FIRST firstValue (SKIP_ skipValue)?
+    | SKIP_ skipValue
+    ;
+
+firstValue
+    : numberLiterals | parameterMarker // | LP_ expr RP_
+    ;
+
+skipValue
+    : numberLiterals | parameterMarker // | LP_ expr RP_
     ;
 
 duplicateSpecification
