@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.factory.init;
+package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.SQLException;
