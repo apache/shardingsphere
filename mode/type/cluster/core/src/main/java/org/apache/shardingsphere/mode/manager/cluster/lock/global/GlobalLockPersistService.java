@@ -18,13 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.core.lock.DefaultDistributedLock;
 import org.apache.shardingsphere.mode.manager.cluster.lock.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-
-import java.util.Properties;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Global lock persist service.
@@ -42,8 +37,7 @@ public final class GlobalLockPersistService {
      * @return is locked or not
      */
     public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
-        String lockKey = lockDefinition.getLockKey();
-        return DistributedLockHolder.getDistributedLock(lockKey, () -> getDistributedLock(lockKey)).tryLock(timeoutMillis);
+        return DistributedLockHolder.getDistributedLock(lockDefinition.getLockKey(), repository).tryLock(timeoutMillis);
     }
     
     /**
@@ -52,11 +46,6 @@ public final class GlobalLockPersistService {
      * @param lockDefinition lock definition
      */
     public void unlock(final GlobalLockDefinition lockDefinition) {
-        String lockKey = lockDefinition.getLockKey();
-        DistributedLockHolder.getDistributedLock(lockKey, () -> getDistributedLock(lockKey)).unlock();
-    }
-    
-    private DistributedLock getDistributedLock(final String lockKey) {
-        return repository.getDistributedLock(lockKey).orElseGet(() -> new DefaultDistributedLock(lockKey, repository, new DefaultLockTypedProperties(new Properties())));
+        DistributedLockHolder.getDistributedLock(lockDefinition.getLockKey(), repository).unlock();
     }
 }
