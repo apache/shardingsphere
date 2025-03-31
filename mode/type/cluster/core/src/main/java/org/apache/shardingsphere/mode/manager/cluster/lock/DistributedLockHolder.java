@@ -19,11 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.DefaultDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 /**
  * Distributed lock holder.
@@ -37,10 +40,14 @@ public final class DistributedLockHolder {
      * Get distributed lock.
      *
      * @param lockKey lock key
-     * @param distributedLock distributed lock if absent
+     * @param repository repository
      * @return got distributed lock
      */
-    public static DistributedLock getDistributedLock(final String lockKey, final Supplier<DistributedLock> distributedLock) {
-        return LOCKS.computeIfAbsent(lockKey, key -> distributedLock.get());
+    public static DistributedLock getDistributedLock(final String lockKey, final ClusterPersistRepository repository) {
+        return LOCKS.computeIfAbsent(lockKey, key -> loadDistributedLock(lockKey, repository));
+    }
+    
+    private static DistributedLock loadDistributedLock(final String lockKey, final ClusterPersistRepository repository) {
+        return repository.getDistributedLock(lockKey).orElseGet(() -> new DefaultDistributedLock(lockKey, repository, new DefaultLockTypedProperties(new Properties())));
     }
 }
