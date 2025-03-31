@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.lock.global;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**

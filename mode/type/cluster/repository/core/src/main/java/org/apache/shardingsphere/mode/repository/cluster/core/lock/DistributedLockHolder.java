@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.lock;
+package org.apache.shardingsphere.mode.repository.cluster.core.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.core.lock.DefaultDistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.core.lock.props.DefaultLockTypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.DefaultDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.util.Map;
