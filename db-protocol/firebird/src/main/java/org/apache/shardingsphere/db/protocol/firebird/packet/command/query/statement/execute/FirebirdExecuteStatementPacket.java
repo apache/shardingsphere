@@ -55,14 +55,25 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         parameterTypes = parseBLR(payload.readBuffer());
         message = payload.readInt4();
         int msgCount = payload.readInt4();
+        List<Integer> nullBits = new ArrayList<>();
         if (msgCount > 0) {
             int length = (parameterTypes.size() + 7) / 8;
-            payload.skipReserved(length);
+            for (int i = 0; i < length; i++) {
+                nullBits.add(payload.readInt1());
+            }
             payload.skipPadding(length);
         }
-        for (FirebirdBinaryColumnType type : parameterTypes) {
-            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(type);
-            parameterValues.add(binaryProtocolValue.read(payload));
+        
+        for (int i = 0; i < parameterTypes.size(); i++) {
+            Integer nullBit = nullBits.get(i / 8);
+            if (((nullBit >> i % 8) & 1) == 0) {
+                FirebirdBinaryColumnType parameterType = parameterTypes.get(i);
+                FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
+                parameterValues.add(binaryProtocolValue.read(payload));
+            }
+            else {
+                parameterValues.add(null);
+            }
         }
         this.payload = payload;
         //        while (msgCount-- != 0) {
