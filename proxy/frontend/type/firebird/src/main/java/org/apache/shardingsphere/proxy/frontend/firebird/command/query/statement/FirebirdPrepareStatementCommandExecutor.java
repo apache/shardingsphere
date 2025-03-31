@@ -69,6 +69,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
@@ -81,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdSelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -88,6 +91,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -265,7 +269,22 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     @SuppressWarnings("unchecked")
     private List<Projection> getProjections(SQLStatementContext sqlStatementContext, ShardingSphereSchema schema) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+            SelectStatementContext selectStatement = (SelectStatementContext) sqlStatementContext;
+            List<Projection> expandProjections = selectStatement.getProjectionsContext().getExpandProjections();
+            Map<Integer, SelectStatementContext> subquery = selectStatement.getSubqueryContexts();
+            if (subquery.isEmpty()) {
+                return expandProjections;
+            }
+            //workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
+            TableSegment from = ((FirebirdSelectStatement) sqlStatementContext.getSqlStatement()).getFrom().orElse(null);
+            if (!(from instanceof SubqueryTableSegment)) {
+                return expandProjections;
+            }
+            List<Projection> subqueryProjections = new ArrayList<>(expandProjections.size());
+            for (SelectStatementContext value : subquery.values()) {
+                    subqueryProjections.addAll(value.getProjectionsContext().getExpandProjections());
+            }
+            return subqueryProjections;
         }
         ProjectionEngine projectionEngine = new ProjectionEngine(sqlStatementContext.getDatabaseType());
         Optional<ReturningSegment> returningSegment = (Optional<ReturningSegment>) ReflectionUtils.getFieldValueByGetMethod(sqlStatementContext.getSqlStatement(), "returningSegment").orElse(Optional.empty());
