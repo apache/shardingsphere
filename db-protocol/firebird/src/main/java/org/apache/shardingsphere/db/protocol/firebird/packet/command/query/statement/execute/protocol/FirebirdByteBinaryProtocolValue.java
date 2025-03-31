@@ -31,6 +31,11 @@ public final class FirebirdByteBinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.writeBuffer((byte[]) value);
+        if (value instanceof String) {
+            payload.writeString((String) value);
+        }
+        else {
+            payload.writeBuffer((byte[]) value);
+        }
     }
 }

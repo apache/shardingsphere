@@ -83,15 +83,18 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         // replace VARYING with TEXT when add proper length
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, BLOB);
+        //temp fix for blobs
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, TEXT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARBINARY, VARYING);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, BLOB);
+        //temp fix for blobs
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, NULL);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, BLOB);
+        //temp fix for blobs
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOLEAN);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, ARRAY);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME_WITH_TIMEZONE, TIME_TZ);
