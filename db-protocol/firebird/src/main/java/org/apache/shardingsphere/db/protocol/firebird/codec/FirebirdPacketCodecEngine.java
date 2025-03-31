@@ -79,7 +79,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (in.writerIndex() == in.capacity()) {
             try {
-                FirebirdPacketPayload payload = new FirebirdPacketPayload(in.copy(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+                CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+                result.addComponents(true, pendingMessages).addComponent(true, in.copy());
+                FirebirdPacketPayload payload = new FirebirdPacketPayload(result, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
                 FirebirdCommandPacketFactory.newInstance(pendingPacketType, payload);
                 writePendingMessages(context, in, out);
             } catch (IndexOutOfBoundsException ignored) {
