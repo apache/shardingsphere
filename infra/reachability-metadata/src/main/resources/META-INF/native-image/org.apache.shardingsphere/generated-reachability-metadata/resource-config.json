@@ -199,9 +199,6 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"
-  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor\\E"
   }, {

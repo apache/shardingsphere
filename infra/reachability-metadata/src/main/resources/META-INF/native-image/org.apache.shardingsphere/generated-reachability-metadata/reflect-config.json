@@ -2493,21 +2493,9 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
-  "name":"org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLockCreator"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
-  "name":"org.apache.shardingsphere.mode.repository.cluster.lock.impl.DefaultDistributedLockCreator"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"},
   "name":"org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
-  "name":"org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZooKeeperDistributedLockCreator"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"},
