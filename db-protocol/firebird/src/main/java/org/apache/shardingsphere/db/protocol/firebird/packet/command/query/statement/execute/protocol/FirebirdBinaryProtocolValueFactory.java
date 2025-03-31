@@ -115,7 +115,8 @@ public final class FirebirdBinaryProtocolValueFactory {
     }
     
     private static void setNullBinaryProtocolValue() {
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.NULL, null);
+        FirebirdNullBinaryProtocolValue binaryProtocolValue = new FirebirdNullBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.NULL, binaryProtocolValue);
     }
     
     /**

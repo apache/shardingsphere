@@ -63,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -82,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTr
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -254,7 +256,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
             else if (each instanceof SubqueryProjection) {
                 SubqueryProjection subquery = (SubqueryProjection) each;
-                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias(), 4, buffer, requestedItems, ++columnCount);
+                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias(), Types.INTEGER, buffer, requestedItems, ++columnCount);
             }
         }
         return columnCount;
@@ -388,10 +390,27 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
             processCustomColumn(null, functionName, expr.getAlias(), getFunctionType(functionName), buffer, requestedItems, columnCount);
         }
-        if (exprSegment instanceof BinaryOperationExpression) {
+        else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
             int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
             processCustomColumn(null, operationName, expr.getAlias(), operationType, buffer, requestedItems, columnCount);
+        }
+        else if (exprSegment instanceof LiteralExpressionSegment) {
+            Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
+            int type = Types.NULL;
+            if (value instanceof String) {
+                type = Types.VARCHAR;
+            }
+            else if (value instanceof Integer) {
+                type = Types.INTEGER;
+            }
+            else if (value instanceof Long) {
+                type = Types.BIGINT;
+            }
+            else if (value instanceof Number) {
+                type = Types.NUMERIC;
+            }
+            processCustomColumn(null, null, expr.getAlias(), type, buffer, requestedItems, columnCount);
         }
     }
     
@@ -402,9 +421,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "current_role":
             case "current_user":
             case "coalesce":
-                return 12;
+                return Types.VARCHAR;
             default:
-                return 4;
+                return Types.INTEGER;
         }
     }
     
