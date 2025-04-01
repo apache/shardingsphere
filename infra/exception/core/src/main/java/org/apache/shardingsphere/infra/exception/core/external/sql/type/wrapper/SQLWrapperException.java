@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
 
 import java.sql.SQLException;
 
 /**
  * SQL wrapper exception.
  */
-public final class SQLWrapperException extends ShardingSphereSQLException {
+public final class SQLWrapperException extends GenericSQLException {
     
     private static final long serialVersionUID = 8983736995662464009L;
     
-    private static final int TYPE_OFFSET = 0;
-    
     public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), TYPE_OFFSET, cause.getErrorCode(), "", cause);
+        super(XOpenSQLState.GENERAL_ERROR, 5, "Underlying SQL state: " + cause.getSQLState() + ", underlying error code: " + cause.getErrorCode() + ".", cause);
     }
 }
