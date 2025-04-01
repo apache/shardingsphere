@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -29,8 +30,8 @@ class SQLWrapperExceptionTest {
     @Test
     void assertToSQLException() {
         SQLException actual = new SQLWrapperException(new SQLException("reason", "1", 10)).toSQLException();
-        assertThat(actual.getSQLState(), is("1"));
-        assertThat(actual.getErrorCode(), is(10));
-        assertThat(actual.getMessage(), is(System.lineSeparator() + "More details: java.sql.SQLException: reason"));
+        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorCode(), is(30005));
+        assertThat(actual.getMessage(), is("Underlying SQL state: 1, underlying error code: 10."));
     }
 }
