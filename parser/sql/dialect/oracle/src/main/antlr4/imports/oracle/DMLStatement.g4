@@ -141,7 +141,7 @@ selectSubquery
     ;
 
 combineType
-    : UNION ALL? | INTERSECT | MINUS
+    : UNION ALL? | INTERSECT ALL? | MINUS ALL? | EXCEPT ALL?
     ;
 
 parenthesisSelectSubquery
