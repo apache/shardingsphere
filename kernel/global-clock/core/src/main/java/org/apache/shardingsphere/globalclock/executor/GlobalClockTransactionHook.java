@@ -97,8 +97,8 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
     }
     
     @Override
-    public boolean isNeedLockWhenCommit() {
-        return true;
+    public boolean isNeedLockWhenCommit(final GlobalClockRule rule) {
+        return rule.getConfiguration().isEnabled();
     }
     
     @Override
