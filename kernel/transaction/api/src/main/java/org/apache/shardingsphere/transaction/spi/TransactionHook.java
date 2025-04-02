@@ -103,9 +103,10 @@ public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSP
     /**
      * Whether to need lock when transaction committed.
      *
+     * @param rule rule
      * @return need lock or not
      */
-    boolean isNeedLockWhenCommit();
+    boolean isNeedLockWhenCommit(T rule);
     
     /**
      * Process before rolling back the transaction.
