@@ -101,4 +101,9 @@
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a GROUP BY a.amount DESC ) AS tmp" />
         <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount AS amount_CIPHER FROM t_account a GROUP BY a.`cipher_amount` DESC ) AS tmp" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_concat_in_subquery" db-types="MySQL">
+        <input sql="SELECT COUNT(*) FROM (SELECT * FROM (SELECT password FROM t_account WHERE password like concat('%', 'zhangsan', '%')) t) TOTAL" />
+        <output sql="SELECT COUNT(*) FROM (SELECT t.password_CIPHER, t.password_ASSISTED, t.password_LIKE FROM (SELECT cipher_password AS password_CIPHER, assisted_query_password AS password_ASSISTED, like_query_password AS password_LIKE FROM t_account WHERE `like_query_password` like concat ('like_query_%', 'like_query_zhangsan', 'like_query_%')) t) TOTAL" />
+    </rewrite-assertion>
 </rewrite-assertions>
