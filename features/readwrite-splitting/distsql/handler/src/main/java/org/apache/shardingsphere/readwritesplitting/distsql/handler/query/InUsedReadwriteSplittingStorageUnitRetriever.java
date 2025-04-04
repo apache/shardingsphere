@@ -25,7 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 /**
  * In used readwrite-splitting storage unit retriever.
@@ -37,7 +37,7 @@ public final class InUsedReadwriteSplittingStorageUnitRetriever implements InUse
         if (!sqlStatement.getStorageUnitName().isPresent()) {
             return Collections.emptyList();
         }
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new HashSet<>(1, 1F);
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : rule.getConfiguration().getDataSourceGroups()) {
             if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName().get())) {
                 result.add(each.getName());
