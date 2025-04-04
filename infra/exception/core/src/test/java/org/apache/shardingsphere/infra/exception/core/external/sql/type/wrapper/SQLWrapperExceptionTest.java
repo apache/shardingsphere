@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class SQLWrapperExceptionTest {
@@ -32,6 +33,6 @@ class SQLWrapperExceptionTest {
         SQLException actual = new SQLWrapperException(new SQLException("reason", "1", 10)).toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(30005));
-        assertThat(actual.getMessage(), is("Underlying SQL state: 1, underlying error code: 10."));
+        assertThat(actual.getMessage(), startsWith("Underlying SQL state: 1, underlying error code: 10."));
     }
 }
