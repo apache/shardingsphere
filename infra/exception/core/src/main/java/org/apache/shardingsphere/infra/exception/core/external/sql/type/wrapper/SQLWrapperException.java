@@ -30,6 +30,6 @@ public final class SQLWrapperException extends GenericSQLException {
     private static final long serialVersionUID = 8983736995662464009L;
     
     public SQLWrapperException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Underlying SQL state: " + cause.getSQLState() + ", underlying error code: " + cause.getErrorCode() + ".", cause);
+        super("Underlying SQL state: " + cause.getSQLState() + ", underlying error code: " + cause.getErrorCode() + ".", XOpenSQLState.GENERAL_ERROR, 5, cause);
     }
 }
