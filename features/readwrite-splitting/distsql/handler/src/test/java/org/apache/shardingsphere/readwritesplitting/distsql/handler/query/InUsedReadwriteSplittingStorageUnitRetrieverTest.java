@@ -47,13 +47,13 @@ class InUsedReadwriteSplittingStorageUnitRetrieverTest {
     @Test
     void assertGetInUsedResourcesWithWriteDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_unit_write", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_ds")));
     }
     
     @Test
     void assertGetInUsedResourcesWithReadDataSource() {
         ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_unit_read", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_ds")));
     }
     
     private ReadwriteSplittingRule mockRule() {
