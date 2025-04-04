@@ -40,6 +40,7 @@
 1. SQL Parser: Fix mysql sql parser error when sql contains implicit concat expression - [#34660](https://github.com/apache/shardingsphere/pull/34660)
 1. JDBC: Fix wrong jdbc database metadata pass through logic - [#34959](https://github.com/apache/shardingsphere/pull/34959)
 1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
+1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
 
 ### Change Logs
 
