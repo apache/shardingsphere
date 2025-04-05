@@ -24,7 +24,6 @@ import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplitti
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -34,15 +33,12 @@ public final class InUsedReadwriteSplittingStorageUnitRetriever implements InUse
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
-        if (!sqlStatement.getStorageUnitName().isPresent()) {
-            return Collections.emptyList();
-        }
         Collection<String> result = new HashSet<>(1, 1F);
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : rule.getConfiguration().getDataSourceGroups()) {
-            if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName().get())) {
+            if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName())) {
                 result.add(each.getName());
             }
-            if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName().get())) {
+            if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName())) {
                 result.add(each.getName());
             }
         }

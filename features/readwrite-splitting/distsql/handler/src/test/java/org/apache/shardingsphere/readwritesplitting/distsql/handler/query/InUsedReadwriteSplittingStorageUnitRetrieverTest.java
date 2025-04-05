@@ -28,7 +28,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,12 +36,6 @@ class InUsedReadwriteSplittingStorageUnitRetrieverTest {
     
     @SuppressWarnings("unchecked")
     private final InUsedStorageUnitRetriever<ReadwriteSplittingRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, ReadwriteSplittingRule.class);
-    
-    @Test
-    void assertGetInUsedResourcesWithoutStorageUnit() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement(null, null);
-        assertTrue(retriever.getInUsedResources(sqlStatement, mock(ReadwriteSplittingRule.class)).isEmpty());
-    }
     
     @Test
     void assertGetInUsedResourcesWithWriteDataSource() {

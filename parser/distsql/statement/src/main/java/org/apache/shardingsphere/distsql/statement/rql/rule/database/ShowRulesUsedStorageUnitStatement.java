@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
-
-import java.util.Optional;
 
 /**
  * Show rules used storage unit statement.
  */
+@Getter
 public final class ShowRulesUsedStorageUnitStatement extends ShowDatabaseRulesStatement {
     
     private final String storageUnitName;
@@ -31,14 +31,5 @@ public final class ShowRulesUsedStorageUnitStatement extends ShowDatabaseRulesSt
     public ShowRulesUsedStorageUnitStatement(final String storageUnitName, final DatabaseSegment database) {
         super(database);
         this.storageUnitName = storageUnitName;
-    }
-    
-    /**
-     * Get resource name.
-     *
-     * @return resource name
-     */
-    public Optional<String> getStorageUnitName() {
-        return Optional.ofNullable(storageUnitName);
     }
 }

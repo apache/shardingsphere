@@ -15,44 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.query;
+package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.single.rule.SingleDataNodeRuleAttribute;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class InUsedShadowStorageUnitRetrieverTest {
+class InUsedSingleStorageUnitRetrieverTest {
     
     @SuppressWarnings("unchecked")
-    private final InUsedStorageUnitRetriever<ShadowRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, ShadowRule.class);
+    private final InUsedStorageUnitRetriever<SingleRule> retriever = TypedSPILoader.getService(InUsedStorageUnitRetriever.class, SingleRule.class);
     
     @Test
-    void assertGetInUsedResourcesWithShadowDataSource() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("prod_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
+    void assertGetInUsedResources() {
+        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("foo_ds", null);
+        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singleton("foo_table")));
     }
     
-    @Test
-    void assertGetInUsedResourcesWithProductionDataSource() {
-        ShowRulesUsedStorageUnitStatement sqlStatement = new ShowRulesUsedStorageUnitStatement("shadow_ds", null);
-        assertThat(retriever.getInUsedResources(sqlStatement, mockRule()), is(Collections.singletonList("foo_ds")));
-    }
-    
-    private ShadowRule mockRule() {
-        ShadowRule result = mock(ShadowRule.class, RETURNS_DEEP_STUBS);
-        ShadowDataSourceConfiguration dataSourceConfig = new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds");
-        when(result.getConfiguration().getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
+    private SingleRule mockRule() {
+        SingleRule result = mock(SingleRule.class);
+        SingleDataNodeRuleAttribute attribute = mock(SingleDataNodeRuleAttribute.class);
+        DataNode dataNode = new DataNode("foo_ds", "foo_table");
+        when(attribute.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_table", Collections.singletonList(dataNode)));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(attribute));
         return result;
     }
 }
