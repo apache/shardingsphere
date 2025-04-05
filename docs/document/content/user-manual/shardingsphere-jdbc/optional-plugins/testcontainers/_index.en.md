@@ -27,7 +27,7 @@ the possible Maven dependencies are as follows,
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.5</version>
     </dependency>
     <dependency>
         <groupId>org.testcontainers</groupId>

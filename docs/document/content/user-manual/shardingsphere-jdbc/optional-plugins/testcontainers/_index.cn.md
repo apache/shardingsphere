@@ -27,7 +27,7 @@ ShardingSphere 默认情况下不提供对 `org.testcontainers.jdbc.ContainerDat
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.5</version>
     </dependency>
     <dependency>
         <groupId>org.testcontainers</groupId>
