@@ -49,8 +49,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        String resourceName = sqlStatement.getStorageUnitName().orElse(null);
-        return database.getResourceMetaData().getStorageUnits().containsKey(resourceName) ? getRows(sqlStatement) : Collections.emptyList();
+        return database.getResourceMetaData().getStorageUnits().containsKey(sqlStatement.getStorageUnitName()) ? getRows(sqlStatement) : Collections.emptyList();
     }
     
     @SuppressWarnings("unchecked")
