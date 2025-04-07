@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecut
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -46,7 +46,7 @@ class SQLParserExecutorTest {
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
                 .maximumSize(1024L).build(new CacheLoader<String, ParseASTNode>() {
                     
-                    @ParametersAreNonnullByDefault
+                    @NullMarked
                     @Override
                     public ParseASTNode load(final String sql) {
                         return sqlParserExecutor.parse(sql);
