@@ -33,6 +33,7 @@ import java.util.Collection;
 /**
  * Push filter into scan rule.
  */
+@Value.Style(nullableAnnotation = "org.jspecify.annotations.Nullable", fallbackNullableAnnotation = org.jspecify.annotations.Nullable.class)
 @Value.Enclosing
 public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule.Config> implements TransformationRule {
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Parse context cache loader.
@@ -35,7 +35,7 @@ public final class ParseTreeCacheLoader implements CacheLoader<String, ParseASTN
         sqlParserExecutor = new SQLParserExecutor(databaseType);
     }
     
-    @ParametersAreNonnullByDefault
+    @NullMarked
     @Override
     public ParseASTNode load(final String sql) {
         return sqlParserExecutor.parse(sql);
