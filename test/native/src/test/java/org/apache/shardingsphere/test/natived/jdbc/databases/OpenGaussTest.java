@@ -53,13 +53,9 @@ class OpenGaussTest {
     
     private final String password = "Enmo@123";
     
-    /**
-     * Unable to use Docker Image `enmotech/opengauss` under WSL.
-     * Background comes from <a href="https://github.com/enmotech/enmotech-docker-opengauss/issues/52">enmotech/enmotech-docker-opengauss#52</a>.
-     */
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("enmotech/opengauss-lite:5.1.0")
+    private final GenericContainer<?> container = new GenericContainer<>("opengauss/opengauss-server:7.0.0-RC1")
             .withEnv("GS_PASSWORD", password)
             .withExposedPorts(5432);
     
