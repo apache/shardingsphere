@@ -340,7 +340,7 @@ The required JDBC Driver corresponds to the `proxy-frontend-database-protocol-ty
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.4</version>
+    <version>42.7.5</version>
 </dependency>
 ```
 
