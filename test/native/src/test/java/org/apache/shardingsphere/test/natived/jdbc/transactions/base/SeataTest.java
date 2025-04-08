@@ -51,7 +51,7 @@ class SeataTest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.2.0")
+    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.3.0")
             .withExposedPorts(7091, 8091)
             .waitingFor(Wait.forHttp("/health")
                     .forPort(7091)
@@ -70,8 +70,7 @@ class SeataTest {
     }
     
     /**
-     * TODO Apparently there is a real connection leak on Seata Client 2.2.0.
-     *  Waiting for <a href="https://github.com/apache/incubator-seata/pull/7044">apache/incubator-seata#7044</a>.
+     * TODO Apparently there is a real connection leak on Seata Client 2.3.0.
      *
      * @throws SQLException SQL exception
      */

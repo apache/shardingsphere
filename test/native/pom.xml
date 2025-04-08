@@ -123,11 +123,6 @@
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-pool2</artifactId>
                 </exclusion>
-                <!-- See https://github.com/apache/incubator-seata/issues/7045 -->
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-webmvc</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
