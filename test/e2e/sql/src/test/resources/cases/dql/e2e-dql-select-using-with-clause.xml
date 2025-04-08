@@ -23,4 +23,12 @@
     <test-case sql="WITH products (col1, col2, col3, col4, col5, col6) AS (SELECT * FROM t_product) SELECT col1 FROM products" db-types="MySQL" scenario-types="db">
         <assertion />
     </test-case>
+
+    <test-case sql="WITH RECURSIVE cte AS (SELECT * from t_user UNION ALL SELECT user_id+1,name FROM cte WHERE user_id BETWEEN 1 AND 4) SELECT * FROM cte" db-types="MySQL" scenario-types="db">
+        <assertion />
+    </test-case>
+
+    <test-case sql="WITH RECURSIVE cte AS (SELECT *,name as repeat_name from t_user UNION ALL SELECT user_id+1,name,repeat_name FROM cte WHERE user_id < 5) SELECT * FROM cte" db-types="MySQL" scenario-types="db">
+        <assertion />
+    </test-case>
 </e2e-test-cases>

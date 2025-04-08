@@ -21,6 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -31,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Subqu
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTableExpressionAliasException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -38,18 +41,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Common table expression segment binder.
@@ -75,7 +73,10 @@ public final class CommonTableExpressionSegmentBinder {
         }
         if (recursive && segment.getAliasName().isPresent()) {
             binderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString(segment.getAliasName().get()),
-                    new SimpleTableSegmentBinderContext(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList()), TableSourceType.TEMPORARY_TABLE));
+                    new SimpleTableSegmentBinderContext(
+                            createProjectionSegmentForRecursiveCommonTableExpression(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList()), binderContext,
+                                    segment.getSubquery().getSelect(), segment.getAliasName().get()),
+                            TableSourceType.TEMPORARY_TABLE));
         }
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getSubquery());
         subqueryTableSegment.setAlias(segment.getAliasSegment());
@@ -89,6 +90,34 @@ public final class CommonTableExpressionSegmentBinder {
                 .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
         putExternalTableBinderContext(segment, externalTableBinderContexts, recursive, currentTableBinderContexts);
         return result;
+    }
+    
+    private static Collection<ProjectionSegment> createProjectionSegmentForRecursiveCommonTableExpression(final Collection<ProjectionSegment> definitionColumns,
+                                                                                                          final SQLStatementBinderContext binderContext,
+                                                                                                          final SelectStatement select, final String cteAlias) {
+        if(select.getFrom().isPresent())
+        {
+            ShardingSpherePreconditions.checkState(((SimpleTableSegment) select.getFrom().get()).getTableName().getIdentifier().getValue().equals(cteAlias), () -> new CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException(cteAlias) );
+        }
+
+        Collection<ProjectionSegment> subqueryProjections = new LinkedList<>();
+        for (ProjectionSegment each : select.getProjections().getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && select.getFrom().isPresent()) {
+                SimpleTableSegment simpleTableSegment = (SimpleTableSegment) select.getFrom().get();
+
+                IdentifierValue schema = SimpleTableSegmentBinderContext.getSchemaName(simpleTableSegment, binderContext);
+                Collection<ProjectionSegment> projectionSegments = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(schema.getValue())
+                        .getVisibleColumnNames(simpleTableSegment.getTableName().getIdentifier().getValue()).stream()
+                        .map(col -> new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue(col)))).collect(Collectors.toList());
+                subqueryProjections.addAll(SubqueryTableBindUtils.createSubqueryProjections(projectionSegments, new IdentifierValue(""),
+                        binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE));
+            } else {
+                subqueryProjections.addAll(SubqueryTableBindUtils.createSubqueryProjections(Collections.singleton(each), new IdentifierValue(""),
+                        binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE));
+            }
+        }
+        
+        return definitionColumns.isEmpty() ? subqueryProjections : definitionColumns;
     }
     
     private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final Collection<ColumnSegment> definitionColumns,
