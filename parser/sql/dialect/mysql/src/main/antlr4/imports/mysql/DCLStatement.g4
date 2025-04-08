@@ -27,11 +27,11 @@ grant
     ;
 
 revoke
-    : REVOKE roleOrPrivileges FROM userList # revokeFrom
-    | REVOKE roleOrPrivileges ON aclType? grantIdentifier FROM userList # revokeOnFrom
-    | REVOKE ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList # revokeOnFrom
-    | REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList # revokeFrom
-    | REVOKE PROXY ON username FROM userList # revokeOnFrom
+    : REVOKE ifExists? roleOrPrivileges FROM userList # revokeFrom
+    | REVOKE ifExists? roleOrPrivileges ON aclType? grantIdentifier FROM userList # revokeOnFrom
+    | REVOKE ifExists? ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList # revokeOnFrom
+    | REVOKE ifExists? ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList # revokeFrom
+    | REVOKE ifExists? PROXY ON username FROM userList # revokeOnFrom
     ;
 
 userList
