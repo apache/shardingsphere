@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * SQL execution unit builder.
  *
- * @param <T> type of storage resource execute unit
+ * @param <T> type of storage resource execution unit
  * @param <M> type of driver executor manager
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
