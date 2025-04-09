@@ -26,13 +26,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
 
-import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 
 @SQLRewriterITSettings("scenario/mix/case")
 class MixSQLRewriterIT extends SQLRewriterIT {
@@ -61,9 +59,5 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
-    }
-    
-    @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
 }

@@ -25,27 +25,15 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRu
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SQLRewriterITSettings("scenario/encrypt/case")
 class EncryptSQLRewriterIT extends SQLRewriterIT {
@@ -95,27 +83,5 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_order");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_user");
         }
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
-            when(connection.getMetaData().getUserName()).thenReturn("root");
-            when(connection.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(connection);
-            ResultSet typeInfo = mockTypeInfo();
-            when(connection.getMetaData().getTypeInfo()).thenReturn(typeInfo);
-            entry.setValue(new MockedDataSource(connection));
-        }
-    }
-    
-    private ResultSet mockTypeInfo() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("INTEGER", "VARCHAR");
-        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        return result;
     }
 }
