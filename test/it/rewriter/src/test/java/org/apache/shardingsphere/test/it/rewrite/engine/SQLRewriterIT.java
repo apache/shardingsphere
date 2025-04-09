@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -48,7 +49,6 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -79,7 +79,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -122,7 +121,8 @@ public abstract class SQLRewriterIT {
         mockDataSource(dataSources);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnits()).thenReturn(databaseConfig.getStorageUnits());
+        Map<String, StorageUnit> stringStorageUnits = databaseConfig.getStorageUnits();
+        when(resourceMetaData.getStorageUnits()).thenReturn(stringStorageUnits);
         String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
@@ -142,9 +142,7 @@ public abstract class SQLRewriterIT {
         if (sqlStatementContext instanceof CursorAware) {
             ((CursorAware) sqlStatementContext).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlStatementParserEngine));
         }
-        ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
-        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(databaseName));
+        ConnectionContext connectionContext = createConnectionContext(database.getName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(queryContext, globalRuleMetaData, database);
@@ -153,6 +151,12 @@ public abstract class SQLRewriterIT {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+    }
+    
+    private ConnectionContext createConnectionContext(final String databaseName) {
+        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
+        result.setCurrentDatabaseName(databaseName);
+        return result;
     }
     
     private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
