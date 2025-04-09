@@ -73,6 +73,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 12300       | 0A000     | DROP TABLE ... CASCADE is not supported.                                                                                         |
 | 12500       | 42000     | Not unique table/alias: '%s'.                                                                                                    |
 | 12600       | HY000     | In definition of view, derived table or common table expression, SELECT list and column names list have different column counts. |
+| 12700       | HY000     | Recursive Common Table Expression '%s' should have one or more non-recursive query blocks followed by one or more recursive ones.|
 
 ### 连接
 

@@ -28,7 +28,7 @@
         <assertion />
     </test-case>
 
-    <test-case sql="WITH RECURSIVE cte AS (SELECT *,user_name as repeat_name from t_user UNION ALL SELECT user_id+1, user_name, password, email, telephone, creation_date, repeat_name FROM cte WHERE user_id < 5) SELECT user_id FROM cte" db-types="MySQL" scenario-types="db">
+    <test-case sql="WITH RECURSIVE cte AS (SELECT *,user_name as repeat_name from t_user UNION ALL SELECT user_id+1, user_name, password, email, telephone, creation_date, repeat_name FROM cte WHERE user_id BETWEEN 1 AND 4) SELECT user_id FROM cte" db-types="MySQL" scenario-types="db">
         <assertion />
     </test-case>
 </e2e-test-cases>
