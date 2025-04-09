@@ -29,13 +29,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
 
-import javax.sql.DataSource;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 @SQLRewriterITSettings("scenario/sharding/case")
@@ -98,9 +96,5 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
-    }
-    
-    @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
 }
