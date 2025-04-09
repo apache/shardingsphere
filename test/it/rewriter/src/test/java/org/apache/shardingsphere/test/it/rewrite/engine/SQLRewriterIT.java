@@ -75,7 +75,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,8 +115,7 @@ public abstract class SQLRewriterIT {
         YamlRootConfiguration rootConfig = createRootConfiguration(testParams);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
-        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         mockDataSource(dataSources);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
@@ -125,8 +123,7 @@ public abstract class SQLRewriterIT {
         when(resourceMetaData.getStorageUnits()).thenReturn(stringStorageUnits);
         String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
-                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
@@ -153,18 +150,18 @@ public abstract class SQLRewriterIT {
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private ConnectionContext createConnectionContext(final String databaseName) {
-        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
-        result.setCurrentDatabaseName(databaseName);
-        return result;
-    }
-    
     private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
         Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class),
                 new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
         mockRules(result, schemaName, sqlStatement);
         result.add(sqlParserRule);
         result.add(timestampServiceRule);
+        return result;
+    }
+    
+    private ConnectionContext createConnectionContext(final String databaseName) {
+        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
+        result.setCurrentDatabaseName(databaseName);
         return result;
     }
     
