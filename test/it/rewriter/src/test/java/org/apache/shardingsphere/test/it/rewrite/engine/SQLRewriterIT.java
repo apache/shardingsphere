@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilde
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -71,14 +72,16 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -113,11 +116,10 @@ public abstract class SQLRewriterIT {
     }
     
     private Collection<SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
-        YamlRootConfiguration rootConfig = createRootConfiguration(testParams);
+        YamlRootConfiguration rootConfig = loadRootConfiguration(testParams);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
-        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         mockDataSource(dataSources);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
@@ -125,8 +127,7 @@ public abstract class SQLRewriterIT {
         when(resourceMetaData.getStorageUnits()).thenReturn(stringStorageUnits);
         String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
-                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
@@ -153,10 +154,10 @@ public abstract class SQLRewriterIT {
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private ConnectionContext createConnectionContext(final String databaseName) {
-        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
-        result.setCurrentDatabaseName(databaseName);
-        return result;
+    private YamlRootConfiguration loadRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParams.getRuleFile()),
+                String.format("Can not find configuration file `%s`", testParams.getRuleFile()));
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
     private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
@@ -165,6 +166,12 @@ public abstract class SQLRewriterIT {
         mockRules(result, schemaName, sqlStatement);
         result.add(sqlParserRule);
         result.add(timestampServiceRule);
+        return result;
+    }
+    
+    private ConnectionContext createConnectionContext(final String databaseName) {
+        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
+        result.setCurrentDatabaseName(databaseName);
         return result;
     }
     
@@ -181,8 +188,6 @@ public abstract class SQLRewriterIT {
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
-    
-    protected abstract YamlRootConfiguration createRootConfiguration(SQLRewriteEngineTestParameters testParams) throws IOException;
     
     protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
     
