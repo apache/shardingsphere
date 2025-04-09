@@ -21,8 +21,6 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -48,6 +46,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Common table expression segment binder.
@@ -95,16 +101,16 @@ public final class CommonTableExpressionSegmentBinder {
     private static Collection<ProjectionSegment> createProjectionSegmentForRecursiveCommonTableExpression(final Collection<ProjectionSegment> definitionColumns,
                                                                                                           final SQLStatementBinderContext binderContext,
                                                                                                           final SelectStatement select, final String cteAlias) {
-        if(select.getFrom().isPresent())
-        {
-            ShardingSpherePreconditions.checkState(((SimpleTableSegment) select.getFrom().get()).getTableName().getIdentifier().getValue().equals(cteAlias), () -> new CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException(cteAlias) );
+        if (select.getFrom().isPresent()) {
+            ShardingSpherePreconditions.checkState(((SimpleTableSegment) select.getFrom().get()).getTableName().getIdentifier().getValue().equals(cteAlias),
+                    () -> new CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException(cteAlias));
         }
-
+        
         Collection<ProjectionSegment> subqueryProjections = new LinkedList<>();
         for (ProjectionSegment each : select.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment && select.getFrom().isPresent()) {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) select.getFrom().get();
-
+                
                 IdentifierValue schema = SimpleTableSegmentBinderContext.getSchemaName(simpleTableSegment, binderContext);
                 Collection<ProjectionSegment> projectionSegments = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(schema.getValue())
                         .getVisibleColumnNames(simpleTableSegment.getTableName().getIdentifier().getValue()).stream()

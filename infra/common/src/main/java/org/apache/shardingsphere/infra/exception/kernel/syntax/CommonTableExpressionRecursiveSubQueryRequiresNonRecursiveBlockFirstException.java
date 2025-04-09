@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
  * Common table expression recursive requires non recursive first exception.
  */
 public final class CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException extends SyntaxSQLException {
-
+    
     private static final long serialVersionUID = -6759214908809202572L;
-
+    
     public CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException(final String alias) {
         super(XOpenSQLState.GENERAL_ERROR, 700, "Recursive Common Table Expression '%s' should have one or more non-recursive query blocks followed by one or more recursive ones", alias);
     }
