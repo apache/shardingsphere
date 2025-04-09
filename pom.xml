@@ -97,7 +97,7 @@
         <narayana.version>5.12.7.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <seata.version>2.2.0</seata.version>
+        <seata.version>2.3.0</seata.version>
         
         <netty.version>4.1.112.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
@@ -121,7 +121,7 @@
         <lombok.version>1.18.36</lombok.version>
         <immutables.version>2.9.3</immutables.version>
         
-        <postgresql.version>42.7.2</postgresql.version>
+        <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <h2.version>2.2.224</h2.version>

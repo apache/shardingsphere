@@ -27,7 +27,7 @@ ShardingSphere 默认情况下不提供对 `org.testcontainers.jdbc.ContainerDat
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.5</version>
     </dependency>
     <dependency>
         <groupId>org.testcontainers</groupId>
@@ -106,3 +106,12 @@ public class ExampleUtils {
 `org.testcontainers.jdbc.ContainerDatabaseDriver#killContainers()`
 将立刻销毁所有由 `org.testcontainers.jdbc.ContainerDatabaseDriver` 创建的 Docker Container。
 默认情况下，通过 Junit 5 创建的单元测试是串行执行的，因此这一般不会造成问题。
+
+
+### host-less URIs 限制
+
+对于大多数 testcontainers-java 模块，
+ShardingSphere 配置文件的 `jdbcUrl` 可以使用类似 `jdbc:tc:postgresql:17.2-bookworm:///databasename` 的 host-less URIs。
+
+但对于特定 Maven 模块 `org.testcontainers:mssqlserver`，无法使用类似 `jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04:///databasename` 的 host-less URIs，
+仅可使用类似 `jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04://test;databaseName=databasename` 的 JDBC Url。

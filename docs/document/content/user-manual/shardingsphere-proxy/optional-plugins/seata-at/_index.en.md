@@ -19,7 +19,7 @@ but there are some differences,
 If users have such needs, they should consider submitting a PR for ShardingSphere
 5. The assumptions made by ShardingSphere JDBC on Seata's TCC mode are invalid on ShardingSphere Proxy
 
-The following discussion takes ShardingSphere Proxy using Seata Client 2.2.0 as an example.
+The following discussion takes ShardingSphere Proxy using Seata Client 2.3.0 as an example.
 
 ## Operation steps
 
@@ -41,22 +41,24 @@ sdk install java 23-open
 sdk use java 23-open
 sdk install maven 3.9.9
 sdk use maven 3.9.9
-mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.2.0
-mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.2.0/seata-all-2.2.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
+mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.3.0
+mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
 ```
 
 Compared with the `pom.xml` of `org.apache.shardingsphere:shardingsphere-proxy-distribution`, 
 it is not difficult to find the differences listed as follows:
 
 ```
+org.apache.seata:seata-all:jar:2.3.0
 org.springframework:spring-context:jar:5.3.39
 org.springframework:spring-expression:jar:5.3.39
 org.springframework:spring-core:jar:5.3.39
 org.springframework:spring-jcl:jar:5.3.39
 org.springframework:spring-beans:jar:5.3.39
 org.springframework:spring-aop:jar:5.3.39
-org.springframework:spring-webmvc:jar:5.3.26
-org.springframework:spring-web:jar:5.3.26
+org.springframework:spring-webmvc:jar:5.3.39
+org.springframework:spring-web:jar:5.3.39
+org.springframework:spring-tx:jar:5.3.39
 io.netty:netty-all:jar:4.1.101.Final
 io.netty:netty-codec-dns:jar:4.1.101.Final
 io.netty:netty-codec-haproxy:jar:4.1.101.Final
@@ -105,7 +107,7 @@ services:
       volumes:
          - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
    apache-seata-server:
-      image: apache/seata-server:2.2.0
+      image: apache/seata-server:2.3.0
       healthcheck:
          test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:7091/health | grep -q '^ok$'" ]
    shardingsphere-proxy-custom:
@@ -115,16 +117,17 @@ services:
          context: .
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
-            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.1/shardingsphere-transaction-base-seata-at-5.5.1.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.2.0/seata-all-2.2.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.2/shardingsphere-transaction-base-seata-at-5.5.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-core/5.3.39/spring-core-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-jcl/5.3.39/spring-jcl-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-beans/5.3.39/spring-beans-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-aop/5.3.39/spring-aop-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-webmvc/5.3.26/spring-webmvc-5.3.26.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-web/5.3.26/spring-web-5.3.26.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-webmvc/5.3.39/spring-webmvc-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-web/5.3.39/spring-web-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/springframework/spring-tx/5.3.39/spring-tx-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-all/4.1.101.Final/netty-all-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.101.Final/netty-codec-dns-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/io/netty/netty-codec-haproxy/4.1.101.Final/netty-codec-haproxy-4.1.101.Final.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
@@ -337,7 +340,7 @@ The required JDBC Driver corresponds to the `proxy-frontend-database-protocol-ty
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.4</version>
+    <version>42.7.5</version>
 </dependency>
 ```
 

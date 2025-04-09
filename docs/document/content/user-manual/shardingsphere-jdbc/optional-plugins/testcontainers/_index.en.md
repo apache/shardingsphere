@@ -27,7 +27,7 @@ the possible Maven dependencies are as follows,
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.5</version>
     </dependency>
     <dependency>
         <groupId>org.testcontainers</groupId>
@@ -105,3 +105,11 @@ public class ExampleUtils {
 `org.testcontainers.jdbc.ContainerDatabaseDriver#killContainers()`
 will immediately destroy all Docker Containers created by `org.testcontainers.jdbc.ContainerDatabaseDriver`.
 By default, unit tests created by JUnit 5 are executed serially, so this is generally not a problem.
+
+### host-less URIs restrictions
+
+For most testcontainers-java modules, 
+the `jdbcUrl` of ShardingSphere configuration file can use host-less URIs like `jdbc:tc:postgresql:17.2-bookworm:///databasename`.
+
+But for the specific Maven module `org.testcontainers:mssqlserver`, host-less URIs like `jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04:///databasename` cannot be used,
+only JDBC Url like `jdbc:tc:sqlserver:2022-CU16-ubuntu-22.04://test;databaseName=databasename` can be used.

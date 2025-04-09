@@ -196,7 +196,7 @@ GraalVM Native Image 形态的 ShardingSphere Proxy Native 无法识别额外添
       <dependency>
          <groupId>org.apache.seata</groupId>
          <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
+         <version>2.3.0</version>
          <exclusions>
             <exclusion>
                <groupId>org.antlr</groupId>

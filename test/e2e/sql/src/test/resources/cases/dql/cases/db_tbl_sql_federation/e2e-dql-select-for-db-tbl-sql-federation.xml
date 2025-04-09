@@ -132,8 +132,8 @@
     </test-case>
 
     <test-case sql="SELECT ATAN(res1.order_id), ATAN(res1.order_id, res2.item_id), ATAN2(res1.order_id), ATAN2(res1.order_id, res2.item_id)
-                    FROM (SELECT order_id FROM t_order limit 10) res1
-                    INNER JOIN (SELECT item_id, order_id FROM t_order_item limit 10) res2 ON res1.order_id = res2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
+                    FROM (SELECT order_id FROM t_order ORDER BY order_id limit 10) res1
+                    INNER JOIN (SELECT item_id, order_id FROM t_order_item ORDER BY item_id limit 10) res2 ON res1.order_id = res2.order_id" db-types="MySQL" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
