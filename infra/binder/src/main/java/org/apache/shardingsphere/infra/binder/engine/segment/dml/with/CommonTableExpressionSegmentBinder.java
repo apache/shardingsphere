@@ -102,7 +102,7 @@ public final class CommonTableExpressionSegmentBinder {
                                                                                                           final SQLStatementBinderContext binderContext,
                                                                                                           final SelectStatement select, final String cteAlias) {
         if (select.getFrom().isPresent()) {
-            ShardingSpherePreconditions.checkState(((SimpleTableSegment) select.getFrom().get()).getTableName().getIdentifier().getValue().equals(cteAlias),
+            ShardingSpherePreconditions.checkState(!((SimpleTableSegment) select.getFrom().get()).getTableName().getIdentifier().getValue().equals(cteAlias),
                     () -> new CommonTableExpressionRecursiveSubQueryRequiresNonRecursiveBlockFirstException(cteAlias));
         }
         
