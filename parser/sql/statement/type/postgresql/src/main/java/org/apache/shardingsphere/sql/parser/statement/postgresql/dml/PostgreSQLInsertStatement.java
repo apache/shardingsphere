@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.postgresql.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnConflictKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
@@ -34,7 +34,7 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     
     private WithSegment withSegment;
     
-    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
+    private OnConflictKeyColumnsSegment onConflictKeyColumns;
     
     private ReturningSegment returningSegment;
     
@@ -44,8 +44,8 @@ public final class PostgreSQLInsertStatement extends InsertStatement implements 
     }
     
     @Override
-    public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
-        return Optional.ofNullable(onDuplicateKeyColumns);
+    public Optional<OnConflictKeyColumnsSegment> getOnConflictKeyColumns() {
+        return Optional.ofNullable(onConflictKeyColumns);
     }
     
     @Override
