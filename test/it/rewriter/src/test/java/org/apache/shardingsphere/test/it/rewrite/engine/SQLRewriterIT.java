@@ -112,13 +112,7 @@ public abstract class SQLRewriterIT {
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
-        if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
-        }
-        if (sqlStatementContext instanceof CursorAware) {
-            ((CursorAware) sqlStatementContext).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
-        }
+        SQLStatementContext sqlStatementContext = bind(testParams, metaData, databaseName, hintValueContext, sqlStatement, sqlParserEngine);
         ConnectionContext connectionContext = createConnectionContext(database.getName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
@@ -143,15 +137,27 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private ConnectionContext createConnectionContext(final String databaseName) {
-        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
-        result.setCurrentDatabaseName(databaseName);
+    private SQLStatementContext bind(final SQLRewriteEngineTestParameters testParams, final ShardingSphereMetaData metaData,
+                                     final String databaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
+        SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        if (result instanceof ParameterAware) {
+            ((ParameterAware) result).setUpParameters(testParams.getInputParameters());
+        }
+        if (result instanceof CursorAware) {
+            ((CursorAware) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
+        }
         return result;
     }
     
     private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         SQLStatement sqlStatement = sqlParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
         return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+    }
+    
+    private ConnectionContext createConnectionContext(final String databaseName) {
+        ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
+        result.setCurrentDatabaseName(databaseName);
+        return result;
     }
     
     protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
