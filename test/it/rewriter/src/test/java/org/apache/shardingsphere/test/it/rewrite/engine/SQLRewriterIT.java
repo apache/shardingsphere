@@ -169,7 +169,7 @@ public abstract class SQLRewriterIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             SQLRewriterITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLRewriterITSettings.class);
-            Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
+            Preconditions.checkNotNull(settings, "Annotation SQLRewriterITSettings is required.");
             return SQLRewriteEngineTestParametersBuilder.loadTestParameters(settings.value().toUpperCase(), settings.value(), SQLRewriterIT.class).stream().map(Arguments::of);
         }
     }
