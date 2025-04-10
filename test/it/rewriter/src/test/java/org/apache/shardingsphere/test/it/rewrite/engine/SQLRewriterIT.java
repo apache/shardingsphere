@@ -117,9 +117,8 @@ public abstract class SQLRewriterIT {
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        Collection<ShardingSphereRule> rules = createRules(databaseConfig, schemaName, sqlStatement, databaseType);
-        RuleMetaData databaseRuleMetaData = new RuleMetaData(rules);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
+        Collection<ShardingSphereRule> rules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, new RuleMetaData(rules), mockSchemas(schemaName));
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
@@ -147,12 +146,10 @@ public abstract class SQLRewriterIT {
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
-    private Collection<ShardingSphereRule> createRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
+    private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
         Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(
                 DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(), new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
-        mockRules(result, schemaName, sqlStatement);
-        result.add(sqlParserRule);
-        result.add(timestampServiceRule);
+        mockDatabaseRules(result, schemaName, sqlStatement);
         return result;
     }
     
@@ -164,8 +161,9 @@ public abstract class SQLRewriterIT {
     
     private Collection<ShardingSphereRule> createGlobalRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
+        result.add(sqlParserRule);
+        result.add(timestampServiceRule);
         result.add(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
-        result.add(new TimestampServiceRule(mock(TimestampServiceRuleConfiguration.class)));
         return result;
     }
     
@@ -176,7 +174,7 @@ public abstract class SQLRewriterIT {
     
     protected abstract Collection<ShardingSphereSchema> mockSchemas(String schemaName);
     
-    protected abstract void mockRules(Collection<ShardingSphereRule> rules, String schemaName, SQLStatement sqlStatement);
+    protected abstract void mockDatabaseRules(Collection<ShardingSphereRule> rules, String schemaName, SQLStatement sqlStatement);
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         

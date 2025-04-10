@@ -58,6 +58,6 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     }
     
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
+    protected void mockDatabaseRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
     }
 }
