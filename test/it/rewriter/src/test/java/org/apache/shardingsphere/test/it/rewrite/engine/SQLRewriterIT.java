@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -53,16 +54,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParametersBuilder;
-import org.apache.shardingsphere.timeservice.config.TimestampServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -74,7 +70,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -84,11 +79,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public abstract class SQLRewriterIT {
-    
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(
-            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
-    
-    private final TimestampServiceRule timestampServiceRule = new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
@@ -115,11 +105,11 @@ public abstract class SQLRewriterIT {
         String databaseName = null == rootConfig.getDatabaseName() ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName();
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
+        SQLParserEngine sqlParserEngine = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(databaseType);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> rules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, new RuleMetaData(rules), mockSchemas(schemaName));
-        RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
@@ -156,14 +146,6 @@ public abstract class SQLRewriterIT {
     private ConnectionContext createConnectionContext(final String databaseName) {
         ConnectionContext result = new ConnectionContext(() -> Collections.singleton("foo_ds"));
         result.setCurrentDatabaseName(databaseName);
-        return result;
-    }
-    
-    private Collection<ShardingSphereRule> createGlobalRules() {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(sqlParserRule);
-        result.add(timestampServiceRule);
-        result.add(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
         return result;
     }
     
