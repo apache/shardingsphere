@@ -40,7 +40,7 @@ import java.util.Optional;
 class ShardingSQLRewriterIT extends SQLRewriterIT {
     
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
+    protected void mockDatabaseRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
         Optional<SingleRule> singleRule = rules.stream().filter(SingleRule.class::isInstance).map(SingleRule.class::cast).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("db", schemaName, "t_single");
