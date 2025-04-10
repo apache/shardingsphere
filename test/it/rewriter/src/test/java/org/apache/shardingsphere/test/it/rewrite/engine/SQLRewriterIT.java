@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -118,8 +117,8 @@ public abstract class SQLRewriterIT {
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
         SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
-        RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
+        Collection<ShardingSphereRule> rules = createRules(databaseConfig, schemaName, sqlStatement, databaseType);
+        RuleMetaData databaseRuleMetaData = new RuleMetaData(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
@@ -134,7 +133,7 @@ public abstract class SQLRewriterIT {
         ConnectionContext connectionContext = createConnectionContext(database.getName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
-        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(queryContext, globalRuleMetaData, database);
+        RouteContext routeContext = new SQLRouteEngine(rules, props).route(queryContext, globalRuleMetaData, database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(queryContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
@@ -148,9 +147,9 @@ public abstract class SQLRewriterIT {
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
-    private Collection<ShardingSphereRule> createDatabaseRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
-        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(ComputeNodeInstanceContext.class),
-                new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
+    private Collection<ShardingSphereRule> createRules(final DatabaseConfiguration databaseConfig, final String schemaName, final SQLStatement sqlStatement, final DatabaseType databaseType) {
+        Collection<ShardingSphereRule> result = DatabaseRulesBuilder.build(
+                DefaultDatabase.LOGIC_NAME, databaseType, databaseConfig, mock(), new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits()));
         mockRules(result, schemaName, sqlStatement);
         result.add(sqlParserRule);
         result.add(timestampServiceRule);
