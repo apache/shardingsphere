@@ -33,10 +33,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -162,8 +163,8 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private SQLStatement parse(final String sql) {
-        CacheOption cacheOption = new CacheOption(0, 0L);
-        return new SQLStatementParserEngine(databaseType, cacheOption, cacheOption).parse(sql, false);
+        SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(0, 0L), new CacheOption(0, 0L)));
+        return sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

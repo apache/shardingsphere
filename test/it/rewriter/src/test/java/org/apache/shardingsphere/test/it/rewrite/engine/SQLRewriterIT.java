@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -113,11 +113,11 @@ public abstract class SQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), databaseConfig.getStorageUnits());
-        String databaseName = null != rootConfig.getDatabaseName() ? rootConfig.getDatabaseName() : DefaultDatabase.LOGIC_NAME;
+        String databaseName = null == rootConfig.getDatabaseName() ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName();
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType, sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
         String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
@@ -129,7 +129,7 @@ public abstract class SQLRewriterIT {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
         if (sqlStatementContext instanceof CursorAware) {
-            ((CursorAware) sqlStatementContext).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlStatementParserEngine));
+            ((CursorAware) sqlStatementContext).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
         }
         ConnectionContext connectionContext = createConnectionContext(database.getName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
@@ -170,8 +170,8 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLStatementParserEngine sqlStatementParserEngine) {
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
+    private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+        SQLStatement sqlStatement = sqlParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
         return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
     }
     
