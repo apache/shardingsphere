@@ -23,7 +23,6 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvis
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ public final class AdvisorConfigurationLoader {
     }
     
     private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String pluginType) {
-        return pluginClassLoader.getResourceAsStream(String.join(File.separator, "META-INF", "conf", getFileName(pluginType)));
+        return pluginClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", getFileName(pluginType)));
     }
     
     private static String getFileName(final String pluginType) {
