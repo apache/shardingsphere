@@ -27,9 +27,11 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.Constra
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
@@ -84,7 +86,10 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         try (Connection connection = material.getDataSource().getConnection()) {
-            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+            DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            dialectDatabaseMetaData.getSchema(connection);
+            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, databaseType);
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
             Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames(), schemaNames);
             Map<String, Multimap<String, ConstraintMetaData>> schemaConstraintMetaDataMap = loadConstraintMetaDataMap(connection, schemaNames);
