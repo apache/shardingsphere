@@ -27,13 +27,18 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Advisor configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
+    
+    private static final Logger LOGGER = Logger.getLogger(AdvisorConfigurationLoader.class.getName());
     
     /**
      * Load advisor configurations.
@@ -47,9 +52,11 @@ public final class AdvisorConfigurationLoader {
         AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars);
         for (String each : pluginTypes) {
             InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
-            if (null != advisorsResourceStream) {
-                mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
+            if (null == advisorsResourceStream) {
+                LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{each});
             }
+            Optional.ofNullable(advisorsResourceStream)
+                    .ifPresent(optional -> mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(optional), each)));
         }
         return result;
     }
