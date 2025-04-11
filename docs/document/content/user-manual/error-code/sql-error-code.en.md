@@ -73,6 +73,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 12300       | 0A000     | DROP TABLE ... CASCADE is not supported.                                                                                         |
 | 12500       | 42000     | Not unique table/alias: '%s'.                                                                                                    |
 | 12600       | HY000     | In definition of view, derived table or common table expression, SELECT list and column names list have different column counts. |
+| 12700       | HY000     | Recursive Common Table Expression '%s' should have one or more non-recursive query blocks followed by one or more recursive ones.|
 
 ### Connection
 

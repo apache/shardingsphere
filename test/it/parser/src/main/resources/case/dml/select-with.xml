@@ -512,7 +512,7 @@
         </from>
     </select>
 
-    <select sql-case-id="select_with_recursive_union_all1">
+    <select sql-case-id="select_with_recursive_union_all">
         <with start-index="0" stop-index="217">
             <common-table-expression name="DirectoryCTE" start-index="15" stop-index="217">
                 <subquery-expression start-index="15" stop-index="217">
@@ -626,7 +626,8 @@
             <column-item name="level" order-direction="ASC" start-index="255" stop-index="259" />
         </order-by>
     </select>
-    <select sql-case-id="select_with_oracle_recursive_union_all1">
+
+    <select sql-case-id="select_with_oracle_union_all">
         <with start-index="0" stop-index="243">
             <common-table-expression name="DirectoryCTE" start-index="5" stop-index="243">
                 <subquery-expression start-index="22" stop-index="242">
@@ -762,7 +763,8 @@
             <column-item name="level" order-direction="ASC" start-index="316" stop-index="320"/>
         </order-by>
     </select>
-    <select sql-case-id="select_with_recursive_union_all2">
+
+    <select sql-case-id="select_with_union_all_subquery">
         <with start-index="0" stop-index="62">
             <common-table-expression name="cte" start-index="5" stop-index="62">
                 <subquery-expression start-index="5" stop-index="62">
