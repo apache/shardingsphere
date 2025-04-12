@@ -70,17 +70,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     NullsOrderType getDefaultNullsOrderType();
     
     /**
-     * Judge whether identifier is reserved word.
-     *
-     * @param identifier identifier to be judged
-     * @return is reserved word or not
-     */
-    // TODO Reuse java.sql.DatabaseMetaData.getSQLKeywords
-    default boolean isReservedWord(final String identifier) {
-        return false;
-    }
-    
-    /**
      * Is schema feature available.
      *
      * @return true or false
