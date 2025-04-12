@@ -80,9 +80,9 @@ class TCLBackendHandlerFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(proxyBackendHandler, instanceOf(TCLBackendHandler.class));
-        TCLBackendHandler TCLBackendHandler = (TCLBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(TCLBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(TCLBackendHandler), "connection", is(databaseConnectionManager));
+        TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
+        assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.COMMIT));
+        assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
     @Test
@@ -100,9 +100,9 @@ class TCLBackendHandlerFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(proxyBackendHandler, instanceOf(TCLBackendHandler.class));
-        TCLBackendHandler TCLBackendHandler = (TCLBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(TCLBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(TCLBackendHandler), "connection", is(databaseConnectionManager));
+        TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
+        assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
+        assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
     }
     
     private ContextManager mockContextManager() {
@@ -140,7 +140,7 @@ class TCLBackendHandlerFactoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private BackendTransactionManager getBackendTransactionManager(final TCLBackendHandler TCLBackendHandler) {
-        return (BackendTransactionManager) Plugins.getMemberAccessor().get(TCLBackendHandler.class.getDeclaredField("backendTransactionManager"), TCLBackendHandler);
+    private BackendTransactionManager getBackendTransactionManager(final TCLBackendHandler backendHandler) {
+        return (BackendTransactionManager) Plugins.getMemberAccessor().get(TCLBackendHandler.class.getDeclaredField("backendTransactionManager"), backendHandler);
     }
 }
