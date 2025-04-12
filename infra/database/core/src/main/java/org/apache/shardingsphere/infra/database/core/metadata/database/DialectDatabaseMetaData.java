@@ -52,7 +52,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Find extra SQL type class.
-     * 
+     *
      * @param dataType data type
      * @param unsigned whether unsigned
      * @return extra SQL type class
