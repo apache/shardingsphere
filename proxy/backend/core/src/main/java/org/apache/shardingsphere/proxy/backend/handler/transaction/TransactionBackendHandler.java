@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
@@ -44,7 +44,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
 /**
- * Do transaction operation.
+ * Transaction backend handler.
  */
 public final class TransactionBackendHandler implements ProxyBackendHandler {
     
@@ -52,14 +52,17 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private final TransactionOperationType operationType;
     
-    private final TransactionManager backendTransactionManager;
-    
     private final ConnectionSession connectionSession;
+    
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    private final TransactionManager backendTransactionManager;
     
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
         backendTransactionManager = new BackendTransactionManager(connectionSession.getDatabaseConnectionManager());
     }
     
@@ -96,9 +99,9 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private void handleBegin() throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (connectionSession.getProtocolType() instanceof MySQLDatabaseType) {
+            if (dialectDatabaseMetaData.isSupportAutoCommitInNestedTransaction()) {
                 backendTransactionManager.commit();
-            } else if (isSchemaSupportedDatabaseType()) {
+            } else if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 throw new InTransactionException();
             }
         }
@@ -106,25 +109,21 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private void handleSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
-    }
-    
-    private boolean isSchemaSupportedDatabaseType() {
-        return new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
     }
     
     private SQLStatement getSQLStatementByCommit() {

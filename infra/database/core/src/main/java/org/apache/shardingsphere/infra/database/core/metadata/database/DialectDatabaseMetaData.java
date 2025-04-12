@@ -149,6 +149,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
+     * Whether support auto commit when nested transaction.
+     *
+     * @return support or not
+     */
+    default boolean isSupportAutoCommitInNestedTransaction() {
+        return false;
+    }
+    
+    /**
      * Whether support DDL in XA transaction.
      *
      * @return support or not
