@@ -76,12 +76,14 @@ public final class JoinTableSegmentBinder {
         result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, binderContext, tableBinderContexts, outerTableBinderContexts));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue()));
-        Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
+        Map<String, ProjectionSegment> usingColumnsByNaturalJoin;
         if (result.isNatural()) {
             usingColumnsByNaturalJoin = getUsingColumnsByNaturalJoin(result, tableBinderContexts);
             Collection<ColumnSegment> derivedUsingColumns = getDerivedUsingColumns(usingColumnsByNaturalJoin);
             result.setDerivedUsing(bindUsingColumns(derivedUsingColumns, tableBinderContexts));
             result.getDerivedUsing().forEach(each -> binderContext.getUsingColumnNames().add(each.getIdentifier().getValue()));
+        } else {
+            usingColumnsByNaturalJoin = Collections.emptyMap();
         }
         result.getDerivedJoinTableProjectionSegments()
                 .addAll(getDerivedJoinTableProjectionSegments(result, binderContext.getSqlStatement().getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
@@ -117,8 +119,9 @@ public final class JoinTableSegmentBinder {
         }
         Collection<ProjectionSegment> result = new LinkedList<>();
         Map<String, ProjectionSegment> originalUsingColumns = segment.getUsing().isEmpty() ? usingColumnsByNaturalJoin : getUsingColumns(projectionSegments, segment.getUsing(), segment.getJoinType());
-        Collection<ProjectionSegment> orderedUsingColumns =
-                databaseType instanceof MySQLDatabaseType ? getJoinUsingColumnsByProjectionOrder(projectionSegments, originalUsingColumns) : originalUsingColumns.values();
+        Collection<ProjectionSegment> orderedUsingColumns = databaseType instanceof MySQLDatabaseType
+                ? getJoinUsingColumnsByProjectionOrder(projectionSegments, originalUsingColumns)
+                : originalUsingColumns.values();
         result.addAll(orderedUsingColumns);
         result.addAll(getJoinRemainingColumns(projectionSegments, originalUsingColumns));
         return result;
@@ -186,8 +189,7 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getJoinUsingColumnsByProjectionOrder(final Collection<ProjectionSegment> projectionSegments,
-                                                                                      final Map<String, ProjectionSegment> usingColumns) {
+    private static Collection<ProjectionSegment> getJoinUsingColumnsByProjectionOrder(final Collection<ProjectionSegment> projectionSegments, final Map<String, ProjectionSegment> usingColumns) {
         Map<String, ProjectionSegment> result = new CaseInsensitiveMap<>(usingColumns.size(), 1F);
         for (ProjectionSegment each : projectionSegments) {
             String columnLabel = each.getColumnLabel();
