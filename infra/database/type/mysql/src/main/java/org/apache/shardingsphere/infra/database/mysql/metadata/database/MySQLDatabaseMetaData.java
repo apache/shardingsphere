@@ -21,11 +21,13 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.math.BigInteger;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -71,6 +73,20 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
         result.put("LINESTRING", Types.BINARY);
         result.put("MULTILINESTRING", Types.BINARY);
         return result;
+    }
+    
+    @Override
+    public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
+        if (Types.TINYINT == dataType || Types.SMALLINT == dataType) {
+            return Optional.of(Integer.class);
+        }
+        if (Types.INTEGER == dataType) {
+            return unsigned ? Optional.of(Long.class) : Optional.of(Integer.class);
+        }
+        if (Types.BIGINT == dataType) {
+            return unsigned ? Optional.of(BigInteger.class) : Optional.of(Long.class);
+        }
+        return Optional.empty();
     }
     
     @Override

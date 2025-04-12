@@ -66,6 +66,14 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
+    public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
+        if (Types.SMALLINT == dataType) {
+            return Optional.of(Integer.class);
+        }
+        return Optional.empty();
+    }
+    
+    @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.HIGH;
     }

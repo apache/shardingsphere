@@ -51,6 +51,17 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
+     * Find extra SQL type class.
+     *
+     * @param dataType data type
+     * @param unsigned whether unsigned
+     * @return extra SQL type class
+     */
+    default Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
+        return Optional.empty();
+    }
+    
+    /**
      * Get default nulls order type.
      *
      * @return default nulls order type
