@@ -50,7 +50,7 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param value value of data
-     * @return persist exclusive node success or not 
+     * @return persist success or not
      */
     boolean persistExclusiveEphemeral(String key, String value);
     
