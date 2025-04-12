@@ -94,6 +94,11 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public boolean isSupportAutoCommitInNestedTransaction() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }
