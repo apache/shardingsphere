@@ -65,7 +65,6 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
         return result;
     }
     
-    
     @Override
     public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
         if (Types.SMALLINT == dataType) {
