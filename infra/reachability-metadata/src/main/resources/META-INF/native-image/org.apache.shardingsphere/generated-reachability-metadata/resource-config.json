@@ -218,7 +218,7 @@
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionalErrorAllowedSQLStatementHandler\\E"
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder\\E"
