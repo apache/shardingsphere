@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -30,7 +30,7 @@ import java.sql.SQLException;
 public interface TransactionalErrorAllowedSQLStatementHandler extends DatabaseTypedSPI {
     
     /**
-     * Judge SQL statement can be executed continuously if exception occur during transactional SQL executing.
+     * Judge SQL statement can be executed continuously if exceptions occur during transactional SQL executing.
      *
      * @param statement statement to be judged
      * @throws SQLException SQL exception

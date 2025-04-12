@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class TransactionBackendHandlerTest {
+class TCLBackendHandlerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -59,7 +59,7 @@ class TransactionBackendHandlerTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        assertThat(new TCLBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     private ContextManager mockContextManager() {

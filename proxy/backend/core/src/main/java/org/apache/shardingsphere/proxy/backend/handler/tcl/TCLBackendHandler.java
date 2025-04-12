@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -44,9 +44,9 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
 /**
- * Transaction backend handler.
+ * TCL backend handler.
  */
-public final class TransactionBackendHandler implements ProxyBackendHandler {
+public final class TCLBackendHandler implements ProxyBackendHandler {
     
     private final TCLStatement tclStatement;
     
@@ -58,7 +58,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private final TransactionManager backendTransactionManager;
     
-    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
+    public TCLBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -32,10 +32,10 @@ import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionEx
 import java.sql.Connection;
 
 /**
- * Set transaction handler.
+ * Transaction set handler.
  */
 @RequiredArgsConstructor
-public final class TransactionSetHandler implements ProxyBackendHandler {
+public final class SetTransactionHandler implements ProxyBackendHandler {
     
     private final SetTransactionStatement sqlStatement;
     
