@@ -175,4 +175,22 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default boolean isSupportMetaDataRefreshInTransaction() {
         return true;
     }
+    
+    /**
+     * Whether join using columns by projection order.
+     *
+     * @return by projection order or not
+     */
+    default boolean isJoinUsingColumnsByProjectionOrder() {
+        return false;
+    }
+    
+    /**
+     * Whether right columns order first on join.
+     *
+     * @return right columns order first or not
+     */
+    default boolean isRightColumnsOrderFirstOnJoin() {
+        return false;
+    }
 }
