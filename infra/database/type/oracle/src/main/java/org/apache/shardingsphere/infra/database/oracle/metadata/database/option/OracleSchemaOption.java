@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
 import java.sql.Connection;
 import java.sql.SQLException;

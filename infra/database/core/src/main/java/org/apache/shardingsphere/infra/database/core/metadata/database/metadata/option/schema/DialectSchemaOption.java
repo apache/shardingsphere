@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema;
 
 import java.sql.Connection;
 import java.util.Optional;

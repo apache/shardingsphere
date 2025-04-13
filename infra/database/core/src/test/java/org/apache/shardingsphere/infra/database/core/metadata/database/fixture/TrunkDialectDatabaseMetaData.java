@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.fixture;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DefaultSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
 public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
