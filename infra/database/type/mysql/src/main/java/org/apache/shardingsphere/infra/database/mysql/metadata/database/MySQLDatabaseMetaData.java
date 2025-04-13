@@ -36,13 +36,13 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectDataTypeOption getDataTypeOption() {
-        return new MySQLDataTypeOption();
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.LOW;
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.LOW;
+    public DialectDataTypeOption getDataTypeOption() {
+        return new MySQLDataTypeOption();
     }
     
     @Override

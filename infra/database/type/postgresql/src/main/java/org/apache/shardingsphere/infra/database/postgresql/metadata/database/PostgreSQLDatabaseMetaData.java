@@ -37,13 +37,13 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public DialectDataTypeOption getDataTypeOption() {
-        return new PostgreSQLDataTypeOption();
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.HIGH;
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.HIGH;
+    public DialectDataTypeOption getDataTypeOption() {
+        return new PostgreSQLDataTypeOption();
     }
     
     @Override

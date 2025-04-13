@@ -44,6 +44,14 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     QuoteCharacter getQuoteCharacter();
     
     /**
+     * Get default nulls order type.
+     *
+     * @return default nulls order type
+     */
+    // TODO Reuse java.sql.DatabaseMetaData.nullsAreSortedHigh and java.sql.DatabaseMetaData.nullsAreSortedLow
+    NullsOrderType getDefaultNullsOrderType();
+    
+    /**
      * Get data type option.
      *
      * @return data type option
@@ -51,14 +59,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default DialectDataTypeOption getDataTypeOption() {
         return new DefaultDataTypeOption();
     }
-    
-    /**
-     * Get default nulls order type.
-     *
-     * @return default nulls order type
-     */
-    // TODO Reuse java.sql.DatabaseMetaData.nullsAreSortedHigh and java.sql.DatabaseMetaData.nullsAreSortedLow
-    NullsOrderType getDefaultNullsOrderType();
     
     /**
      * Is schema feature available.

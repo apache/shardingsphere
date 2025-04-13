@@ -37,13 +37,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public DialectDataTypeOption getDataTypeOption() {
-        return new OpenGaussDataTypeOption();
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.HIGH;
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.HIGH;
+    public DialectDataTypeOption getDataTypeOption() {
+        return new OpenGaussDataTypeOption();
     }
     
     @Override
