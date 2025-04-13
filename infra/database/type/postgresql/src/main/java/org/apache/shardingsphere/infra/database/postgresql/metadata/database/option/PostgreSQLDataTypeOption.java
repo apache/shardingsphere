@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.postgresql.metadata.database.option;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.sql.Types;
 import java.util.Map;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

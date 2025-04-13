@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype;
 
 import java.util.Map;
 import java.util.Optional;

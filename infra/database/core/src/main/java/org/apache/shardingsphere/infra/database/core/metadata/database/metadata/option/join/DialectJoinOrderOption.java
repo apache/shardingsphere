@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Default data type option.
+ * Dialect join order option.
  */
-public final class DefaultDataTypeOption implements DialectDataTypeOption {
+@RequiredArgsConstructor
+@Getter
+public final class DialectJoinOrderOption {
     
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        return Collections.emptyMap();
-    }
+    private final boolean isUsingColumnsByProjectionOrder;
     
-    @Override
-    public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
-        return Optional.empty();
-    }
+    private final boolean isRightColumnsByFirstOrder;
 }
