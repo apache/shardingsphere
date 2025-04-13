@@ -45,7 +45,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get data type option.
-     * 
+     *
      * @return data type option
      */
     default DialectDataTypeOption getDataTypeOption() {
