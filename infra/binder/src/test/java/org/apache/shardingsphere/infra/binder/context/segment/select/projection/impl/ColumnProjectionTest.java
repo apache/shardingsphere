@@ -89,14 +89,8 @@ class ColumnProjectionTest {
     }
     
     @Test
-    void assertGetColumnNameWithMySQL() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        assertThat(new ColumnProjection(null, "name", "alias", databaseType).getColumnName(), is("name"));
-    }
-    
-    @Test
     void assertGetColumnNameWithAlias() {
-        assertThat(new ColumnProjection(null, "name", "alias", databaseType).getColumnName(), is("alias"));
+        assertThat(new ColumnProjection(null, "name", "alias", databaseType).getColumnName(), is("name"));
     }
     
     @Test
