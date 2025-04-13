@@ -38,7 +38,7 @@ public interface DialectSchemaOption {
      * @param connection connection
      * @return schema
      */
-    String getSchema(final Connection connection);
+    String getSchema(Connection connection);
     
     /**
      * Get default schema name.
