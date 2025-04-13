@@ -80,7 +80,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get connection option.
-     * 
+     *
      * @return connection option
      */
     default DialectConnectionOption getConnectionOption() {
