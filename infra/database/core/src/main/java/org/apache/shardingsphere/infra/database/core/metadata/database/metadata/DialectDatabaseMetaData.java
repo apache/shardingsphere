@@ -64,7 +64,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return schema option
      */
     default DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption();
+        return new DefaultSchemaOption(false, null);
     }
     
     /**

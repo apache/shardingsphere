@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.hive.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.hive.metadata.database.option.HiveSchemaOption;
 
 /**
  * Database meta data of Hive.
@@ -40,7 +40,7 @@ public final class HiveDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new HiveSchemaOption();
+        return new DefaultSchemaOption(false, "default");
     }
     
     @Override
