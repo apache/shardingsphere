@@ -50,7 +50,7 @@ public final class TableMetaDataLoader {
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
-            String formattedTableNamePattern = dialectDatabaseMetaData.formatTableNamePattern(tableNamePattern);
+            String formattedTableNamePattern = dialectDatabaseMetaData.getTableOption().formatTableNamePattern(tableNamePattern);
             return isTableExist(connection, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
                             connection, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connection, formattedTableNamePattern), Collections.emptyList()))

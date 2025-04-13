@@ -51,6 +51,6 @@ class PostgreSQLDatabaseMetaDataTest {
     
     @Test
     void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.formatTableNamePattern("T_ORDER"), is("t_order"));
+        assertThat(dialectDatabaseMetaData.getTableOption().formatTableNamePattern("T_ORDER"), is("t_order"));
     }
 }
