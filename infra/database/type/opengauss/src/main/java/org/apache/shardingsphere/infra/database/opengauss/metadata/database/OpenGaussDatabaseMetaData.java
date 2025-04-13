@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption.Type;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 
@@ -57,8 +59,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public String formatTableNamePattern(final String tableNamePattern) {
-        return tableNamePattern.toLowerCase();
+    public DialectTableOption getTableOption() {
+        return new DialectTableOption(Type.LOWER_CASE);
     }
     
     @Override

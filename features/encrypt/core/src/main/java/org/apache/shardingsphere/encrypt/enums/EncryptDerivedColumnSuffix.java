@@ -44,6 +44,6 @@ public enum EncryptDerivedColumnSuffix {
      */
     public String getDerivedColumnName(final String columnName, final DatabaseType databaseType) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return String.format("%s%s", columnName, dialectDatabaseMetaData.formatTableNamePattern(suffix));
+        return String.format("%s%s", columnName, dialectDatabaseMetaData.getTableOption().formatTableNamePattern(suffix));
     }
 }

@@ -59,6 +59,6 @@ class OracleDatabaseMetaDataTest {
     
     @Test
     void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.formatTableNamePattern("tbl"), is("TBL"));
+        assertThat(dialectDatabaseMetaData.getTableOption().formatTableNamePattern("tbl"), is("TBL"));
     }
 }

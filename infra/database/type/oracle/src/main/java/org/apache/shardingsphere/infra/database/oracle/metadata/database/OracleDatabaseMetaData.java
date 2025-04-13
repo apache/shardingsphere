@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption.Type;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleSchemaOption;
 
@@ -52,8 +54,8 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public String formatTableNamePattern(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
+    public DialectTableOption getTableOption() {
+        return new DialectTableOption(Type.UPPER_CASE);
     }
     
     @Override
