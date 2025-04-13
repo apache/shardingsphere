@@ -38,13 +38,13 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectDataTypeOption getDataTypeOption() {
-        return new OracleDataTypeOption();
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.HIGH;
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.HIGH;
+    public DialectDataTypeOption getDataTypeOption() {
+        return new OracleDataTypeOption();
     }
     
     @Override
