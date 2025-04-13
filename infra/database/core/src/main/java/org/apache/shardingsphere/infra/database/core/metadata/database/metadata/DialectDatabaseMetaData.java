@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseJoinOrderOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -137,8 +137,8 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return transaction option
      */
-    default DialectDatabaseTransactionOption getTransactionOption() {
-        return new DialectDatabaseTransactionOption(false, false, false, false, true);
+    default DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, false, false, true);
     }
     
     /**
@@ -146,7 +146,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return join order option
      */
-    default DialectDatabaseJoinOrderOption getJoinOrderOption() {
-        return new DialectDatabaseJoinOrderOption(false, false);
+    default DialectJoinOrderOption getJoinOrderOption() {
+        return new DialectJoinOrderOption(false, false);
     }
 }

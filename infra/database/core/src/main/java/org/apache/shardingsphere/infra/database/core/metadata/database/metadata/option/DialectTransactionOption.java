@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.option;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Dialect database join order option.
+ * Dialect transaction option.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DialectDatabaseJoinOrderOption {
+public final class DialectTransactionOption {
     
-    private final boolean isUsingColumnsByProjectionOrder;
+    private final boolean isSupportGlobalCSN;
     
-    private final boolean isRightColumnsByFirstOrder;
+    private final boolean isDDLNeedImplicitCommit;
+    
+    private final boolean isSupportAutoCommitInNestedTransaction;
+    
+    private final boolean isSupportDDLInXATransaction;
+    
+    // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
+    private final boolean isSupportMetaDataRefreshInTransaction;
 }
