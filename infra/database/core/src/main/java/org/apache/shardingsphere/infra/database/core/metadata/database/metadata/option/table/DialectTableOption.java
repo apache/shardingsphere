@@ -33,7 +33,7 @@ public final class DialectTableOption {
      * @param tableNamePattern table name pattern
      * @return formatted table name pattern
      */
-    public String formatTableNamePattern(String tableNamePattern) {
+    public String formatTableNamePattern(final String tableNamePattern) {
         switch (type) {
             case UPPER_CASE:
                 return tableNamePattern.toUpperCase();
