@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.firebird.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption.Type;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 
 /**
@@ -40,8 +39,8 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectTableOption getTableOption() {
-        return new DialectTableOption(Type.UPPER_CASE);
+    public TableNamePatternType getTableNamePatternType() {
+        return TableNamePatternType.UPPER_CASE;
     }
     
     @Override

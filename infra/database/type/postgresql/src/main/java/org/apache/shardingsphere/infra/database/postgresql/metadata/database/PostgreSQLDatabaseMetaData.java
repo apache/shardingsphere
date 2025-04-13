@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectTableOption.Type;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 
@@ -54,8 +53,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public DialectTableOption getTableOption() {
-        return new DialectTableOption(Type.LOWER_CASE);
+    public TableNamePatternType getTableNamePatternType() {
+        return TableNamePatternType.LOWER_CASE;
     }
     
     @Override

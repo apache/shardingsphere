@@ -48,9 +48,4 @@ class PostgreSQLDatabaseMetaDataTest {
     void assertGetDefaultSchema() {
         assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
     }
-    
-    @Test
-    void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.getTableOption().formatTableNamePattern("T_ORDER"), is("t_order"));
-    }
 }
