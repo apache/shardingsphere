@@ -99,7 +99,7 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     
     private void handleBegin() throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (dialectDatabaseMetaData.isSupportAutoCommitInNestedTransaction()) {
+            if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction()) {
                 backendTransactionManager.commit();
             } else if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 throw new InTransactionException();
