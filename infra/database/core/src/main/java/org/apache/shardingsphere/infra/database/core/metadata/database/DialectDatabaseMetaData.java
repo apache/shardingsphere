@@ -178,7 +178,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Whether join using columns by projection order.
-     * 
+     *
      * @return by projection order or not
      */
     default boolean isJoinUsingColumnsByProjectionOrder() {
