@@ -125,7 +125,7 @@
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData\\E"
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase\\E"

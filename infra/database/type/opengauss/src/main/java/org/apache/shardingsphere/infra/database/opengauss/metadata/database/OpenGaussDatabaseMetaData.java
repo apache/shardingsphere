@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
 
 import java.sql.Types;
 import java.util.Map;
@@ -68,8 +68,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public DialectDatabaseTransactionOption getTransactionOption() {
-        return new DialectDatabaseTransactionOption(true, false, false, true, false);
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(true, false, false, true, false);
     }
     
     @Override

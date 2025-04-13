@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseJoinOrderOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
@@ -85,13 +85,13 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectDatabaseTransactionOption getTransactionOption() {
-        return new DialectDatabaseTransactionOption(false, false, true, false, true);
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(false, false, true, false, true);
     }
     
     @Override
-    public DialectDatabaseJoinOrderOption getJoinOrderOption() {
-        return new DialectDatabaseJoinOrderOption(true, true);
+    public DialectJoinOrderOption getJoinOrderOption() {
+        return new DialectJoinOrderOption(true, true);
     }
     
     @Override
