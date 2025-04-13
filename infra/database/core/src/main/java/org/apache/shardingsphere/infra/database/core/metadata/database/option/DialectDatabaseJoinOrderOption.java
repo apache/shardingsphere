@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Join order option.
+ * Dialect database join order option.
  */
 @RequiredArgsConstructor
 @Getter
-public final class JoinOrderOption {
+public final class DialectDatabaseJoinOrderOption {
     
     private final boolean isUsingColumnsByProjectionOrder;
     

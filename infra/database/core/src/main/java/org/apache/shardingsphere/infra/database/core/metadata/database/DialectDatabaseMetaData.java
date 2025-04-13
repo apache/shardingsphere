@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.database.core.metadata.database;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -137,8 +137,8 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return transaction option
      */
-    default TransactionOption getTransactionOption() {
-        return new TransactionOption(false, false, false, false, true);
+    default DialectDatabaseTransactionOption getTransactionOption() {
+        return new DialectDatabaseTransactionOption(false, false, false, false, true);
     }
     
     /**
@@ -146,7 +146,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return join order option
      */
-    default JoinOrderOption getJoinOrderOption() {
-        return new JoinOrderOption(false, false);
+    default DialectDatabaseJoinOrderOption getJoinOrderOption() {
+        return new DialectDatabaseJoinOrderOption(false, false);
     }
 }
