@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.sql.Types;
 import java.util.HashMap;

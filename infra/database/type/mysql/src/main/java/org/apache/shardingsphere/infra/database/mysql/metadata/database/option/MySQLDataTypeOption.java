@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.database.option;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
