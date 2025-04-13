@@ -61,7 +61,7 @@ public final class StorageNodeAggregator {
         for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolPropsMap.entrySet()) {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
             StorageNode storageNode = getStorageNode(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
             result.putIfAbsent(storageNode, entry.getValue());
         }

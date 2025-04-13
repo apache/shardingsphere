@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.mysql.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -46,13 +47,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public boolean isInstanceConnectionAvailable() {
-        return true;
-    }
-    
-    @Override
-    public boolean isSupportThreeTierStorageStructure() {
-        return true;
+    public DialectConnectionOption getConnectionOption() {
+        return new DialectConnectionOption(true, true);
     }
     
     @Override
