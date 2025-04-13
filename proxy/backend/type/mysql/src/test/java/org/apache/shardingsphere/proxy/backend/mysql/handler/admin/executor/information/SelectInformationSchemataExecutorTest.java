@@ -114,7 +114,7 @@ class SelectInformationSchemataExecutorTest {
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, mockContext) -> {
             DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-            when(dialectDatabaseMetaData.isInstanceConnectionAvailable()).thenReturn(true);
+            when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(true);
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         })) {
             ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
