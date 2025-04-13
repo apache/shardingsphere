@@ -23,16 +23,12 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * Database type registry.
  */
 public final class DatabaseTypeRegistry {
-    
-    private static final Map<DatabaseType, DialectDatabaseMetaData> REGISTERED_META_DATA = new ConcurrentHashMap<>();
     
     private final DatabaseType databaseType;
     
@@ -41,10 +37,7 @@ public final class DatabaseTypeRegistry {
     
     public DatabaseTypeRegistry(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        if (!REGISTERED_META_DATA.containsKey(databaseType)) {
-            REGISTERED_META_DATA.put(databaseType, DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
-        }
-        dialectDatabaseMetaData = REGISTERED_META_DATA.get(databaseType);
+        dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     }
     
     /**
