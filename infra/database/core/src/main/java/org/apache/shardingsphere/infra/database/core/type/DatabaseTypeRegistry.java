@@ -66,4 +66,23 @@ public final class DatabaseTypeRegistry {
     public String getDefaultSchemaName(final String databaseName) {
         return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
+    
+    /**
+     * Format table name pattern.
+     *
+     * @param tableNamePattern table name pattern
+     * @return formatted table name pattern
+     */
+    public String formatTableNamePattern(final String tableNamePattern) {
+        DatabaseType databaseType = this.databaseType.getTrunkDatabaseType().orElse(this.databaseType);
+        switch (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTableNamePatternType()) {
+            case UPPER_CASE:
+                return tableNamePattern.toUpperCase();
+            case LOWER_CASE:
+                return tableNamePattern.toLowerCase();
+            case KEEP_ORIGIN:
+            default:
+                return tableNamePattern;
+        }
+    }
 }

@@ -17,39 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table;
 
-import lombok.RequiredArgsConstructor;
-
 /**
- * Dialect table option.
+ * Table name pattern type.
  */
-@RequiredArgsConstructor
-public final class DialectTableOption {
+public enum TableNamePatternType {
     
-    private final Type type;
-    
-    /**
-     * Format table name pattern.
-     *
-     * @param tableNamePattern table name pattern
-     * @return formatted table name pattern
-     */
-    public String formatTableNamePattern(final String tableNamePattern) {
-        switch (type) {
-            case UPPER_CASE:
-                return tableNamePattern.toUpperCase();
-            case LOWER_CASE:
-                return tableNamePattern.toLowerCase();
-            case KEEP_ORIGIN:
-            default:
-                return tableNamePattern;
-        }
-    }
-    
-    /**
-     * Dialect table option type.
-     */
-    public enum Type {
-        
-        UPPER_CASE, LOWER_CASE, KEEP_ORIGIN
-    }
+    UPPER_CASE, LOWER_CASE, KEEP_ORIGIN
 }

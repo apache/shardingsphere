@@ -56,9 +56,4 @@ class OracleDatabaseMetaDataTest {
         when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
         assertNull(dialectDatabaseMetaData.getSchemaOption().getSchema(connection));
     }
-    
-    @Test
-    void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.getTableOption().formatTableNamePattern("tbl"), is("TBL"));
-    }
 }
