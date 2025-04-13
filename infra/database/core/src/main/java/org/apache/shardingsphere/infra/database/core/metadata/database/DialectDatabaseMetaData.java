@@ -134,7 +134,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get transaction option.
-     * 
+     *
      * @return transaction option
      */
     default TransactionOption getTransactionOption() {
