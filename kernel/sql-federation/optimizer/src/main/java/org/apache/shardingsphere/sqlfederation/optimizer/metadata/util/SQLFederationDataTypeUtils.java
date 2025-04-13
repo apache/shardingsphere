@@ -64,7 +64,7 @@ public final class SQLFederationDataTypeUtils {
      * @return SQL type class
      */
     public static Class<?> getSqlTypeClass(final DatabaseType protocolType, final ShardingSphereColumn column) {
-        return new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData().findExtraSQLTypeClass(column.getDataType(), column.isUnsigned())
+        return new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData().getDataTypeOption().findExtraSQLTypeClass(column.getDataType(), column.isUnsigned())
                 .orElseGet(() -> SqlType.valueOf(column.getDataType()).clazz);
     }
 }

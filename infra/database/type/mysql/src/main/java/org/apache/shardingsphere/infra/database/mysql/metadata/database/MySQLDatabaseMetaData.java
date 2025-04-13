@@ -17,17 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
-
-import java.math.BigInteger;
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.mysql.metadata.database.option.MySQLDataTypeOption;
 
 /**
  * Database meta data of MySQL.
@@ -40,33 +36,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new HashMap<>(10, 1F);
-        result.put("JSON", Types.LONGVARCHAR);
-        result.put("GEOMETRY", Types.BINARY);
-        result.put("GEOMETRYCOLLECTION", Types.BINARY);
-        result.put("YEAR", Types.DATE);
-        result.put("POINT", Types.BINARY);
-        result.put("MULTIPOINT", Types.BINARY);
-        result.put("POLYGON", Types.BINARY);
-        result.put("MULTIPOLYGON", Types.BINARY);
-        result.put("LINESTRING", Types.BINARY);
-        result.put("MULTILINESTRING", Types.BINARY);
-        return result;
-    }
-    
-    @Override
-    public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
-        if (Types.TINYINT == dataType || Types.SMALLINT == dataType) {
-            return Optional.of(Integer.class);
-        }
-        if (Types.INTEGER == dataType) {
-            return unsigned ? Optional.of(Long.class) : Optional.of(Integer.class);
-        }
-        if (Types.BIGINT == dataType) {
-            return unsigned ? Optional.of(BigInteger.class) : Optional.of(Long.class);
-        }
-        return Optional.empty();
+    public DialectDataTypeOption getDataTypeOption() {
+        return new MySQLDataTypeOption();
     }
     
     @Override

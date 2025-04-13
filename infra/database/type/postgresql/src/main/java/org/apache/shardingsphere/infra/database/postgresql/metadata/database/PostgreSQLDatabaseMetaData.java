@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.postgresql.metadata.database;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 
-import java.sql.Types;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -38,26 +37,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new CaseInsensitiveMap<>();
-        result.put("SMALLINT", Types.SMALLINT);
-        result.put("INT", Types.INTEGER);
-        result.put("INTEGER", Types.INTEGER);
-        result.put("BIGINT", Types.BIGINT);
-        result.put("DECIMAL", Types.DECIMAL);
-        result.put("NUMERIC", Types.NUMERIC);
-        result.put("REAL", Types.REAL);
-        result.put("BOOL", Types.BOOLEAN);
-        result.put("CHARACTER VARYING", Types.VARCHAR);
-        return result;
-    }
-    
-    @Override
-    public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
-        if (Types.SMALLINT == dataType) {
-            return Optional.of(Integer.class);
-        }
-        return Optional.empty();
+    public DialectDataTypeOption getDataTypeOption() {
+        return new PostgreSQLDataTypeOption();
     }
     
     @Override

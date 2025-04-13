@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.metadata
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DefaultDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
@@ -26,8 +28,6 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,23 +44,12 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     QuoteCharacter getQuoteCharacter();
     
     /**
-     * Get extra data types.
+     * Get data type option.
      *
-     * @return extra data type map
+     * @return data type option
      */
-    default Map<String, Integer> getExtraDataTypes() {
-        return Collections.emptyMap();
-    }
-    
-    /**
-     * Find extra SQL type class.
-     *
-     * @param dataType data type
-     * @param unsigned whether unsigned
-     * @return extra SQL type class
-     */
-    default Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
-        return Optional.empty();
+    default DialectDataTypeOption getDataTypeOption() {
+        return new DefaultDataTypeOption();
     }
     
     /**

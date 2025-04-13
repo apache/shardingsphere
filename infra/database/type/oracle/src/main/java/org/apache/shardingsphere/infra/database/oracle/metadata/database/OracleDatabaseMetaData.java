@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -36,6 +35,11 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public DialectDataTypeOption getDataTypeOption() {
+        return new OracleDataTypeOption();
     }
     
     @Override
@@ -70,22 +74,5 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public String getDatabaseType() {
         return "Oracle";
-    }
-    
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new HashMap<>(8);
-        result.put("SMALLINT", Types.SMALLINT);
-        result.put("TINYINT", Types.TINYINT);
-        result.put("INT", Types.INTEGER);
-        result.put("TEXT", Types.LONGVARCHAR);
-        result.put("CHARACTER", Types.CHAR);
-        result.put("VARCHAR2", Types.VARCHAR);
-        result.put("DATETIME", Types.TIMESTAMP);
-        result.put("ROWID", Types.ROWID);
-        result.put("BINARY_DOUBLE", Types.DOUBLE);
-        result.put("BINARY_FLOAT", Types.FLOAT);
-        result.put("NUMBER", Types.NUMERIC);
-        return result;
     }
 }
