@@ -72,7 +72,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get table option.
-     * 
+     *
      * @return table option
      */
     default DialectTableOption getTableOption() {
