@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.mysql.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
@@ -88,13 +89,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public boolean isJoinUsingColumnsByProjectionOrder() {
-        return true;
-    }
-    
-    @Override
-    public boolean isRightColumnsOrderFirstOnJoin() {
-        return true;
+    public JoinOrderOption getJoinOrderOption() {
+        return new JoinOrderOption(true, true);
     }
     
     @Override

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.database;
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -177,20 +178,11 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Whether join using columns by projection order.
+     * Get join order option.
      *
-     * @return by projection order or not
+     * @return join order option
      */
-    default boolean isJoinUsingColumnsByProjectionOrder() {
-        return false;
-    }
-    
-    /**
-     * Whether right columns order first on join.
-     *
-     * @return right columns order first or not
-     */
-    default boolean isRightColumnsOrderFirstOnJoin() {
-        return false;
+    default JoinOrderOption getJoinOrderOption() {
+        return new JoinOrderOption(false, false);
     }
 }
