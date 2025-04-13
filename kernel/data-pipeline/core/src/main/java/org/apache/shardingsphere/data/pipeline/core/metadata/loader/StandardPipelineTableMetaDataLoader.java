@@ -74,7 +74,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     private void loadTableMetaData(final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData();
-            tableMetaDataMap.putAll(loadTableMetaData(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableName));
+            tableMetaDataMap.putAll(loadTableMetaData(connection, dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? schemaName : null, tableName));
         }
     }
     

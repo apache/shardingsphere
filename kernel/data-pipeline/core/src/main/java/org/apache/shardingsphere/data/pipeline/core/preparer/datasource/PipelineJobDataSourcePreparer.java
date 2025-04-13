@@ -70,10 +70,10 @@ public final class PipelineJobDataSourcePreparer {
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
-        if (!dialectDatabaseMetaData.isSchemaAvailable()) {
+        if (!dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()) {
             return;
         }
-        String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
+        String defaultSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {

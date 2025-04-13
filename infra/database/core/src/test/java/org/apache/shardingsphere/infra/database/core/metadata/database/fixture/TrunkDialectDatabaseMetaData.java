@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.fixture;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
 
 public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
@@ -36,8 +35,8 @@ public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaDa
     }
     
     @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("test");
+    public DialectSchemaOption getSchemaOption() {
+        return new TrunkSchemaOption();
     }
     
     @Override

@@ -71,7 +71,7 @@ public final class MetaDataLoaderConnection implements Connection {
     
     @Override
     public String getSchema() {
-        return dialectDatabaseMetaData.getSchema(connection);
+        return dialectDatabaseMetaData.getSchemaOption().getSchema(connection);
     }
     
     @Override

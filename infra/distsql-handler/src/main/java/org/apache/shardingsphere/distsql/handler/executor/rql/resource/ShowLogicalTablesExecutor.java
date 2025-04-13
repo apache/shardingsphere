@@ -55,7 +55,7 @@ public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement, final ContextManager contextManager) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
+        String schemaName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
         }

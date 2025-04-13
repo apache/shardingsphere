@@ -105,7 +105,7 @@ public final class CDCBackendHandler {
         Collection<String> tableNames;
         Set<String> schemaTableNames = new HashSet<>();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        if (dialectDatabaseMetaData.isSchemaAvailable()) {
+        if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()) {
             schemaTableNameMap = CDCSchemaTableUtils.parseTableExpressionWithSchema(database, requestBody.getSourceSchemaTableList());
             // TODO if different schema have same table names, table name may be overwritten, because the table name at sharding rule not contain schema.
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());

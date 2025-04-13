@@ -47,14 +47,14 @@ class OracleDatabaseMetaDataTest {
     void assertGetSchema() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenReturn("scott");
-        assertThat(dialectDatabaseMetaData.getSchema(connection), is("SCOTT"));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getSchema(connection), is("SCOTT"));
     }
     
     @Test
     void assertGetSchemaIfExceptionThrown() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
-        assertNull(dialectDatabaseMetaData.getSchema(connection));
+        assertNull(dialectDatabaseMetaData.getSchemaOption().getSchema(connection));
     }
     
     @Test

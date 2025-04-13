@@ -80,7 +80,7 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
         DataNode dataNode = jobDataNodeEntry.getDataNodes().get(0);
         PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
         String sourceSchemaName = mapper.getSchemaName(jobDataNodeEntry.getLogicTableName());
-        String targetSchemaName = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().isSchemaAvailable() ? sourceSchemaName : null;
+        String targetSchemaName = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? sourceSchemaName : null;
         return new CreateTableConfiguration(sourceDataSourceConfig, new QualifiedTable(sourceSchemaName, dataNode.getTableName()),
                 jobConfig.getTarget(), new QualifiedTable(targetSchemaName, jobDataNodeEntry.getLogicTableName()));
     }

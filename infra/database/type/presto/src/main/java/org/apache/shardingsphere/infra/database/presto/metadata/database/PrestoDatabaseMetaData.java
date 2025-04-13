@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.presto.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.presto.metadata.database.option.PrestoSchemaOption;
 
 /**
  * Database meta data of Presto.
@@ -39,8 +39,8 @@ public final class PrestoDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("default");
+    public DialectSchemaOption getSchemaOption() {
+        return new PrestoSchemaOption();
     }
     
     @Override

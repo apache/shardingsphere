@@ -21,11 +21,9 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleSchemaOption;
 
 /**
  * Database meta data of Oracle.
@@ -48,17 +46,8 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public boolean isSchemaAvailable() {
-        return true;
-    }
-    
-    @Override
-    public String getSchema(final Connection connection) {
-        try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
-        } catch (final SQLException ignored) {
-            return null;
-        }
+    public DialectSchemaOption getSchemaOption() {
+        return new OracleSchemaOption();
     }
     
     @Override

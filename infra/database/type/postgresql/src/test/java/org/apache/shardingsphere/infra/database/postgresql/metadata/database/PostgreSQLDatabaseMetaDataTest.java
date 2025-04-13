@@ -41,12 +41,12 @@ class PostgreSQLDatabaseMetaDataTest {
     
     @Test
     void assertIsSchemaAvailable() {
-        assertTrue(dialectDatabaseMetaData.isSchemaAvailable());
+        assertTrue(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable());
     }
     
     @Test
     void assertGetDefaultSchema() {
-        assertThat(dialectDatabaseMetaData.getDefaultSchema(), is(Optional.of("public")));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
     }
     
     @Test

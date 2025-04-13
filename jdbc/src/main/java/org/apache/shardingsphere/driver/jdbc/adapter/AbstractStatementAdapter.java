@@ -57,7 +57,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
             DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);
             }
         }
