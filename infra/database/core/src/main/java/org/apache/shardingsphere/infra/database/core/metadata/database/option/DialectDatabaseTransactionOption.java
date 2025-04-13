@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction option.
+ * Dialect database transaction option.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TransactionOption {
+public final class DialectDatabaseTransactionOption {
     
     private final boolean isSupportGlobalCSN;
     

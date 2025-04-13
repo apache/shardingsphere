@@ -21,7 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
 
 import java.sql.Types;
 import java.util.Map;
@@ -81,8 +81,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public TransactionOption getTransactionOption() {
-        return new TransactionOption(false, false, false, true, false);
+    public DialectDatabaseTransactionOption getTransactionOption() {
+        return new DialectDatabaseTransactionOption(false, false, false, true, false);
     }
     
     @Override

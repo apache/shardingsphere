@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.mysql.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
@@ -85,13 +85,13 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public TransactionOption getTransactionOption() {
-        return new TransactionOption(false, false, true, false, true);
+    public DialectDatabaseTransactionOption getTransactionOption() {
+        return new DialectDatabaseTransactionOption(false, false, true, false, true);
     }
     
     @Override
-    public JoinOrderOption getJoinOrderOption() {
-        return new JoinOrderOption(true, true);
+    public DialectDatabaseJoinOrderOption getJoinOrderOption() {
+        return new DialectDatabaseJoinOrderOption(true, true);
     }
     
     @Override

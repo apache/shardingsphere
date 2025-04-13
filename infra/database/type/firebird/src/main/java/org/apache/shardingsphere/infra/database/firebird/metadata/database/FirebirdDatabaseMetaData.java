@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.firebird.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
 
 /**
  * Database metadata of Firebird.
@@ -43,8 +43,8 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public TransactionOption getTransactionOption() {
-        return new TransactionOption(false, true, false, false, true);
+    public DialectDatabaseTransactionOption getTransactionOption() {
+        return new DialectDatabaseTransactionOption(false, true, false, false, true);
     }
     
     @Override

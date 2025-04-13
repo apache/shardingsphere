@@ -27,7 +27,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.DialectDatabaseTransactionOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -132,7 +132,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
     }
     
     private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
-        TransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        DialectDatabaseTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
         return !connection.getAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
     }
     
