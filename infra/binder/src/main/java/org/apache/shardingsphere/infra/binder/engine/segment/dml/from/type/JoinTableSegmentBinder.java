@@ -29,8 +29,9 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -113,13 +114,14 @@ public final class JoinTableSegmentBinder {
     private static Collection<ProjectionSegment> getDerivedJoinTableProjectionSegments(final JoinTableSegment segment, final DatabaseType databaseType,
                                                                                        final Map<String, ProjectionSegment> usingColumnsByNaturalJoin,
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
-        Collection<ProjectionSegment> projectionSegments = getProjectionSegments(segment, databaseType, tableBinderContexts);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        Collection<ProjectionSegment> projectionSegments = getProjectionSegments(segment, dialectDatabaseMetaData, tableBinderContexts);
         if (segment.getUsing().isEmpty() && !segment.isNatural()) {
             return projectionSegments;
         }
         Collection<ProjectionSegment> result = new LinkedList<>();
         Map<String, ProjectionSegment> originalUsingColumns = segment.getUsing().isEmpty() ? usingColumnsByNaturalJoin : getUsingColumns(projectionSegments, segment.getUsing(), segment.getJoinType());
-        Collection<ProjectionSegment> orderedUsingColumns = databaseType instanceof MySQLDatabaseType
+        Collection<ProjectionSegment> orderedUsingColumns = dialectDatabaseMetaData.isJoinUsingColumnsByProjectionOrder()
                 ? getJoinUsingColumnsByProjectionOrder(projectionSegments, originalUsingColumns)
                 : originalUsingColumns.values();
         result.addAll(orderedUsingColumns);
@@ -127,10 +129,10 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getProjectionSegments(final JoinTableSegment segment, final DatabaseType databaseType,
+    private static Collection<ProjectionSegment> getProjectionSegments(final JoinTableSegment segment, final DialectDatabaseMetaData dialectDatabaseMetaData,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ProjectionSegment> result = new LinkedList<>();
-        if (databaseType instanceof MySQLDatabaseType && JoinType.RIGHT.name().equalsIgnoreCase(segment.getJoinType()) && (!segment.getUsing().isEmpty() || segment.isNatural())) {
+        if (dialectDatabaseMetaData.isRightColumnsOrderFirstOnJoin() && JoinType.RIGHT.name().equalsIgnoreCase(segment.getJoinType()) && (!segment.getUsing().isEmpty() || segment.isNatural())) {
             result.addAll(getProjectionSegments(segment.getRight(), tableBinderContexts));
             result.addAll(getProjectionSegments(segment.getLeft(), tableBinderContexts));
         } else {

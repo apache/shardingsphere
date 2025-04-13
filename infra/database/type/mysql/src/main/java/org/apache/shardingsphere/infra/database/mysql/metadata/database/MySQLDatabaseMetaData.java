@@ -88,6 +88,16 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public boolean isJoinUsingColumnsByProjectionOrder() {
+        return true;
+    }
+    
+    @Override
+    public boolean isRightColumnsOrderFirstOnJoin() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }
