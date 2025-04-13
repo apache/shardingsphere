@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -132,49 +133,12 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Is support global CSN.
+     * Get transaction option.
      *
-     * @return support or not
+     * @return transaction option
      */
-    default boolean isSupportGlobalCSN() {
-        return false;
-    }
-    
-    /**
-     * Whether DDL need implicit commit.
-     *
-     * @return need or not
-     */
-    default boolean isDDLNeedImplicitCommit() {
-        return false;
-    }
-    
-    /**
-     * Whether support auto commit when nested transaction.
-     *
-     * @return support or not
-     */
-    default boolean isSupportAutoCommitInNestedTransaction() {
-        return false;
-    }
-    
-    /**
-     * Whether support DDL in XA transaction.
-     *
-     * @return support or not
-     */
-    default boolean isSupportDDLInXATransaction() {
-        return false;
-    }
-    
-    /**
-     * Whether support meta data refresh in transaction.
-     *
-     * @return support or not
-     */
-    // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
-    default boolean isSupportMetaDataRefreshInTransaction() {
-        return true;
+    default TransactionOption getTransactionOption() {
+        return new TransactionOption(false, false, false, false, true);
     }
     
     /**

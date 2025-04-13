@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.option.JoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
@@ -84,8 +85,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public boolean isSupportAutoCommitInNestedTransaction() {
-        return true;
+    public TransactionOption getTransactionOption() {
+        return new TransactionOption(false, false, true, false, true);
     }
     
     @Override

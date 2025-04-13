@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.option.TransactionOption;
 
 import java.sql.Types;
 import java.util.Map;
@@ -67,23 +68,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public boolean isSupportGlobalCSN() {
-        return true;
+    public TransactionOption getTransactionOption() {
+        return new TransactionOption(true, false, false, true, false);
     }
     
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toLowerCase();
-    }
-    
-    @Override
-    public boolean isSupportDDLInXATransaction() {
-        return true;
-    }
-    
-    @Override
-    public boolean isSupportMetaDataRefreshInTransaction() {
-        return false;
     }
     
     @Override
