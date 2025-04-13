@@ -101,7 +101,7 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction()) {
                 backendTransactionManager.commit();
-            } else if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            } else if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 throw new InTransactionException();
             }
         }
@@ -109,19 +109,19 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     }
     
     private void handleSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getDefaultSchema().isPresent(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
                 () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
     }

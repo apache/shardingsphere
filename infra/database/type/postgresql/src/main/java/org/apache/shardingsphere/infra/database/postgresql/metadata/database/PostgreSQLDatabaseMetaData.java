@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DefaultSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
-
-import java.util.Optional;
 
 /**
  * Database meta data of PostgreSQL.
@@ -47,13 +47,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public boolean isSchemaAvailable() {
-        return true;
-    }
-    
-    @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("public");
+    public DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(true, "public");
     }
     
     @Override

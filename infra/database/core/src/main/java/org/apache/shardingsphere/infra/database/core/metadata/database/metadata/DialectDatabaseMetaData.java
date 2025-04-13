@@ -22,13 +22,11 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DefaultSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Dialect database meta data.
@@ -61,36 +59,12 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Is schema feature available.
+     * Get schema option.
      *
-     * @return true or false
+     * @return schema option
      */
-    default boolean isSchemaAvailable() {
-        return false;
-    }
-    
-    /**
-     * Get schema.
-     *
-     * @param connection connection
-     * @return schema
-     */
-    @SuppressWarnings("ReturnOfNull")
-    default String getSchema(final Connection connection) {
-        try {
-            return connection.getSchema();
-        } catch (final SQLException ignored) {
-            return null;
-        }
-    }
-    
-    /**
-     * Get default schema name.
-     *
-     * @return default schema name
-     */
-    default Optional<String> getDefaultSchema() {
-        return Optional.empty();
+    default DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(false, null);
     }
     
     /**

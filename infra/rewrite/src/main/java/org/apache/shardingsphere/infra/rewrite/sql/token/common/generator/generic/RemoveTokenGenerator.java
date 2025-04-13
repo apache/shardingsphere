@@ -79,7 +79,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
             }
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             OwnerSegment ownerSegment = each.getOwner().get();
-            if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 ownerSegment.getOwner().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), ownerSegment.getStartIndex() - 1)));
             } else {
                 result.add(new RemoveToken(ownerSegment.getStartIndex(), each.getTableName().getStartIndex() - 1));

@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.hive.metadata.database;
+package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.scehma.DialectSchemaOption;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+
 /**
- * Database meta data of Hive.
+ * Schema option for Oracle.
  */
-public final class HiveDatabaseMetaData implements DialectDatabaseMetaData {
+public final class OracleSchemaOption implements DialectSchemaOption {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
+    public boolean isSchemaAvailable() {
+        return true;
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.LOW;
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
     }
     
     @Override
-    public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, "default");
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "Hive";
+    public Optional<String> getDefaultSchema() {
+        return Optional.empty();
     }
 }

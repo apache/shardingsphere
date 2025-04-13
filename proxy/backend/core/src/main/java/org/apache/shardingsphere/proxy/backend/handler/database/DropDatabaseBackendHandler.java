@@ -75,6 +75,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     
     private void checkSupportedDropCurrentDatabase(final ConnectionSession connectionSession) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
-        ShardingSpherePreconditions.checkState(!dialectDatabaseMetaData.getDefaultSchema().isPresent(), () -> new UnsupportedOperationException("cannot drop the currently open database"));
+        ShardingSpherePreconditions.checkState(!dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
+                () -> new UnsupportedOperationException("cannot drop the currently open database"));
     }
 }

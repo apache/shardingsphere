@@ -55,7 +55,7 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
         DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         currentId = 1;
-        if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             collectFromDatabase(metaData.getDatabase(databaseName), result);
         } else {
             for (ShardingSphereDatabase each : metaData.getAllDatabases()) {

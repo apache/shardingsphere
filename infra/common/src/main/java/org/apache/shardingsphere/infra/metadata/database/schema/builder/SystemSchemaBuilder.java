@@ -72,7 +72,7 @@ public final class SystemSchemaBuilder {
     
     private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final SystemDatabase systemDatabase) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        String databaseName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
+        String databaseName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
         return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
