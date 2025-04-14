@@ -95,6 +95,12 @@ class ColumnProjectionTest {
     }
     
     @Test
+    void assertGetColumnNameWithPostgreSQL() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        assertThat(new ColumnProjection(null, "name", "alias", databaseType).getColumnName(), is("alias"));
+    }
+    
+    @Test
     void assertGetColumnNameWithAlias() {
         assertThat(new ColumnProjection(null, "name", "alias", databaseType).getColumnName(), is("alias"));
     }

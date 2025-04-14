@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.metadata
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
@@ -67,6 +68,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, null);
+    }
+    
+    /**
+     * Get column option.
+     *
+     * @return column option
+     */
+    default DialectColumnOption getColumnOption() {
+        return new DialectColumnOption(true);
     }
     
     /**
