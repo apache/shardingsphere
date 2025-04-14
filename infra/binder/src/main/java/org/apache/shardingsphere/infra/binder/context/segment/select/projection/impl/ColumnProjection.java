@@ -25,8 +25,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -122,7 +123,8 @@ public final class ColumnProjection implements Projection {
     @Override
     public String getColumnName() {
         ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return databaseType instanceof MySQLDatabaseType ? extractEngine.getIdentifierValue(name) : getColumnLabel();
+        DialectColumnOption columnOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getColumnOption();
+        return columnOption.isColumnNameEqualsLabelInColumnProjection() ? getColumnLabel() : extractEngine.getIdentifierValue(name);
     }
     
     @Override
