@@ -86,6 +86,7 @@ unreservedWord
 
 variable
     : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
+    | DEFAULT
     ;
 
 schemaName

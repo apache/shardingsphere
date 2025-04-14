@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Dele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstSkipClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
@@ -48,15 +50,13 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Sele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SkipValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstSkipClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstValueContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SkipValueContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
@@ -92,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Alias
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -486,6 +487,14 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }

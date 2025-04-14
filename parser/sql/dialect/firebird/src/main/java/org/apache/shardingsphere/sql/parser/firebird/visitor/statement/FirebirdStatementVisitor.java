@@ -60,11 +60,13 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Stri
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -412,6 +414,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
+        if (null != ctx.variable()) {
+            return visit(ctx.variable());
+        }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }
     
@@ -508,6 +513,12 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitVariable(final VariableContext ctx) {
+        String variableName = null == ctx.identifier() ? ctx.DEFAULT().getText() : ctx.identifier().getText();
+        return new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variableName);
     }
     
     @Override
