@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,12 +31,16 @@ import java.util.Collections;
 /**
  * Tableless datasource broadcast route engine.
  */
+@RequiredArgsConstructor
 public final class TablelessDataSourceBroadcastRouteEngine implements TablelessRouteEngine {
+    
+    private final ConnectionContext connectionContext;
     
     @Override
     public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
         RouteContext result = new RouteContext();
-        for (String each : aggregatedDataSources) {
+        Collection<String> usedDataSourceNames = null == aggregatedDataSources || aggregatedDataSources.isEmpty() ? connectionContext.getUsedDataSourceNames() : aggregatedDataSources;
+        for (String each : usedDataSourceNames) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return result;
