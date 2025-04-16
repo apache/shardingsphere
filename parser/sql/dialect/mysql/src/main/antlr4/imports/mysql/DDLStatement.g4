@@ -293,7 +293,7 @@ dropFunction
 
 createProcedure
     : CREATE ownerStatement?
-      PROCEDURE functionName LP_ procedureParameter? (COMMA_ procedureParameter)* RP_
+      PROCEDURE ifNotExists? functionName LP_ procedureParameter? (COMMA_ procedureParameter)* RP_
       routineOption*
       routineBody
     ;
@@ -681,7 +681,8 @@ validStatement
     : (createTable | alterTable | dropTable | dropDatabase | truncateTable
     | insert | replace | update | delete | select | call
     | createView | prepare | executeStmt | commit | deallocate
-    | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
+    | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement
+    | showCreateTable | startTransaction | rollback | commit) SEMI_?
     ;
 
 beginStatement
