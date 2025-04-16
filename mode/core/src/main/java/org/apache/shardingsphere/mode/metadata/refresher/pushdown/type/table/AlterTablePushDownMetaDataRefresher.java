@@ -56,7 +56,8 @@ public final class AlterTablePushDownMetaDataRefresher implements PushDownMetaDa
         } else {
             alteredTables.add(getTable(database, logicDataSourceNames, schemaName, tableName, props));
         }
-        metaDataManagerPersistService.alterSchema(database, schemaName, alteredTables, Collections.emptyList(), droppedTables, Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
+        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
     }
     
     private ShardingSphereTable getTable(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName,

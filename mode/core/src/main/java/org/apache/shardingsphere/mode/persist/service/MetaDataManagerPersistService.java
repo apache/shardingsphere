@@ -56,19 +56,6 @@ public interface MetaDataManagerPersistService {
     void createSchema(ShardingSphereDatabase database, String schemaName);
     
     /**
-     * Alter schema.
-     *
-     * @param database database
-     * @param schemaName schema name
-     * @param alteredTables altered tables
-     * @param alteredViews altered views
-     * @param droppedTables dropped tables
-     * @param droppedViews dropped views
-     */
-    void alterSchema(ShardingSphereDatabase database, String schemaName,
-                     Collection<ShardingSphereTable> alteredTables, Collection<ShardingSphereView> alteredViews, Collection<String> droppedTables, Collection<String> droppedViews);
-    
-    /**
      * Rename schema.
      *
      * @param database database
@@ -102,6 +89,33 @@ public interface MetaDataManagerPersistService {
      * @param tableNames table names
      */
     void dropTables(ShardingSphereDatabase database, String schemaName, Collection<String> tableNames);
+    
+    /**
+     * Alter tables.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param alteredTables altered tables
+     */
+    void alterTables(ShardingSphereDatabase database, String schemaName, Collection<ShardingSphereTable> alteredTables);
+    
+    /**
+     * Alter views.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param alteredViews altered views
+     */
+    void alterViews(ShardingSphereDatabase database, String schemaName, Collection<ShardingSphereView> alteredViews);
+    
+    /**
+     * Drop views.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param droppedViews dropped views
+     */
+    void dropViews(ShardingSphereDatabase database, String schemaName, Collection<String> droppedViews);
     
     /**
      * Register storage units.

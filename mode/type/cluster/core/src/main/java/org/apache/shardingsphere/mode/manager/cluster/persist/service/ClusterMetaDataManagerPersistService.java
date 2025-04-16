@@ -86,13 +86,6 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     }
     
     @Override
-    public void alterSchema(final ShardingSphereDatabase database, final String schemaName,
-                            final Collection<ShardingSphereTable> alteredTables, final Collection<ShardingSphereView> alteredViews,
-                            final Collection<String> droppedTables, final Collection<String> droppedViews) {
-        metaDataPersistFacade.getDatabaseMetaDataFacade().alterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
-    }
-    
-    @Override
     public void renameSchema(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName) {
         metaDataPersistFacade.getDatabaseMetaDataFacade().renameSchema(metaDataContextManager.getMetaDataContexts().getMetaData(), database, schemaName, renameSchemaName);
     }
@@ -121,6 +114,21 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (isNeedRefresh && tableNames.stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each, database))) {
             alterSingleRuleConfiguration(database, database.getRuleMetaData());
         }
+    }
+    
+    @Override
+    public void alterTables(final ShardingSphereDatabase database, final String schemaName, final Collection<ShardingSphereTable> alteredTables) {
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, alteredTables);
+    }
+    
+    @Override
+    public void alterViews(final ShardingSphereDatabase database, final String schemaName, final Collection<ShardingSphereView> alteredViews) {
+        metaDataPersistFacade.getDatabaseMetaDataFacade().getView().persist(database.getName(), schemaName, alteredViews);
+    }
+    
+    @Override
+    public void dropViews(final ShardingSphereDatabase database, final String schemaName, final Collection<String> droppedViews) {
+        droppedViews.forEach(each -> metaDataPersistFacade.getDatabaseMetaDataFacade().getView().drop(database.getName(), schemaName, each));
     }
     
     @Override

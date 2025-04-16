@@ -53,7 +53,7 @@ public final class CreateIndexPushDownMetaDataRefresher implements PushDownMetaD
         ShardingSphereTable table = schema.getTable(tableName);
         ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
         newTable.putIndex(new ShardingSphereIndex(indexName, new LinkedList<>(), false));
-        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.singleton(newTable), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(newTable));
     }
     
     @Override

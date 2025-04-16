@@ -69,7 +69,10 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
             alteredTables.add(schema.getTable(viewName));
             alteredViews.add(schema.getView(viewName));
         }
-        metaDataManagerPersistService.alterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
+        metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
+        metaDataManagerPersistService.alterViews(database, schemaName, alteredViews);
+        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
     private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,

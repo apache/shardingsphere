@@ -57,9 +57,8 @@ public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDa
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
-        metaDataManagerPersistService.alterSchema(database, schemaName,
-                Collections.singleton(actualTableMetaData.get()), Collections.singleton(new ShardingSphereView(viewName, sqlStatement.getViewDefinition())),
-                Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualTableMetaData.get()));
+        metaDataManagerPersistService.alterViews(database, schemaName, Collections.singleton(new ShardingSphereView(viewName, sqlStatement.getViewDefinition())));
     }
     
     @Override
