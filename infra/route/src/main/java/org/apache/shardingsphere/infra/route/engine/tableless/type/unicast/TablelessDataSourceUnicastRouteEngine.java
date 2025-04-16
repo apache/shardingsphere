@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,8 +34,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @RequiredArgsConstructor
 public final class TablelessDataSourceUnicastRouteEngine implements TablelessRouteEngine {
-    
-    private final ConnectionContext connectionContext;
     
     @Override
     public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
@@ -51,7 +48,6 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        Collection<String> usedDataSourceNames = connectionContext.getUsedDataSourceNames().isEmpty() ? dataSourceNames : connectionContext.getUsedDataSourceNames();
-        return new ArrayList<>(usedDataSourceNames).get(ThreadLocalRandom.current().nextInt(usedDataSourceNames.size()));
+        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }
