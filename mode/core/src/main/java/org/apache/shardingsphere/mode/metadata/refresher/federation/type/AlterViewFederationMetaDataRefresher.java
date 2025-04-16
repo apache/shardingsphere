@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -48,7 +47,8 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
             droppedViews.add(viewName);
         }
         sqlStatement.getViewDefinition().ifPresent(optional -> alteredViews.add(new ShardingSphereView(viewName, optional)));
-        metaDataManagerPersistService.alterSchema(database, schemaName, Collections.emptyList(), alteredViews, Collections.emptyList(), droppedViews);
+        metaDataManagerPersistService.alterViews(database, schemaName, alteredViews);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
     @Override
