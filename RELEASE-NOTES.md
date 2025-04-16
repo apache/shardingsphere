@@ -32,6 +32,7 @@
 1. SQL Parser: Enhance combineType in Oracle to support EXCEPT ALL and INTERSECT ALL - [#35099](https://github.com/apache/shardingsphere/pull/35099)
 1. DistSQL: Add InUsedStorageUnitRetriever for single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
 1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35137](https://github.com/apache/shardingsphere/pull/35137)
+1. SQL Parser: Support parsing MySQL stored procedure syntax part2 - [#35205](https://github.com/apache/shardingsphere/pull/35205)
 
 ### Bug Fixes
 
