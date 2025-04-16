@@ -135,7 +135,7 @@ public final class ShardingSphereProxyContainer implements AdapterContainer, Emb
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
         proxy.startInternal(port, Collections.singletonList("0.0.0.0"));
-        log.info("DBPlusEngine-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
+        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
     }
     
     private Path getTempConfigDirectory() throws IOException {
