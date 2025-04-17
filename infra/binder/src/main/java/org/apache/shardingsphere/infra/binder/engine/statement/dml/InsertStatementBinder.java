@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.column.InsertColumnsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -53,6 +54,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
             sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
         }
+        sqlStatement.getSetAssignment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
         sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)));
         return result;
     }
@@ -61,7 +63,6 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     private InsertStatement copy(final InsertStatement sqlStatement) {
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.getValues().addAll(sqlStatement.getValues());
-        sqlStatement.getSetAssignment().ifPresent(result::setSetAssignment);
         sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
         sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
