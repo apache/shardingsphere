@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.va
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
@@ -44,7 +43,7 @@ class SetDistVariableUpdatableRALBackendHandlerTest {
     @BeforeEach
     void setUp() {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
-        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), new DefaultAttributeMap());
+        connectionSession = new ConnectionSession(mock(), new DefaultAttributeMap());
     }
     
     @Test
