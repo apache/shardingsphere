@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
@@ -49,6 +50,15 @@ public interface SQLFederationProcessor {
      */
     default void registerExecutor(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
                                   String databaseName, String schemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus) {
+    }
+    
+    /**
+     * Unregister executor.
+     *
+     * @param queryContext query context
+     * @param schemaPlus sql federation schema
+     */
+    default void unregisterExecutor(QueryContext queryContext, SchemaPlus schemaPlus) {
     }
     
     /**
