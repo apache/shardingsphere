@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -60,7 +59,7 @@ class ConnectionSessionTest {
     
     @BeforeEach
     void setup() {
-        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), null);
+        connectionSession = new ConnectionSession(mock(), null);
         connectionSession.setGrantee(mock(Grantee.class));
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
