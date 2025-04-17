@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
@@ -64,14 +64,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLFederationTable extends AbstractTable implements ModifiableTable, TranslatableTable {
     
+    private static final TransmittableThreadLocal<ScanExecutor> SCAN_EXECUTOR_HOLDER = new TransmittableThreadLocal<>();
+    
     private final ShardingSphereTable table;
     
     private final SQLFederationStatistic statistic;
     
     private final DatabaseType protocolType;
-    
-    @Setter
-    private ScanExecutor scanExecutor;
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
@@ -107,10 +106,10 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
      * @return enumerable result
      */
     public Enumerable<Object> execute(final DataContext root, final String sql, final int[] paramIndexes) {
-        if (null == scanExecutor) {
+        if (null == SCAN_EXECUTOR_HOLDER.get()) {
             return createEmptyEnumerable();
         }
-        return scanExecutor.execute(table, new ScanExecutorContext(root, sql, paramIndexes));
+        return SCAN_EXECUTOR_HOLDER.get().execute(table, new ScanExecutorContext(root, sql, paramIndexes));
     }
     
     private AbstractEnumerable<Object> createEmptyEnumerable() {
@@ -143,5 +142,21 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
                                          final RelNode relNode, final Operation operation, final List<String> updateColumnList,
                                          final List<RexNode> sourceExpressionList, final boolean flattened) {
         return LogicalTableModify.create(table, schema, relNode, operation, updateColumnList, sourceExpressionList, flattened);
+    }
+    
+    /**
+     * Set scan executor.
+     *
+     * @param scanExecutor scan executor
+     */
+    public void setScanExecutor(final ScanExecutor scanExecutor) {
+        SCAN_EXECUTOR_HOLDER.set(scanExecutor);
+    }
+    
+    /**
+     * Clear scan executor.
+     */
+    public void clearScanExecutor() {
+        SCAN_EXECUTOR_HOLDER.remove();
     }
 }

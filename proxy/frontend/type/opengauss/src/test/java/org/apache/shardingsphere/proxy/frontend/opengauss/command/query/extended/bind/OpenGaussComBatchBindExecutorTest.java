@@ -113,7 +113,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
-        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
         when(result.getStatementManager()).thenReturn(backendStatement);
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);

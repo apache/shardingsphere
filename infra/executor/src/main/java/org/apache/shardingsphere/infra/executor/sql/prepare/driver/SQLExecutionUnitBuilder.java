@@ -43,11 +43,12 @@ public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M ext
      * @param executionUnit execution unit
      * @param executorManager executor manager 
      * @param connection connection
+     * @param connectionOffset connection offset
      * @param connectionMode connection mode
      * @param option storage resource option
      * @param databaseType database type
      * @return SQL execution unit
      * @throws SQLException SQL exception
      */
-    T build(ExecutionUnit executionUnit, M executorManager, C connection, ConnectionMode connectionMode, O option, DatabaseType databaseType) throws SQLException;
+    T build(ExecutionUnit executionUnit, M executorManager, C connection, int connectionOffset, ConnectionMode connectionMode, O option, DatabaseType databaseType) throws SQLException;
 }

@@ -29,14 +29,16 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationBindContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +79,26 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         SQLFederationExecutorContext executorContext = new SQLFederationExecutorContext(databaseName, schemaName, metaData.getProps());
         EnumerableScanExecutor scanExecutor =
                 new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext, federationContext, metaData.getGlobalRuleMetaData(), statistics);
-        // TODO register only the required tables
-        for (ShardingSphereTable each : metaData.getDatabase(databaseName).getSchema(schemaName).getAllTables()) {
-            Table table = schemaPlus.tables().get(each.getName());
+        Collection<SimpleTableSegment> simpleTables = federationContext.getQueryContext().getSqlStatementContext() instanceof TableAvailable
+                ? ((TableAvailable) federationContext.getQueryContext().getSqlStatementContext()).getTablesContext().getSimpleTables()
+                : Collections.emptyList();
+        for (SimpleTableSegment each : simpleTables) {
+            Table table = schemaPlus.tables().get(each.getTableName().getIdentifier().getValue());
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).setScanExecutor(scanExecutor);
+            }
+        }
+    }
+    
+    @Override
+    public void unregisterExecutor(final QueryContext queryContext, final SchemaPlus schemaPlus) {
+        Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext() instanceof TableAvailable
+                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getSimpleTables()
+                : Collections.emptyList();
+        for (SimpleTableSegment each : simpleTables) {
+            Table table = schemaPlus.tables().get(each.getTableName().getIdentifier().getValue());
+            if (table instanceof SQLFederationTable) {
+                ((SQLFederationTable) table).clearScanExecutor();
             }
         }
     }
