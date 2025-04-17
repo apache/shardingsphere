@@ -986,3 +986,7 @@ SIMILAR
 CURRENT_ROLE
     : C U R R E N T UL_ R O L E
     ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;

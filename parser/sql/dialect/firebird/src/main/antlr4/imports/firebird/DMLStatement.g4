@@ -77,7 +77,7 @@ combineClause
     ;
 
 selectClause
-    : SELECT firstSkipClause? selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT firstSkipClause? selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause? optimizeClause?
     ;
 
 selectSpecification

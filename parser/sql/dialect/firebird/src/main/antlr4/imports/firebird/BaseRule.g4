@@ -388,7 +388,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals) (ASC | DESC)?
+    : (numberLiterals | expr) (ASC | DESC)?
     ;
 
 limitClause
@@ -419,6 +419,10 @@ limitRowCount
 
 limitOffset
     : numberLiterals | parameterMarker | bindLiterals
+    ;
+
+optimizeClause
+    : OPTIMIZE FOR (FIRST | ALL) ROWS
     ;
 
 dataType
