@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.route.engine.engine;
 
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -64,8 +63,8 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteInSameDataSource() throws SQLException {
-        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock(HintValueContext.class));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), null, mock());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -97,8 +96,8 @@ class SingleRouteEngineTest {
     void assertRouteWithoutSingleRule() throws SQLException {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setIfNotExists(false);
-        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock(HintValueContext.class));
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -114,9 +113,9 @@ class SingleRouteEngineTest {
     void assertRouteWithDefaultSingleRule() throws SQLException {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setIfNotExists(false);
-        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
         SingleRule singleRule =
-                new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
+                new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
