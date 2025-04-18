@@ -32,7 +32,7 @@ public final class FirebirdStatementIdGenerator {
     
     private static final FirebirdStatementIdGenerator INSTANCE = new FirebirdStatementIdGenerator();
     
-    private final Map<Integer, AtomicInteger> transactionRegistry = new ConcurrentHashMap<>();
+    private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
     /**
      * Get prepared statement registry instance.
@@ -46,38 +46,38 @@ public final class FirebirdStatementIdGenerator {
     /**
      * Register connection.
      *
-     * @param transactionId transaction ID
+     * @param connectionId connection ID
      */
-    public void registerTransaction(final int transactionId) {
-        transactionRegistry.computeIfAbsent(transactionId, k -> new AtomicInteger());
+    public void registerConnection(final int connectionId) {
+        connectionRegistry.put(connectionId, new AtomicInteger());
     }
     
     /**
      * Generate next statement ID for connection.
      *
-     * @param transactionId transaction ID
-     * @return generated statement ID for prepared statement
+     * @param connectionId connection ID
+     * @return generated statement ID
      */
-    public int nextStatementId(final int transactionId) {
-        return transactionRegistry.get(transactionId).incrementAndGet();
+    public int nextStatementId(final int connectionId) {
+        return connectionRegistry.get(connectionId).incrementAndGet();
     }
-
+    
     /**
-     * Get current statement ID for transaction.
+     * Get current statement ID for connection.
      *
-     * @param transactionId transaction ID
-     * @return statement ID for prepared statement
+     * @param connectionId connection ID
+     * @return statement ID
      */
-    public int getStatementId(final int transactionId) {
-        return transactionRegistry.get(transactionId).get();
+    public int getStatementId(final int connectionId) {
+        return connectionRegistry.get(connectionId).get();
     }
     
     /**
      * Unregister connection.
      *
-     * @param transactionId transaction ID
+     * @param connectionId connection ID
      */
-    public void unregisterTransaction(final int transactionId) {
-        transactionRegistry.remove(transactionId);
+    public void unregisterConnection(final int connectionId) {
+        connectionRegistry.remove(connectionId);
     }
 }

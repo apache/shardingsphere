@@ -43,8 +43,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        int transactionId = FirebirdTransactionIdGenerator.getInstance().getTransactionId(connectionSession.getConnectionId());
-        FirebirdStatementIdGenerator.getInstance().unregisterTransaction(transactionId);
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     

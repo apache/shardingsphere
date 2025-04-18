@@ -44,6 +44,7 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.util.Arrays;
@@ -64,6 +65,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     public int handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
+        FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     
