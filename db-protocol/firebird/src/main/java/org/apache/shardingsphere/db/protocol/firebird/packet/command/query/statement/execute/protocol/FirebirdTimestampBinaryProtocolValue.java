@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol;
 
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
- * Binary protocol value for int2 for Firebird.
+ * Binary protocol value for date for Firebird.
  */
-public final class FirebirdInt2BinaryProtocolValue implements FirebirdBinaryProtocolValue {
+public final class FirebirdTimestampBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        return payload.readInt2();
+        return FirebirdDateTimeUtil.getDateTime(payload.readInt4(), payload.readInt4());
     }
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.writeInt4((Integer) value);
+        LocalDateTime localDateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        payload.writeInt4(FirebirdDateTimeUtil.getEncodedDate(localDateTime));
+        payload.writeInt4(FirebirdDateTimeUtil.getEncodedTime(localDateTime));
     }
 }

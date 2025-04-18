@@ -17,89 +17,26 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol;
 
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
  * Binary protocol value for date for Firebird.
- * TODO Test Date type
  */
 public final class FirebirdDateBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        int length = payload.readInt1();
-        switch (length) {
-//            case 0:
-//                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent.");
-            case 4:
-                return getTimestampForDate(payload);
-            case 7:
-                return getTimestampForDatetime(payload);
-            case 11:
-                Timestamp result = getTimestampForDatetime(payload);
-                result.setNanos(payload.readInt4() * 1000);
-                return result;
-            default:
-                return null;
-//                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_TIME", length));
-        }
-    }
-    
-    private Timestamp getTimestampForDate(final FirebirdPacketPayload payload) {
-        return Timestamp.valueOf(LocalDate.of(payload.readInt2(), payload.readInt1(), payload.readInt1()).atStartOfDay());
-    }
-    
-    private Timestamp getTimestampForDatetime(final FirebirdPacketPayload payload) {
-        return Timestamp.valueOf(LocalDateTime.of(payload.readInt2(), payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1()));
+        return FirebirdDateTimeUtil.getDate(payload.readInt4());
     }
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        LocalDateTime dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
-        int year = dateTime.getYear();
-        int month = dateTime.getMonthValue();
-        int dayOfMonth = dateTime.getDayOfMonth();
-        int hours = dateTime.getHour();
-        int minutes = dateTime.getMinute();
-        int seconds = dateTime.getSecond();
-        int nanos = dateTime.getNano();
-        boolean isTimeAbsent = 0 == hours && 0 == minutes && 0 == seconds;
-        boolean isNanosAbsent = 0 == nanos;
-        if (isTimeAbsent && isNanosAbsent) {
-            payload.writeInt1(4);
-            writeDate(payload, year, month, dayOfMonth);
-            return;
-        }
-        if (isNanosAbsent) {
-            payload.writeInt1(7);
-            writeDate(payload, year, month, dayOfMonth);
-            writeTime(payload, hours, minutes, seconds);
-            return;
-        }
-        payload.writeInt1(11);
-        writeDate(payload, year, month, dayOfMonth);
-        writeTime(payload, hours, minutes, seconds);
-        writeNanos(payload, nanos);
-    }
-    
-    private void writeDate(final FirebirdPacketPayload payload, final int year, final int month, final int dayOfMonth) {
-        payload.writeInt2(year);
-        payload.writeInt1(month);
-        payload.writeInt1(dayOfMonth);
-    }
-    
-    private void writeTime(final FirebirdPacketPayload payload, final int hourOfDay, final int minutes, final int seconds) {
-        payload.writeInt1(hourOfDay);
-        payload.writeInt1(minutes);
-        payload.writeInt1(seconds);
-    }
-    
-    private void writeNanos(final FirebirdPacketPayload payload, final int nanos) {
-        payload.writeInt4(nanos);
+        LocalDateTime localDateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        payload.writeInt4(FirebirdDateTimeUtil.getEncodedDate(localDateTime));
     }
 }

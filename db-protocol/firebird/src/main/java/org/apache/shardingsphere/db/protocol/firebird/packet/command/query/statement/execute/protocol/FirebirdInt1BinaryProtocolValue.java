@@ -31,6 +31,6 @@ public final class FirebirdInt1BinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.writeInt1((Integer) value);
+        payload.writeInt2((Integer) value);
     }
 }

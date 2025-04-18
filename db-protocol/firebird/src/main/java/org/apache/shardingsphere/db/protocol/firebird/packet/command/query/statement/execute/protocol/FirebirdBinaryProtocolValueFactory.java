@@ -28,6 +28,7 @@ import java.util.Map;
 
 /**
  * Binary protocol value factory for Firebird.
+ * TODO Add handle for timezones and EX
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBinaryProtocolValueFactory {
@@ -46,6 +47,7 @@ public final class FirebirdBinaryProtocolValueFactory {
         setFloatBinaryProtocolValue();
         setDateBinaryProtocolValue();
         setTimeBinaryProtocolValue();
+        setTimestampBinaryProtocolValue();
         setNullBinaryProtocolValue();
     }
     
@@ -104,14 +106,19 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setDateBinaryProtocolValue() {
         FirebirdDateBinaryProtocolValue binaryProtocolValue = new FirebirdDateBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DATE, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIME_TZ, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP_TZ_EX, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP, binaryProtocolValue);
+//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIME_TZ, binaryProtocolValue);
+//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP_TZ_EX, binaryProtocolValue);
+//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP, binaryProtocolValue);
     }
     
     private static void setTimeBinaryProtocolValue() {
         FirebirdTimeBinaryProtocolValue binaryProtocolValue = new FirebirdTimeBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIME, binaryProtocolValue);
+    }
+    
+    private static void setTimestampBinaryProtocolValue() {
+        FirebirdTimestampBinaryProtocolValue binaryProtocolValue = new FirebirdTimestampBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP, binaryProtocolValue);
     }
     
     private static void setNullBinaryProtocolValue() {
