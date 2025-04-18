@@ -36,7 +36,7 @@ import java.util.LinkedList;
 public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<RenameTableStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
         Collection<String> droppedTables = new LinkedList<>();

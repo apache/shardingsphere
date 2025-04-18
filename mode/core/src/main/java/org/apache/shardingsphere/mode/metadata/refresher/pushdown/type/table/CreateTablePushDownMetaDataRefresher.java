@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
@@ -43,12 +42,12 @@ import java.util.Map;
 public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         if (TableRefreshUtils.isSingleTable(tableName, database)) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, tableName));
         }
         ShardingSphereTable loadedTable = loadTable(database, schemaName, tableName, ruleMetaData, props);
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
