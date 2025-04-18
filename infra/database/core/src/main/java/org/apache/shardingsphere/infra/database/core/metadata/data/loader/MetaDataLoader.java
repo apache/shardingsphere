@@ -86,7 +86,7 @@ public final class MetaDataLoader {
             try {
                 return dialectLoader.get().load(material);
             } catch (final SQLException ex) {
-                log.debug("Dialect load schema meta data error.", ex);
+                log.debug("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
             }
         }
         return loadByDefault(material);
