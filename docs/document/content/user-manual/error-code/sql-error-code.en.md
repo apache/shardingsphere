@@ -44,7 +44,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10403       | 44000     | %s algorithms '%s' in database '%s' are still in used.                              |
 | 10404       | 44000     | Invalid %s algorithm configuration '%s'.                                            |
 | 10410       | 0A000     | Unsupported %s.%s with database type '%s'.                                          |
-| 10440       | HY000     | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 10440       | HY000     | Algorithm '%s' execute failed, reason is: %s.                                       |
 | 10500       | 44000     | Invalid single rule configuration, reason is: %s.                                   |
 | 10501       | 42S02     | Single table '%s' does not exist.                                                   |
 | 10502       | HY000     | Can not load table with database name '%s' and data source name '%s', reason is: %s |
