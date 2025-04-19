@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 /**
  * DorisSQL create materialized view statement.
  */
-public class DorisCreateMaterializedViewStatement extends CreateMaterializedViewStatement implements DorisStatement {
+public final class DorisCreateMaterializedViewStatement extends CreateMaterializedViewStatement implements DorisStatement {
 }

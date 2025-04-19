@@ -361,12 +361,7 @@ createView
 
 // DORIS ADDED BEGIN
 createMaterializedView
-    : CREATE MATERIALIZED VIEW ifNotExists? name
-    (LP_ columnDefinition RP_)? buildMode?
-    (REFRESH refreshMethod? refreshTrigger?)?
-    ((DUPLICATE)? KEY keys= LP_ identifierList RP_)?
-    commentClause? partitionClause? distributedbyClause? propertiesClause?
-    AS select
+    : CREATE MATERIALIZED VIEW ifNotExists? name (LP_ columnDefinition RP_)? buildMode? (REFRESH refreshMethod? refreshTrigger?)? ((DUPLICATE)? KEY keys= LP_ identifierList RP_)? commentClause? partitionClause? distributedbyClause? propertiesClause? AS select
     ;
 // DORIS ADDED END
 
@@ -384,9 +379,7 @@ refreshMethod
 
 // DORIS ADDED BEGIN
 refreshTrigger
-    : ON MANUAL
-    | ON SCHEDULE refreshSchedule
-    | ON COMMIT
+    : ON MANUAL | ON SCHEDULE refreshSchedule | ON COMMIT
     ;
 // DORIS ADDED END
 
