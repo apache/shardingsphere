@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.sqlserver.metadata.database.object;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.object.DialectObjectUniquenessLevelProvider;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQLServer object uniqueness level provider.
+ * Dialect index option.
  */
-public class SQLServerObjectUniquenessLevelProvider implements DialectObjectUniquenessLevelProvider {
+@RequiredArgsConstructor
+@Getter
+public final class DialectIndexOption {
     
-    @Override
-    public UniquenessLevel getIndexUniquenessLevel() {
-        return UniquenessLevel.TABLE_LEVEL;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
+    private final boolean isSchemaUniquenessLevel;
 }
