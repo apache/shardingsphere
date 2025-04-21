@@ -55,7 +55,7 @@ public final class StorageUnitNodeMapCreator {
     }
     
     private static StorageNode create(final String storageUnitName, final String url, final String username) {
-        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
             return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(storageUnitName);

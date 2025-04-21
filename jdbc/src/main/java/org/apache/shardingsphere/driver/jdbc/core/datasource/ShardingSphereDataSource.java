@@ -78,7 +78,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     }
     
     private void printDriverInstanceId(final ContextManager contextManager) {
-        log.info("ShardingSphere-Driver `{}` started successfully.", contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId());
+        log.info("ShardingSphere-JDBC {} mode started successfully.", contextManager.getComputeNodeInstanceContext().getModeConfiguration().getType());
+        InstanceMetaData instanceMetaData = contextManager.getComputeNodeInstanceContext().getInstance().getMetaData();
+        log.info("Instance id: {}, IP: {}", instanceMetaData.getId(), instanceMetaData.getIp());
     }
     
     @HighFrequencyInvocation(canBeCached = true)

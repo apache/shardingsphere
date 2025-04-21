@@ -43,7 +43,7 @@ import java.util.Optional;
 public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDataRefresher<DropIndexStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
@@ -57,7 +57,7 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
             ShardingSphereTable table = schema.getTable(logicTableName.get());
             ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
             newTable.removeIndex(each.getIndexName().getIdentifier().getValue());
-            metaDataManagerPersistService.alterSchema(database, actualSchemaName, Collections.singleton(newTable), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+            metaDataManagerPersistService.alterTables(database, actualSchemaName, Collections.singleton(newTable));
         }
     }
     

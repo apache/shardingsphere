@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,10 +42,10 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import java.util.Collections;
 
 /**
- * Transaction backend handler factory.
+ * TCL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionBackendHandlerFactory {
+public final class TCLBackendHandlerFactory {
     
     /**
      * New instance of backend handler.
@@ -58,30 +58,30 @@ public final class TransactionBackendHandlerFactory {
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
+            return new TCLBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.SET_AUTOCOMMIT, connectionSession);
+            return new TCLBackendHandler(tclStatement, TransactionOperationType.SET_AUTOCOMMIT, connectionSession);
         }
         if (tclStatement instanceof SavepointStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);
+            return new TCLBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);
         }
         if (tclStatement instanceof ReleaseSavepointStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
+            return new TCLBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
         }
         if (tclStatement instanceof CommitStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
+            return new TCLBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
         }
         if (tclStatement instanceof RollbackStatement) {
             return ((RollbackStatement) tclStatement).getSavepointName().isPresent()
-                    ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
-                    : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+                    ? new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
+                    : new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && OperationScope.GLOBAL != ((SetTransactionStatement) tclStatement).getScope()) {
-            return new TransactionSetHandler((SetTransactionStatement) tclStatement, connectionSession);
+            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession);
         }
         if (tclStatement instanceof XAStatement) {
-            return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
+            return new XATCLHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());

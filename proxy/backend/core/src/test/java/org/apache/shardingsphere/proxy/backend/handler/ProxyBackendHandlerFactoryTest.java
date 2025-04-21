@@ -43,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabase
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
@@ -99,6 +99,7 @@ class ProxyBackendHandlerFactoryTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ContextManager contextManager = mockContextManager();
         when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -147,7 +148,7 @@ class ProxyBackendHandlerFactoryTest {
     void assertNewInstanceWithTCL(final String sql) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        assertThat(actual, instanceOf(TCLBackendHandler.class));
     }
     
     @Test

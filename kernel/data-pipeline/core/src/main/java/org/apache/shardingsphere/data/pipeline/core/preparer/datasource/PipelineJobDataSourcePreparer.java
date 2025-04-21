@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.Pr
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -70,10 +70,10 @@ public final class PipelineJobDataSourcePreparer {
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
-        if (!dialectDatabaseMetaData.isSchemaAvailable()) {
+        if (!dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()) {
             return;
         }
-        String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
+        String defaultSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>(param.getCreateTableConfigurations().size(), 1F);
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {

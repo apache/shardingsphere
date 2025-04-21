@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.postgresql.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -41,16 +41,11 @@ class PostgreSQLDatabaseMetaDataTest {
     
     @Test
     void assertIsSchemaAvailable() {
-        assertTrue(dialectDatabaseMetaData.isSchemaAvailable());
+        assertTrue(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable());
     }
     
     @Test
     void assertGetDefaultSchema() {
-        assertThat(dialectDatabaseMetaData.getDefaultSchema(), is(Optional.of("public")));
-    }
-    
-    @Test
-    void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.formatTableNamePattern("T_ORDER"), is("t_order"));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
     }
 }

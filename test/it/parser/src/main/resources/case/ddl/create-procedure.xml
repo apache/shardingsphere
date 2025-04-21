@@ -64,4 +64,31 @@
             <sql-statement start-index="152" stop-index="169" statement-class-simple-name="FirebirdOpenCursorStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_handler_and_table_creation">
+        <procedure-name name="peter1" />
+        <sql-statements>
+            <sql-statement start-index="65" stop-index="158" statement-class-simple-name="MySQLHandlerStatement" />
+            <sql-statement start-index="160" stop-index="202" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="204" stop-index="218" statement-class-simple-name="MySQLCallStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_decimal_variable">
+        <procedure-name name="bug15231_4" />
+        <sql-statements>
+            <sql-statement start-index="60" stop-index="73" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="75" stop-index="88" statement-class-simple-name="MySQLShowWarningsStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_transaction_read_only_and_isolation">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="22" stop-index="84" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_transaction_read_only" >
+        <sql-statements>
+            <sql-statement start-index="22" stop-index="54" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_if_not_exists" />
 </sql-parser-test-cases>

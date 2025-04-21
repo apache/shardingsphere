@@ -24,15 +24,9 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-
-import java.math.BigInteger;
-import java.sql.Types;
-import java.util.Optional;
 
 /**
  * SQL federation data type utility class.
@@ -70,33 +64,7 @@ public final class SQLFederationDataTypeUtils {
      * @return SQL type class
      */
     public static Class<?> getSqlTypeClass(final DatabaseType protocolType, final ShardingSphereColumn column) {
-        Optional<Class<?>> typeClazz = Optional.empty();
-        if (protocolType instanceof MySQLDatabaseType) {
-            typeClazz = findMySQLTypeClass(column);
-        }
-        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
-            typeClazz = findPostgreSQLTypeClass(column);
-        }
-        return typeClazz.orElseGet(() -> SqlType.valueOf(column.getDataType()).clazz);
-    }
-    
-    private static Optional<Class<?>> findPostgreSQLTypeClass(final ShardingSphereColumn column) {
-        if (Types.SMALLINT == column.getDataType()) {
-            return Optional.of(Integer.class);
-        }
-        return Optional.empty();
-    }
-    
-    private static Optional<Class<?>> findMySQLTypeClass(final ShardingSphereColumn column) {
-        if (Types.TINYINT == column.getDataType() || Types.SMALLINT == column.getDataType()) {
-            return Optional.of(Integer.class);
-        }
-        if (Types.INTEGER == column.getDataType()) {
-            return column.isUnsigned() ? Optional.of(Long.class) : Optional.of(Integer.class);
-        }
-        if (Types.BIGINT == column.getDataType()) {
-            return column.isUnsigned() ? Optional.of(BigInteger.class) : Optional.of(Long.class);
-        }
-        return Optional.empty();
+        return new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData().getDataTypeOption().findExtraSQLTypeClass(column.getDataType(), column.isUnsigned())
+                .orElseGet(() -> SqlType.valueOf(column.getDataType()).clazz);
     }
 }

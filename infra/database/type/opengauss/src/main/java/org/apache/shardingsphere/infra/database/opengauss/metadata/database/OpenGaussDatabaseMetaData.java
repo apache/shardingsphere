@@ -17,55 +17,24 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 
 /**
  * Database meta data of openGauss.
  */
 public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData {
     
-    private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList(
-            "ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC", "AUTHID", "AUTHORIZATION", "BETWEEN", "BIGINT",
-            "BINARY", "BINARY_DOUBLE", "BINARY_INTEGER", "BIT", "BOOLEAN", "BOTH", "BUCKETCNT", "BUCKETS", "BYTEAWITHOUTORDER", "BYTEAWITHOUTORDERWITHEQUAL", "CASE", "CAST", "CHAR", "CHARACTER",
-            "CHECK", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMPACT", "CONCURRENTLY", "CONSTRAINT", "CREATE", "CROSS", "CSN", "CURRENT_CATALOG", "CURRENT_DATE", "CURRENT_ROLE",
-            "CURRENT_SCHEMA", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DATE", "DEC", "DECIMAL", "DECODE", "DEFAULT", "DEFERRABLE", "DELTAMERGE", "DESC", "DISTINCT", "DO", "ELSE", "END",
-            "EXCEPT", "EXCLUDED", "EXISTS", "EXTRACT", "FALSE", "FENCED", "FETCH", "FLOAT", "FOR", "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GREATEST", "GROUP", "GROUPING", "GROUPPARENT",
-            "HAVING", "HDFSDIRECTORY", "ILIKE", "IN", "INITIALLY", "INNER", "INOUT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "JOIN", "LEADING", "LEAST", "LEFT", "LESS", "LIKE",
-            "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "MAXVALUE", "MINUS", "MODIFY", "NATIONAL", "NATURAL", "NCHAR", "NOCYCLE", "NONE", "NOT", "NOTNULL", "NULL", "NULLIF", "NUMBER", "NUMERIC",
-            "NVARCHAR", "NVARCHAR2", "NVL", "OFFSET", "ON", "ONLY", "OR", "ORDER", "OUT", "OUTER", "OVERLAPS", "OVERLAY", "PERFORMANCE", "PLACING", "POSITION", "PRECISION", "PRIMARY", "PRIORER",
-            "PROCEDURE", "REAL", "RECYCLEBIN", "REFERENCES", "REJECT", "RETURNING", "RIGHT", "ROW", "ROWNUM", "SELECT", "SESSION_USER", "SETOF", "SIMILAR", "SMALLDATETIME", "SMALLINT", "SOME",
-            "SUBSTRING", "SYMMETRIC", "SYSDATE", "TABLE", "TABLESAMPLE", "THEN", "TIME", "TIMECAPSULE", "TIMESTAMP", "TIMESTAMPDIFF", "TINYINT", "TO", "TRAILING", "TREAT", "TRIM", "TRUE", "UNION",
-            "UNIQUE", "USER", "USING", "VALUES", "VARCHAR", "VARCHAR2", "VARIADIC", "VERBOSE", "VERIFY", "WHEN", "WHERE", "WINDOW", "WITH", "XMLATTRIBUTES", "XMLCONCAT", "XMLELEMENT", "XMLEXISTS",
-            "XMLFOREST", "XMLPARSE", "XMLPI", "XMLROOT", "XMLSERIALIZE"));
-    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
-    }
-    
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new CaseInsensitiveMap<>();
-        result.put("SMALLINT", Types.SMALLINT);
-        result.put("INT", Types.INTEGER);
-        result.put("INTEGER", Types.INTEGER);
-        result.put("BIGINT", Types.BIGINT);
-        result.put("DECIMAL", Types.DECIMAL);
-        result.put("NUMERIC", Types.NUMERIC);
-        result.put("REAL", Types.REAL);
-        result.put("BOOL", Types.BOOLEAN);
-        result.put("CHARACTER VARYING", Types.VARCHAR);
-        return result;
     }
     
     @Override
@@ -74,38 +43,23 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public boolean isReservedWord(final String identifier) {
-        return RESERVED_WORDS.contains(identifier.toUpperCase());
+    public DialectDataTypeOption getDataTypeOption() {
+        return new OpenGaussDataTypeOption();
     }
     
     @Override
-    public boolean isSchemaAvailable() {
-        return true;
+    public DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(true, "public");
     }
     
     @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("public");
+    public DialectTransactionOption getTransactionOption() {
+        return new DialectTransactionOption(true, false, false, true, false);
     }
     
     @Override
-    public boolean isSupportGlobalCSN() {
-        return true;
-    }
-    
-    @Override
-    public String formatTableNamePattern(final String tableNamePattern) {
-        return tableNamePattern.toLowerCase();
-    }
-    
-    @Override
-    public boolean isSupportDDLInXATransaction() {
-        return true;
-    }
-    
-    @Override
-    public boolean isSupportMetaDataRefreshInTransaction() {
-        return false;
+    public TableNamePatternType getTableNamePatternType() {
+        return TableNamePatternType.LOWER_CASE;
     }
     
     @Override

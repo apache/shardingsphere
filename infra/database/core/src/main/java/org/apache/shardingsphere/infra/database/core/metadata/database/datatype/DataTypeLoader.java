@@ -41,7 +41,7 @@ public final class DataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
         Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
-        result.putAll(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getExtraDataTypes());
+        result.putAll(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDataTypeOption().getExtraDataTypes());
         return result;
     }
     

@@ -22,7 +22,7 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -73,7 +73,7 @@ public final class SchemaMetaDataLoader {
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             Map<String, Collection<String>> result = new CaseInsensitiveMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
-                String schemaName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? each : databaseName;
+                String schemaName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? each : databaseName;
                 result.put(schemaName, loadTableNames(connection, each, excludedTables));
             }
             return result;
@@ -90,7 +90,7 @@ public final class SchemaMetaDataLoader {
      */
     public static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (!dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+        if (!dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             return Collections.singletonList(connection.getSchema());
         }
         Collection<String> result = new LinkedList<>();

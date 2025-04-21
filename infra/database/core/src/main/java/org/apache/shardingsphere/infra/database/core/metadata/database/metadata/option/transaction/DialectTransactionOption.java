@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Transactional error allowed SQL statement handler.
+ * Dialect transaction option.
  */
-@SingletonSPI
-public interface TransactionalErrorAllowedSQLStatementHandler extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class DialectTransactionOption {
     
-    /**
-     * Judge SQL statement can be executed continuously if exception occur during transactional SQL executing.
-     *
-     * @param statement statement to be judged
-     * @throws SQLException SQL exception
-     */
-    void judgeContinueToExecute(SQLStatement statement) throws SQLException;
+    private final boolean isSupportGlobalCSN;
+    
+    private final boolean isDDLNeedImplicitCommit;
+    
+    private final boolean isSupportAutoCommitInNestedTransaction;
+    
+    private final boolean isSupportDDLInXATransaction;
+    
+    // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
+    private final boolean isSupportMetaDataRefreshInTransaction;
 }

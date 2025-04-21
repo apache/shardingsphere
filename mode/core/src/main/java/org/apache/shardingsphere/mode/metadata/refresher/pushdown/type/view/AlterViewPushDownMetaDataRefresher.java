@@ -46,7 +46,7 @@ import java.util.Optional;
 public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
@@ -57,7 +57,7 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
-            ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, renameViewName, originalView, props);
+            ShardingSphereSchema schema = getSchema(database, logicDataSourceName, schemaName, renameViewName, originalView, props);
             alteredTables.add(schema.getTable(renameViewName));
             alteredViews.add(schema.getView(renameViewName));
             droppedTables.add(viewName);
@@ -65,18 +65,21 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
         }
         Optional<String> viewDefinition = sqlStatement.getViewDefinition();
         if (viewDefinition.isPresent()) {
-            ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
+            ShardingSphereSchema schema = getSchema(database, logicDataSourceName, schemaName, viewName, viewDefinition.get(), props);
             alteredTables.add(schema.getTable(viewName));
             alteredViews.add(schema.getView(viewName));
         }
-        metaDataManagerPersistService.alterSchema(database, schemaName, alteredTables, alteredViews, droppedTables, droppedViews);
+        metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
+        metaDataManagerPersistService.alterViews(database, schemaName, alteredViews);
+        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
+        metaDataManagerPersistService.dropViews(database, schemaName, droppedViews);
     }
     
-    private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final String logicDataSourceName,
                                            final String schemaName, final String viewName, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         if (TableRefreshUtils.isSingleTable(viewName, database)) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, viewName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);

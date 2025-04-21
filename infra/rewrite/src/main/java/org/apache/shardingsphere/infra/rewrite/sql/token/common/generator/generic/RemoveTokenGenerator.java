@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -79,7 +79,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
             }
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             OwnerSegment ownerSegment = each.getOwner().get();
-            if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 ownerSegment.getOwner().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), ownerSegment.getStartIndex() - 1)));
             } else {
                 result.add(new RemoveToken(ownerSegment.getStartIndex(), each.getTableName().getStartIndex() - 1));

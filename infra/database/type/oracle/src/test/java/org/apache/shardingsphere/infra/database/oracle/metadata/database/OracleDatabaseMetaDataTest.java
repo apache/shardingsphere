@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -47,18 +47,13 @@ class OracleDatabaseMetaDataTest {
     void assertGetSchema() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenReturn("scott");
-        assertThat(dialectDatabaseMetaData.getSchema(connection), is("SCOTT"));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getSchema(connection), is("SCOTT"));
     }
     
     @Test
     void assertGetSchemaIfExceptionThrown() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
-        assertNull(dialectDatabaseMetaData.getSchema(connection));
-    }
-    
-    @Test
-    void assertFormatTableNamePattern() {
-        assertThat(dialectDatabaseMetaData.formatTableNamePattern("tbl"), is("TBL"));
+        assertNull(dialectDatabaseMetaData.getSchemaOption().getSchema(connection));
     }
 }

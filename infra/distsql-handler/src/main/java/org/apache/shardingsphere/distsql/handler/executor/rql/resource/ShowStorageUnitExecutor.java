@@ -86,7 +86,7 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
         DataSource dataSource = storageUnit.getDataSource();
         DataSourcePoolProperties result = DataSourcePoolPropertiesCreator.create(
                 dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource);
-        if (new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().isInstanceConnectionAvailable()) {
+        if (new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable()) {
             for (Entry<String, Object> entry : storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());

@@ -36,4 +36,8 @@
     <create-materialized-view sql-case-id="create_materialized_view_with_pctfree_storage_build_deferred" />
     <create-materialized-view sql-case-id="create_materialized_view_refresh_fast_on_remand_as_select" />
     <create-materialized-view sql-case-id="create_materialized_view_refresh_with_date" />
+    <create-materialized-view sql-case-id="create_materialized_view_with_key_exists" />
+    <create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" />
+    <create-materialized-view sql-case-id="create_materialized_view_refresh_complete" />
+    <create-materialized-view sql-case-id="create_materialized_view_build_immediate" />
 </sql-parser-test-cases>

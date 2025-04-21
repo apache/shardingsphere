@@ -111,8 +111,8 @@ public final class SchemaMetaDataUtils {
     }
     
     private static Collection<DatabaseType> getUnsupportedThreeTierStorageStructureDatabaseTypes(final Collection<StorageUnit> storageUnits) {
-        return storageUnits.stream()
-                .map(StorageUnit::getStorageType).filter(each -> !new DatabaseTypeRegistry(each).getDialectDatabaseMetaData().isSupportThreeTierStorageStructure()).collect(Collectors.toList());
+        return storageUnits.stream().map(StorageUnit::getStorageType)
+                .filter(each -> !new DatabaseTypeRegistry(each).getDialectDatabaseMetaData().getConnectionOption().isSupportThreeTierStorageStructure()).collect(Collectors.toList());
     }
     
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,

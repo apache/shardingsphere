@@ -312,7 +312,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
-        if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSchemaAvailable()) {
+        if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
             return;
         }
         connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));

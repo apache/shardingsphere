@@ -26,6 +26,8 @@ import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRule
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -65,6 +67,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -230,9 +233,37 @@ class ExportMetaDataExecutorTest {
             return;
         }
         assertThat(actual.size(), is(expected.size()));
+        ConfigurationProperties actualConfigProperties = new ConfigurationProperties(actual);
+        ConfigurationProperties expectedConfigProperties = new ConfigurationProperties(expected);
+        TemporaryConfigurationProperties actualTemporaryConfigProperties = new TemporaryConfigurationProperties(actual);
+        TemporaryConfigurationProperties expectedTemporaryConfigProperties = new TemporaryConfigurationProperties(expected);
         for (Entry<Object, Object> entry : expected.entrySet()) {
-            assertThat(actual.get(entry.getKey()), is(entry.getValue()));
+            Object actualValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
+                    .map(actualConfigProperties::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(actualTemporaryConfigProperties::getValue).orElse(null));
+            Object expectedValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
+                    .map(expectedConfigProperties::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(expectedTemporaryConfigProperties::getValue).orElse(null));
+            assertThat(actualValue, is(expectedValue));
         }
+    }
+    
+    private Optional<ConfigurationPropertyKey> findConfigurationPropertyKey(final String key) {
+        for (ConfigurationPropertyKey each : ConfigurationPropertyKey.values()) {
+            if (each.getKey().equalsIgnoreCase(key)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<TemporaryConfigurationPropertyKey> findTemporaryConfigurationPropertyKey(final String key) {
+        for (TemporaryConfigurationPropertyKey each : TemporaryConfigurationPropertyKey.values()) {
+            if (each.getKey().equalsIgnoreCase(key)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private void assertDatabaseConfig(final Map<String, String> actual, final Map<String, String> expected) {

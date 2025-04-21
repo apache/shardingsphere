@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -53,7 +53,7 @@ public final class PipelineSQLSegmentBuilder {
      */
     public String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (dialectDatabaseMetaData.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(getEscapedIdentifier(schemaName)).append('.');
         }
         result.append(getEscapedIdentifier(tableName));

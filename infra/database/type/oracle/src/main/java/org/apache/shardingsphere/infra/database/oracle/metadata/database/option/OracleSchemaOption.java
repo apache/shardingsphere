@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.query;
+package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
-import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
-import java.util.Collection;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * In used encrypt storage unit retriever.
+ * Schema option for Oracle.
  */
-public final class InUsedEncryptStorageUnitRetriever implements InUsedStorageUnitRetriever<EncryptRule> {
+public final class OracleSchemaOption implements DialectSchemaOption {
     
     @Override
-    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final EncryptRule rule) {
-        return rule.getAllTableNames();
+    public boolean isSchemaAvailable() {
+        return true;
     }
     
     @Override
-    public Class<EncryptRule> getType() {
-        return EncryptRule.class;
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    @Override
+    public Optional<String> getDefaultSchema() {
+        return Optional.empty();
     }
 }

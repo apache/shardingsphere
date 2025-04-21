@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.inf
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -113,8 +113,8 @@ class SelectInformationSchemataExecutorTest {
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, mockContext) -> {
-            DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-            when(dialectDatabaseMetaData.isInstanceConnectionAvailable()).thenReturn(true);
+            DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+            when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(true);
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         })) {
             ShardingSphereDatabase database = createDatabase(expectedResultSetMap);

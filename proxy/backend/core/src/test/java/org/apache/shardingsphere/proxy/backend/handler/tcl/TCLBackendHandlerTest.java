@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.transaction;
+package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -43,7 +45,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class TransactionBackendHandlerTest {
+class TCLBackendHandlerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     
@@ -51,10 +55,11 @@ class TransactionBackendHandlerTest {
     void assertExecute() throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        assertThat(new TCLBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     private ContextManager mockContextManager() {

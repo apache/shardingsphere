@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameT
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -37,7 +36,7 @@ import java.util.LinkedList;
 public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<RenameTableStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
         Collection<String> droppedTables = new LinkedList<>();
@@ -48,7 +47,8 @@ public final class RenameTablePushDownMetaDataRefresher implements PushDownMetaD
                     each.getRenameTable().getTableName().getIdentifier().getValue(), toBeRenamedTable.getAllColumns(), toBeRenamedTable.getAllIndexes(), toBeRenamedTable.getAllConstraints()));
             droppedTables.add(toBeRenamedTableName);
         }
-        metaDataManagerPersistService.alterSchema(database, schemaName, alteredTables, Collections.emptyList(), droppedTables, Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, schemaName, alteredTables);
+        metaDataManagerPersistService.dropTables(database, schemaName, droppedTables);
     }
     
     @Override

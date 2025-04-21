@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -43,7 +42,7 @@ import java.util.Optional;
 public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterIndexStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
         Optional<IndexSegment> renameIndex = sqlStatement.getRenameIndex();
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
@@ -61,7 +60,7 @@ public final class AlterIndexPushDownMetaDataRefresher implements PushDownMetaDa
         newTable.removeIndex(indexName);
         String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
         newTable.putIndex(new ShardingSphereIndex(renameIndexName, new LinkedList<>(), false));
-        metaDataManagerPersistService.alterSchema(database, actualSchemaName, Collections.singleton(newTable), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaDataManagerPersistService.alterTables(database, actualSchemaName, Collections.singleton(newTable));
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {

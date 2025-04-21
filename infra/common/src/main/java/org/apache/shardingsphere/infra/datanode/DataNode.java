@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
@@ -87,12 +87,12 @@ public final class DataNode {
     }
     
     private boolean isSchemaAvailable(final DatabaseType databaseType) {
-        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSchemaAvailable();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
     }
     
     private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             return containsSchema ? segments.get(1) : ASTERISK;
         }
         return databaseName;
@@ -123,7 +123,7 @@ public final class DataNode {
      */
     public String format(final DatabaseType databaseType) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() && null != schemaName
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() && null != schemaName
                 ? String.join(DELIMITER, dataSourceName, schemaName, tableName)
                 : String.join(DELIMITER, dataSourceName, tableName);
     }

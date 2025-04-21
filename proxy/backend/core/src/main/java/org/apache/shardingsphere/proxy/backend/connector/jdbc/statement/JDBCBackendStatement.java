@@ -49,8 +49,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     @Override
-    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
-                                           final DatabaseType databaseType) throws SQLException {
+    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final int connectionOffset,
+                                           final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> params = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -41,11 +41,11 @@ class OpenGaussDatabaseMetaDataTest {
     
     @Test
     void assertIsSchemaAvailable() {
-        assertTrue(dialectDatabaseMetaData.isSchemaAvailable());
+        assertTrue(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable());
     }
     
     @Test
     void assertGetDefaultSchema() {
-        assertThat(dialectDatabaseMetaData.getDefaultSchema(), is(Optional.of("public")));
+        assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
     }
 }

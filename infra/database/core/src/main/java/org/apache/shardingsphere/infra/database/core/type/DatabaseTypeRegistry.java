@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * Database type registry.
  */
 public final class DatabaseTypeRegistry {
-    
-    private static final Map<DatabaseType, DialectDatabaseMetaData> REGISTERED_META_DATA = new ConcurrentHashMap<>();
     
     private final DatabaseType databaseType;
     
@@ -41,10 +37,7 @@ public final class DatabaseTypeRegistry {
     
     public DatabaseTypeRegistry(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        if (!REGISTERED_META_DATA.containsKey(databaseType)) {
-            REGISTERED_META_DATA.put(databaseType, DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
-        }
-        dialectDatabaseMetaData = REGISTERED_META_DATA.get(databaseType);
+        dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     }
     
     /**
@@ -64,6 +57,25 @@ public final class DatabaseTypeRegistry {
      * @return default schema name
      */
     public String getDefaultSchemaName(final String databaseName) {
-        return dialectDatabaseMetaData.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
+    }
+    
+    /**
+     * Format table name pattern.
+     *
+     * @param tableNamePattern table name pattern
+     * @return formatted table name pattern
+     */
+    public String formatTableNamePattern(final String tableNamePattern) {
+        DatabaseType databaseType = this.databaseType.getTrunkDatabaseType().orElse(this.databaseType);
+        switch (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTableNamePatternType()) {
+            case UPPER_CASE:
+                return tableNamePattern.toUpperCase();
+            case LOWER_CASE:
+                return tableNamePattern.toLowerCase();
+            case KEEP_ORIGIN:
+            default:
+                return tableNamePattern;
+        }
     }
 }

@@ -22,7 +22,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration.Si
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,6 +34,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlCDCJobConfigurationSwapperTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertSwapToObject() {
@@ -54,7 +57,7 @@ class YamlCDCJobConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfig() {
-        CDCJobConfiguration jobConfig = new CDCJobConfiguration("j0302p00007a8bf46da145dc155ba25c710b550220", "test_db", Arrays.asList("t_order", "t_order_item"), true, new MySQLDatabaseType(),
+        CDCJobConfiguration jobConfig = new CDCJobConfiguration("j0302p00007a8bf46da145dc155ba25c710b550220", "test_db", Arrays.asList("t_order", "t_order_item"), true, databaseType,
                 null, null, null, true, new SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 1);
         YamlCDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration(jobConfig);
         assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));

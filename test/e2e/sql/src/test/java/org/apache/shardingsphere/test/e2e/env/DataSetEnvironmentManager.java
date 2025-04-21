@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.env;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -236,8 +235,8 @@ public final class DataSetEnvironmentManager {
         }
         
         private String getQuotedTableName(final String tableName, final DatabaseType databaseType) {
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            return dialectDatabaseMetaData.getQuoteCharacter().wrap(dialectDatabaseMetaData.formatTableNamePattern(tableName));
+            DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+            return databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter().wrap(databaseTypeRegistry.formatTableNamePattern(tableName));
         }
     }
 }

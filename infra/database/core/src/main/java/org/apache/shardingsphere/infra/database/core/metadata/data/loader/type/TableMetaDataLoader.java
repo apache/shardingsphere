@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
@@ -48,9 +47,8 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
-            String formattedTableNamePattern = dialectDatabaseMetaData.formatTableNamePattern(tableNamePattern);
+            String formattedTableNamePattern = new DatabaseTypeRegistry(databaseType).formatTableNamePattern(tableNamePattern);
             return isTableExist(connection, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
                             connection, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connection, formattedTableNamePattern), Collections.emptyList()))

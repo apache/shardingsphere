@@ -30,9 +30,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -40,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
@@ -53,8 +49,6 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerIns
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,16 +66,6 @@ class SQLStatementContextFactoryTest {
         selectStatement.setProjections(projectionsSegment);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(selectStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
-    }
-    
-    @Test
-    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
-        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
-        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(insertStatement);
     }
     
     @Test

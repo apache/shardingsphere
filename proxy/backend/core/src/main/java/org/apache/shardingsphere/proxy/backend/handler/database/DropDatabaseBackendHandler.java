@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
@@ -75,6 +75,7 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     
     private void checkSupportedDropCurrentDatabase(final ConnectionSession connectionSession) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDialectDatabaseMetaData();
-        ShardingSpherePreconditions.checkState(!dialectDatabaseMetaData.getDefaultSchema().isPresent(), () -> new UnsupportedOperationException("cannot drop the currently open database"));
+        ShardingSpherePreconditions.checkState(!dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent(),
+                () -> new UnsupportedOperationException("cannot drop the currently open database"));
     }
 }

@@ -197,4 +197,105 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_assignments">
+        <table name="t_order" start-index="12" stop-index="18">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </table>
+        <derived-columns start-index="0" stop-index="0">
+            <column name="order_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="user_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="status" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="merchant_id" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="remark" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="remark" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="creation_date" start-index="0" stop-index="0" start-delimiter="`" end-delimiter="`" >
+                <owner name="t_order" start-index="0" stop-index="0" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_order" />
+                    <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+        </derived-columns>
+        <set start-index="20" stop-index="46">
+            <assignment start-index="20" stop-index="46">
+                <columns name="order_id" start-index="24" stop-index="31">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
+                    </column-bound>
+                </columns>
+                <assignment-value>
+                    <literal-expression value="1" start-index="33" stop-index="33" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <columns name="status" start-index="36" stop-index="41">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="status" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
+                    </column-bound>
+                </columns>
+                <assignment-value>
+                    <literal-expression value="OK" start-index="43" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </insert>
 </sql-parser-test-cases>

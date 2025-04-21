@@ -129,7 +129,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
-        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
         when(result.getStatementManager()).thenReturn(backendStatement);
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
@@ -71,7 +71,7 @@ public final class MetaDataLoaderConnection implements Connection {
     
     @Override
     public String getSchema() {
-        return dialectDatabaseMetaData.getSchema(connection);
+        return dialectDatabaseMetaData.getSchemaOption().getSchema(connection);
     }
     
     @Override
