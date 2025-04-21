@@ -35,8 +35,8 @@ import java.sql.Statement;
 public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBuilder {
     
     @Override
-    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager,
-                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
+    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
+                                   final int connectionOffset, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         return new JDBCExecutionUnit(executionUnit, connectionMode, createStatement(statementManager, connection, connectionMode, option, databaseType));
     }
     

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariable
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -43,9 +43,9 @@ import org.slf4j.event.Level;
 
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -79,12 +79,12 @@ class SetDistVariableExecutorTest {
     
     @Test
     void assertExecuteWithTypedSPI() throws SQLException {
-        SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "MySQL");
+        SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "Fixture");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
-        assertThat(actualValue.toString(), is("MySQL"));
-        assertInstanceOf(MySQLDatabaseType.class, contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE));
+        assertThat(actualValue.toString(), is("FIXTURE"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), instanceOf(MockedDatabaseType.class));
     }
     
     @Test

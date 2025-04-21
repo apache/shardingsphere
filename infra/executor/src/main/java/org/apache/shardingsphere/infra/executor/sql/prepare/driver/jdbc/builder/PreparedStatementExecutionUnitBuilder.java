@@ -35,16 +35,17 @@ import java.sql.SQLException;
 public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutionUnitBuilder {
     
     @Override
-    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager,
-                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
+    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
+                                   final int connectionOffset, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(
-                executionUnit, statementManager, connection, connectionMode, option, databaseType);
+                executionUnit, statementManager, connection, connectionOffset, connectionMode, option, databaseType);
         return new JDBCExecutionUnit(executionUnit, connectionMode, preparedStatement);
     }
     
     private PreparedStatement createPreparedStatement(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
-                                                      final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
-        return (PreparedStatement) statementManager.createStorageResource(executionUnit, connection, connectionMode, option, databaseType);
+                                                      final int connectionOffset, final ConnectionMode connectionMode, final StatementOption option,
+                                                      final DatabaseType databaseType) throws SQLException {
+        return (PreparedStatement) statementManager.createStorageResource(executionUnit, connection, connectionOffset, connectionMode, option, databaseType);
     }
     
     @Override

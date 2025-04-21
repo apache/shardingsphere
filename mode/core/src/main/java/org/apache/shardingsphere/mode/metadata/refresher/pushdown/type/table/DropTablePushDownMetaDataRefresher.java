@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public final class DropTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<DropTableStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         metaDataManagerPersistService.dropTables(database, schemaName, tableNames);

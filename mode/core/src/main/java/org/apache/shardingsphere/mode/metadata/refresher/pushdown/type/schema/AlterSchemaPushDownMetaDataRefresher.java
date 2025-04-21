@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Optional;
 public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaDataRefresher<AlterSchemaStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {

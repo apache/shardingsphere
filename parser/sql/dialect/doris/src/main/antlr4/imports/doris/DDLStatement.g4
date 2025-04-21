@@ -359,6 +359,36 @@ createView
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
+// DORIS ADDED BEGIN
+createMaterializedView
+    : CREATE MATERIALIZED VIEW ifNotExists? name (LP_ columnDefinition RP_)? buildMode? (REFRESH refreshMethod? refreshTrigger?)? ((DUPLICATE)? KEY keys= LP_ identifierList RP_)? commentClause? partitionClause? distributedbyClause? propertiesClause? AS select
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+buildMode
+    : BUILD (IMMEDIATE | DEFERRED)
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+refreshMethod
+    : COMPLETE | AUTO
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+refreshTrigger
+    : ON MANUAL | ON SCHEDULE refreshSchedule | ON COMMIT
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+refreshSchedule
+    : EVERY intervalValue (STARTS timestampValue)?
+    ;
+// DORIS ADDED END
+
 alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?

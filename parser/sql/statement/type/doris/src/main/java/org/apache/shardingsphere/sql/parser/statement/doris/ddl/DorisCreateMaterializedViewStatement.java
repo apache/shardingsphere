@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.object;
+package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
 
 /**
- * Dialect object uniqueness level provider.
+ * DorisSQL create materialized view statement.
  */
-@SingletonSPI
-public interface DialectObjectUniquenessLevelProvider extends DatabaseTypedSPI {
-    
-    /**
-     * Get index uniqueness level.
-     *
-     * @return index uniqueness level
-     */
-    UniquenessLevel getIndexUniquenessLevel();
-    
-    /**
-     * Uniqueness level enum.
-     */
-    enum UniquenessLevel {
-        
-        SCHEMA_LEVEL, TABLE_LEVEL
-    }
+public final class DorisCreateMaterializedViewStatement extends CreateMaterializedViewStatement implements DorisStatement {
 }

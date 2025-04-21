@@ -95,13 +95,13 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private final String currentSchemaName;
     
-    private final ShardingSphereMetaData metaData;
-    
-    private final ShardingSphereStatistics statistics;
-    
-    private final JDBCExecutor jdbcExecutor;
-    
     private final SQLFederationRule sqlFederationRule;
+    
+    private final SQLFederationProcessor processor;
+    
+    private QueryContext queryContext;
+    
+    private SchemaPlus schemaPlus;
     
     private ResultSet resultSet;
     
@@ -110,10 +110,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(currentDatabaseName).getRuleMetaData().getRules());
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
-        this.metaData = metaData;
-        this.statistics = statistics;
-        this.jdbcExecutor = jdbcExecutor;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        processor = SQLFederationProcessorFactory.getInstance().newInstance(metaData, statistics, jdbcExecutor);
     }
     
     /**
@@ -184,18 +182,17 @@ public final class SQLFederationEngine implements AutoCloseable {
      */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                                   final SQLFederationContext federationContext) {
-        QueryContext queryContext = federationContext.getQueryContext();
+        queryContext = federationContext.getQueryContext();
         try {
             ShardingSpherePreconditions.checkState(queryContext.getSqlStatementContext() instanceof SelectStatementContext,
                     () -> new IllegalArgumentException("SQL statement must be select statement in sql federation engine."));
             SelectStatementContext selectStatementContext = (SelectStatementContext) queryContext.getSqlStatementContext();
             String databaseName = selectStatementContext.getTablesContext().getDatabaseNames().stream().findFirst().orElse(currentDatabaseName);
             String schemaName = selectStatementContext.getTablesContext().getSchemaName().orElse(currentSchemaName);
-            SQLFederationProcessor processor = SQLFederationProcessorFactory.getInstance().newInstance(metaData, statistics, jdbcExecutor);
             SqlToRelConverter converter = creeateSQLToRelConverter(databaseName, schemaName, selectStatementContext.getDatabaseType(), processor.getConvention());
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, databaseName, schemaName,
                     federationContext.getMetaData(), selectStatementContext, queryContext.getSql(), processor.getConvention());
-            SchemaPlus schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
+            schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
             processor.registerExecutor(prepareEngine, callback, databaseName, schemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             resultSet = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, schemaPlus);
             return resultSet;
@@ -249,6 +246,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         closeResultSet().ifPresent(result::add);
+        unregisterExecutor();
         if (result.isEmpty()) {
             return;
         }
@@ -266,5 +264,11 @@ public final class SQLFederationEngine implements AutoCloseable {
             return Optional.of(ex);
         }
         return Optional.empty();
+    }
+    
+    private void unregisterExecutor() {
+        if (null != queryContext && null != schemaPlus) {
+            processor.unregisterExecutor(queryContext, schemaPlus);
+        }
     }
 }

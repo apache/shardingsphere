@@ -25,6 +25,7 @@
 1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)
 1. SQL Parser: Support MySQL INSERT with GEOMCOLLECTION function parse - [#34654](https://github.com/apache/shardingsphere/pull/34654)
 1. SQL Parser: Support MySQL DELETE with statement parse - [#34817](https://github.com/apache/shardingsphere/pull/34817) 
+1. SQL Parser: Support Doris CREATE MATERIALIZED VIEW - [#31499](https://github.com/apache/shardingsphere/pull/31499)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
@@ -45,6 +46,7 @@
 1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
 1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
+1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use sql federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
 
 ### Change Logs
 

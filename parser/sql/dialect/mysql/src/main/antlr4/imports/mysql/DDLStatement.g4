@@ -682,7 +682,15 @@ validStatement
     | insert | replace | update | delete | select | call
     | createView | prepare | executeStmt | commit | deallocate
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement
-    | showCreateTable | startTransaction | rollback | commit) SEMI_?
+    | setStatement | showStatement | startTransaction | rollback | commit) SEMI_?
+    ;
+
+showStatement
+    : SHOW WARNINGS
+    ;
+
+setStatement
+    : SET optionType TRANSACTION transactionCharacteristics (COMMA_ transactionCharacteristics)*
     ;
 
 beginStatement

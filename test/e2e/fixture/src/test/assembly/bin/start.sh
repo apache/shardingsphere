@@ -40,14 +40,12 @@ MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 unset -v PORT
 unset -v ADDRESSES
 unset -v CONF_PATH
-unset -v FORCE
 unset -v SOCKET_FILE
 
 print_usage() {
     echo "usage: start.sh [port] [config_dir]"
     echo "  port: proxy listen port, default is 3307"
     echo "  config_dir: proxy config directory, default is conf"
-    echo "-f  Force start ShardingSphere-Proxy"
     exit 0
 }
 
@@ -61,8 +59,8 @@ if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] || [[ $1 == -s ]]; then
-    while getopts ":a:p:c:fs:" opt
+if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -s ]]; then
+    while getopts ":a:p:c:s:" opt
         do
             case $opt in
             a)
@@ -74,9 +72,6 @@ if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] || [[ $1
             c)
               echo "The configuration path is $OPTARG"
               CONF_PATH=$OPTARG;;
-            f)
-              echo "The force param is true"
-              FORCE=true;;
             s)
               echo "The socket file is $OPTARG"
               SOCKET_FILE=$OPTARG;;
@@ -109,16 +104,12 @@ if [ -z "$ADDRESSES" ]; then
     ADDRESSES="0.0.0.0"
 fi
 
-if [ -z "$FORCE" ]; then
-    FORCE=false
-fi
-
 if [ "$SOCKET_FILE" ]; then
     ADDRESSES="${ADDRESSES},${SOCKET_FILE}"
 fi
 
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
-MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES} ${FORCE}"
+MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"

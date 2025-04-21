@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Push down meta data refresher.
@@ -41,14 +40,14 @@ public interface PushDownMetaDataRefresher<T extends SQLStatement> extends Typed
      *
      * @param metaDataManagerPersistService meta data manager persist service
      * @param database database
-     * @param logicDataSourceNames route data source names
+     * @param logicDataSourceName route data source name
      * @param schemaName schema name
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(MetaDataManagerPersistService metaDataManagerPersistService, ShardingSphereDatabase database, Collection<String> logicDataSourceNames, String schemaName,
+    void refresh(MetaDataManagerPersistService metaDataManagerPersistService, ShardingSphereDatabase database, String logicDataSourceName, String schemaName,
                  DatabaseType databaseType, T sqlStatement, ConfigurationProperties props) throws SQLException;
     
     @Override
