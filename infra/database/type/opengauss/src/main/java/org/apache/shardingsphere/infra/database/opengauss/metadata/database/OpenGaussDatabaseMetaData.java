@@ -54,7 +54,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public  DialectIndexOption getIndexOption() {
+    public DialectIndexOption getIndexOption() {
         return new DialectIndexOption(true);
     }
     

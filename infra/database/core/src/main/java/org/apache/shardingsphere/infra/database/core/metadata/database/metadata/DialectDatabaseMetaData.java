@@ -82,7 +82,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get index option.
-     * 
+     *
      * @return index option
      */
     default DialectIndexOption getIndexOption() {
