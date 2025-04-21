@@ -682,7 +682,7 @@ validStatement
     | insert | replace | update | delete | select | call
     | createView | prepare | executeStmt | commit | deallocate
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement
-    | setStatement | showStatement | startTransaction | rollback | commit) SEMI_?
+    | setStatement | showStatement | startTransaction | rollback | commit | show) SEMI_?
     ;
 
 showStatement

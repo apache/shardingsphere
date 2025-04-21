@@ -126,5 +126,4 @@
             <sql-statement start-index="22" stop-index="54" statement-class-simple-name="MySQLSetStatement" />
         </sql-statements>
     </create-procedure>
-    <create-procedure sql-case-id="create_procedure_if_not_exists" />
 </sql-parser-test-cases>
