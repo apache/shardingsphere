@@ -111,6 +111,10 @@ ATTRIBUTE
     : A T T R I B U T E
     ;
 
+AUTO
+    : A U T O
+    ;
+
 AUTOEXTEND_SIZE
     : A U T O E X T E N D UL_ S I Z E
     ;
@@ -199,6 +203,10 @@ BTREE
 
 BUCKETS
     : B U C K E T S
+    ;
+
+BUILD
+    : B U I L D
     ;
 
 BY
@@ -348,6 +356,12 @@ COMPACT
 COMPLETION
     : C O M P L E T I O N
     ;
+
+// DORIS ADDED BEGIN
+COMPLETE
+    : C O M P L E T E
+    ;
+// DORIS ADDED END
 
 COMPONENT
     : C O M P O N E N T
@@ -530,6 +544,12 @@ DEFAULT
 DEFAULT_AUTH
     : D E F A U L T UL_ A U T H
     ;
+
+// DORIS ADDED BEGIN
+DEFERRED
+    : D E F E R R E D
+    ;
+// DORIS ADDED END
 
 DEFINER
     : D E F I N E R
@@ -1023,6 +1043,12 @@ IGNORE_SERVER_IDS
     : I G N O R E UL_ S E R V E R UL_ I D S
     ;
 
+// DORIS ADDED BEGIN
+IMMEDIATE
+    : I M M E D I A T E
+    ;
+// DORIS ADDED END
+
 IMPORT
     : I M P O R T
     ;
@@ -1338,6 +1364,10 @@ LOW_PRIORITY
     : L O W UL_ P R I O R I T Y
     ;
 
+MANUAL
+    : M A N U A L
+    ;
+
 MASTER
     : M A S T E R
     ;
@@ -1449,6 +1479,12 @@ MASTER_USER
 MASTER_ZSTD_COMPRESSION_LEVEL
     : M A S T E R UL_ Z S T D UL_ C O M P R E S S I O N UL_ L E V E L
     ;
+
+// DORIS ADDED BEGIN
+MATERIALIZED
+    : M A T E R I A L I Z E D
+    ;
+// DORIS ADDED END
 
 MATCH
     : M A T C H
@@ -2022,6 +2058,10 @@ REFERENCE
 
 REFERENCES
     : R E F E R E N C E S
+    ;
+
+REFRESH
+    : R E F R E S H
     ;
 
 REGEXP

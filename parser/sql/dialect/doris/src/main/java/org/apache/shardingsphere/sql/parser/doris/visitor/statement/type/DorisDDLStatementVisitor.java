@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateF
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableContext;
@@ -165,6 +166,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateEvent
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateTableStatement;
@@ -1045,5 +1047,10 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
         return new DorisDeallocateStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
+        return new DorisCreateMaterializedViewStatement();
     }
 }
