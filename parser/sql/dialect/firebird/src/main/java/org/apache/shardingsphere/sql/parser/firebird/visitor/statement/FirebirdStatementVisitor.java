@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Data
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GenIdFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.IntervalExpressionContext;
@@ -486,6 +487,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
         if (null != ctx.castFunction()) {
             return visit(ctx.castFunction());
         }
+        if (null != ctx.genIdFunction()) {
+            return visit(ctx.genIdFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
@@ -500,6 +504,22 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             result.getParameters().add((LiteralExpressionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitGenIdFunction(final GenIdFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GEN_ID().getText(), getOriginalText(ctx));
+        if (null != ctx.variable()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.variable()));
+        }
+        else {
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            result.getParameters().add(segment);
+        }
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     

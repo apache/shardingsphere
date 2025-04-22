@@ -311,6 +311,7 @@ specialFunction
     | extractFunction
     | trimFunction
     | windowFunction
+    | genIdFunction
     ;
 
 castFunction
@@ -336,6 +337,10 @@ extractFunction
 trimFunction
     : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
     | TRIM LP_ (expr FROM)? expr RP_
+    ;
+
+genIdFunction
+    : GEN_ID LP_ (variable | parameterMarker) COMMA_ expr RP_
     ;
 
 regularFunction

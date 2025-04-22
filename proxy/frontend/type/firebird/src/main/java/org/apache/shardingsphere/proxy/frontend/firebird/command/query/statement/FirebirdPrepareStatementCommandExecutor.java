@@ -438,6 +438,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "current_user":
             case "coalesce":
                 return Types.VARCHAR;
+            case "gen_id":
+                return Types.BIGINT;
             default:
                 return Types.INTEGER;
         }

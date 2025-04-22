@@ -990,3 +990,7 @@ CURRENT_ROLE
 OPTIMIZE
     : O P T I M I Z E
     ;
+
+GEN_ID
+    : G E N UL_ I D
+    ;
