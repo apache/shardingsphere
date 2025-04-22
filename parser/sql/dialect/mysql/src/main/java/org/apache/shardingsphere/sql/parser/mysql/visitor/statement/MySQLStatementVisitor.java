@@ -837,6 +837,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.windowClause()) {
             result.setWindow((WindowSegment) visit(ctx.windowClause()));
         }
+        if (null != ctx.lockClauseList()) {
+            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+        }
         return result;
     }
     
@@ -1444,11 +1447,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         MySQLInsertStatement result = new MySQLInsertStatement();
         result.setInsertSelect(createInsertSelectSegment(ctx));
-        if (null != ctx.LP_()) {
+        if (null != ctx.LP_() && !ctx.LP_().isEmpty()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), Collections.emptyList()));
             }
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));

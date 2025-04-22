@@ -44,7 +44,7 @@ tableWild
     ;
 
 insertSelectClause
-    : valueReference? (LP_ fields? RP_)? select
+    : valueReference? (LP_ fields? RP_)? (LP_ select RP_ | select)
     ;
 
 onDuplicateKeyClause
@@ -159,7 +159,7 @@ queryPrimary
     ;
 
 querySpecification
-    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? lockClauseList?
     ;
 
 call
