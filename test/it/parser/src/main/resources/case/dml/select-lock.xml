@@ -309,7 +309,7 @@
         <from start-index="21" stop-index="27">
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
-        <combine combine-type="UNION_ALL" start-index="40" stop-index="89">
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="89">
             <left>
                 <projections start-index="7" stop-index="14">
                     <column-projection name="order_id" start-index="7" stop-index="14" />

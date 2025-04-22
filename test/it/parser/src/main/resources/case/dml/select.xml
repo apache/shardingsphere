@@ -182,7 +182,7 @@
                         <from>
                             <simple-table name="t1" start-index="29" stop-index="30" />
                         </from>
-                        <combine combine-type="EXCEPT" start-index="32" stop-index="58">
+                        <combine combine-type="EXCEPT_ALL" start-index="15" stop-index="58">
                             <left>
                                 <projections start-index="22" stop-index="22">
                                     <shorthand-projection start-index="22" stop-index="22" />

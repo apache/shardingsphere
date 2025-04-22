@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionsSpaceSeparatedContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
@@ -162,24 +161,21 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         if (1 == ctx.getChildCount()) {
             visit(ctx.queryPrimary());
         } else if (null == ctx.queryExpressionParens()) {
-            visit(ctx.queryExpressionBody());
-            visit(ctx.combineClause());
+            visit(ctx.queryExpressionBody(0));
+            visitCombineClause(ctx);
         } else {
             visit(ctx.queryExpressionParens());
-            visit(ctx.combineClause());
         }
         return formattedSQL.toString();
     }
     
-    @Override
-    public String visitCombineClause(final CombineClauseContext ctx) {
+    private void visitCombineClause(final QueryExpressionBodyContext ctx) {
         formattedSQL.append("\nUNION\n");
         if (null != ctx.combineOption()) {
             visit(ctx.combineOption());
             formattedSQL.append(' ');
         }
-        visit(null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary());
-        return formattedSQL.toString();
+        visit(ctx.queryExpressionBody(1));
     }
     
     @Override
