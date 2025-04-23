@@ -1112,6 +1112,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = (TableSegment) visit(ctx.containersClause());
         } else if (null != ctx.shardsClause()) {
             result = (TableSegment) visit(ctx.shardsClause());
+        } else if (null != ctx.joinClause()) {
+            result = (TableSegment) visit(ctx.joinClause());
         } else {
             result = (TableSegment) visit(ctx.queryTableExprClause());
         }
