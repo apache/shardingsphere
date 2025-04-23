@@ -3366,26 +3366,12 @@
                                 <left start-index="63" stop-index="72">
                                     <column name="ORDER_ID" start-index="63" stop-index="72">
                                         <owner name="t" start-index="63" stop-index="63"/>
-                                        <column-bound start-index="0" stop-index="0">
-                                            <original-database name="" start-index="0" stop-index="0"/>
-                                            <original-schema name="" start-index="0" stop-index="0"/>
-                                            <original-table name="" start-index="0" stop-index="0"/>
-                                            <original-column name="ORDER_ID" start-index="0" stop-index="0"/>
-                                            <table-source-type name="TEMPORARY_TABLE" start-index="0" stop-index="0"/>
-                                        </column-bound>
                                     </column>
                                 </left>
                                 <operator>=</operator>
                                 <right start-index="76" stop-index="85">
                                     <column name="ORDER_ID" start-index="76" stop-index="85">
                                         <owner name="i" start-index="76" stop-index="76"/>
-                                        <column-bound start-index="0" stop-index="0">
-                                            <original-database name="" start-index="0" stop-index="0"/>
-                                            <original-schema name="" start-index="0" stop-index="0"/>
-                                            <original-table name="" start-index="0" stop-index="0"/>
-                                            <original-column name="ORDER_ID" start-index="0" stop-index="0"/>
-                                            <table-source-type name="TEMPORARY_TABLE" start-index="0" stop-index="0"/>
-                                        </column-bound>
                                     </column>
                                 </right>
                             </binary-operation-expression>
@@ -3400,26 +3386,12 @@
                         <left start-index="111" stop-index="120">
                             <column name="ORDER_ID" start-index="111" stop-index="120">
                                 <owner name="t" start-index="111" stop-index="111"/>
-                                <column-bound start-index="0" stop-index="0">
-                                    <original-database name="" start-index="0" stop-index="0"/>
-                                    <original-schema name="" start-index="0" stop-index="0"/>
-                                    <original-table name="" start-index="0" stop-index="0"/>
-                                    <original-column name="ORDER_ID" start-index="0" stop-index="0"/>
-                                    <table-source-type name="TEMPORARY_TABLE" start-index="0" stop-index="0"/>
-                                </column-bound>
                             </column>
                         </left>
                         <operator>=</operator>
                         <right start-index="124" stop-index="133">
                             <column name="ORDER_ID" start-index="124" stop-index="133">
                                 <owner name="c" start-index="124" stop-index="124"/>
-                                <column-bound start-index="0" stop-index="0">
-                                    <original-database name="" start-index="0" stop-index="0"/>
-                                    <original-schema name="" start-index="0" stop-index="0"/>
-                                    <original-table name="" start-index="0" stop-index="0"/>
-                                    <original-column name="ORDER_ID" start-index="0" stop-index="0"/>
-                                    <table-source-type name="TEMPORARY_TABLE" start-index="0" stop-index="0"/>
-                                </column-bound>
                             </column>
                         </right>
                     </binary-operation-expression>
