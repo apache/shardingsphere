@@ -523,7 +523,7 @@
                         <projections start-index="39" stop-index="39">
                             <shorthand-projection start-index="39" stop-index="39" />
                         </projections>
-                        <combine combine-type="UNION_ALL" start-index="85" stop-index="216">
+                        <combine combine-type="UNION_ALL" start-index="32" stop-index="216">
                             <left>
                                 <projections start-index="39" stop-index="39">
                                     <shorthand-projection start-index="39" stop-index="39" />
@@ -777,7 +777,7 @@
                                 <literal-expression value="2" start-index="31" stop-index="31" />
                             </expression-projection>
                         </projections>
-                        <combine combine-type="UNION_ALL" start-index="41" stop-index="61">
+                        <combine combine-type="UNION_ALL" start-index="13" stop-index="61">
                             <left>
                                 <projections start-index="20" stop-index="39">
                                     <expression-projection text="1" alias="col1" start-index="20" stop-index="28">

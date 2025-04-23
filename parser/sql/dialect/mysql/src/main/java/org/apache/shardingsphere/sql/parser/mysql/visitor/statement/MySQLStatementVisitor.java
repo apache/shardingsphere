@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Collate
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnRefContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
@@ -770,39 +769,29 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
         }
-        if (null != ctx.queryExpressionBody()) {
+        if (null != ctx.queryExpressionBody() && ctx.queryExpressionBody().size() > 1) {
             MySQLSelectStatement result = new MySQLSelectStatement();
-            SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
-                    (MySQLSelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
+            SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody(0).start.getStartIndex(), ctx.queryExpressionBody(0).stop.getStopIndex(),
+                    (MySQLSelectStatement) visit(ctx.queryExpressionBody(0)), getOriginalText(ctx.queryExpressionBody(0)));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
             ((MySQLSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
-        }
-        if (null != ctx.queryExpressionParens()) {
-            MySQLSelectStatement result = new MySQLSelectStatement();
-            SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
-                    (MySQLSelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            ((MySQLSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
+            result.setCombine(createCombineSegment(ctx, left));
             return result;
         }
         return visit(ctx.queryExpressionParens());
     }
     
-    private CombineSegment createCombineSegment(final CombineClauseContext ctx, final SubquerySegment left) {
+    private CombineSegment createCombineSegment(final QueryExpressionBodyContext ctx, final SubquerySegment left) {
         CombineType combineType;
         if (null != ctx.EXCEPT()) {
-            combineType = CombineType.EXCEPT;
+            combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.EXCEPT : CombineType.EXCEPT_ALL;
         } else if (null != ctx.INTERSECT()) {
-            combineType = CombineType.INTERSECT;
+            combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.INTERSECT : CombineType.INTERSECT_ALL;
         } else {
             combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
-        ParserRuleContext ruleContext = null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary();
+        ParserRuleContext ruleContext = ctx.queryExpressionBody(1);
         SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (MySQLSelectStatement) visit(ruleContext), getOriginalText(ruleContext));
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
