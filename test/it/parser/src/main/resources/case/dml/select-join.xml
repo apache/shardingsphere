@@ -3349,4 +3349,59 @@
             </join-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_join_with_brackets">
+        <from start-index="24" stop-index="133">
+            <join-table join-type="LEFT" start-index="24" stop-index="133">
+                <left start-index="24" stop-index="85">
+                    <join-table join-type="INNER" start-index="24" stop-index="85">
+                        <left start-index="24" stop-index="32">
+                            <simple-table alias="t" name="t_order" start-index="24" stop-index="32"/>
+                        </left>
+                        <right start-index="45" stop-index="58">
+                            <simple-table alias="i" name="t_order_item" start-index="45" stop-index="58"/>
+                        </right>
+                        <on-condition start-index="63" stop-index="85">
+                            <binary-operation-expression start-index="63" stop-index="85">
+                                <left start-index="63" stop-index="72">
+                                    <column name="ORDER_ID" start-index="63" stop-index="72">
+                                        <owner name="t" start-index="63" stop-index="63"/>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right start-index="76" stop-index="85">
+                                    <column name="ORDER_ID" start-index="76" stop-index="85">
+                                        <owner name="i" start-index="76" stop-index="76"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right start-index="98" stop-index="106">
+                    <simple-table alias="c" name="T_ORDER" start-index="98" stop-index="106"/>
+                </right>
+                <on-condition start-index="111" stop-index="133">
+                    <binary-operation-expression start-index="111" stop-index="133">
+                        <left start-index="111" stop-index="120">
+                            <column name="ORDER_ID" start-index="111" stop-index="120">
+                                <owner name="t" start-index="111" stop-index="111"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right start-index="124" stop-index="133">
+                            <column name="ORDER_ID" start-index="124" stop-index="133">
+                                <owner name="c" start-index="124" stop-index="124"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="16">
+            <column-projection name="ORDER_ID" start-index="7" stop-index="16">
+                <owner name="t" start-index="7" stop-index="7"/>
+            </column-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
