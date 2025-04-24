@@ -1060,7 +1060,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, "
                         + "trimFunction, toDateFunction, approxCount, predictionCostFunction, jsonObjectFunction or featureFunction.");
     }
-
+    
     @Override
     public ASTNode visitJsonObjectFunction(final JsonObjectFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_OBJECT().getText(), getOriginalText(ctx));
