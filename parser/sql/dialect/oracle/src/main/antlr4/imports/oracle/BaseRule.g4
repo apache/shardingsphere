@@ -550,7 +550,27 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction | predictionCostFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank | wmConcatFunction | predictionCostFunction | jsonObjectFunction
+    ;
+
+jsonObjectFunction
+    : JSON_OBJECT LP_ jsonObjectContent RP_
+    ;
+
+jsonObjectContent
+    : jsonObjectKeyValue (COMMA_ jsonObjectKeyValue)* jsonOnNullClause? jsonReturnClause?
+    ;
+
+jsonOnNullClause
+    : (NULL | ABSENT) ON NULL
+    ;
+
+jsonReturnClause
+    : RETURNING VARCHAR2 (LP_ INTEGER_ ( BYTE | CHAR)? RP_)?
+    ;
+    
+jsonObjectKeyValue
+    : (KEY? expr VALUE expr) (FORMAT JSON)?
     ;
 
 predictionCostFunction
