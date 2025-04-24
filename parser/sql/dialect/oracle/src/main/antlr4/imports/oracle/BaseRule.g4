@@ -558,7 +558,7 @@ jsonObjectFunction
     ;
 
 jsonObjectContent
-    : (jsonObjectKeyValue (COMMA_ jsonObjectKeyValue)*) jsonOnNullClause? jsonReturnClause?
+    : jsonObjectKeyValue (COMMA_ jsonObjectKeyValue)* jsonOnNullClause? jsonReturnClause?
     ;
 
 jsonOnNullClause
