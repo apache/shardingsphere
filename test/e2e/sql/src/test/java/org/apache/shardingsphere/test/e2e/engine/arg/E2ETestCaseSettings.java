@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.engine.arg;
 
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.E2EExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.Inherited;

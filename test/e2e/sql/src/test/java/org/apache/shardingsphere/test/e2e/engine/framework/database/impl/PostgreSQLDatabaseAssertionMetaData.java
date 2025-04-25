@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database.impl;
+package org.apache.shardingsphere.test.e2e.engine.framework.database.impl;
 
-import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
+import org.apache.shardingsphere.test.e2e.engine.framework.database.DatabaseAssertionMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

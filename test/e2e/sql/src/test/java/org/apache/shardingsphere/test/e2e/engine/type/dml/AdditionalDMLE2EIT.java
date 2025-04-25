@@ -22,10 +22,10 @@ import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvide
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLExecuteType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.EnabledIf;

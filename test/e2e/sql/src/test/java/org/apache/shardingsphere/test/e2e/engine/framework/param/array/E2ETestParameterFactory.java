@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.param.array;
+package org.apache.shardingsphere.test.e2e.engine.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.E2ETestParameter;
 
 import java.util.Collection;
 import java.util.LinkedList;

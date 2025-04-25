@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.param.array;
+package org.apache.shardingsphere.test.e2e.engine.framework.param.array;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -27,12 +27,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.E2ETestCasesLoader;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.E2ETestParameter;
 
 import java.util.Arrays;
 import java.util.Collection;

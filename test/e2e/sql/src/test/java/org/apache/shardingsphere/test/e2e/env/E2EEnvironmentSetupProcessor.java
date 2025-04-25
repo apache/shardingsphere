@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.E2ETestParameter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;

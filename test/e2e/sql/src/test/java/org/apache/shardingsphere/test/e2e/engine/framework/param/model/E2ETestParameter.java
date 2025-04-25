@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.param.model;
+package org.apache.shardingsphere.test.e2e.engine.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 
 /**
  * E2E test parameter.

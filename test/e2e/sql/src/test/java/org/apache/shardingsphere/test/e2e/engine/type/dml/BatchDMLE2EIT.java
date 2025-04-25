@@ -21,9 +21,9 @@ import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAsser
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
-import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;

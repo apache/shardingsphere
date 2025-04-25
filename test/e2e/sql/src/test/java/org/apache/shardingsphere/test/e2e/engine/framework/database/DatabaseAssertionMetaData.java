@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database;
+package org.apache.shardingsphere.test.e2e.engine.framework.database;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
