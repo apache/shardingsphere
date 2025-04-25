@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.container.compose.mode;
+package org.apache.shardingsphere.test.e2e.env.container.compose.mode;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
-import org.apache.shardingsphere.test.e2e.container.config.ProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
+import org.apache.shardingsphere.test.e2e.env.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;

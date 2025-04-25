@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.container.compose;
+package org.apache.shardingsphere.test.e2e.env.container.compose;
 
 import org.testcontainers.lifecycle.Startable;
 
