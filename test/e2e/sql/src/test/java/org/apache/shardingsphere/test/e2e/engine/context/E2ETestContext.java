@@ -29,8 +29,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * E2E test context.
+ */
 @Getter
-public class E2ETestContext {
+public final class E2ETestContext {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
