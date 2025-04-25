@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.container.compose;
-
-import org.testcontainers.lifecycle.Startable;
+package org.apache.shardingsphere.test.e2e.engine.framework.database;
 
 import javax.sql.DataSource;
-import java.util.Map;
+import java.sql.SQLException;
 
 /**
- * Composed container.
+ * Database assertion meta data.
  */
-public interface ContainerComposer extends Startable {
+public interface DatabaseAssertionMetaData {
     
     /**
-     * Get target data source.
+     * Get primary key column name.
      *
-     * @return target data source
+     * @param dataSource data source
+     * @param tableName table name
+     * @return primary key column name
+     * @throws SQLException SQL exception
      */
-    DataSource getTargetDataSource();
-    
-    /**
-     * Get actual data source map.
-     *
-     * @return actual data source map
-     */
-    Map<String, DataSource> getActualDataSourceMap();
-    
-    /**
-     * Get expected data source map.
-     *
-     * @return expected data source map
-     */
-    Map<String, DataSource> getExpectedDataSourceMap();
+    String getPrimaryKeyColumnName(DataSource dataSource, String tableName) throws SQLException;
 }

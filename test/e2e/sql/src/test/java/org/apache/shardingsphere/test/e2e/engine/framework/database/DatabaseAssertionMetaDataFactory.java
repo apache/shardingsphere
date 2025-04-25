@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database;
+package org.apache.shardingsphere.test.e2e.engine.framework.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.framework.database.impl.PostgreSQLDatabaseAssertionMetaData;
+import org.apache.shardingsphere.test.e2e.engine.framework.database.impl.PostgreSQLDatabaseAssertionMetaData;
 
 import java.util.Optional;
 

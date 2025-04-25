@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.param.model;
+package org.apache.shardingsphere.test.e2e.engine.framework.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 
 /**
- * Case test parameter.
+ * Assertion test parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseTestParameter implements E2ETestParameter {
+public final class AssertionTestParameter implements E2ETestParameter {
     
     private final E2ETestCaseContext testCaseContext;
+    
+    private final E2ETestCaseAssertion assertion;
     
     private final String adapter;
     
@@ -40,12 +44,14 @@ public final class CaseTestParameter implements E2ETestParameter {
     
     private final DatabaseType databaseType;
     
+    private final SQLExecuteType sqlExecuteType;
+    
     private final SQLCommandType sqlCommandType;
     
     @Override
     public String toString() {
         String sql = null == testCaseContext ? null : testCaseContext.getTestCase().getSql();
         String type = null == databaseType ? null : databaseType.getType();
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, type, sql);
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, type, sqlExecuteType, sql);
     }
 }

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAsser
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLExecuteType;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,5 +64,4 @@ public class E2ETestContext {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
-    
 }
