@@ -54,7 +54,7 @@ class DALE2EIT implements E2EEnvironmentAware {
     
     @Override
     public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentSetupEngine = environmentEngine;
+        environmentSetupEngine = environmentEngine;
     }
     
     @ParameterizedTest(name = "{0}")

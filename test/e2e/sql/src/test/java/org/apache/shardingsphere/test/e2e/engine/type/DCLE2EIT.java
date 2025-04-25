@@ -42,11 +42,11 @@ import java.sql.Statement;
 @E2ETestCaseSettings(SQLCommandType.DCL)
 class DCLE2EIT implements E2EEnvironmentAware {
     
-    private E2EEnvironmentEngine environmentSetupEngine;
+    private E2EEnvironmentEngine environmentEngine;
     
     @Override
     public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentSetupEngine = environmentEngine;
+        this.environmentEngine = environmentEngine;
     }
     
     @ParameterizedTest(name = "{0}")
@@ -60,14 +60,14 @@ class DCLE2EIT implements E2EEnvironmentAware {
         E2ETestContext context = new E2ETestContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentSetupEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecuteUpdate(context);
         }
     }
     
     private void assertExecuteUpdate(final E2ETestContext context) throws SQLException {
         String sql = context.getSQL();
-        try (Connection connection = this.environmentSetupEngine.getTargetDataSource().getConnection()) {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
@@ -91,14 +91,14 @@ class DCLE2EIT implements E2EEnvironmentAware {
         E2ETestContext context = new E2ETestContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentSetupEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecute(context);
         }
     }
     
     private void assertExecute(final E2ETestContext context) throws SQLException {
         String sql = context.getSQL();
-        try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);

@@ -23,9 +23,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public interface E2EEnvironmentAware {
     
     /**
-     * Set container composer.
+     * Set environment engine.
      *
-     * @param environmentEngine container composer
+     * @param environmentEngine environment engine
      */
     void setEnvironmentEngine(E2EEnvironmentEngine environmentEngine);
 }

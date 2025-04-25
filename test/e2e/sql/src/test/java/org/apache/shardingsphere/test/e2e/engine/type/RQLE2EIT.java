@@ -48,11 +48,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.RQL)
 class RQLE2EIT implements E2EEnvironmentAware {
     
-    private E2EEnvironmentEngine environmentSetupEngine;
+    private E2EEnvironmentEngine environmentEngine;
     
     @Override
     public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentSetupEngine = environmentEngine;
+        this.environmentEngine = environmentEngine;
     }
     
     @ParameterizedTest(name = "{0}")
@@ -69,7 +69,7 @@ class RQLE2EIT implements E2EEnvironmentAware {
     
     private void assertExecute(final E2ETestContext context) throws SQLException {
         try (
-                Connection connection = environmentSetupEngine.getTargetDataSource().getConnection();
+                Connection connection = environmentEngine.getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(context.getSQL());
             try (ResultSet resultSet = statement.getResultSet()) {
