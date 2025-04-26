@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -71,7 +71,7 @@ class DDLE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
@@ -85,14 +85,14 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeUpdateForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeUpdateForStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.executeUpdate(context.getSQL()) > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeUpdateForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeUpdateForPreparedStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
         }
@@ -107,7 +107,7 @@ class DDLE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
@@ -121,21 +121,21 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeForStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(context.getSQL()), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeForPreparedStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             assertFalse(preparedStatement.execute(), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void init(final E2ETestContext context) throws SQLException {
+    private void init(final SQLE2ETestContext context) throws SQLException {
         assertNotNull(context.getAssertion().getInitialSQL(), "Init SQL is required");
         assertNotNull(context.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
@@ -143,7 +143,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeInitSQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -155,7 +155,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void tearDown(final E2ETestContext context) throws SQLException {
+    private void tearDown(final SQLE2ETestContext context) throws SQLException {
         if (null != context.getAssertion().getDestroySQL()) {
             try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
                 executeDestroySQLs(context, connection);
@@ -163,7 +163,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeDestroySQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeDestroySQLs(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getDestroySQL().getSql()) {
             return;
         }
@@ -175,7 +175,7 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertTableMetaData(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
+    private void assertTableMetaData(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
         String tableName = context.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = context.getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());

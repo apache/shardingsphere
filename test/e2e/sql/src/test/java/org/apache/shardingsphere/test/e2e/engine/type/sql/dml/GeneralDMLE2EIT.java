@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dml;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -49,7 +49,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam);
         try {
             int actualUpdateCount;
@@ -69,18 +69,18 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         executeInitSQLs(testParam.getAssertion());
     }
     
-    void tearDown(final E2ETestContext context) throws SQLException {
+    void tearDown(final SQLE2ETestContext context) throws SQLException {
         super.tearDown();
         executeDestroySQLs(context.getAssertion());
     }
     
-    private int executeUpdateForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private int executeUpdateForStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(context.getSQL());
         }
     }
     
-    private int executeUpdateForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private int executeUpdateForPreparedStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -97,7 +97,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam);
         try {
             int actualUpdateCount;
@@ -112,14 +112,14 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    private int executeForStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private int executeForStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(context.getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
     
-    private int executeForPreparedStatement(final E2ETestContext context, final Connection connection) throws SQLException {
+    private int executeForPreparedStatement(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

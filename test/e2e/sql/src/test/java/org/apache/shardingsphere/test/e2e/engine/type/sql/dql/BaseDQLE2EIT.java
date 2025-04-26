@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
@@ -69,7 +69,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     @Setter
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    protected final void init(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException, IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam);
         expectedDataSource = null == context.getAssertion().getExpectedDataSourceName() || 1 == getEnvironmentEngine().getExpectedDataSourceMap().size()
                 ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values())
@@ -104,12 +104,12 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         assertRows(actualResultSet, expectedResultSet);
     }
     
-    protected final void assertResultSet(final E2ETestContext context, final ResultSet resultSet) throws SQLException {
+    protected final void assertResultSet(final SQLE2ETestContext context, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
         assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final E2ETestContext context) {
+    private Collection<DataSetColumn> getExpectedColumns(final SQLE2ETestContext context) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
@@ -117,7 +117,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         return result;
     }
     
-    private Collection<String> getIgnoreAssertColumns(final E2ETestContext context) {
+    private Collection<String> getIgnoreAssertColumns(final SQLE2ETestContext context) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));

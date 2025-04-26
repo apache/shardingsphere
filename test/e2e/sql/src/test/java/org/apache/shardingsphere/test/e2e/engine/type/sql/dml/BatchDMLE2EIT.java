@@ -66,7 +66,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     }
     
     void tearDown(final CaseTestParameter testParam) throws SQLException {
-        super.tearDown();
+        tearDown();
         executeDestroySQLs(testParam);
     }
     
