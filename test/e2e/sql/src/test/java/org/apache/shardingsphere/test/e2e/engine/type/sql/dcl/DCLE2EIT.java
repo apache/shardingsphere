@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.sql.dcl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
@@ -42,7 +42,7 @@ import java.sql.Statement;
 
 @E2ETestCaseSettings(SQLCommandType.DCL)
 @Setter
-class DCLE2EIT implements E2EEnvironmentAware {
+class DCLE2EIT implements SQLE2EIT {
     
     private E2EEnvironmentEngine environmentEngine;
     

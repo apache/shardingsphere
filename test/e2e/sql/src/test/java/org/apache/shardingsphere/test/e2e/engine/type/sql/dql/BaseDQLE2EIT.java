@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -58,7 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class BaseDQLE2EIT implements E2EEnvironmentAware {
+public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
     private static final Collection<String> FILLED_SUITES = new HashSet<>();
     

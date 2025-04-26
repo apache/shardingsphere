@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.DAL)
 @Setter
-class DALE2EIT implements E2EEnvironmentAware {
+class DALE2EIT implements SQLE2EIT {
     
     private E2EEnvironmentEngine environmentEngine;
     
