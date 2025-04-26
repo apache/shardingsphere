@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
@@ -54,7 +54,7 @@ class DCLE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
@@ -62,7 +62,7 @@ class DCLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertExecuteUpdate(final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteUpdate(final SQLE2EITContext context) throws SQLException {
         String sql = context.getSQL();
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {
@@ -85,7 +85,7 @@ class DCLE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
         try (
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
                         new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), environmentEngine.getActualDataSourceMap(), testParam.getDatabaseType())) {
@@ -93,7 +93,7 @@ class DCLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertExecute(final SQLE2ETestContext context) throws SQLException {
+    private void assertExecute(final SQLE2EITContext context) throws SQLException {
         String sql = context.getSQL();
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.LITERAL == context.getSqlExecuteType()) {

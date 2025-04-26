@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -60,11 +60,11 @@ class RQLE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
         assertExecute(context);
     }
     
-    private void assertExecute(final SQLE2ETestContext context) throws SQLException {
+    private void assertExecute(final SQLE2EITContext context) throws SQLException {
         try (
                 Connection connection = environmentEngine.getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
@@ -75,12 +75,12 @@ class RQLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertResultSet(final SQLE2ETestContext context, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
         assertRows(resultSet, context.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SQLE2ETestContext context) {
+    private Collection<DataSetColumn> getExpectedColumns(final SQLE2EITContext context) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());

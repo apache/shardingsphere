@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dql;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -50,12 +50,12 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam, context);
         assertExecuteQuery(testParam, context);
     }
     
-    private void assertExecuteQuery(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteQuery(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteQueryWithXmlExpected(testParam, context);
         } else {
@@ -63,7 +63,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         // TODO Fix jdbc adapter and empty_storage_units proxy adapter
         if (isNeedSkipExecuteQueryWithXmlExcepted(testParam)) {
             return;
@@ -80,7 +80,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
                 || "proxy".equals(testParam.getAdapter()) && "empty_storage_units".equalsIgnoreCase(testParam.getScenario());
     }
     
-    private void assertQueryForStatementWithXmlExpected(final SQLE2ETestContext context) throws SQLException {
+    private void assertQueryForStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement();
@@ -89,7 +89,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertQueryForPreparedStatementWithXmlExpected(final SQLE2ETestContext context) throws SQLException {
+    private void assertQueryForPreparedStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
@@ -102,7 +102,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         try (
                 Connection expectedConnection = getExpectedDataSource().getConnection();
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
@@ -114,7 +114,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForStatement(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteQueryForStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                 final AssertionTestParameter testParam) throws SQLException {
         try (
                 Statement expectedStatement = expectedConnection.createStatement();
@@ -125,7 +125,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForPreparedStatement(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteQueryForPreparedStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                         final AssertionTestParameter testParam) throws SQLException {
         try (
                 PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(context.getSQL());
@@ -150,12 +150,12 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
+        SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam, context);
         assertExecute(testParam, context);
     }
     
-    private void assertExecute(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecute(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteWithXmlExpected(testParam, context);
         } else {
@@ -163,7 +163,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithXmlExpected(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteWithXmlExpected(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         // TODO Fix jdbc adapter
         if (isNeedSkipExecuteWithXmlExcepted(testParam)) {
             return;
@@ -179,7 +179,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         return "jdbc".equals(testParam.getAdapter());
     }
     
-    private void assertExecuteForStatementWithXmlExpected(final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteForStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
@@ -189,7 +189,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForPreparedStatementWithXmlExpected(final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteForPreparedStatementWithXmlExpected(final SQLE2EITContext context) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(context.getSQL())) {
@@ -203,7 +203,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
+    private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
         try (
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
@@ -215,7 +215,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForStatement(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteForStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                            final AssertionTestParameter testParam) throws SQLException {
         try (
                 Statement actualStatement = actualConnection.createStatement();
@@ -229,7 +229,7 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForPreparedStatement(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteForPreparedStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                    final AssertionTestParameter testParam) throws SQLException {
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(context.getSQL());

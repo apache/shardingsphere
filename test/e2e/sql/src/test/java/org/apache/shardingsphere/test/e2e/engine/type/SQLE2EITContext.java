@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.context;
+package org.apache.shardingsphere.test.e2e.engine.type;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * SQL E2E test context.
+ * SQL E2E IT context.
  */
 @Getter
-public final class SQLE2ETestContext {
+public final class SQLE2EITContext {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -47,7 +47,7 @@ public final class SQLE2ETestContext {
     
     private final DataSet dataSet;
     
-    public SQLE2ETestContext(final AssertionTestParameter testParam) {
+    public SQLE2EITContext(final AssertionTestParameter testParam) {
         sql = testParam.getTestCaseContext().getTestCase().getSql();
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
