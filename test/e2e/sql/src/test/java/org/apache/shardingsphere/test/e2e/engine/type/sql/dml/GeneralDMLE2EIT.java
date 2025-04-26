@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.sql.dml;
 
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.framework.arg.SQLE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
@@ -43,7 +43,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -91,7 +91,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

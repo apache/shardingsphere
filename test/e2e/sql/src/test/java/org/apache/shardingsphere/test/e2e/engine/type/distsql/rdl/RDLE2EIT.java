@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
-import org.apache.shardingsphere.test.e2e.engine.framework.arg.SQLE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
@@ -59,7 +59,7 @@ class RDLE2EIT implements SQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
