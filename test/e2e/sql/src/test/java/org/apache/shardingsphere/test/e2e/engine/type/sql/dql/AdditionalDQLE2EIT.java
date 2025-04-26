@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dql;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
@@ -51,7 +51,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam, context);
         // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -72,7 +72,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam, context);
         // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -94,7 +94,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam, context);
         // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -115,7 +115,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(testParam, context);
         // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -132,7 +132,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         return "PostgreSQL".equals(databaseType) || "openGauss".equals(databaseType);
     }
     
-    private void assertExecuteQueryWithXMLExpected(final AssertionTestParameter testParam, final E2ETestContext context, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteQueryWithXMLExpected(final AssertionTestParameter testParam, final SQLE2ETestContext context, final int... resultSetTypes) throws SQLException {
         // TODO Fix jdbc adapter
         if ("jdbc".equals(testParam.getAdapter())) {
             return;
@@ -146,7 +146,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final E2ETestContext context, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2ETestContext context, final int... resultSetTypes) throws SQLException {
         try (
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
@@ -158,7 +158,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForStatementWithResultSetTypes(final E2ETestContext context,
+    private void assertExecuteQueryForStatementWithResultSetTypes(final SQLE2ETestContext context,
                                                                   final Connection actualConnection, final Connection expectedConnection,
                                                                   final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
@@ -172,7 +172,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForPreparedStatementWithResultSetTypes(final E2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteQueryForPreparedStatementWithResultSetTypes(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
                                                                           final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(context.getSQL(), resultSetTypes[0], resultSetTypes[1])
@@ -191,7 +191,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithXMLExpected(final AssertionTestParameter testParam, final E2ETestContext context, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteWithXMLExpected(final AssertionTestParameter testParam, final SQLE2ETestContext context, final int... resultSetTypes) throws SQLException {
         // TODO Fix jdbc adapter
         if ("jdbc".equals(testParam.getAdapter())) {
             return;
@@ -206,7 +206,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final E2ETestContext context, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SQLE2ETestContext context, final int... resultSetTypes) throws SQLException {
         try (
                 Connection actualConnection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
@@ -218,7 +218,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypes(final E2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteForStatementWithResultSetTypes(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
                                                              final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 Statement actualStatement = 2 == resultSetTypes.length ? actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
@@ -234,7 +234,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForPreparedStatementWithResultSetTypes(final E2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteForPreparedStatementWithResultSetTypes(final SQLE2ETestContext context, final Connection actualConnection, final Connection expectedConnection,
                                                                      final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(context.getSQL(), resultSetTypes[0], resultSetTypes[1])

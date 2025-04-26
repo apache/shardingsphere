@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -65,7 +65,7 @@ class RALE2EIT implements SQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        E2ETestContext context = new E2ETestContext(testParam);
+        SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(context);
         try {
             assertExecute(context);
@@ -74,7 +74,7 @@ class RALE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertExecute(final E2ETestContext context) throws SQLException {
+    private void assertExecute(final SQLE2ETestContext context) throws SQLException {
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 assertResultSet(context, statement);
@@ -82,7 +82,7 @@ class RALE2EIT implements SQLE2EIT {
         }
     }
     
-    private void init(final E2ETestContext context) throws SQLException {
+    private void init(final SQLE2ETestContext context) throws SQLException {
         if (null != context.getAssertion().getInitialSQL()) {
             try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
                 executeInitSQLs(context, connection);
@@ -90,7 +90,7 @@ class RALE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeInitSQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -102,7 +102,7 @@ class RALE2EIT implements SQLE2EIT {
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    private void tearDown(final E2ETestContext context) throws SQLException {
+    private void tearDown(final SQLE2ETestContext context) throws SQLException {
         if (null != context.getAssertion().getDestroySQL()) {
             try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
                 executeDestroySQLs(context, connection);
@@ -110,7 +110,7 @@ class RALE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeDestroySQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+    private void executeDestroySQLs(final SQLE2ETestContext context, final Connection connection) throws SQLException {
         if (null == context.getAssertion().getDestroySQL().getSql()) {
             return;
         }
@@ -122,7 +122,7 @@ class RALE2EIT implements SQLE2EIT {
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    private void assertResultSet(final E2ETestContext context, final Statement statement) throws SQLException {
+    private void assertResultSet(final SQLE2ETestContext context, final Statement statement) throws SQLException {
         if (null == context.getAssertion().getAssertionSQL()) {
             assertResultSet(context, statement, context.getSQL());
         } else {
@@ -132,19 +132,19 @@ class RALE2EIT implements SQLE2EIT {
         }
     }
     
-    private void assertResultSet(final E2ETestContext context, final Statement statement, final String sql) throws SQLException {
+    private void assertResultSet(final SQLE2ETestContext context, final Statement statement, final String sql) throws SQLException {
         statement.execute(sql);
         try (ResultSet resultSet = statement.getResultSet()) {
             assertResultSet(context, resultSet);
         }
     }
     
-    private void assertResultSet(final E2ETestContext context, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SQLE2ETestContext context, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
         assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final E2ETestContext context) {
+    private Collection<DataSetColumn> getExpectedColumns(final SQLE2ETestContext context) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
@@ -152,7 +152,7 @@ class RALE2EIT implements SQLE2EIT {
         return result;
     }
     
-    private Collection<String> getIgnoreAssertColumns(final E2ETestContext context) {
+    private Collection<String> getIgnoreAssertColumns(final SQLE2ETestContext context) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(DataSetColumn::isIgnoreAssertData).map(DataSetColumn::getName).collect(Collectors.toList()));
