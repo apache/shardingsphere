@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.context.SQLE2ETestContext;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
@@ -177,14 +177,14 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         dataSet.getRows().sort(Comparator.comparingLong(o -> Long.parseLong(o.splitValues(",").get(0))));
     }
     
-    protected final void assertDataSet(final SQLE2ETestContext context, final int actualUpdateCount, final AssertionTestParameter testParam) throws SQLException {
+    protected final void assertDataSet(final SQLE2EITContext context, final int actualUpdateCount, final AssertionTestParameter testParam) throws SQLException {
         assertThat(actualUpdateCount, is(context.getDataSet().getUpdateCount()));
         for (DataSetMetaData each : context.getDataSet().getMetaDataList()) {
             assertDataSet(context, each, testParam);
         }
     }
     
-    private void assertDataSet(final SQLE2ETestContext context, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
+    private void assertDataSet(final SQLE2EITContext context, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
         Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
@@ -262,7 +262,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertValue(final ResultSet actual, final int columnIndex, final String expected, final DatabaseType databaseType) throws SQLException {
-        if (SQLE2ETestContext.NOT_VERIFY_FLAG.equals(expected)) {
+        if (SQLE2EITContext.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
         if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
