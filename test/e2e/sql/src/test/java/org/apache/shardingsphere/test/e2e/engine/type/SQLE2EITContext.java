@@ -36,6 +36,9 @@ import java.util.stream.Collectors;
 @Getter
 public final class SQLE2EITContext {
     
+    /**
+     * Not verify flag.
+     */
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Getter(AccessLevel.NONE)
