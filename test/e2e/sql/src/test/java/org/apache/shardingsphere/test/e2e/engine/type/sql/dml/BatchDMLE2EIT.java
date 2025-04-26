@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type.sql.dml;
 
-import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
@@ -71,27 +71,27 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     }
     
     private void executeInitSQLs(final CaseTestParameter testParam) throws SQLException {
-        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+        for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             executeInitSQLs(each);
         }
     }
     
     private void executeDestroySQLs(final CaseTestParameter testParam) throws SQLException {
-        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+        for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             executeDestroySQLs(each);
         }
     }
     
     private int[] executeBatchForPreparedStatement(final CaseTestParameter testParam, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
-            for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
         }
     }
     
-    private void addBatch(final PreparedStatement preparedStatement, final E2ETestCaseAssertion assertion) throws SQLException {
+    private void addBatch(final PreparedStatement preparedStatement, final SQLE2ETestCaseAssertion assertion) throws SQLException {
         for (SQLValue each : assertion.getSQLValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
         }
@@ -110,7 +110,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
-            for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             preparedStatement.clearBatch();

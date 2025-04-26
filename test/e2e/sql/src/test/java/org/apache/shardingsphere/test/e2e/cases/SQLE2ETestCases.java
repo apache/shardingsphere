@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCase;
+import org.apache.shardingsphere.test.e2e.cases.casse.SQLE2ETestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,12 +26,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JAXB definition of E2E test cases.
+ * JAXB definition of SQL E2E test cases.
  */
 @XmlRootElement(name = "e2e-test-cases")
 @Getter
-public final class E2ETestCases {
+public final class SQLE2ETestCases {
     
     @XmlElement(name = "test-case")
-    private final Collection<E2ETestCase> testCases = new LinkedList<>();
+    private final Collection<SQLE2ETestCase> testCases = new LinkedList<>();
 }

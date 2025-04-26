@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
@@ -41,7 +41,7 @@ public final class E2ETestContext {
     
     private final SQLExecuteType sqlExecuteType;
     
-    private final E2ETestCaseAssertion assertion;
+    private final SQLE2ETestCaseAssertion assertion;
     
     private final DataSet dataSet;
     
