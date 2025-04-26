@@ -26,6 +26,9 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 import java.lang.reflect.Method;
 
+/**
+ * E2E environment setup processor.
+ */
 public final class E2EEnvironmentSetupProcessor implements InvocationInterceptor {
     
     @Override
