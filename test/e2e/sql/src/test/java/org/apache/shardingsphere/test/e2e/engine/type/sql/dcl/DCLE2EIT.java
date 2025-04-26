@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.type;
+package org.apache.shardingsphere.test.e2e.engine.type.sql.dcl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.type;
+package org.apache.shardingsphere.test.e2e.engine.type.distsql.rdl;
 
+import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -32,8 +33,10 @@ import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -41,14 +44,16 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@E2ETestCaseSettings(SQLCommandType.RQL)
+@E2ETestCaseSettings(SQLCommandType.RDL)
 @Setter
-class RQLE2EIT implements E2EEnvironmentAware {
+class RDLE2EIT implements E2EEnvironmentAware {
     
     private E2EEnvironmentEngine environmentEngine;
     
@@ -61,17 +66,71 @@ class RQLE2EIT implements E2EEnvironmentAware {
             return;
         }
         E2ETestContext context = new E2ETestContext(testParam);
-        assertExecute(context);
+        init(context);
+        try {
+            assertExecute(testParam, context);
+        } finally {
+            tearDown(context);
+        }
     }
     
-    private void assertExecute(final E2ETestContext context) throws SQLException {
-        try (
-                Connection connection = environmentEngine.getTargetDataSource().getConnection();
-                Statement statement = connection.createStatement()) {
-            statement.execute(context.getSQL());
-            try (ResultSet resultSet = statement.getResultSet()) {
-                assertResultSet(context, resultSet);
+    private void assertExecute(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
+        assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                executeSQLCase(context, statement);
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                assertResultSet(context, statement);
             }
+        }
+    }
+    
+    private void executeSQLCase(final E2ETestContext context, final Statement statement) throws SQLException {
+        statement.execute(context.getSQL());
+    }
+    
+    private void init(final E2ETestContext context) throws SQLException {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+            executeInitSQLs(context, connection);
+        }
+    }
+    
+    private void tearDown(final E2ETestContext context) throws SQLException {
+        if (null != context.getAssertion().getDestroySQL()) {
+            try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
+                executeDestroySQLs(context, connection);
+            }
+        }
+        Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+    }
+    
+    private void executeInitSQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+        if (null == context.getAssertion().getInitialSQL() || null == context.getAssertion().getInitialSQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getInitialSQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+            }
+        }
+    }
+    
+    private void executeDestroySQLs(final E2ETestContext context, final Connection connection) throws SQLException {
+        if (null == context.getAssertion().getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getDestroySQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+            }
+        }
+    }
+    
+    private void assertResultSet(final E2ETestContext context, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(context.getAssertion().getAssertionSQL().getSql())) {
+            assertResultSet(context, resultSet);
         }
     }
     
@@ -122,6 +181,6 @@ class RQLE2EIT implements E2EEnvironmentAware {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).isEmpty();
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL).isEmpty();
     }
 }

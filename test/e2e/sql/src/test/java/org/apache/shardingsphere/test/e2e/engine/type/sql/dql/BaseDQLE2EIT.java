@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.type.dql;
+package org.apache.shardingsphere.test.e2e.engine.type.sql.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
