@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.engine.type.sql.dql;
 
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
@@ -40,12 +40,12 @@ import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@E2ETestCaseSettings(SQLCommandType.DQL)
+@SQLE2EITSettings(SQLCommandType.DQL)
 class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteQueryWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -66,7 +66,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -88,7 +88,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -109,7 +109,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

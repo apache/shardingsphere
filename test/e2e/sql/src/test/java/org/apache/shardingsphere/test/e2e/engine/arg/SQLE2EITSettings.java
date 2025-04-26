@@ -26,12 +26,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * E2E test case settings.
+ * SQL E2E IT settings.
  */
 @ExtendWith(E2ESettingExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface E2ETestCaseSettings {
+public @interface SQLE2EITSettings {
     
     /**
      * Get SQL command type.

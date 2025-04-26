@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * E2E test case arguments provider.
+ * SQL E2E test case arguments provider.
  */
-public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
+public final class SQLE2ETestCaseArgumentsProvider implements ArgumentsProvider {
     
     @Override
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        E2ETestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ETestCaseSettings.class);
+        SQLE2EITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLE2EITSettings.class);
         Preconditions.checkNotNull(settings, "Annotation E2ETestCaseSettings is required.");
         return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
     }

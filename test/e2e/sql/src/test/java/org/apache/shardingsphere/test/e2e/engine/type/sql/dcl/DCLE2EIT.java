@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dcl;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -40,7 +40,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@E2ETestCaseSettings(SQLCommandType.DCL)
+@SQLE2EITSettings(SQLCommandType.DCL)
 @Setter
 class DCLE2EIT implements SQLE2EIT {
     
@@ -48,7 +48,7 @@ class DCLE2EIT implements SQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -79,7 +79,7 @@ class DCLE2EIT implements SQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

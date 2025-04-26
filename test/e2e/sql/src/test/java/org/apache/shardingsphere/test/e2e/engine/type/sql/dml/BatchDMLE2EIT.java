@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dml;
 
 import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
@@ -37,12 +37,12 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@E2ETestCaseSettings(value = SQLCommandType.DML, batch = true)
+@SQLE2EITSettings(value = SQLCommandType.DML, batch = true)
 class BatchDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -100,7 +100,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(SQLE2ETestCaseArgumentsProvider.class)
     void assertClearBatch(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
