@@ -70,7 +70,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     }
     
     void tearDown(final SQLE2ETestContext context) throws SQLException {
-        super.tearDown();
+        tearDown();
         executeDestroySQLs(context.getAssertion());
     }
     
