@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
@@ -37,6 +38,7 @@ public final class SQLE2ETestContext {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
+    @Getter(AccessLevel.NONE)
     private final String sql;
     
     private final SQLExecuteType sqlExecuteType;
