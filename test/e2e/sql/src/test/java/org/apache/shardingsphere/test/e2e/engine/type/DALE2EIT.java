@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type;
 
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -48,14 +49,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.DAL)
+@Setter
 class DALE2EIT implements E2EEnvironmentAware {
     
-    private E2EEnvironmentEngine environmentSetupEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        environmentSetupEngine = environmentEngine;
-    }
+    private E2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -70,7 +67,7 @@ class DALE2EIT implements E2EEnvironmentAware {
     }
     
     private void assertExecute(final E2ETestContext context) throws SQLException {
-        try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(context.getSQL());
                 assertExecuteResult(context, statement);

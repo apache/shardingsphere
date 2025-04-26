@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -57,14 +58,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @E2ETestCaseSettings(SQLCommandType.DDL)
+@Setter
 class DDLE2EIT implements E2EEnvironmentAware {
     
     private E2EEnvironmentEngine environmentEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentEngine = environmentEngine;
-    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")

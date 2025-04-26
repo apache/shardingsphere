@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dml;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -80,12 +81,8 @@ public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @Getter
+    @Setter
     private E2EEnvironmentEngine environmentEngine;
-    
-    @Override
-    public final void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentEngine = environmentEngine;
-    }
     
     /**
      * Init.

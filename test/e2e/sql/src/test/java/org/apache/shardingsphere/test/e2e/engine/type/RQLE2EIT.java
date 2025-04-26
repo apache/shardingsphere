@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type;
 
+import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
@@ -46,14 +47,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RQL)
+@Setter
 class RQLE2EIT implements E2EEnvironmentAware {
     
     private E2EEnvironmentEngine environmentEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentEngine = environmentEngine;
-    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
