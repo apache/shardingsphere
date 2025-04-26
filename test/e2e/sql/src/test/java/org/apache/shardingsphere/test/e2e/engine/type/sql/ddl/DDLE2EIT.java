@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
+import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
@@ -61,7 +61,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Setter
 class DDLE2EIT implements SQLE2EIT {
     
-    private E2EEnvironmentEngine environmentEngine;
+    private SQLE2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -191,9 +191,9 @@ class DDLE2EIT implements SQLE2EIT {
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
     
-    private void assertNotContainsTable(final E2EEnvironmentEngine containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
+    private void assertNotContainsTable(final SQLE2EEnvironmentEngine environmentEngine, final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = containerComposer.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = environmentEngine.getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }

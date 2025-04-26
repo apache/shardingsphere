@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
+import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Setter
 class RDLE2EIT implements SQLE2EIT {
     
-    private E2EEnvironmentEngine environmentEngine;
+    private SQLE2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
