@@ -15,26 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.casse.assertion;
+package org.apache.shardingsphere.test.e2e.cases.casse;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * JAXB definition of E2E test case assertion initial SQL.
+ * JAXB definition of SQL E2E test case.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class E2ETestCaseAssertionSQL {
+public final class SQLE2ETestCase {
     
     @XmlAttribute
     private String sql;
     
-    @XmlAttribute(name = "affected-table")
-    private String affectedTable;
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
+    @XmlAttribute(name = "scenario-types")
+    private String scenarioTypes;
+    
+    @XmlAttribute(name = "scenario-comments")
+    private String scenarioComments;
+    
+    @XmlAttribute
+    private String adapters;
+    
+    @XmlAttribute(name = "delay-assertion-seconds")
+    private int delayAssertionSeconds;
+    
+    @XmlAttribute
+    private boolean smoke;
+    
+    @XmlElement(name = "assertion")
+    private Collection<SQLE2ETestCaseAssertion> assertions = new LinkedList<>();
 }

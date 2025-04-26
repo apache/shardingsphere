@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.cases;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.casse.SQLE2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 
 import javax.xml.bind.JAXBContext;
@@ -43,22 +43,22 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * E2E test cases loader.
+ * SQL E2E test cases XML loader.
  */
-public final class E2ETestCasesLoader {
+public final class SQLE2ETestCasesXMLLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final E2ETestCasesLoader INSTANCE = new E2ETestCasesLoader();
+    private static final SQLE2ETestCasesXMLLoader INSTANCE = new SQLE2ETestCasesXMLLoader();
     
-    private final Map<SQLCommandType, Collection<E2ETestCaseContext>> testCaseContexts = new LinkedHashMap<>();
+    private final Map<SQLCommandType, Collection<SQLE2ETestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static E2ETestCasesLoader getInstance() {
+    public static SQLE2ETestCasesXMLLoader getInstance() {
         return INSTANCE;
     }
     
@@ -68,20 +68,20 @@ public final class E2ETestCasesLoader {
      * @param sqlCommandType SQL command type
      * @return E2E test case contexts
      */
-    public Collection<E2ETestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
+    public Collection<SQLE2ETestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
         return testCaseContexts.computeIfAbsent(sqlCommandType, this::loadE2ETestCaseContexts);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private Collection<E2ETestCaseContext> loadE2ETestCaseContexts(final SQLCommandType sqlCommandType) {
+    private Collection<SQLE2ETestCaseContext> loadE2ETestCaseContexts(final SQLCommandType sqlCommandType) {
         URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/"));
         return loadE2ETestCaseContexts(url, sqlCommandType);
     }
     
-    private Collection<E2ETestCaseContext> loadE2ETestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
+    private Collection<SQLE2ETestCaseContext> loadE2ETestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
         Collection<File> files = getFiles(url, sqlCommandType);
         Preconditions.checkNotNull(files, "Can not find E2E test cases.");
-        Collection<E2ETestCaseContext> result = new LinkedList<>();
+        Collection<SQLE2ETestCaseContext> result = new LinkedList<>();
         for (File each : files) {
             result.addAll(getE2ETestCaseContexts(each));
         }
@@ -103,17 +103,17 @@ public final class E2ETestCasesLoader {
         return result;
     }
     
-    private Collection<E2ETestCaseContext> getE2ETestCaseContexts(final File file) throws IOException, JAXBException {
-        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new E2ETestCaseContext(each, getParentPath(file))).collect(Collectors.toList());
+    private Collection<SQLE2ETestCaseContext> getE2ETestCaseContexts(final File file) throws IOException, JAXBException {
+        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new SQLE2ETestCaseContext(each, getParentPath(file))).collect(Collectors.toList());
     }
     
     private String getParentPath(final File file) {
         return file.getParent().replaceAll("(/cases/.+)/cases/.+", "$1");
     }
     
-    private E2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
+    private SQLE2ETestCases unmarshal(final String e2eCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(e2eCasesFile)) {
-            return (E2ETestCases) JAXBContext.newInstance(E2ETestCases.class).createUnmarshaller().unmarshal(reader);
+            return (SQLE2ETestCases) JAXBContext.newInstance(SQLE2ETestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }

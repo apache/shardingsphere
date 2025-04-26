@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * E2E test case context.
+ * SQL E2E test case context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class E2ETestCaseContext {
+public final class SQLE2ETestCaseContext {
     
-    private final E2ETestCase testCase;
+    private final SQLE2ETestCase testCase;
     
     private final String parentPath;
 }

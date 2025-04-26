@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
-import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -208,7 +208,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     
     protected final void assertDataSet(final int[] actualUpdateCounts, final CaseTestParameter testParam) throws SQLException {
         Collection<DataSet> dataSets = new LinkedList<>();
-        for (E2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+        for (SQLE2ETestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), each.getExpectedDataFile()));
         }
         DataSet dataSet = getDataSet(actualUpdateCounts, dataSets, testParam.getTestCaseContext().getTestCase().getSql());
@@ -313,7 +313,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         assertRows(generatedKeys, generatedKeyDataSet.getRows(), databaseType);
     }
     
-    protected void executeInitSQLs(final E2ETestCaseAssertion assertion) throws SQLException {
+    protected void executeInitSQLs(final SQLE2ETestCaseAssertion assertion) throws SQLException {
         if (null == assertion.getInitialSQL()) {
             return;
         }
@@ -322,7 +322,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeInitSQLs(final E2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final SQLE2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
         if (null == assertion.getInitialSQL().getSql()) {
             return;
         }
@@ -338,7 +338,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         Awaitility.await().pollDelay(1500L, TimeUnit.MILLISECONDS).until(() -> true);
     }
     
-    protected void executeDestroySQLs(final E2ETestCaseAssertion assertion) throws SQLException {
+    protected void executeDestroySQLs(final SQLE2ETestCaseAssertion assertion) throws SQLException {
         if (null != assertion.getDestroySQL()) {
             try (Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection()) {
                 executeDestroySQLs(assertion, connection);
@@ -346,7 +346,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         }
     }
     
-    private void executeDestroySQLs(final E2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
+    private void executeDestroySQLs(final SQLE2ETestCaseAssertion assertion, final Connection connection) throws SQLException {
         if (null == assertion.getDestroySQL().getSql()) {
             return;
         }
