@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.env;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
+import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
+import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 
 import javax.sql.DataSource;
@@ -43,6 +44,7 @@ public final class E2EEnvironmentEngine {
     
     private static final Collection<String> INITIALIZED_SUITES = new HashSet<>();
     
+    @Getter(AccessLevel.NONE)
     private final ContainerComposer containerComposer;
     
     private final Map<String, DataSource> actualDataSourceMap;
@@ -57,10 +59,10 @@ public final class E2EEnvironmentEngine {
         actualDataSourceMap = containerComposer.getActualDataSourceMap();
         targetDataSource = containerComposer.getTargetDataSource();
         expectedDataSourceMap = containerComposer.getExpectedDataSourceMap();
-        executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType, targetDataSource);
+        executeLogicDatabaseInitSQLFileOnlyOnce(key, scenario, databaseType);
     }
     
-    private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType, final DataSource targetDataSource) {
+    private void executeLogicDatabaseInitSQLFileOnlyOnce(final String key, final String scenario, final DatabaseType databaseType) {
         Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(scenario).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, databaseType);
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
