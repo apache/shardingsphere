@@ -68,14 +68,14 @@ class RDLE2EIT implements SQLE2EIT {
         SQLE2ETestContext context = new SQLE2ETestContext(testParam);
         init(context);
         try {
-            assertExecute(testParam, context);
+            assertExecute(context);
         } finally {
             tearDown(context);
         }
     }
     
-    private void assertExecute(final AssertionTestParameter testParam, final SQLE2ETestContext context) throws SQLException {
-        assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
+    private void assertExecute(final SQLE2ETestContext context) throws SQLException {
+        assertNotNull(context.getAssertion().getAssertionSQL(), "Assertion SQL is required");
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(context, statement);
