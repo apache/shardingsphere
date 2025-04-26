@@ -26,10 +26,10 @@ import java.io.PrintStream;
 import java.util.Optional;
 
 /**
- * E2E extension.
+ * E2E setting extension.
  */
 @Slf4j
-public final class E2EExtension implements TestWatcher {
+public final class E2ESettingExtension implements TestWatcher {
     
     @Override
     public void testFailed(final ExtensionContext context, final Throwable cause) {

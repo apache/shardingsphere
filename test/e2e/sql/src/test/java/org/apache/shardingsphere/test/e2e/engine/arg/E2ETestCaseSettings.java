@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.engine.framework.E2EExtension;
+import org.apache.shardingsphere.test.e2e.engine.framework.E2ESettingExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.Inherited;
@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * E2E test case settings.
  */
-@ExtendWith(E2EExtension.class)
+@ExtendWith(E2ESettingExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface E2ETestCaseSettings {
