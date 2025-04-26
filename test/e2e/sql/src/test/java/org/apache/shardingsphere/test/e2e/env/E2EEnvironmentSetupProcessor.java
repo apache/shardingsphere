@@ -40,11 +40,15 @@ public final class E2EEnvironmentSetupProcessor implements InvocationInterceptor
                 if (null == testParameter.getTestCaseContext()) {
                     break;
                 }
-                E2EEnvironmentEngine e2EEnvironmentEngine = new E2EEnvironmentEngine(testParameter.getKey(), testParameter.getScenario(), testParameter.getDatabaseType(),
-                        AdapterMode.valueOf(testParameter.getMode().toUpperCase()), AdapterType.valueOf(testParameter.getAdapter().toUpperCase()));
-                ((E2EEnvironmentAware) extensionContext.getRequiredTestInstance()).setEnvironmentEngine(e2EEnvironmentEngine);
+                setEnvironmentEngine(extensionContext, testParameter);
             }
         }
         invocation.proceed();
+    }
+    
+    private void setEnvironmentEngine(final ExtensionContext extensionContext, final E2ETestParameter testParam) {
+        E2EEnvironmentEngine environmentEngine = new E2EEnvironmentEngine(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+                AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
+        ((E2EEnvironmentAware) extensionContext.getRequiredTestInstance()).setEnvironmentEngine(environmentEngine);
     }
 }
