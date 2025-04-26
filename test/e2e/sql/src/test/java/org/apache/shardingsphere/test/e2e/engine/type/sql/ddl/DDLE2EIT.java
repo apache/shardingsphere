@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.type;
+package org.apache.shardingsphere.test.e2e.engine.type.sql.ddl;
 
 import com.google.common.base.Splitter;
 import lombok.Setter;

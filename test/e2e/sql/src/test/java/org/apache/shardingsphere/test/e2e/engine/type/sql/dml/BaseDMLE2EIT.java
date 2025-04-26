@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.type.dml;
+package org.apache.shardingsphere.test.e2e.engine.type.sql.dml;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
