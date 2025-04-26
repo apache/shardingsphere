@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.framework.arg;
+package org.apache.shardingsphere.test.e2e.engine.framework;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
@@ -32,9 +31,9 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * SQL E2E test case arguments provider.
+ * SQL E2E IT arguments provider.
  */
-public final class SQLE2ETestCaseArgumentsProvider implements ArgumentsProvider {
+public final class SQLE2EITArgumentsProvider implements ArgumentsProvider {
     
     @Override
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
