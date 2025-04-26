@@ -38,7 +38,7 @@ public final class SQLE2EITArgumentsProvider implements ArgumentsProvider {
     @Override
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
         SQLE2EITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLE2EITSettings.class);
-        Preconditions.checkNotNull(settings, "Annotation E2ETestCaseSettings is required.");
+        Preconditions.checkNotNull(settings, "Annotation `%s` is required.", SQLE2EITSettings.class.getSimpleName());
         return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
     }
     
