@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.E2ETestParameter;
-import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT.SQLE2EITExtension;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT.SQLE2EITEnvironmentExtension;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 /**
  * SQL E2E IT.
  */
-@ExtendWith(SQLE2EITExtension.class)
+@ExtendWith(SQLE2EITEnvironmentExtension.class)
 public interface SQLE2EIT {
     
     /**
@@ -43,9 +43,9 @@ public interface SQLE2EIT {
     void setEnvironmentEngine(E2EEnvironmentEngine environmentEngine);
     
     /**
-     * SQL E2E IT extension.
+     * SQL E2E IT environment extension.
      */
-    class SQLE2EITExtension implements InvocationInterceptor {
+    class SQLE2EITEnvironmentExtension implements InvocationInterceptor {
         
         @Override
         public void interceptTestTemplateMethod(final Invocation<Void> invocation, final ReflectiveInvocationContext<Method> invocationContext,
