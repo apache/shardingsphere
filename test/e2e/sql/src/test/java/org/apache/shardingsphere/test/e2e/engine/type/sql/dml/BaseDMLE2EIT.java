@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
@@ -74,7 +74,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public abstract class BaseDMLE2EIT implements E2EEnvironmentAware {
+public abstract class BaseDMLE2EIT implements SQLE2EIT {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     

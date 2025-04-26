@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
+import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RAL)
 @Setter
-class RALE2EIT implements E2EEnvironmentAware {
+class RALE2EIT implements SQLE2EIT {
     
     private E2EEnvironmentEngine environmentEngine;
     
