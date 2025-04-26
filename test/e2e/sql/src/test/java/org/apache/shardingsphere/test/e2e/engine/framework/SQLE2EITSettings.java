@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.arg;
+package org.apache.shardingsphere.test.e2e.engine.framework;
 
 import org.apache.shardingsphere.test.e2e.engine.framework.type.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.engine.framework.SQLE2ESettingExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.Inherited;
@@ -28,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * SQL E2E IT settings.
  */
-@ExtendWith(SQLE2ESettingExtension.class)
+@ExtendWith(SQLE2EITSettingsExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SQLE2EITSettings {
