@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * E2E container composer.
+ * SQL E2E environment engine.
  */
 @Getter
-public final class E2EEnvironmentEngine {
+public final class SQLE2EEnvironmentEngine {
     
     private static final ContainerComposerRegistry CONTAINER_COMPOSER_REGISTRY = new ContainerComposerRegistry();
     
@@ -53,7 +53,7 @@ public final class E2EEnvironmentEngine {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public E2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
+    public SQLE2EEnvironmentEngine(final String key, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(key, scenario, databaseType, adapterMode, adapterType);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT.SQLE2EITEnvironmentExtension;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
+import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ public interface SQLE2EIT {
      *
      * @param environmentEngine environment engine
      */
-    void setEnvironmentEngine(E2EEnvironmentEngine environmentEngine);
+    void setEnvironmentEngine(SQLE2EEnvironmentEngine environmentEngine);
     
     /**
      * SQL E2E IT environment extension.
@@ -64,7 +64,7 @@ public interface SQLE2EIT {
         }
         
         private void setEnvironmentEngine(final ExtensionContext extensionContext, final E2ETestParameter testParam) {
-            E2EEnvironmentEngine environmentEngine = new E2EEnvironmentEngine(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
+            SQLE2EEnvironmentEngine environmentEngine = new SQLE2EEnvironmentEngine(testParam.getKey(), testParam.getScenario(), testParam.getDatabaseType(),
                     AdapterMode.valueOf(testParam.getMode().toUpperCase()), AdapterType.valueOf(testParam.getAdapter().toUpperCase()));
             ((SQLE2EIT) extensionContext.getRequiredTestInstance()).setEnvironmentEngine(environmentEngine);
         }

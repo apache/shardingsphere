@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
+import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.engine.framework.param.model.AssertionTestParameter;
@@ -67,7 +67,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     private boolean useXMLAsExpectedDataset;
     
     @Setter
-    private E2EEnvironmentEngine environmentEngine;
+    private SQLE2EEnvironmentEngine environmentEngine;
     
     protected final void init(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam);

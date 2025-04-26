@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.sql.dcl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.engine.type.SQLE2EIT;
-import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
+import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.SQLE2EITSettings;
 import org.apache.shardingsphere.test.e2e.engine.context.E2ETestContext;
@@ -44,7 +44,7 @@ import java.sql.Statement;
 @Setter
 class DCLE2EIT implements SQLE2EIT {
     
-    private E2EEnvironmentEngine environmentEngine;
+    private SQLE2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
