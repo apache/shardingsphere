@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -65,12 +66,8 @@ public abstract class BaseDQLE2EIT implements E2EEnvironmentAware {
     
     private boolean useXMLAsExpectedDataset;
     
+    @Setter
     private E2EEnvironmentEngine environmentEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentEngine = environmentEngine;
-    }
     
     protected final void init(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam);

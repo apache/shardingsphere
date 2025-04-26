@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
@@ -51,14 +52,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RDL)
+@Setter
 class RDLE2EIT implements E2EEnvironmentAware {
     
-    private E2EEnvironmentEngine environmentSetupEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentSetupEngine = environmentEngine;
-    }
+    private E2EEnvironmentEngine environmentEngine;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -79,7 +76,7 @@ class RDLE2EIT implements E2EEnvironmentAware {
     
     private void assertExecute(final AssertionTestParameter testParam, final E2ETestContext context) throws SQLException {
         assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
-        try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(context, statement);
                 Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
@@ -93,14 +90,14 @@ class RDLE2EIT implements E2EEnvironmentAware {
     }
     
     private void init(final E2ETestContext context) throws SQLException {
-        try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
+        try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
             executeInitSQLs(context, connection);
         }
     }
     
     private void tearDown(final E2ETestContext context) throws SQLException {
         if (null != context.getAssertion().getDestroySQL()) {
-            try (Connection connection = environmentSetupEngine.getTargetDataSource().getConnection()) {
+            try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
                 executeDestroySQLs(context, connection);
             }
         }

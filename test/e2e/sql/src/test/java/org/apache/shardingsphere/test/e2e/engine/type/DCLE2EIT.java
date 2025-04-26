@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type;
 
+import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentAware;
 import org.apache.shardingsphere.test.e2e.env.E2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
@@ -40,14 +41,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @E2ETestCaseSettings(SQLCommandType.DCL)
+@Setter
 class DCLE2EIT implements E2EEnvironmentAware {
     
     private E2EEnvironmentEngine environmentEngine;
-    
-    @Override
-    public void setEnvironmentEngine(final E2EEnvironmentEngine environmentEngine) {
-        this.environmentEngine = environmentEngine;
-    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
