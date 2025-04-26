@@ -48,7 +48,8 @@ public interface SQLE2EIT {
     class SQLE2EITExtension implements InvocationInterceptor {
         
         @Override
-        public void interceptTestTemplateMethod(final Invocation<Void> invocation, final ReflectiveInvocationContext<Method> invocationContext, final ExtensionContext extensionContext) throws Throwable {
+        public void interceptTestTemplateMethod(final Invocation<Void> invocation, final ReflectiveInvocationContext<Method> invocationContext,
+                                                final ExtensionContext extensionContext) throws Throwable {
             for (Object each : invocationContext.getArguments()) {
                 if (each instanceof E2ETestParameter) {
                     E2ETestParameter testParameter = (E2ETestParameter) each;
