@@ -26,10 +26,10 @@ import java.io.PrintStream;
 import java.util.Optional;
 
 /**
- * SQL E2E setting extension.
+ * SQL E2E IT settings extension.
  */
 @Slf4j
-public final class SQLE2ESettingExtension implements TestWatcher {
+public final class SQLE2EITSettingsExtension implements TestWatcher {
     
     @Override
     public void testFailed(final ExtensionContext context, final Throwable cause) {
