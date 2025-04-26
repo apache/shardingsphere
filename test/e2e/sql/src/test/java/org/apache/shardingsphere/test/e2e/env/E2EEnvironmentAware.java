@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * E2E environment aware.
  */
-@ExtendWith(E2EEnvironmentSetupProcessor.class)
+@ExtendWith(E2EEnvironmentSetupExtension.class)
 public interface E2EEnvironmentAware {
     
     /**
