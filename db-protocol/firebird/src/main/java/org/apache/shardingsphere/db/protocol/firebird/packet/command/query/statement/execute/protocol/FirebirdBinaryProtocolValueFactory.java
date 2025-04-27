@@ -72,6 +72,8 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setInt8BinaryProtocolValue() {
         FirebirdInt8BinaryProtocolValue binaryProtocolValue = new FirebirdInt8BinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.INT64, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.NUMERIC, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DECIMAL, binaryProtocolValue);
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DEC34, binaryProtocolValue);
     }
     

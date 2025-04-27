@@ -38,12 +38,21 @@ public final class FirebirdPacketPayload implements PacketPayload {
     private final Charset charset;
     
     /**
+     * Read 1 byte fixed length integer from unsigned byte buffers.
+     *
+     * @return 1 byte fixed length integer
+     */
+    public int readInt1Unsigned() {
+        return byteBuf.readUnsignedByte();
+    }
+    
+    /**
      * Read 1 byte fixed length integer from byte buffers.
      *
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
-        return byteBuf.readUnsignedByte();
+        return byteBuf.readByte();
     }
     
     /**

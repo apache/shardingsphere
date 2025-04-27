@@ -51,6 +51,8 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
     TIME(560, 4),
     DATE(570, 4),
     INT64(580, 8),
+    NUMERIC(580, 8, 1),
+    DECIMAL(580, 8, 2),
     TIMESTAMP_TZ_EX(32748, 10),
     TIME_TZ_EX(32750, 6),
     INT128(32752, 16),
@@ -69,6 +71,7 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
 
     private final int value;
     private final int length;
+    private final int subtype;
 
     static {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, SHORT);
@@ -78,8 +81,8 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.FLOAT, FLOAT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.REAL, FLOAT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DOUBLE, DOUBLE);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NUMERIC, INT128);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DECIMAL, INT128);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NUMERIC, NUMERIC);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DECIMAL, DECIMAL);
         // replace VARYING with TEXT when add proper length
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
@@ -127,7 +130,13 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
             VALUE_AND_COLUMN_TYPE_MAP.put(each.value, each);
         }
     }
-
+    
+    FirebirdBinaryColumnType(int value, int length) {
+        this.value = value;
+        this.length = length;
+        subtype = 0;
+    }
+    
     /**
      * Value of JDBC type.
      *

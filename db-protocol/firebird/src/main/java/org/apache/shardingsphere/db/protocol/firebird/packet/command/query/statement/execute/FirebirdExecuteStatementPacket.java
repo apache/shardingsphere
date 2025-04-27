@@ -168,12 +168,9 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         writePayload.getByteBuf().writeZero(nullBits);
         int i = 0;
         for (BinaryCell cell : row.getCells()) {
-            boolean isRowNotFound = !returnColumns.remove((FirebirdBinaryColumnType) cell.getColumnType());
-            if (isRowNotFound) {
-                continue;
-            }
+            FirebirdBinaryColumnType returnType = returnColumns.get(i);
             if (cell.getData() != null) {
-                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
+                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(returnType);
                 type.write(writePayload, cell.getData());
             } else {
                 byte nullBitsByte = writePayload.getByteBuf().getByte(i / 8);
