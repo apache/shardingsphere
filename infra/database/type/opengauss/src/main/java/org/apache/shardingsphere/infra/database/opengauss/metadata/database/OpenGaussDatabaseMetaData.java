@@ -56,7 +56,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public  DialectSystemTableOption getSystemTableOption() {
+    public DialectSystemTableOption getSystemTableOption() {
         return new OpenGaussSystemTableOption();
     }
     

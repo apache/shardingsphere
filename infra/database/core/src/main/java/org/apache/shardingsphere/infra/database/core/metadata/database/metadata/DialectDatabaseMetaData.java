@@ -75,7 +75,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get system table option.
-     * 
+     *
      * @return system table option
      */
     default DialectSystemTableOption getSystemTableOption() {
