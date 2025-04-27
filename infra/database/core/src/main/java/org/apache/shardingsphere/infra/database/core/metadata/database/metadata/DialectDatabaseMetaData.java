@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DefaultSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
@@ -69,6 +71,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, null);
+    }
+    
+    /**
+     * Get system table option.
+     *
+     * @return system table option
+     */
+    default DialectSystemTableOption getSystemTableOption() {
+        return new DefaultSystemTableOption();
     }
     
     /**
