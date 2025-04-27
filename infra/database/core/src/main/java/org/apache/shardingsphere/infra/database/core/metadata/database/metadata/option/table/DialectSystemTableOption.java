@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema;
-
-import java.sql.Connection;
-import java.util.Optional;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table;
 
 /**
- * Dialect schema option.
+ * Dialect system table option.
  */
-public interface DialectSchemaOption {
+public interface DialectSystemTableOption {
     
     /**
-     * Is schema feature available.
+     * Whether driver query system catalog.
      *
-     * @return available or not
+     * @return query or not
      */
-    boolean isSchemaAvailable();
+    boolean isDriverQuerySystemCatalog();
     
     /**
-     * Get schema.
+     * Whether system catalog query expressions.
      *
-     * @param connection connection
-     * @return schema
+     * @param projectionExpression projection expression
+     * @return is query expressions or not
      */
-    String getSchema(Connection connection);
-    
-    /**
-     * Get default schema name.
-     *
-     * @return default schema name
-     */
-    Optional<String> getDefaultSchema();
+    boolean isSystemCatalogQueryExpressions(String projectionExpression);
 }

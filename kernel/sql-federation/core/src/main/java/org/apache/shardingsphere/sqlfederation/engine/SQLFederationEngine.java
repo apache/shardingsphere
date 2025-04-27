@@ -168,7 +168,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
-                || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     /**
