@@ -34,7 +34,7 @@ public interface StaticMethodAdvice extends AgentAdvice {
      * @param args all method arguments
      * @param pluginType plugin type
      */
-    default void beforeMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, String pluginType) {
+    default void beforeMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
     }
     
     /**
@@ -47,7 +47,7 @@ public interface StaticMethodAdvice extends AgentAdvice {
      * @param result original call result
      * @param pluginType plugin type
      */
-    default void afterMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Object result, String pluginType) {
+    default void afterMethod(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
     }
     
     /**
@@ -59,6 +59,6 @@ public interface StaticMethodAdvice extends AgentAdvice {
      * @param throwable exception from target method
      * @param pluginType plugin type
      */
-    default void onThrowing(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, String pluginType) {
+    default void onThrowing(final Class<?> clazz, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
     }
 }
