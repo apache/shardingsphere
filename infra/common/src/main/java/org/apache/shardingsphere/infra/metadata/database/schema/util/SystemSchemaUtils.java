@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -37,16 +37,16 @@ import java.util.Collection;
 public final class SystemSchemaUtils {
     
     /**
-     * Judge whether SQL statement contains system schema or not.
+     * Judge whether SQL statement contains system schema.
      *
      * @param databaseType database type
      * @param schemaNames schema names
      * @param database database
-     * @return whether SQL statement contains system schema or not
+     * @return contains system schema or not
      */
     public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (database.isComplete() && !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption();
+        if (database.isComplete() && !schemaOption.getDefaultSchema().isPresent()) {
             return false;
         }
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
@@ -55,7 +55,18 @@ public final class SystemSchemaUtils {
                 return true;
             }
         }
-        return !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
+        return !schemaOption.getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
+    }
+    
+    /**
+     * Judge whether schema is system schema.
+     *
+     * @param database database
+     * @return is system schema or not
+     */
+    public static boolean isSystemSchema(final ShardingSphereDatabase database) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption();
+        return (!database.isComplete() || schemaOption.getDefaultSchema().isPresent()) && new SystemDatabase(database.getProtocolType()).getSystemSchemas().contains(database.getName());
     }
     
     /**
@@ -70,19 +81,5 @@ public final class SystemSchemaUtils {
         return systemTableOption.isDriverQuerySystemCatalog()
                 && 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
                 && systemTableOption.isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) projections.iterator().next()).getText());
-    }
-    
-    /**
-     * Judge schema is system schema or not.
-     *
-     * @param database database
-     * @return whether schema is system schema or not
-     */
-    public static boolean isSystemSchema(final ShardingSphereDatabase database) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        if (database.isComplete() && !dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            return false;
-        }
-        return new SystemDatabase(database.getProtocolType()).getSystemSchemas().contains(database.getName());
     }
 }

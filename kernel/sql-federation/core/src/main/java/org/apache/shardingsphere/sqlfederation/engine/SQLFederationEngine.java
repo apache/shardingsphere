@@ -136,8 +136,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
-        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
+        if (!sqlFederationRule.getConfiguration().isSqlFederationEnabled() || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         boolean allQueryUseSQLFederation = sqlFederationRule.getConfiguration().isAllQueryUseSQLFederation();
