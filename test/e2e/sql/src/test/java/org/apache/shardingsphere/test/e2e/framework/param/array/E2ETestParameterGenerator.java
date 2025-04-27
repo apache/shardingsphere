@@ -25,11 +25,11 @@ import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
-import org.apache.shardingsphere.test.e2e.cases.E2ETestCasesLoader;
+import org.apache.shardingsphere.test.e2e.cases.casse.SQLE2ETestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.SQLE2ETestCasesXMLLoader;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
+import org.apache.shardingsphere.test.e2e.cases.casse.assertion.SQLE2ETestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class E2ETestParameterGenerator {
     
-    private static final E2ETestCasesLoader TEST_CASES_LOADER = E2ETestCasesLoader.getInstance();
+    private static final SQLE2ETestCasesXMLLoader TEST_CASES_LOADER = SQLE2ETestCasesXMLLoader.getInstance();
     
     private final Collection<String> envAdapters;
     
@@ -66,7 +66,7 @@ public final class E2ETestParameterGenerator {
      */
     public Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (E2ETestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
+        for (SQLE2ETestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             if (smoke) {
                 result.addAll(getAssertionTestParameterFilterBySmoke(each, sqlCommandType));
             } else {
@@ -76,7 +76,7 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameter(final E2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
+    private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
             if (envDatabaseTypes.contains(each)) {
@@ -86,7 +86,7 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameter(final E2ETestCaseContext testCaseContext,
+    private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (SQLExecuteType each : SQLExecuteType.values()) {
@@ -97,18 +97,18 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameter(final E2ETestCaseContext testCaseContext,
+    private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (E2ETestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+        for (SQLE2ETestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, each, sqlCommandType));
         }
         return result;
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameter(final E2ETestCaseContext testCaseContext,
+    private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
-                                                                         final E2ETestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
+                                                                         final SQLE2ETestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (String each : getEnvAdapters(testCaseContext.getTestCase().getAdapters())) {
             if (sqlCommandType.getRunningAdaptors().contains(each) && envAdapters.contains(each)) {
@@ -118,7 +118,7 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameter(final E2ETestCaseContext testCaseContext, final E2ETestCaseAssertion assertion,
+    private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext, final SQLE2ETestCaseAssertion assertion,
                                                                          final String adapter, final DatabaseType databaseType,
                                                                          final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
@@ -126,7 +126,7 @@ public final class E2ETestParameterGenerator {
                 .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
     
-    private Collection<AssertionTestParameter> getAssertionTestParameterFilterBySmoke(final E2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
+    private Collection<AssertionTestParameter> getAssertionTestParameterFilterBySmoke(final SQLE2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         if (testCaseContext.getTestCase().isSmoke()) {
             result.addAll(getAssertionTestParameter(testCaseContext, sqlCommandType));
@@ -159,13 +159,13 @@ public final class E2ETestParameterGenerator {
      */
     public Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (E2ETestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
+        for (SQLE2ETestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             result.addAll(getCaseTestParameter(each, sqlCommandType));
         }
         return result;
     }
     
-    private Collection<E2ETestParameter> getCaseTestParameter(final E2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
+    private Collection<E2ETestParameter> getCaseTestParameter(final SQLE2ETestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
             if (envDatabaseTypes.contains(each)) {
@@ -175,7 +175,7 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<E2ETestParameter> getCaseTestParameter(final E2ETestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
+    private Collection<E2ETestParameter> getCaseTestParameter(final SQLE2ETestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
         for (String each : envAdapters) {
             result.addAll(getCaseTestParameter(testCaseContext, each, databaseType, sqlCommandType));
@@ -183,7 +183,7 @@ public final class E2ETestParameterGenerator {
         return result;
     }
     
-    private Collection<E2ETestParameter> getCaseTestParameter(final E2ETestCaseContext testCaseContext, final String adapter,
+    private Collection<E2ETestParameter> getCaseTestParameter(final SQLE2ETestCaseContext testCaseContext, final String adapter,
                                                               final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         if (null != testCaseContext.getTestCase().getAdapters() && !testCaseContext.getTestCase().getAdapters().contains(adapter)) {
             return Collections.emptyList();

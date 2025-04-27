@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.util.ScriptReader;
@@ -37,9 +39,8 @@ import java.sql.Statement;
 /**
  * Batched SQL utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLScriptUtils {
-    
-    private static final int BATCH_SIZE = 100;
     
     /**
      * Execute SQL script.
@@ -51,12 +52,12 @@ public final class SQLScriptUtils {
     public static void execute(final DataSource dataSource, final String scriptFilePath) {
         try (
                 Connection connection = dataSource.getConnection();
-                Reader reader = getReader(scriptFilePath)) {
-            Statement statement = connection.createStatement();
-            ScriptReader r = new ScriptReader(reader);
-            r.setSkipRemarks(true);
+                Statement statement = connection.createStatement();
+                Reader reader = getReader(scriptFilePath);
+                ScriptReader scriptReader = new ScriptReader(reader)) {
+            scriptReader.setSkipRemarks(true);
             while (true) {
-                String sql = r.readStatement();
+                String sql = scriptReader.readStatement();
                 if (null == sql) {
                     break;
                 }
@@ -68,48 +69,8 @@ public final class SQLScriptUtils {
         }
     }
     
-    /**
-     * Execute SQL script.
-     *
-     * @param dataSource data source
-     * @param scriptFilePath script file path
-     */
-    @SneakyThrows({SQLException.class, IOException.class})
-    public static void executeBatch(final DataSource dataSource, final String scriptFilePath) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Reader reader = getReader(scriptFilePath)) {
-            Statement statement = connection.createStatement();
-            ScriptReader r = new ScriptReader(reader);
-            r.setSkipRemarks(true);
-            int count = 0;
-            while (true) {
-                String sql = r.readStatement();
-                if (null == sql) {
-                    break;
-                }
-                if (StringUtils.isBlank(sql)) {
-                    continue;
-                }
-                statement.addBatch(sql);
-                count++;
-                if (0 == count % BATCH_SIZE) {
-                    statement.executeBatch();
-                    statement.clearBatch();
-                }
-            }
-            if (0 != count % BATCH_SIZE) {
-                statement.executeBatch();
-            }
-        }
-    }
-    
     private static Reader getReader(final String scriptFilePath) throws FileNotFoundException {
         InputStream resourceAsStream = SQLScriptUtils.class.getClassLoader().getResourceAsStream(StringUtils.removeStart(scriptFilePath, "/"));
-        if (resourceAsStream != null) {
-            return new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
-        } else {
-            return new FileReader(scriptFilePath);
-        }
+        return resourceAsStream == null ? new FileReader(scriptFilePath) : new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
     }
 }

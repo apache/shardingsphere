@@ -2443,7 +2443,7 @@
                     <owner name="test_schema" start-index="152" stop-index="162"/>
                 </simple-table>
             </from>
-            <combine combine-type="UNION_ALL" start-index="240" stop-index="775">
+            <combine combine-type="UNION_ALL" start-index="56" stop-index="775">
                 <left start-index="56" stop-index="230">
                     <projections start-index="63" stop-index="137">
                         <column-projection name="id" start-index="63" stop-index="67">

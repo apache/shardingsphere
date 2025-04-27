@@ -4347,4 +4347,19 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_select_with_brackets">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="29">
+            <column name="order_id" start-index="21" stop-index="28" />
+        </columns>
+        <select>
+            <from start-index="53" stop-index="64">
+                <simple-table name="t_order_item" start-index="53" stop-index="64"/>
+            </from>
+            <projections start-index="39" stop-index="46">
+                <column-projection name="order_id" start-index="39" stop-index="46"/>
+            </projections>
+        </select>
+    </insert>
 </sql-parser-test-cases>

@@ -450,6 +450,7 @@ fromClauseOption
 selectTableReference
     : queryTableExprClause | containersClause | shardsClause
     | (queryTableExprClause | containersClause | shardsClause) alias?
+    | LP_ joinClause RP_
     ;
 
 queryTableExprClause

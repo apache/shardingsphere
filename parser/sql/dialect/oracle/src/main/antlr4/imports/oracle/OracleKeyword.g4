@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+ABSENT
+    : A B S E N T
+    ;
+
 BEQUEATH
     : B E Q U E A T H
     ;
