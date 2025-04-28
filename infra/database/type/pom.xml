@@ -41,6 +41,5 @@
         <module>firebird</module>
         <module>h2</module>
         <module>sql92</module>
-        <module>testcontainers</module>
     </modules>
 </project>

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.testcontainers.type;
+package org.apache.shardingsphere.test.natived.testcontainers;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -25,22 +25,22 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of Firebird in testcontainers-java.
+ * Database type of MSSQL Server in testcontainers.
  */
-public final class TcFirebirdDatabaseType implements TestcontainersDatabaseType {
+public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:firebird:");
+        return Collections.singleton("jdbc:tc:sqlserver:");
     }
     
     @Override
     public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "Firebird"));
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
     }
     
     @Override
     public String getType() {
-        return "TC-Firebird";
+        return "TC-SQLServer";
     }
 }

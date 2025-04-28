@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.testcontainers.type;
+package org.apache.shardingsphere.test.natived.testcontainers;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Database type for Testcontainers.
- * All jdbcUrl prefixes supported by testcontainers-java should extend this class.
+ * All jdbcUrl prefixes supported by testcontainers should extend this class.
  */
 public interface TestcontainersDatabaseType extends DatabaseType {
 }
