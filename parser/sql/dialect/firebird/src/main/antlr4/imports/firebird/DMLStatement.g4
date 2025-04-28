@@ -90,11 +90,11 @@ firstSkipClause
     ;
 
 firstValue
-    : numberLiterals | parameterMarker // | LP_ expr RP_
+    : LP_? (numberLiterals | parameterMarker) RP_?
     ;
 
 skipValue
-    : numberLiterals | parameterMarker // | LP_ expr RP_
+    : LP_? (numberLiterals | parameterMarker) RP_?
     ;
 
 duplicateSpecification
