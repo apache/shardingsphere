@@ -1526,10 +1526,6 @@
   "name":"org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.p6spy.type.P6spyMySQLDatabaseType"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.postgresql.checker.PostgreSQLDatabasePrivilegeChecker"
 },

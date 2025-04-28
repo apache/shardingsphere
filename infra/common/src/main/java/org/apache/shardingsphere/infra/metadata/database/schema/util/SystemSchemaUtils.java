@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * System schema utility.
@@ -77,9 +78,9 @@ public final class SystemSchemaUtils {
      * @return whether query or not
      */
     public static boolean isDriverQuerySystemCatalog(final DatabaseType databaseType, final Collection<ProjectionSegment> projections) {
-        DialectSystemTableOption systemTableOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSystemTableOption();
-        return systemTableOption.isDriverQuerySystemCatalog()
+        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
+        return driverQuerySystemCatalogOption.isPresent()
                 && 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
-                && systemTableOption.isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) projections.iterator().next()).getText());
+                && driverQuerySystemCatalogOption.get().isSystemCatalogQueryExpressions(((ExpressionProjectionSegment) projections.iterator().next()).getText());
     }
 }

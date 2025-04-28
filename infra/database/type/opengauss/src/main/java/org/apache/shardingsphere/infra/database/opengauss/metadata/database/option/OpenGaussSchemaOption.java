@@ -17,31 +17,36 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database.option;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
-import java.util.Collection;
+import java.sql.Connection;
+import java.util.Optional;
 
 /**
- * System table option for openGauss.
+ * Schema option for openGauss.
  */
-public final class OpenGaussSystemTableOption implements DialectSystemTableOption {
+public final class OpenGaussSchemaOption implements DialectSchemaOption {
     
-    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>(3, 1F);
+    private final DialectSchemaOption defaultSchemaOption = new DefaultSchemaOption(true, "public");
     
-    static {
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("version()");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+    @Override
+    public boolean isSchemaAvailable() {
+        return defaultSchemaOption.isSchemaAvailable();
     }
     
     @Override
-    public boolean isDriverQuerySystemCatalog() {
-        return true;
+    public String getSchema(final Connection connection) {
+        return defaultSchemaOption.getSchema(connection);
     }
     
     @Override
-    public boolean isSystemCatalogQueryExpressions(final String projectionExpression) {
-        return SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(projectionExpression);
+    public Optional<String> getDefaultSchema() {
+        return defaultSchemaOption.getDefaultSchema();
+    }
+    
+    @Override
+    public Optional<String> getDefaultSystemSchema() {
+        return Optional.of("pg_catalog");
     }
 }
