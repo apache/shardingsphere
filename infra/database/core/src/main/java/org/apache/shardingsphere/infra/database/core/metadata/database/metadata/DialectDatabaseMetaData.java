@@ -27,12 +27,13 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DefaultSystemTableOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import java.util.Optional;
 
 /**
  * Dialect database meta data.
@@ -74,12 +75,12 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get system table option.
+     * Get driver query system catalog option.
      *
-     * @return system table option
+     * @return driver query system catalog option
      */
-    default DialectSystemTableOption getSystemTableOption() {
-        return new DefaultSystemTableOption();
+    default Optional<DialectDriverQuerySystemCatalogOption> getDriverQuerySystemCatalogOption() {
+        return Optional.empty();
     }
     
     /**

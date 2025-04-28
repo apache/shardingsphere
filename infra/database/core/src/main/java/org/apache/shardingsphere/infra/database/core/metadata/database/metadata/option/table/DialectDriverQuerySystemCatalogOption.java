@@ -18,16 +18,9 @@
 package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table;
 
 /**
- * Dialect system table option.
+ * Dialect driver query system catalog option.
  */
-public interface DialectSystemTableOption {
-    
-    /**
-     * Whether driver query system catalog.
-     *
-     * @return query or not
-     */
-    boolean isDriverQuerySystemCatalog();
+public interface DialectDriverQuerySystemCatalogOption {
     
     /**
      * Whether system catalog query expressions.
@@ -44,4 +37,35 @@ public interface DialectSystemTableOption {
      * @return is system table or not
      */
     boolean isSystemTable(String tableName);
+    
+    /**
+     * Whether database data table.
+     *
+     * @param tableName table name
+     * @return is database data table or not
+     */
+    boolean isDatabaseDataTable(String tableName);
+    
+    /**
+     * Whether table data table.
+     *
+     * @param tableName table name
+     * @return is table data table or not
+     */
+    boolean isTableDataTable(String tableName);
+    
+    /**
+     * Whether role data table.
+     *
+     * @param tableName table name
+     * @return is role data table or not
+     */
+    boolean isRoleDataTable(String tableName);
+    
+    /**
+     * Get dat compatibility.
+     *
+     * @return dat compatibility
+     */
+    String getDatCompatibility();
 }

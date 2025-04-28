@@ -18,25 +18,26 @@
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database.option;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * System table option for openGauss.
+ * Driver query system catalog option for openGauss.
  */
-public final class OpenGaussSystemTableOption implements DialectSystemTableOption {
+public final class OpenGaussDriverQuerySystemCatalogOption implements DialectDriverQuerySystemCatalogOption {
     
     private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>(
             Arrays.asList("version()", "intervaltonum(gs_password_deadline())", "gs_password_notifytime()"));
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(Arrays.asList("pg_database", "pg_tables", "pg_roles"));
+    private static final String DATABASE_DATA_TABLE = "pg_database";
     
-    @Override
-    public boolean isDriverQuerySystemCatalog() {
-        return true;
-    }
+    private static final String TABLE_DATA_TABLE = "pg_tables";
+    
+    private static final String ROLE_DATA_TABLE = "pg_roles";
+    
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(Arrays.asList(DATABASE_DATA_TABLE, TABLE_DATA_TABLE, ROLE_DATA_TABLE));
     
     @Override
     public boolean isSystemCatalogQueryExpressions(final String projectionExpression) {
@@ -46,5 +47,25 @@ public final class OpenGaussSystemTableOption implements DialectSystemTableOptio
     @Override
     public boolean isSystemTable(final String tableName) {
         return SYSTEM_CATALOG_TABLES.contains(tableName);
+    }
+    
+    @Override
+    public boolean isDatabaseDataTable(final String tableName) {
+        return DATABASE_DATA_TABLE.equalsIgnoreCase(tableName);
+    }
+    
+    @Override
+    public boolean isTableDataTable(final String tableName) {
+        return TABLE_DATA_TABLE.equalsIgnoreCase(tableName);
+    }
+    
+    @Override
+    public boolean isRoleDataTable(final String tableName) {
+        return ROLE_DATA_TABLE.equalsIgnoreCase(tableName);
+    }
+    
+    @Override
+    public String getDatCompatibility() {
+        return "PG";
     }
 }
