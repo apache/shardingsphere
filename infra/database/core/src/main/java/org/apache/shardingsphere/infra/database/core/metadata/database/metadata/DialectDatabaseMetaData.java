@@ -23,9 +23,12 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DefaultSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
@@ -71,12 +74,30 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
+     * Get system table option.
+     *
+     * @return system table option
+     */
+    default DialectSystemTableOption getSystemTableOption() {
+        return new DefaultSystemTableOption();
+    }
+    
+    /**
      * Get column option.
      *
      * @return column option
      */
     default DialectColumnOption getColumnOption() {
         return new DialectColumnOption(true);
+    }
+    
+    /**
+     * Get index option.
+     *
+     * @return index option
+     */
+    default DialectIndexOption getIndexOption() {
+        return new DialectIndexOption(false);
     }
     
     /**

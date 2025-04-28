@@ -301,4 +301,35 @@
             <column name="order_id" start-index="51" stop-index="58" />
         </lock>
     </select>
+
+    <select sql-case-id="select_lock_with_union_all">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+        </projections>
+        <from start-index="21" stop-index="27">
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="89">
+            <left>
+                <projections start-index="7" stop-index="14">
+                    <column-projection name="order_id" start-index="7" stop-index="14" />
+                </projections>
+                <from>
+                    <simple-table name="t_order" start-index="21" stop-index="27" />
+                </from>
+                <lock start-index="29" stop-index="38">
+                </lock>
+            </left>
+            <right>
+                <projections start-index="57" stop-index="64">
+                    <column-projection name="order_id" start-index="57" stop-index="64"/>
+                </projections>
+                <from start-index="71" stop-index="78">
+                    <simple-table name="t_order2" start-index="71" stop-index="78"/>
+                </from>
+                <lock start-index="80" stop-index="89">
+                </lock>
+            </right>
+        </combine>
+    </select>
 </sql-parser-test-cases>

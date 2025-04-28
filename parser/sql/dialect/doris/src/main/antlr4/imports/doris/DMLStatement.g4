@@ -138,14 +138,9 @@ queryExpression
 
 queryExpressionBody
     : queryPrimary
-    | queryExpressionParens combineClause
-    | queryExpressionBody combineClause
-    ;
-
-combineClause
-    : INTERSECT combineOption? (queryPrimary | queryExpressionParens)
-    | UNION combineOption? (queryPrimary | queryExpressionParens)
-    | EXCEPT combineOption? (queryPrimary | queryExpressionParens)
+    | queryExpressionParens
+    | queryExpressionBody INTERSECT combineOption? queryExpressionBody
+    | queryExpressionBody (UNION | EXCEPT) combineOption? queryExpressionBody
     ;
 
 queryExpressionParens

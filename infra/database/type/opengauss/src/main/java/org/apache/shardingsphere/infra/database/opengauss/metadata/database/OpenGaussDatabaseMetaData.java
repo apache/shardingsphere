@@ -21,11 +21,14 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussDataTypeOption;
+import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussSystemTableOption;
 
 /**
  * Database meta data of openGauss.
@@ -50,6 +53,16 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(true, "public");
+    }
+    
+    @Override
+    public DialectSystemTableOption getSystemTableOption() {
+        return new OpenGaussSystemTableOption();
+    }
+    
+    @Override
+    public DialectIndexOption getIndexOption() {
+        return new DialectIndexOption(true);
     }
     
     @Override

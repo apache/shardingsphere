@@ -136,8 +136,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
-        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
+        if (!sqlFederationRule.getConfiguration().isSqlFederationEnabled() || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         boolean allQueryUseSQLFederation = sqlFederationRule.getConfiguration().isAllQueryUseSQLFederation();
@@ -168,7 +167,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
-                || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     /**

@@ -28,7 +28,7 @@ public interface DialectSchemaOption {
     /**
      * Is schema feature available.
      *
-     * @return true or false
+     * @return available or not
      */
     boolean isSchemaAvailable();
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.cases.casse.E2ETestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.casse.SQLE2ETestCaseContext;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 
 /**
@@ -31,7 +31,7 @@ public interface E2ETestParameter {
      *
      * @return test case context
      */
-    E2ETestCaseContext getTestCaseContext();
+    SQLE2ETestCaseContext getTestCaseContext();
     
     /**
      * Get database type.

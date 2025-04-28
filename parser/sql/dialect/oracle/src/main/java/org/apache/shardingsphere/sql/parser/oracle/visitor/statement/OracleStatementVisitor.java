@@ -60,6 +60,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalDayToSecondExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntervalYearToMonthExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JsonObjectFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JsonObjectKeyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
@@ -1051,9 +1053,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.predictionCostFunction()) {
             return visit(ctx.predictionCostFunction());
         }
+        if (null != ctx.jsonObjectFunction()) {
+            return visit(ctx.jsonObjectFunction());
+        }
         throw new IllegalStateException(
                 "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, "
-                        + "trimFunction, toDateFunction, approxCount, predictionCostFunction or featureFunction.");
+                        + "trimFunction, toDateFunction, approxCount, predictionCostFunction, jsonObjectFunction or featureFunction.");
+    }
+    
+    @Override
+    public ASTNode visitJsonObjectFunction(final JsonObjectFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_OBJECT().getText(), getOriginalText(ctx));
+        for (JsonObjectKeyValueContext each : ctx.jsonObjectContent().jsonObjectKeyValue()) {
+            result.getParameters().addAll(getExpressions(each.expr()));
+        }
+        return result;
     }
     
     @Override

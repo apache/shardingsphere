@@ -182,7 +182,7 @@
                         <from>
                             <simple-table name="t1" start-index="29" stop-index="30" />
                         </from>
-                        <combine combine-type="EXCEPT" start-index="32" stop-index="58">
+                        <combine combine-type="EXCEPT_ALL" start-index="15" stop-index="58">
                             <left>
                                 <projections start-index="22" stop-index="22">
                                     <shorthand-projection start-index="22" stop-index="22" />
@@ -10157,6 +10157,26 @@
                         </binary-operation-expression>
                     </right>
                 </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_match_against">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7">
+                <actual-projections start-index="0" stop-index="0"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <where start-index="22" stop-index="62">
+            <expr start-index="28" stop-index="62">
+                <match-expression start-index="28" stop-index="62">
+                    <expr start-index="49" stop-index="61">
+                        <literal-expression value="15111111111" start-index="49" stop-index="61"/>
+                    </expr>
+                </match-expression>
             </expr>
         </where>
     </select>

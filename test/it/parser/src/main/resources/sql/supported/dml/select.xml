@@ -317,4 +317,5 @@
     <sql-case id="select_is_not_nan" value="SELECT COUNT(*) FROM employees WHERE commission_pct IS NOT NAN" db-types="Oracle"/>
     <sql-case id="select_with_comparison_with_space" value="select * from test where id &gt; = 1 or name &lt;   = 2" db-types="Oracle"/>
     <sql-case id="select_with_not_equal_comparison_with_space" value="select * from test where id &lt;  &gt; 1 and name !  = 1 and id ^ = 3 " db-types="Oracle"/>
+    <sql-case id="select_match_against" value="SELECT * FROM t_order WHERE MATCH(phone) AGAINST('15111111111')" db-types="MySQL"/>
 </sql-cases>

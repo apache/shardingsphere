@@ -1140,6 +1140,10 @@ JSONPRINT
     : J S O N P R I N T
     ;
 
+JSON_OBJECT
+    : J S O N UL_ O B J E C T
+    ;
+
 LINESIZE
     : L I N E S I Z E
     ;
