@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +37,14 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatisticsAssembleUtils {
     
+    private static final String DAT_COMPATIBILITY = "PG";
+    
+    private static final String PG_DATABASE = "pg_database";
+    
+    private static final String PG_TABLES = "pg_tables";
+    
+    private static final String PG_ROLES = "pg_roles";
+    
     /**
      * Assemble table statistics.
      *
@@ -47,13 +54,13 @@ public final class StatisticsAssembleUtils {
      */
     public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
         TableStatistics result = new TableStatistics(table.getName());
-        if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
+        if (PG_DATABASE.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
-        } else if (EnumerableConstants.PG_TABLES.equalsIgnoreCase(table.getName())) {
+        } else if (PG_TABLES.equalsIgnoreCase(table.getName())) {
             for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
                 assembleOpenGaussTableData(result, each.getAllSchemas());
             }
-        } else if (EnumerableConstants.PG_ROLES.equalsIgnoreCase(table.getName())) {
+        } else if (PG_ROLES.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussRoleData(result, metaData);
         }
         return result;
@@ -63,7 +70,7 @@ public final class StatisticsAssembleUtils {
         for (ShardingSphereDatabase each : databases) {
             Object[] rows = new Object[15];
             rows[0] = each.getName();
-            rows[11] = EnumerableConstants.DAT_COMPATIBILITY;
+            rows[11] = DAT_COMPATIBILITY;
             tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
     }

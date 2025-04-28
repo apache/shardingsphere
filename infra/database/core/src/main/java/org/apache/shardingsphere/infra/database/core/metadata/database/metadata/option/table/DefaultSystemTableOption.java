@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table;
 
 /**
- * Dialect system table option.
+ * Default system table option.
  */
 public final class DefaultSystemTableOption implements DialectSystemTableOption {
     
@@ -29,6 +29,11 @@ public final class DefaultSystemTableOption implements DialectSystemTableOption 
     
     @Override
     public boolean isSystemCatalogQueryExpressions(final String projectionExpression) {
+        return false;
+    }
+    
+    @Override
+    public boolean isSystemTable(final String tableName) {
         return false;
     }
 }

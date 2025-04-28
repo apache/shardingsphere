@@ -36,4 +36,12 @@ public interface DialectSystemTableOption {
      * @return is query expressions or not
      */
     boolean isSystemCatalogQueryExpressions(String projectionExpression);
+    
+    /**
+     * Whether system table.
+     *
+     * @param tableName table name
+     * @return is system table or not
+     */
+    boolean isSystemTable(String tableName);
 }

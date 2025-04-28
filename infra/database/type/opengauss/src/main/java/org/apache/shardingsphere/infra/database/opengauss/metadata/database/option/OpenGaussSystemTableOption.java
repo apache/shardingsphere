@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.opengauss.metadata.database.opt
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -27,13 +28,10 @@ import java.util.Collection;
  */
 public final class OpenGaussSystemTableOption implements DialectSystemTableOption {
     
-    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>(3, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new CaseInsensitiveSet<>(
+            Arrays.asList("version()", "intervaltonum(gs_password_deadline())", "gs_password_notifytime()"));
     
-    static {
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("version()");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
-        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
-    }
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(Arrays.asList("pg_database", "pg_tables", "pg_roles"));
     
     @Override
     public boolean isDriverQuerySystemCatalog() {
@@ -43,5 +41,10 @@ public final class OpenGaussSystemTableOption implements DialectSystemTableOptio
     @Override
     public boolean isSystemCatalogQueryExpressions(final String projectionExpression) {
         return SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(projectionExpression);
+    }
+    
+    @Override
+    public boolean isSystemTable(final String tableName) {
+        return SYSTEM_CATALOG_TABLES.contains(tableName);
     }
 }

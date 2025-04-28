@@ -25,6 +25,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -54,7 +55,6 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.executor.constant.EnumerableConstants;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerator.JDBCRowEnumerator;
@@ -153,8 +153,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     }
     
     private Enumerable<Object> createMemoryEnumerable(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
-        if (new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSystemTableOption().isDriverQuerySystemCatalog()
-                && EnumerableConstants.SYSTEM_CATALOG_TABLES.contains(table.getName())) {
+        DialectSystemTableOption systemTableOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSystemTableOption();
+        if (systemTableOption.isDriverQuerySystemCatalog() && systemTableOption.isSystemTable(table.getName())) {
             return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableStatistics(table, federationContext.getMetaData()), table, databaseType);
         }
         Optional<TableStatistics> tableStatistics = Optional.ofNullable(statistics.getDatabaseStatistics(databaseName))
