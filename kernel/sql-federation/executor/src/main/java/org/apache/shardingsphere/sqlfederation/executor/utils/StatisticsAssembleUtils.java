@@ -46,7 +46,6 @@ public final class StatisticsAssembleUtils {
      * @return table statistics
      */
     public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
-        // TODO move this logic to ShardingSphere statistics
         TableStatistics result = new TableStatistics(table.getName());
         if (EnumerableConstants.PG_DATABASE.equalsIgnoreCase(table.getName())) {
             assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
