@@ -382,8 +382,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public void sourceExecuteWithLog(final String sql) throws SQLException {
         log.info("source execute :{}", sql);
-        try (Connection connection = sourceDataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = sourceDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
     }
