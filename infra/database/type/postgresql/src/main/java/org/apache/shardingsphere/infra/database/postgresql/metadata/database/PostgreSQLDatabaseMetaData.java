@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
+import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
 /**
  * Database meta data of PostgreSQL.
@@ -50,7 +50,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(true, "public");
+        return new PostgreSQLSchemaOption();
     }
     
     @Override
