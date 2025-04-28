@@ -37,7 +37,6 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
 - Row Value Expressions definition
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation
 - Database type identification
-  - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`, Adaptation of jdbcURL for `JDBC support` of `testcontainers-java` 
   - `org.apache.shardingsphere:shardingsphere-infra-database-hive`, Adaptation of jdbcURL for `JDBC support` of Hive, and metadata loading implementation 
   - `org.apache.shardingsphere:shardingsphere-infra-database-presto`, Adaptation of jdbcURL for `JDBC support` of Presto, and metadata loading implementation
 - SQL parsing
