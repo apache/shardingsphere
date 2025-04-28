@@ -39,7 +39,7 @@ public interface DialectSystemTableOption {
     
     /**
      * Whether system table.
-     * 
+     *
      * @param tableName table name
      * @return is system table or not
      */
