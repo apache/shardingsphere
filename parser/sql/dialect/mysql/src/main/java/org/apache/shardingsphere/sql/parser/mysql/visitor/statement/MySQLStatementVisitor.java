@@ -2046,6 +2046,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     protected String getOriginalText(final ParserRuleContext ctx) {
-        return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return null == ctx ? "" : ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
 }
