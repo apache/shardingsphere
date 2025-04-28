@@ -25,7 +25,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectSystemTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -153,9 +153,9 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     }
     
     private Enumerable<Object> createMemoryEnumerable(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
-        DialectSystemTableOption systemTableOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSystemTableOption();
-        if (systemTableOption.isDriverQuerySystemCatalog() && systemTableOption.isSystemTable(table.getName())) {
-            return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableStatistics(table, federationContext.getMetaData()), table, databaseType);
+        Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
+        if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
+            return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableStatistics(table, federationContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
         }
         Optional<TableStatistics> tableStatistics = Optional.ofNullable(statistics.getDatabaseStatistics(databaseName))
                 .map(optional -> optional.getSchemaStatistics(schemaName)).map(optional -> optional.getTableStatistics(table.getName()));

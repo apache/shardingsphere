@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.executor.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -37,45 +38,39 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatisticsAssembleUtils {
     
-    private static final String DAT_COMPATIBILITY = "PG";
-    
-    private static final String PG_DATABASE = "pg_database";
-    
-    private static final String PG_TABLES = "pg_tables";
-    
-    private static final String PG_ROLES = "pg_roles";
-    
     /**
      * Assemble table statistics.
      *
      * @param table table
      * @param metaData meta data
+     * @param driverQuerySystemCatalogOption driver query system catalog option
      * @return table statistics
      */
-    public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData) {
+    public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData,
+                                                          final DialectDriverQuerySystemCatalogOption driverQuerySystemCatalogOption) {
         TableStatistics result = new TableStatistics(table.getName());
-        if (PG_DATABASE.equalsIgnoreCase(table.getName())) {
-            assembleOpenGaussDatabaseData(result, metaData.getAllDatabases());
-        } else if (PG_TABLES.equalsIgnoreCase(table.getName())) {
+        if (driverQuerySystemCatalogOption.isDatabaseDataTable(table.getName())) {
+            assembleDatabaseData(result, metaData.getAllDatabases(), driverQuerySystemCatalogOption.getDatCompatibility());
+        } else if (driverQuerySystemCatalogOption.isTableDataTable(table.getName())) {
             for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
-                assembleOpenGaussTableData(result, each.getAllSchemas());
+                assembleTableData(result, each.getAllSchemas());
             }
-        } else if (PG_ROLES.equalsIgnoreCase(table.getName())) {
-            assembleOpenGaussRoleData(result, metaData);
+        } else if (driverQuerySystemCatalogOption.isRoleDataTable(table.getName())) {
+            assembleRoleData(result, metaData);
         }
         return result;
     }
     
-    private static void assembleOpenGaussDatabaseData(final TableStatistics tableStatistics, final Collection<ShardingSphereDatabase> databases) {
+    private static void assembleDatabaseData(final TableStatistics tableStatistics, final Collection<ShardingSphereDatabase> databases, final String datCompatibility) {
         for (ShardingSphereDatabase each : databases) {
             Object[] rows = new Object[15];
             rows[0] = each.getName();
-            rows[11] = DAT_COMPATIBILITY;
+            rows[11] = datCompatibility;
             tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
     }
     
-    private static void assembleOpenGaussTableData(final TableStatistics tableStatistics, final Collection<ShardingSphereSchema> schemas) {
+    private static void assembleTableData(final TableStatistics tableStatistics, final Collection<ShardingSphereSchema> schemas) {
         for (ShardingSphereSchema schema : schemas) {
             for (ShardingSphereTable each : schema.getAllTables()) {
                 Object[] rows = new Object[10];
@@ -86,7 +81,7 @@ public final class StatisticsAssembleUtils {
         }
     }
     
-    private static void assembleOpenGaussRoleData(final TableStatistics tableStatistics, final ShardingSphereMetaData metaData) {
+    private static void assembleRoleData(final TableStatistics tableStatistics, final ShardingSphereMetaData metaData) {
         for (Grantee each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getGrantees()) {
             Object[] rows = new Object[27];
             rows[0] = each.getUsername();
