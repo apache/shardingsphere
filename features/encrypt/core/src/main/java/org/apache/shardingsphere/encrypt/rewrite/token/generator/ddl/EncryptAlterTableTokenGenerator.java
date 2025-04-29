@@ -75,9 +75,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         result.addAll(getModifyColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getModifyColumnDefinitions()));
         result.addAll(getChangeColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getChangeColumnDefinitions()));
         List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getDropColumnDefinitions());
-        DialectAlterTableOption alterTableOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getAlterTableOption();
-        if (alterTableOption.isSupportMergeDropColumns()) {
-            result.addAll(mergeDropColumnStatement(dropColumnTokens, alterTableOption.isContainsParenthesesOnMergeDropColumns()));
+        Optional<DialectAlterTableOption> alterTableOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getAlterTableOption();
+        if (alterTableOption.isPresent() && alterTableOption.get().isSupportMergeDropColumns()) {
+            result.addAll(mergeDropColumnStatement(dropColumnTokens, alterTableOption.get().isContainsParenthesesOnMergeDropColumns()));
         } else {
             result.addAll(dropColumnTokens);
         }
