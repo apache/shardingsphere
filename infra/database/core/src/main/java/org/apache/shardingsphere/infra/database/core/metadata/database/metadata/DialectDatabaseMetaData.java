@@ -140,7 +140,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get alter table option.
-     * 
+     *
      * @return alter table option
      */
     default DialectAlterTableOption getAlterTableOption() {
