@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
+import java.util.Optional;
+
 /**
  * Database meta data of SQLServer.
  */
@@ -45,8 +47,8 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public DialectAlterTableOption getAlterTableOption() {
-        return new DialectAlterTableOption(true, false);
+    public Optional<DialectAlterTableOption> getAlterTableOption() {
+        return Optional.of(new DialectAlterTableOption(true, false));
     }
     
     @Override

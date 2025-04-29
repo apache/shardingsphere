@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleSchemaOption;
 
+import java.util.Optional;
+
 /**
  * Database meta data of Oracle.
  */
@@ -70,8 +72,8 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectAlterTableOption getAlterTableOption() {
-        return new DialectAlterTableOption(true, true);
+    public Optional<DialectAlterTableOption> getAlterTableOption() {
+        return Optional.of(new DialectAlterTableOption(true, true));
     }
     
     @Override
