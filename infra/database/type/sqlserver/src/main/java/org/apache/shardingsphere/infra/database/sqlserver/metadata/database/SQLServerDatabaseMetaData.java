@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.sqlserver.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
@@ -41,6 +42,11 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "dbo");
+    }
+    
+    @Override
+    public DialectAlterTableOption getAlterTableOption() {
+        return new DialectAlterTableOption(true, false);
     }
     
     @Override
