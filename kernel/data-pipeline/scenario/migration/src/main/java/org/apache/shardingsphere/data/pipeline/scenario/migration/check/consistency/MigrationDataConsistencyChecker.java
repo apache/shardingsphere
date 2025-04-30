@@ -113,6 +113,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
                 checkResultMap.put(new QualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
+                if (checkResult.isIgnored()) {
+                    progressContext.getIgnoredTableNames().add(each.format());
+                    log.info("Table '{}' is ignored, ignore type: {}", checkResult.getIgnoredType(), each.format());
+                    continue;
+                }
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", each.format());
                     return true;
@@ -138,15 +143,15 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
         TableInventoryChecker tableInventoryChecker = tableChecker.buildTableInventoryChecker(param);
         currentTableInventoryChecker.set(tableInventoryChecker);
-        TableDataConsistencyCheckResult result = tableInventoryChecker.checkSingleTableInventoryData();
-        currentTableInventoryChecker.set(null);
-        return result;
+        Optional<TableDataConsistencyCheckResult> preCheckResult = tableInventoryChecker.preCheck();
+        return preCheckResult.orElseGet(tableInventoryChecker::checkSingleTableInventoryData);
     }
     
     @Override
     public void cancel() {
         canceling.set(true);
         Optional.ofNullable(currentTableInventoryChecker.get()).ifPresent(TableInventoryChecker::cancel);
+        currentTableInventoryChecker.set(null);
     }
     
     @Override
