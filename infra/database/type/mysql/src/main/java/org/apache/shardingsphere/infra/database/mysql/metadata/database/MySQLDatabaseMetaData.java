@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.mysql.metadata.database.option.MySQLDataTypeOption;
 
@@ -63,8 +63,8 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public DialectJoinOrderOption getJoinOrderOption() {
-        return new DialectJoinOrderOption(true, true);
+    public DialectJoinOption getJoinOption() {
+        return new DialectJoinOption(true, true);
     }
     
     @Override
