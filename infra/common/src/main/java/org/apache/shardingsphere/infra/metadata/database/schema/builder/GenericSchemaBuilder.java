@@ -97,7 +97,8 @@ public final class GenericSchemaBuilder {
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         for (StorageUnit each : material.getStorageUnits().values()) {
-            String defaultSchemaName = new DatabaseTypeRegistry(each.getStorageType()).getDefaultSchemaName(material.getDefaultSchemaName());
+            DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(each.getStorageType());
+            String defaultSchemaName = databaseTypeRegistry.getDefaultSchemaName(material.getDefaultSchemaName());
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
         String frontendSchemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(material.getDefaultSchemaName());
