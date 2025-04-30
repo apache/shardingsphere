@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -88,6 +91,14 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         DataMatchTableInventoryChecker(final TableInventoryCheckParameter param, final int chunkSize) {
             super(param);
             this.chunkSize = chunkSize;
+        }
+        
+        @Override
+        public Optional<TableDataConsistencyCheckResult> preCheck() {
+            if (getParam().getUniqueKeys().isEmpty()) {
+                return Optional.of(new TableDataConsistencyCheckResult(TableDataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
+            }
+            return Optional.empty();
         }
         
         @Override
