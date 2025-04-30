@@ -678,9 +678,9 @@ compoundStatement
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | dropDatabase | truncateTable
+    : (createTable | alterTable | dropTable | dropDatabase | truncateTable | startTransaction
     | insert | replace | update | delete | select | call
-    | createView | prepare | executeStmt | commit | deallocate
+    | createView | prepare | executeStmt | commit | deallocate | rollback
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement
     | setStatement | showStatement) SEMI_?
     ;
