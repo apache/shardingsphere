@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
-import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+
+import java.util.Objects;
 
 /**
  * Qualified table.
  */
-@EqualsAndHashCode
 public final class QualifiedTable {
     
     private final ShardingSphereIdentifier schemaName;
@@ -51,6 +51,21 @@ public final class QualifiedTable {
      */
     public String getTableName() {
         return tableName.getValue();
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (null == o || getClass() != o.getClass()) {
+            return false;
+        }
+        QualifiedTable that = (QualifiedTable) o;
+        return Objects.equals(null == schemaName.getValue() ? null : schemaName, null == that.schemaName.getValue() ? null : that.schemaName)
+                && Objects.equals(null == tableName.getValue() ? null : tableName, null == that.tableName.getValue() ? null : that.tableName);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(schemaName, tableName);
     }
     
     @Override
