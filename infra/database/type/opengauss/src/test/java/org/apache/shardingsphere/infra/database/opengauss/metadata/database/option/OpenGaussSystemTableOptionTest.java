@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class OpenGaussSystemTableOptionTest {
     
     @Test
-    public void assertIsSystemCatalogQueryExpressions() {
+    void assertIsSystemCatalogQueryExpressions() {
         assertTrue(new OpenGaussDriverQuerySystemCatalogOption().isSystemCatalogQueryExpressions("version()"));
         assertTrue(new OpenGaussDriverQuerySystemCatalogOption().isSystemCatalogQueryExpressions("intervaltonum(gs_password_deadline())"));
         assertTrue(new OpenGaussDriverQuerySystemCatalogOption().isSystemCatalogQueryExpressions("gs_password_notifytime()"));
