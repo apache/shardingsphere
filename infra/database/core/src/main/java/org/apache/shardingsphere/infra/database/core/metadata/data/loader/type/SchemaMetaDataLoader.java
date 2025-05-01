@@ -109,9 +109,8 @@ public final class SchemaMetaDataLoader {
     
     private Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
         Collection<String> result = new CaseInsensitiveSet<>();
-        try (
-                ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null,
-                        new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})) {
+        String[] tableTypes = new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE};
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, tableTypes)) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table) && !excludedTables.contains(table)) {
