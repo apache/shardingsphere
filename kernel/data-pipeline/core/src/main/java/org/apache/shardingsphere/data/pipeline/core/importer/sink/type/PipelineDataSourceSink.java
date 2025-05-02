@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.DataReco
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
@@ -273,6 +272,15 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     @Override
     public void close() {
-        Optional.ofNullable(runningStatement.get()).ifPresent(PipelineJdbcUtils::cancelStatement);
+        PreparedStatement statement = runningStatement.get();
+        if (null != statement)
+            try {
+                if (!statement.isClosed()) {
+                    statement.cancel();
+                }
+                // CHECKSTYLE:OFF
+            } catch (final SQLException ignored) {
+                // CHECKSTYLE:ON
+            }
     }
 }

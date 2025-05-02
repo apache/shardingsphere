@@ -47,7 +47,6 @@ import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.BuildDivisibleSQLParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -341,6 +340,15 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     @Override
     protected void doStop() {
-        Optional.ofNullable(runningStatement.get()).ifPresent(PipelineJdbcUtils::cancelStatement);
+        Statement statement = runningStatement.get();
+        if (null != statement)
+            try {
+                if (!statement.isClosed()) {
+                    statement.cancel();
+                }
+                // CHECKSTYLE:OFF
+            } catch (final SQLException ignored) {
+                // CHECKSTYLE:ON
+            }
     }
 }
