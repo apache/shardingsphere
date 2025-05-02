@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     
-    private final DialectDataTypeOption dataTypeOption = new DefaultDataTypeOption();
+    private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
     
     @Override
     public Map<String, Integer> getExtraDataTypes() {
@@ -57,16 +57,16 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     
     @Override
     public boolean isIntegerDataType(final int sqlType) {
-        return dataTypeOption.isIntegerDataType(sqlType);
+        return delegate.isIntegerDataType(sqlType);
     }
     
     @Override
     public boolean isStringDataType(final int sqlType) {
-        return dataTypeOption.isStringDataType(sqlType);
+        return delegate.isStringDataType(sqlType);
     }
     
     @Override
     public boolean isBinaryDataType(final int sqlType) {
-        return dataTypeOption.isBinaryDataType(sqlType);
+        return delegate.isBinaryDataType(sqlType);
     }
 }
