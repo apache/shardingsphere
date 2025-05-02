@@ -40,4 +40,29 @@ public interface DialectDataTypeOption {
      * @return extra SQL type class
      */
     Optional<Class<?>> findExtraSQLTypeClass(int dataType, boolean unsigned);
+    
+    /**
+     * Whether data type is integer type.
+     *
+     * @param sqlType value of java.sql.Types
+     * @return is integer type or not
+     */
+    boolean isIntegerDataType(int sqlType);
+    
+    /**
+     * Whether data type is string column.
+     *
+     * @param sqlType value of java.sql.Types
+     * @return is string type or not
+     */
+    boolean isStringDataType(int sqlType);
+    
+    /**
+     * Whether data type is binary type.
+     * <p>it doesn't include BLOB etc.</p>
+     *
+     * @param sqlType value of java.sql.Types
+     * @return is binary type or not
+     */
+    boolean isBinaryDataType(int sqlType);
 }

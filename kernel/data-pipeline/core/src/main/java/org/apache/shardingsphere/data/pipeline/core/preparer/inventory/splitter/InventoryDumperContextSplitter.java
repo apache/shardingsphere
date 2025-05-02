@@ -35,7 +35,8 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculato
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryRecordsCountCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.sql.Connection;
@@ -119,13 +120,14 @@ public final class InventoryDumperContextSplitter {
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
+            DialectDataTypeOption dataTypeOption = new DatabaseTypeRegistry(sourceDataSource.getDatabaseType()).getDialectDatabaseMetaData().getDataTypeOption();
             int firstColumnDataType = uniqueKeyColumns.get(0).getDataType();
-            if (PipelineJdbcUtils.isIntegerColumn(firstColumnDataType)) {
+            if (dataTypeOption.isIntegerDataType(firstColumnDataType)) {
                 Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dumperContext);
                 int shardingSize = jobItemContext.getJobProcessContext().getProcessConfiguration().getRead().getShardingSize();
                 return InventoryPositionCalculator.getPositionByIntegerUniqueKeyRange(tableRecordsCount, uniqueKeyValuesRange, shardingSize);
             }
-            if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
+            if (dataTypeOption.isStringDataType(firstColumnDataType)) {
                 return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
         }
