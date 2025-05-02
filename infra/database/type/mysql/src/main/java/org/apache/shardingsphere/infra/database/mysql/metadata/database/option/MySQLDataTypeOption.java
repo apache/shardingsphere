@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.database.option;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.math.BigInteger;
@@ -29,6 +30,8 @@ import java.util.Optional;
  * Data type option for MySQL.
  */
 public final class MySQLDataTypeOption implements DialectDataTypeOption {
+    
+    private final DialectDataTypeOption dataTypeOption = new DefaultDataTypeOption();
     
     @Override
     public Map<String, Integer> getExtraDataTypes() {
@@ -58,5 +61,20 @@ public final class MySQLDataTypeOption implements DialectDataTypeOption {
             return unsigned ? Optional.of(BigInteger.class) : Optional.of(Long.class);
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public boolean isIntegerDataType(final int sqlType) {
+        return dataTypeOption.isIntegerDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isStringDataType(final int sqlType) {
+        return dataTypeOption.isStringDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isBinaryDataType(final int sqlType) {
+        return dataTypeOption.isBinaryDataType(sqlType);
     }
 }

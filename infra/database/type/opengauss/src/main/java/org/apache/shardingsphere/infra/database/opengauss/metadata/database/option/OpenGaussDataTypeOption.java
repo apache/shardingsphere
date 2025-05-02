@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database.option;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.sql.Types;
@@ -28,6 +29,8 @@ import java.util.Optional;
  * Data type option for openGauss.
  */
 public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
+    
+    private final DialectDataTypeOption dataTypeOption = new DefaultDataTypeOption();
     
     @Override
     public Map<String, Integer> getExtraDataTypes() {
@@ -47,5 +50,20 @@ public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
     @Override
     public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
         return Optional.empty();
+    }
+    
+    @Override
+    public boolean isIntegerDataType(final int sqlType) {
+        return dataTypeOption.isIntegerDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isStringDataType(final int sqlType) {
+        return dataTypeOption.isStringDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isBinaryDataType(final int sqlType) {
+        return dataTypeOption.isBinaryDataType(sqlType);
     }
 }
