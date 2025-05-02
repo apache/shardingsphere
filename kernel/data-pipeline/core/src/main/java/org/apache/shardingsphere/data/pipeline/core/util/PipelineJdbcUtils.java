@@ -22,69 +22,12 @@ import lombok.NoArgsConstructor;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
 /**
  * Pipeline JDBC utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineJdbcUtils {
-    
-    /**
-     * Whether column is integer type.
-     *
-     * @param columnType column type, value of java.sql.Types
-     * @return true or false
-     */
-    public static boolean isIntegerColumn(final int columnType) {
-        switch (columnType) {
-            case Types.INTEGER:
-            case Types.BIGINT:
-            case Types.SMALLINT:
-            case Types.TINYINT:
-                return true;
-            default:
-                return false;
-        }
-    }
-    
-    /**
-     * Whether column is string column.
-     *
-     * @param columnType column type, value of java.sql.Types
-     * @return true or false
-     */
-    public static boolean isStringColumn(final int columnType) {
-        switch (columnType) {
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.LONGVARCHAR:
-            case Types.NCHAR:
-            case Types.NVARCHAR:
-            case Types.LONGNVARCHAR:
-                return true;
-            default:
-                return false;
-        }
-    }
-    
-    /**
-     * Whether column is binary column.
-     * <p>it doesn't include BLOB etc.</p>
-     *
-     * @param columnType column type, value of java.sql.Types
-     * @return true or false
-     */
-    public static boolean isBinaryColumn(final int columnType) {
-        switch (columnType) {
-            case Types.BINARY:
-            case Types.VARBINARY:
-            case Types.LONGVARBINARY:
-                return true;
-            default:
-                return false;
-        }
-    }
     
     /**
      * Cancel statement.
