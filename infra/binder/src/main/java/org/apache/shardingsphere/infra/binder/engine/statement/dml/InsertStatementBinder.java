@@ -64,6 +64,8 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.getValues().addAll(sqlStatement.getValues());
         sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
+        sqlStatement.getOnConflictKeyColumns().ifPresent(result::setOnConflictKeyColumns);
+        sqlStatement.getWithSegment().ifPresent(result::setWithSegment);
         sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
         sqlStatement.getMultiTableInsertIntoSegment().ifPresent(result::setMultiTableInsertIntoSegment);
