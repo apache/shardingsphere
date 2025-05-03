@@ -58,7 +58,7 @@ public final class PaginationContext {
             if (null == obj) {
                 return null;
             }
-            return obj instanceof Long ? (long) obj : (int) obj;
+            return obj instanceof byte[] ? (long) (((byte[]) obj)[0] - '0') : obj instanceof Long ? (long) obj : (int) obj;
         }
         if (paginationValueSegment instanceof ExpressionRowNumberValueSegment) {
             return ((ExpressionRowNumberValueSegment) paginationValueSegment).getValue(params);
