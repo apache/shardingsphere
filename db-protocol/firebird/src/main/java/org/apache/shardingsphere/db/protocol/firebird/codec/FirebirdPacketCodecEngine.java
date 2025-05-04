@@ -53,20 +53,18 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (isValidHeader(in.readableBytes())) {
-            if (pendingMessages.isEmpty()) {
-                int type = in.getInt(in.readerIndex());
-                pendingPacketType = FirebirdCommandPacketType.valueOf(type);
-                if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                    handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                    return;
-                } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
-                    handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
-                    return;
-                }
+        if (pendingMessages.isEmpty() && isValidHeader(in.readableBytes())) {
+            int type = in.getInt(in.readerIndex());
+            pendingPacketType = FirebirdCommandPacketType.valueOf(type);
+            if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
+                handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                return;
+            } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
+                handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                return;
             }
-            addToBuffer(context, in, out);
         }
+        addToBuffer(context, in, out);
     }
 
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {

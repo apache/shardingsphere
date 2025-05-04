@@ -46,6 +46,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     private final List<FirebirdBinaryColumnType> parameterTypes;
     private final int message;
     private final List<Object> parameterValues = new ArrayList<>();
+    private final List<FirebirdBinaryColumnType> returnColumns = new ArrayList<>();
     private final FirebirdPacketPayload payload;
     
     public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload) {
@@ -74,6 +75,10 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             else {
                 parameterValues.add(null);
             }
+        }
+        
+        if (isStoredProcedure()) {
+            returnColumns.addAll(parseBLR(payload.readBuffer()));
         }
         this.payload = payload;
         //        while (msgCount-- != 0) {
@@ -160,7 +165,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      * @return Return data
      */
     public ByteBuf getReturnData(BinaryRow row) {
-        List<FirebirdBinaryColumnType> returnColumns = parseBLR(payload.readBuffer());
         ByteBuf writeBuffer = payload.getByteBuf().alloc().buffer();
         FirebirdPacketPayload writePayload = new FirebirdPacketPayload(writeBuffer, payload.getCharset());
         int nullBits = (returnColumns.size() + 7) / 8;
