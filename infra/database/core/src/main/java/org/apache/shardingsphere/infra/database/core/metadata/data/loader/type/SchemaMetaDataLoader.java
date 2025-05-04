@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -59,7 +60,8 @@ public final class SchemaMetaDataLoader {
     
     public SchemaMetaDataLoader(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        schemaOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        schemaOption = dialectDatabaseMetaData.getSchemaOption();
     }
     
     /**
