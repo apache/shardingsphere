@@ -42,6 +42,6 @@ public enum EncryptDerivedColumnSuffix {
      * @return derived column name
      */
     public String getDerivedColumnName(final String columnName, final DatabaseType databaseType) {
-        return String.format("%s%s", columnName, new DatabaseTypeRegistry(databaseType).formatTableNamePattern(suffix));
+        return String.format("%s%s", columnName, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(suffix));
     }
 }

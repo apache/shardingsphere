@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierNamePatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussSchemaOption;
@@ -73,8 +73,8 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public TableNamePatternType getTableNamePatternType() {
-        return TableNamePatternType.LOWER_CASE;
+    public IdentifierNamePatternType getIdentifierPatternType() {
+        return IdentifierNamePatternType.LOWER_CASE;
     }
     
     @Override
