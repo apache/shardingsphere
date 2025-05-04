@@ -30,10 +30,15 @@ import java.util.Optional;
  */
 public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     
+    private static final Map<String, Integer> EXTRA_DATA_TYPES;
+    
     private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
     
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
+    static {
+        EXTRA_DATA_TYPES = setUpExtraDataTypes();
+    }
+    
+    private static Map<String, Integer> setUpExtraDataTypes() {
         Map<String, Integer> result = new CaseInsensitiveMap<>();
         result.put("SMALLINT", Types.SMALLINT);
         result.put("INT", Types.INTEGER);
@@ -45,6 +50,11 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
         result.put("BOOL", Types.BOOLEAN);
         result.put("CHARACTER VARYING", Types.VARCHAR);
         return result;
+    }
+    
+    @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        return EXTRA_DATA_TYPES;
     }
     
     @Override

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,11 +30,16 @@ import java.util.Optional;
  */
 public final class OracleDataTypeOption implements DialectDataTypeOption {
     
+    private static final Map<String, Integer> EXTRA_DATA_TYPES;
+    
     private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
     
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new HashMap<>(8);
+    static {
+        EXTRA_DATA_TYPES = setUpExtraDataTypes();
+    }
+    
+    private static Map<String, Integer> setUpExtraDataTypes() {
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         result.put("SMALLINT", Types.SMALLINT);
         result.put("TINYINT", Types.TINYINT);
         result.put("INT", Types.INTEGER);
@@ -47,6 +52,11 @@ public final class OracleDataTypeOption implements DialectDataTypeOption {
         result.put("BINARY_FLOAT", Types.FLOAT);
         result.put("NUMBER", Types.NUMERIC);
         return result;
+    }
+    
+    @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        return EXTRA_DATA_TYPES;
     }
     
     @Override

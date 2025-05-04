@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.mysql.metadata.database.option;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.math.BigInteger;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,11 +31,16 @@ import java.util.Optional;
  */
 public final class MySQLDataTypeOption implements DialectDataTypeOption {
     
+    private static final Map<String, Integer> EXTRA_DATA_TYPES;
+    
     private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
     
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new HashMap<>(10, 1F);
+    static {
+        EXTRA_DATA_TYPES = setUpExtraDataTypes();
+    }
+    
+    private static Map<String, Integer> setUpExtraDataTypes() {
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         result.put("JSON", Types.LONGVARCHAR);
         result.put("GEOMETRY", Types.BINARY);
         result.put("GEOMETRYCOLLECTION", Types.BINARY);
@@ -47,6 +52,11 @@ public final class MySQLDataTypeOption implements DialectDataTypeOption {
         result.put("LINESTRING", Types.BINARY);
         result.put("MULTILINESTRING", Types.BINARY);
         return result;
+    }
+    
+    @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        return EXTRA_DATA_TYPES;
     }
     
     @Override
