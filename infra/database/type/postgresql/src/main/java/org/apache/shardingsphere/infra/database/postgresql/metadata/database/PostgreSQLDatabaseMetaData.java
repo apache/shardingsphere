@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLSchemaOption;
@@ -59,8 +59,8 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public IdentifierNamePatternType getIdentifierPatternType() {
-        return IdentifierNamePatternType.LOWER_CASE;
+    public IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.LOWER_CASE;
     }
     
     @Override
