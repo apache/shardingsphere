@@ -52,7 +52,5 @@ public interface DialectSchemaOption {
      *
      * @return default system schema name
      */
-    default Optional<String> getDefaultSystemSchema() {
-        return Optional.empty();
-    }
+    Optional<String> getDefaultSystemSchema();
 }
