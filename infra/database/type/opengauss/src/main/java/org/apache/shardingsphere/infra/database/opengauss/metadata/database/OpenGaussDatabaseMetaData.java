@@ -58,13 +58,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
-    public DialectSchemaOption getSchemaOption() {
-        return new OpenGaussSchemaOption();
+    public Optional<DialectDriverQuerySystemCatalogOption> getDriverQuerySystemCatalogOption() {
+        return Optional.of(new OpenGaussDriverQuerySystemCatalogOption());
     }
     
     @Override
-    public Optional<DialectDriverQuerySystemCatalogOption> getDriverQuerySystemCatalogOption() {
-        return Optional.of(new OpenGaussDriverQuerySystemCatalogOption());
+    public DialectSchemaOption getSchemaOption() {
+        return new OpenGaussSchemaOption();
     }
     
     @Override

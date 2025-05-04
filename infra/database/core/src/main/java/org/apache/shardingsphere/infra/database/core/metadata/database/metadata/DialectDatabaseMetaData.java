@@ -74,21 +74,21 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get schema option.
-     *
-     * @return schema option
-     */
-    default DialectSchemaOption getSchemaOption() {
-        return new DefaultSchemaOption(false, null);
-    }
-    
-    /**
      * Get driver query system catalog option.
      *
      * @return driver query system catalog option
      */
     default Optional<DialectDriverQuerySystemCatalogOption> getDriverQuerySystemCatalogOption() {
         return Optional.empty();
+    }
+    
+    /**
+     * Get schema option.
+     *
+     * @return schema option
+     */
+    default DialectSchemaOption getSchemaOption() {
+        return new DefaultSchemaOption(false, null);
     }
     
     /**
