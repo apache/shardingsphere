@@ -20,12 +20,18 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.fixture;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 
 public final class BranchDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.NONE;
+    }
+    
+    @Override
+    public IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.KEEP_ORIGIN;
     }
     
     @Override

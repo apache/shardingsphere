@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.database.oracle.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleSchemaOption;
 
@@ -39,6 +39,11 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.UPPER_CASE;
     }
     
     @Override
@@ -59,11 +64,6 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectIndexOption getIndexOption() {
         return new DialectIndexOption(true);
-    }
-    
-    @Override
-    public IdentifierPatternType getIdentifierPatternType() {
-        return IdentifierPatternType.UPPER_CASE;
     }
     
     @Override
