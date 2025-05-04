@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.h2.metadata.database;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 
 /**
  * Database meta data of H2.
@@ -29,6 +30,11 @@ public final class H2DatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.KEEP_ORIGIN;
     }
     
     @Override

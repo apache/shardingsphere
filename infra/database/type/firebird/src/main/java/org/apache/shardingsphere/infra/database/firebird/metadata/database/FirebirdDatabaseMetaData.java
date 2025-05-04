@@ -34,13 +34,13 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.LOW;
+    public IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.UPPER_CASE;
     }
     
     @Override
-    public IdentifierPatternType getIdentifierPatternType() {
-        return IdentifierPatternType.UPPER_CASE;
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.LOW;
     }
     
     @Override

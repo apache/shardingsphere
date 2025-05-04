@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.metadata
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -48,6 +48,13 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return quote character
      */
     QuoteCharacter getQuoteCharacter();
+    
+    /**
+     * Get identifier pattern type.
+     *
+     * @return identifier pattern type
+     */
+    IdentifierPatternType getIdentifierPatternType();
     
     /**
      * Get default nulls order type.
@@ -100,15 +107,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectIndexOption getIndexOption() {
         return new DialectIndexOption(false);
-    }
-    
-    /**
-     * Get identifier pattern type.
-     *
-     * @return identifier pattern type
-     */
-    default IdentifierPatternType getIdentifierPatternType() {
-        return IdentifierPatternType.KEEP_ORIGIN;
     }
     
     /**
