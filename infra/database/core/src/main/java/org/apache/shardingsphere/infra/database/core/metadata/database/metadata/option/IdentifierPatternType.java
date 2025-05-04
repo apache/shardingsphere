@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
 
 /**
- * Identifier name pattern type.
+ * Identifier pattern type.
  */
-public enum IdentifierNamePatternType {
+public enum IdentifierPatternType {
     
     UPPER_CASE, LOWER_CASE, KEEP_ORIGIN
 }

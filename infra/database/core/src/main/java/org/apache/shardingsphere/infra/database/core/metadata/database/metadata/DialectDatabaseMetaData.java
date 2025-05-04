@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -107,8 +107,8 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      *
      * @return identifier pattern type
      */
-    default IdentifierNamePatternType getIdentifierPatternType() {
-        return IdentifierNamePatternType.KEEP_ORIGIN;
+    default IdentifierPatternType getIdentifierPatternType() {
+        return IdentifierPatternType.KEEP_ORIGIN;
     }
     
     /**
