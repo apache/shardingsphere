@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table;
+package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option;
 
 /**
- * Table name pattern type.
+ * Identifier name pattern type.
  */
-public enum TableNamePatternType {
+public enum IdentifierNamePatternType {
     
     UPPER_CASE, LOWER_CASE, KEEP_ORIGIN
 }

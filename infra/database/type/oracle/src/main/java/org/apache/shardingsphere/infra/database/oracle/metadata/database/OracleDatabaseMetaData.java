@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierNamePatternType;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.infra.database.oracle.metadata.database.option.OracleSchemaOption;
 
@@ -62,8 +62,8 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public TableNamePatternType getTableNamePatternType() {
-        return TableNamePatternType.UPPER_CASE;
+    public IdentifierNamePatternType getIdentifierPatternType() {
+        return IdentifierNamePatternType.UPPER_CASE;
     }
     
     @Override
