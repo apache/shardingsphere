@@ -28,21 +28,21 @@ import java.util.Optional;
  */
 public final class PostgreSQLSchemaOption implements DialectSchemaOption {
     
-    private final DialectSchemaOption defaultSchemaOption = new DefaultSchemaOption(true, "public");
+    private final DialectSchemaOption delegate = new DefaultSchemaOption(true, "public");
     
     @Override
     public boolean isSchemaAvailable() {
-        return defaultSchemaOption.isSchemaAvailable();
+        return delegate.isSchemaAvailable();
     }
     
     @Override
     public String getSchema(final Connection connection) {
-        return defaultSchemaOption.getSchema(connection);
+        return delegate.getSchema(connection);
     }
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return defaultSchemaOption.getDefaultSchema();
+        return delegate.getDefaultSchema();
     }
     
     @Override

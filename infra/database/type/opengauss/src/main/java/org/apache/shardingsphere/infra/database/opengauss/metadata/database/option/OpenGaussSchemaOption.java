@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database.option;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
 import java.sql.Connection;
 import java.util.Optional;
@@ -28,25 +28,25 @@ import java.util.Optional;
  */
 public final class OpenGaussSchemaOption implements DialectSchemaOption {
     
-    private final DialectSchemaOption defaultSchemaOption = new DefaultSchemaOption(true, "public");
+    private final DialectSchemaOption delegate = new PostgreSQLSchemaOption();
     
     @Override
     public boolean isSchemaAvailable() {
-        return defaultSchemaOption.isSchemaAvailable();
+        return delegate.isSchemaAvailable();
     }
     
     @Override
     public String getSchema(final Connection connection) {
-        return defaultSchemaOption.getSchema(connection);
+        return delegate.getSchema(connection);
     }
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return defaultSchemaOption.getDefaultSchema();
+        return delegate.getDefaultSchema();
     }
     
     @Override
     public Optional<String> getDefaultSystemSchema() {
-        return Optional.of("pg_catalog");
+        return delegate.getDefaultSystemSchema();
     }
 }
