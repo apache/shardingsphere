@@ -218,9 +218,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
         if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
+        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            String databaseName = databaseType instanceof OracleDatabaseType ? each.toUpperCase() : each;
-            containerComposer.cleanUpDatabase(databaseName);
+            containerComposer.cleanUpDatabase(databaseTypeRegistry.formatIdentifierPattern(each));
         }
     }
     

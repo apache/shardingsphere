@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.com
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -120,9 +120,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        if (databaseType instanceof OracleDatabaseType) {
-            return String.format("jdbc:mysql://localhost:3307/%s?useSSL=false", databaseName);
-        }
+        DatabaseType databaseType = "Oracle".equals(this.databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : this.databaseType;
         return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
     
