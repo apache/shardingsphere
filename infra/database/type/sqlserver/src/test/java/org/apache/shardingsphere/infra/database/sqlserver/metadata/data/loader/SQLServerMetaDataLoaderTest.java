@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMe
 import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +79,8 @@ class SQLServerMetaDataLoaderTest {
             + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
             + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN ('tbl') ORDER BY idx.index_id";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @Test
     void assertLoadWithoutTablesWithHighVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -92,7 +93,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
         DataTypeRegistry.load(dataSource, "SQLServer");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -112,7 +113,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
         DataTypeRegistry.load(dataSource, "SQLServer");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -131,7 +132,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
         DataTypeRegistry.load(dataSource, "SQLServer");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -150,7 +151,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
         DataTypeRegistry.load(dataSource, "SQLServer");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new SQLServerDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
