@@ -54,14 +54,12 @@ public final class MariaDBContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
