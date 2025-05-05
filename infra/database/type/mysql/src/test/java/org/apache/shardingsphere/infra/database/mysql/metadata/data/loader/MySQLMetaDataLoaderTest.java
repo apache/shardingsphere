@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMe
 import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -46,8 +45,11 @@ import static org.mockito.Mockito.when;
 
 class MySQLMetaDataLoaderTest {
     
-    private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
+    private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -59,9 +61,10 @@ class MySQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics "
                 + "WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX").executeQuery()).thenReturn(indexResultSet);
         DataTypeRegistry.load(dataSource, "MySQL");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, new MySQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -74,9 +77,10 @@ class MySQLMetaDataLoaderTest {
                 + "ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX")
                 .executeQuery()).thenReturn(indexResultSet);
         DataTypeRegistry.load(dataSource, "MySQL");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, new MySQLDatabaseType(), "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
