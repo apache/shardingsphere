@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.com
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineProxyTypeEnum;
@@ -73,7 +72,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainers.add(storageContainer);
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType);
-        DatabaseType proxyDatabaseType = databaseType instanceof OracleDatabaseType ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : databaseType;
+        DatabaseType proxyDatabaseType = "Oracle".equals(databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : databaseType;
         if (PipelineE2EEnvironment.getInstance().getItProxyType() == PipelineProxyTypeEnum.INTERNAL) {
             ShardingSphereProxyContainer proxyContainer = new ShardingSphereProxyContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
@@ -100,9 +99,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             host = proxyContainer.getHost();
             port = proxyContainer.getFirstMappedPort();
         }
-        if (databaseType instanceof OracleDatabaseType) {
-            return DataSourceEnvironment.getURL(TypedSPILoader.getService(DatabaseType.class, "MySQL"), host, port, databaseName);
-        }
+        DatabaseType databaseType = "Oracle".equals(this.databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : this.databaseType;
         return DataSourceEnvironment.getURL(databaseType, host, port, databaseName);
     }
     
