@@ -23,10 +23,11 @@ import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -293,7 +294,7 @@ public final class ShardingRouteEngineFixtureBuilder {
      */
     public static SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SingleRule result = new SingleRule(new SingleRuleConfiguration(), "foo_db", new H2DatabaseType(), dataSourceMap, rules);
+        SingleRule result = new SingleRule(new SingleRuleConfiguration(), "foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), dataSourceMap, rules);
         result.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put(dataSourceMap.keySet().iterator().next(), "foo_db", "t_category");
         return result;
     }
