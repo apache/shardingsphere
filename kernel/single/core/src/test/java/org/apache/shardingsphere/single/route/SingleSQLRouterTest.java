@@ -21,7 +21,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -76,10 +76,11 @@ import static org.mockito.Mockito.when;
 
 class SingleSQLRouterTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertCreateRouteContextWithSingleDataSource() throws SQLException {
-        SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
-                "foo_db", new H2DatabaseType(), Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
+        SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(
@@ -100,7 +101,7 @@ class SingleSQLRouterTest {
     @Test
     void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
-                "foo_db", new H2DatabaseType(), Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
+                "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(
@@ -121,7 +122,7 @@ class SingleSQLRouterTest {
     
     @Test
     void assertCreateRouteContextWithMultiDataSource() throws SQLException {
-        SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new H2DatabaseType(), createMultiDataSourceMap(), Collections.emptyList());
+        SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, createMultiDataSourceMap(), Collections.emptyList());
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         RouteContext actual = new SingleSQLRouter().createRouteContext(
                 createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
@@ -174,7 +175,7 @@ class SingleSQLRouterTest {
     @Test
     void assertDecorateRouteContextWithSingleDataSource() {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
-                "foo_db", new H2DatabaseType(), Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
+                "foo_db", databaseType, Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order"))));
         SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
@@ -187,7 +188,7 @@ class SingleSQLRouterTest {
     @Test
     void assertDecorateRouteContextWithReadwriteSplittingDataSource() {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
-                "foo_db", new H2DatabaseType(), Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
+                "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         RouteUnit readWriteRouteUnit = new RouteUnit(new RouteMapper("readwrite_ds", "readwrite_ds"), Collections.emptyList());
         RouteUnit writeRouteUnit = new RouteUnit(new RouteMapper("write_ds", "write_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
@@ -203,7 +204,7 @@ class SingleSQLRouterTest {
     
     @Test
     void assertDecorateRouteContextWithMultiDataSource() throws SQLException {
-        SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", new H2DatabaseType(), createMultiDataSourceMap(), Collections.emptyList());
+        SingleRule rule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, createMultiDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList()));
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.emptyList()));
