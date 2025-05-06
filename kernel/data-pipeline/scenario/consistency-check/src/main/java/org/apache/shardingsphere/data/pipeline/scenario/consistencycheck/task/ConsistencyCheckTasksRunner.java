@@ -146,7 +146,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             log.info("onSuccess, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             Map<String, TableDataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getPipelineGovernanceFacade(
                     PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getCheckJobResult(parentJobId, checkJobId);
-            if (checkJobResult.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched)) {
+            if (checkJobResult.values().stream().allMatch(TableDataConsistencyCheckResult::isSuccessful)) {
                 jobItemContext.setStatus(JobStatus.FINISHED);
             } else {
                 jobItemContext.setStatus(JobStatus.CONSISTENCY_CHECK_FAILURE);

@@ -225,8 +225,8 @@ public final class ConsistencyCheckJobAPI {
         result.setErrorMessage(PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(latestCheckJobId)).getJobItemFacade().getErrorMessage().load(latestCheckJobId, 0));
         Map<String, TableDataConsistencyCheckResult> checkJobResults = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId))
                 .getJobFacade().getCheck().getCheckJobResult(parentJobId, latestCheckJobId);
-        result.setCheckSuccess(checkJobResults.isEmpty() ? null : checkJobResults.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched));
-        result.setCheckFailedTableNames(checkJobResults.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
+        result.setCheckSuccess(checkJobResults.isEmpty() ? null : checkJobResults.values().stream().allMatch(TableDataConsistencyCheckResult::isSuccessful));
+        result.setCheckFailedTableNames(checkJobResults.entrySet().stream().filter(each -> !each.getValue().isSuccessful())
                 .map(Entry::getKey).collect(Collectors.joining(",")));
         return result;
     }
