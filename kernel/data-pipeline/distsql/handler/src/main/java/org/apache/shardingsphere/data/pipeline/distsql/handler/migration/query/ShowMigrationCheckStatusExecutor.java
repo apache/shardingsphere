@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 /**
  * Show migration check status executor.
@@ -38,18 +38,19 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationCheckStatusStatement sqlStatement) {
-        return Arrays.asList("tables", "result", "check_failed_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
+        return Arrays.asList("tables", "result", "check_failed_tables", "ignored_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
                 "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckStatusStatement sqlStatement, final ContextManager contextManager) {
-        return jobAPI.getJobItemInfos(sqlStatement.getJobId()).stream().map(this::convert).collect(Collectors.toList());
+        ConsistencyCheckJobItemInfo jobItemInfo = jobAPI.getJobItemInfo(sqlStatement.getJobId());
+        return Collections.singletonList(convert(jobItemInfo));
     }
     
     private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String incrementalIdleSeconds = null == info.getIncrementalIdleSeconds() ? "" : String.valueOf(info.getIncrementalIdleSeconds());
-        return new LocalDataQueryResultRow(info.getTableNames(), info.getCheckSuccess(), info.getCheckFailedTableNames(), info.isActive(),
+        return new LocalDataQueryResultRow(info.getTableNames(), info.getCheckSuccess(), info.getCheckFailedTableNames(), info.getIgnoredTableNames(), info.isActive(),
                 info.getInventoryFinishedPercentage(), info.getInventoryRemainingSeconds(), incrementalIdleSeconds,
                 info.getCheckBeginTime(), info.getCheckEndTime(), info.getDurationSeconds(), info.getAlgorithmType(), info.getAlgorithmProps(), info.getErrorMessage());
     }
