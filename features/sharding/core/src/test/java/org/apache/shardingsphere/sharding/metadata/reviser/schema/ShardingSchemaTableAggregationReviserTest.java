@@ -62,7 +62,7 @@ class ShardingSchemaTableAggregationReviserTest {
     }
     
     private ColumnMetaData createColumnMetaData(final String columnName) {
-        return new ColumnMetaData(columnName, 1, true, false, true, true, true, true, "int");
+        return new ColumnMetaData(columnName, 1, true, false, true, true, true, true);
     }
     
     private static IndexMetaData createIndexMetaData(final String columnName) {
