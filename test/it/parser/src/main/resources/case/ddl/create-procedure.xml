@@ -91,4 +91,39 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_if_not_exists" />
+    <create-procedure sql-case-id="create_procedure_with_show_create_table_default">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="60" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="63" stop-index="82" statement-class-simple-name="MySQLShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_create_table_and_show_create_table">
+        <procedure-name name="p2" />
+        <sql-statements>
+            <sql-statement start-index="39" stop-index="71" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="74" stop-index="93" statement-class-simple-name="MySQLShowCreateTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_custom_collation_and_insert">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="87" statement-class-simple-name="DeclareStatement" />
+            <sql-statement start-index="90" stop-index="125" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="128" stop-index="181" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="184" stop-index="208" statement-class-simple-name="MySQLInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_alter_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="54" statement-class-simple-name="MySQLAlterEventStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_drop_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>
