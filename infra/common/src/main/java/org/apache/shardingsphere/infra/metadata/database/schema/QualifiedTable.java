@@ -53,6 +53,15 @@ public final class QualifiedTable {
         return tableName.getValue();
     }
     
+    /**
+     * Get qualified table name.
+     *
+     * @return qualified table name
+     */
+    public String format() {
+        return null == getSchemaName() ? getTableName() : String.join(".", getSchemaName(), getTableName());
+    }
+    
     @Override
     public boolean equals(final Object o) {
         if (null == o || getClass() != o.getClass()) {
@@ -70,6 +79,6 @@ public final class QualifiedTable {
     
     @Override
     public String toString() {
-        return null == getSchemaName() ? getTableName() : String.join(".", getSchemaName(), getTableName());
+        return format();
     }
 }

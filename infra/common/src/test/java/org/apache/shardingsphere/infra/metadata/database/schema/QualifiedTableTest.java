@@ -26,6 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class QualifiedTableTest {
     
     @Test
+    void assertFormat() {
+        assertThat(new QualifiedTable("schema", "t_order").format(), is("schema.t_order"));
+        assertThat(new QualifiedTable("SCHEMA", "T_ORDER").format(), is("SCHEMA.T_ORDER"));
+        assertThat(new QualifiedTable(null, "t_order").format(), is("t_order"));
+    }
+    
+    @Test
     void assertEqualsTrueWithoutSchema() {
         QualifiedTable actual = new QualifiedTable(null, "t_order");
         QualifiedTable expected = new QualifiedTable(null, "T_ORDER");
