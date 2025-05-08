@@ -38,5 +38,11 @@
             <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
