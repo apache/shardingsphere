@@ -39,7 +39,7 @@ class SQLParserRuleTest {
     
     @Test
     void assertGetSQLParserEngine() {
-        assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "H2")));
+        assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "SQL92")));
     }
     
     @Test
