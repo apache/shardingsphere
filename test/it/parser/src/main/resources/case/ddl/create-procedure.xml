@@ -91,4 +91,54 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_if_not_exists" />
+    <create-procedure sql-case-id="create_procedure_with_while_and_handler">
+        <procedure-name name="test_round" />
+        <sql-statements>
+            <sql-statement start-index="7" stop-index="20" statement-class-simple-name="MySQLDeclareStatement" />
+            <sql-statement start-index="22" stop-index="31" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="33" stop-index="177" statement-class-simple-name="MySQLWhileStatement" />
+            <sql-statement start-index="59" stop-index="116" statement-class-simple-name="MySQLDeclareHandlerStatement" />
+            <sql-statement start-index="118" stop-index="146" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="153" stop-index="166" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_parameters_and_while_and_handler">
+        <procedure-name name="test_round_unsigned" />
+        <sql-statements>
+            <sql-statement start-index="7" stop-index="20" statement-class-simple-name="MySQLDeclareStatement" />
+            <sql-statement start-index="22" stop-index="31" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="33" stop-index="177" statement-class-simple-name="MySQLWhileStatement" />
+            <sql-statement start-index="59" stop-index="116" statement-class-simple-name="MySQLDeclareHandlerStatement" />
+            <sql-statement start-index="118" stop-index="146" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="153" stop-index="166" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_select_and_explain">
+        <procedure-name name="sub1" />
+        <sql-statements>
+            <sql-statement start-index="7" stop-index="73" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="75" stop-index="149" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="151" stop-index="190" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="192" stop-index="240" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="242" stop-index="308" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="310" stop-index="384" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="386" stop-index="453" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="455" stop-index="530" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="532" stop-index="572" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="574" stop-index="622" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="624" stop-index="690" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="692" stop-index="766" statement-class-simple-name="MySQLExplainStatement" />
+            <sql-statement start-index="768" stop-index="837" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="839" stop-index="916" statement-class-simple-name="MySQLExplainStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_select_and_do">
+        <procedure-name name="t_sysdate" />
+        <sql-statements>
+            <sql-statement start-index="7" stop-index="31" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="33" stop-index="44" statement-class-simple-name="MySQLDoStatement" />
+            <sql-statement start-index="46" stop-index="70" statement-class-simple-name="MySQLSelectStatement" />
+            <sql-statement start-index="72" stop-index="87" statement-class-simple-name="MySQLSelectStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>
