@@ -41,7 +41,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
-import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -51,7 +50,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.E
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -67,8 +65,6 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     private static final TransmittableThreadLocal<ScanExecutor> SCAN_EXECUTOR_HOLDER = new TransmittableThreadLocal<>();
     
     private final ShardingSphereTable table;
-    
-    private final SQLFederationStatistic statistic;
     
     private final DatabaseType protocolType;
     
@@ -125,11 +121,6 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     @Override
     public String toString() {
         return "SQLFederationTable";
-    }
-    
-    @Override
-    public Statistic getStatistic() {
-        return statistic;
     }
     
     @Override

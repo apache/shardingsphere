@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
 
 import java.util.Collections;
 import java.util.Map;
@@ -56,8 +55,7 @@ public final class SQLFederationSchema extends AbstractSchema {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
-                // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
+                result.put(each.getName(), new SQLFederationTable(each, protocolType));
             }
         }
         return result;
