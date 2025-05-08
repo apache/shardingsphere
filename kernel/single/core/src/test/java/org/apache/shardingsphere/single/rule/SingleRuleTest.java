@@ -88,7 +88,7 @@ class SingleRuleTest {
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
-        when(connection.getMetaData().getURL()).thenReturn(String.format("jdbc:h2:mem:%s", dataSourceName));
+        when(connection.getMetaData().getURL()).thenReturn(String.format("jdbc:mock://127.0.0.1/%s", dataSourceName));
         DataSource result = new MockedDataSource(connection);
         ResultSet resultSet = mockResultSet(tableNames);
         when(result.getConnection().getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE}))
