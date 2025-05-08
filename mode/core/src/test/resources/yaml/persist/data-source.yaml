@@ -17,8 +17,8 @@
 
 ds_0:
   dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  driverClassName: com.mysql.jdbc.Driver
-  url: jdbc:mysql://localhost:3306/ds_0
+  driverClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDriver
+  url: jdbc:mock://localhost:3306/ds_0
   username: root
   password: root
   connectionInitSqls:
