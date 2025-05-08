@@ -38,6 +38,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -56,24 +57,25 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         currentId = 1;
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            collectFromDatabase(metaData.getDatabase(databaseName), result);
+            result.addAll(collectFromDatabase(metaData.getDatabase(databaseName)));
         } else {
             for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
-                collectFromDatabase(each, result);
+                result.addAll(collectFromDatabase(each));
             }
         }
         return result;
     }
     
-    private void collectFromDatabase(final ShardingSphereDatabase database, final Collection<Map<String, Object>> rows) throws SQLException {
+    private Collection<Map<String, Object>> collectFromDatabase(final ShardingSphereDatabase database) throws SQLException {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!rule.isPresent()) {
-            return;
+            return Collections.emptyList();
         }
-        collectForShardingStatisticTable(database, rule.get(), rows);
+        return collectForShardingStatisticTable(database, rule.get());
     }
     
-    private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule rule, final Collection<Map<String, Object>> rows) throws SQLException {
+    private Collection<Map<String, Object>> collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule rule) throws SQLException {
+        Collection<Map<String, Object>> result = new LinkedList<>();
         for (ShardingTable each : rule.getShardingTables().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
                 Map<String, Object> rowColumnValues = new CaseInsensitiveMap<>();
@@ -83,13 +85,14 @@ public final class ShardingTableStatisticsCollector implements ShardingSphereTab
                 rowColumnValues.put("actual_database_name", dataNode.getDataSourceName());
                 rowColumnValues.put("actual_table_name", dataNode.getTableName());
                 addTableRowsAndDataLength(database.getResourceMetaData().getStorageUnits(), dataNode, rowColumnValues, rule);
-                rows.add(rowColumnValues);
+                result.add(rowColumnValues);
             }
         }
+        return result;
     }
     
-    private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits, final DataNode dataNode, final Map<String, Object> rowColumnValues,
-                                           final ShardingRule rule) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits,
+                                           final DataNode dataNode, final Map<String, Object> rowColumnValues, final ShardingRule rule) throws SQLException {
         DataSource dataSource;
         DatabaseType databaseType;
         StorageUnit storageUnit = storageUnits.get(dataNode.getDataSourceName());
