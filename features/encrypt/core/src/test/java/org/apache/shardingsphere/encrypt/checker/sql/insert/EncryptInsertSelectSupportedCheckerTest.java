@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +39,7 @@ class EncryptInsertSelectSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getInsertSelect().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getSqlStatement().getInsertSelect()).thenReturn(Optional.of(mock()));
         assertTrue(new EncryptInsertSelectSupportedChecker().isCheck(sqlStatementContext));
     }
     

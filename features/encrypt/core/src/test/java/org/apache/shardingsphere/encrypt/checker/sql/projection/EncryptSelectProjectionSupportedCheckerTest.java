@@ -78,7 +78,7 @@ class EncryptSelectProjectionSupportedCheckerTest {
     @Test
     void assertCheckWhenCombineStatementContainsEncryptColumn() {
         SelectStatementContext sqlStatementContext = mockSelectStatementContext();
-        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mock(EncryptRule.class, RETURNS_DEEP_STUBS), null, null, sqlStatementContext));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new EncryptSelectProjectionSupportedChecker().check(mockEncryptRuleWithEncryptColumn(), null, null, sqlStatementContext));
     }
     
     @Test
@@ -113,6 +113,15 @@ class EncryptSelectProjectionSupportedCheckerTest {
         subqueryContexts.put(0, leftSelectStatementContext);
         subqueryContexts.put(1, rightSelectStatementContext);
         when(result.getSubqueryContexts()).thenReturn(subqueryContexts);
+        return result;
+    }
+    
+    private EncryptRule mockEncryptRuleWithEncryptColumn() {
+        EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(result.findQueryEncryptor("foo_tbl", "foo_col_1")).thenReturn(Optional.of(mock()));
+        when(result.findQueryEncryptor("foo_tbl", "foo_col_2")).thenReturn(Optional.of(mock()));
+        when(result.findQueryEncryptor("bar_tbl", "bar_col_1")).thenReturn(Optional.of(mock()));
+        when(result.findQueryEncryptor("bar_tbl", "bar_col_2")).thenReturn(Optional.of(mock()));
         return result;
     }
     

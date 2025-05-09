@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.rewrite.context;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -39,6 +38,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -81,7 +81,7 @@ class SQLRewriteContextTest {
     @Test
     void assertInsertStatementContext() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(statementContext.getInsertSelectContext()).thenReturn(null);
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
@@ -95,7 +95,7 @@ class SQLRewriteContextTest {
     @Test
     void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
         when(queryContext.getSql()).thenReturn("SELECT * FROM tbl WHERE id = ?");

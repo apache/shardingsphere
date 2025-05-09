@@ -143,7 +143,7 @@
         
         <junit.version>5.11.2</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <mockito.version>4.11.0</mockito.version>
+        <mockito.version>5.17.0</mockito.version>
         <awaitility.version>4.2.2</awaitility.version>
         <testcontainers.version>1.20.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
@@ -618,11 +618,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

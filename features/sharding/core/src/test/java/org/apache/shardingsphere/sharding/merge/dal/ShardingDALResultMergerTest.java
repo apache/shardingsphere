@@ -42,7 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,7 +105,6 @@ class ShardingDALResultMergerTest {
     private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
         when(result.getSqlStatement()).thenReturn(dalStatement);
-        when(((TableAvailable) result).getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }

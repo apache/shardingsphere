@@ -129,7 +129,6 @@ class GlobalClockTransactionHookTest {
     @Test
     void assertBeforeExecuteSQLWhenGlobalClockTransactionExecutorAbsent() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
-        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.beforeExecuteSQL(rule, databaseType, Collections.emptyList(), transactionContext, TransactionIsolationLevel.READ_COMMITTED);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.empty());
         verify(globalClockTransactionExecutor, times(0)).sendSnapshotTimestamp(any(), anyLong());
