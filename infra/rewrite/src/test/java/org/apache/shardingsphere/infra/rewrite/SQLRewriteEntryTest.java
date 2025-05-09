@@ -52,13 +52,11 @@ import static org.mockito.Mockito.when;
 
 class SQLRewriteEntryTest {
     
-    private final DatabaseType h2DatabaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-    
-    private final DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertRewriteForGenericSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", h2DatabaseType, mockResourceMetaData(),
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mockResourceMetaData(),
                 mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))), new ConfigurationProperties(new Properties()));
@@ -73,7 +71,7 @@ class SQLRewriteEntryTest {
         when(result.getSql()).thenReturn("SELECT ?");
         when(result.getParameters()).thenReturn(Collections.singletonList(1));
         CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(h2DatabaseType);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(result.getHintValueContext()).thenReturn(new HintValueContext());
         return result;
@@ -82,7 +80,7 @@ class SQLRewriteEntryTest {
     @Test
     void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", h2DatabaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
+                "foo_db", databaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
@@ -99,9 +97,9 @@ class SQLRewriteEntryTest {
     private ResourceMetaData mockResourceMetaData() {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         StorageUnit storageUnit1 = mock(StorageUnit.class);
-        when(storageUnit1.getStorageType()).thenReturn(h2DatabaseType);
+        when(storageUnit1.getStorageType()).thenReturn(databaseType);
         StorageUnit storageUnit2 = mock(StorageUnit.class);
-        when(storageUnit2.getStorageType()).thenReturn(mysqlDatabaseType);
+        when(storageUnit2.getStorageType()).thenReturn(mock());
         storageUnits.put("ds_0", storageUnit1);
         storageUnits.put("ds_1", storageUnit2);
         ResourceMetaData result = mock(ResourceMetaData.class);

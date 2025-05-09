@@ -145,7 +145,7 @@ class SingleSQLRouterTest {
     
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
+        when(result.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/db");
         return result;
     }
     

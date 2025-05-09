@@ -59,7 +59,7 @@ class ShowStorageUnitExecutorTest {
     
     private MockedDataSource createDataSource(final String dataSourceName) {
         MockedDataSource result = new MockedDataSource();
-        result.setUrl("jdbc:mysql://localhost:3307/" + dataSourceName);
+        result.setUrl("jdbc:mock://localhost:3307/" + dataSourceName);
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxPoolSize(100);
@@ -77,7 +77,7 @@ class ShowStorageUnitExecutorTest {
         while (iterator.hasNext()) {
             LocalDataQueryResultRow row = iterator.next();
             assertThat(row.getCell(1), is(storageUnitNames.get(index)));
-            assertThat(row.getCell(2), is("MySQL"));
+            assertThat(row.getCell(2), is("FIXTURE"));
             assertThat(row.getCell(3), is("localhost"));
             assertThat(row.getCell(4), is("3307"));
             assertThat(row.getCell(5), is(storageUnitNames.get(index)));
@@ -98,7 +98,7 @@ class ShowStorageUnitExecutorTest {
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("ds_0"));
-        assertThat(row.getCell(2), is("MySQL"));
+        assertThat(row.getCell(2), is("FIXTURE"));
         assertThat(row.getCell(3), is("localhost"));
         assertThat(row.getCell(4), is("3307"));
         assertThat(row.getCell(5), is("ds_0"));

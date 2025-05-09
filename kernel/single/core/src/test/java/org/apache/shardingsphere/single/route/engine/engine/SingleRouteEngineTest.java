@@ -131,7 +131,7 @@ class SingleRouteEngineTest {
     private Map<String, DataSource> createDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2, 1F);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/db");
         result.put("ds_0", new MockedDataSource(connection));
         result.put("ds_1", new MockedDataSource(connection));
         return result;

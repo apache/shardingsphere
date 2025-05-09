@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 class SQLStatementParserEngineFactoryTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQL92");
     
     @Test
     void assertGetSQLStatementParserEngineNotSame() {

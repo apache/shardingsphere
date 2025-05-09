@@ -91,13 +91,13 @@ class RegisterStorageUnitExecutorTest {
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
-        return new RegisterStorageUnitStatement(false, Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())),
+        return new RegisterStorageUnitStatement(false, Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mock://127.0.0.1:3306/test0", "root", "", new Properties())),
                 Collections.emptySet());
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatementWithDuplicateStorageUnitNames() {
         return new RegisterStorageUnitStatement(false, Arrays.asList(
                 new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()),
-                new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties())), Collections.emptySet());
+                new URLBasedDataSourceSegment("ds_0", "jdbc:mock://127.0.0.1:3306/ds_1", "root", "", new Properties())), Collections.emptySet());
     }
 }
