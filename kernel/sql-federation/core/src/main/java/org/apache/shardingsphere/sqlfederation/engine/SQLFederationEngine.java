@@ -82,8 +82,6 @@ import java.util.Optional;
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
-    private static final int DEFAULT_METADATA_VERSION = 0;
-    
     private static final JavaTypeFactory DEFAULT_DATA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     private final ProcessEngine processEngine = new ProcessEngine();
@@ -218,7 +216,6 @@ public final class SQLFederationEngine implements AutoCloseable {
                                                     final SelectStatementContext selectStatementContext, final String sql, final Convention convention) {
         SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(converter, convention);
         SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());
-        // TODO open useCache flag when ShardingSphereTable contains version
         return compilerEngine.compile(buildCacheKey(metaData, databaseName, schemaName, selectStatementContext, sql, sqlStatementCompiler), false);
     }
     
@@ -235,8 +232,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
             ShardingSpherePreconditions.checkNotNull(table, () -> new NoSuchTableException(each));
-            // TODO replace DEFAULT_METADATA_VERSION with actual version in ShardingSphereTable
-            result.getTableMetaDataVersions().put(new QualifiedTable(schema.getName(), table.getName()), DEFAULT_METADATA_VERSION);
+            result.getTableMetaDataVersions().put(new QualifiedTable(schema.getName(), table.getName()), 0);
         }
         return result;
     }
