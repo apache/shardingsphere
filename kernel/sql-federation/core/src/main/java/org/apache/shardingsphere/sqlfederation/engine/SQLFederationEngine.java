@@ -189,10 +189,10 @@ public final class SQLFederationEngine implements AutoCloseable {
             String databaseName = selectStatementContext.getTablesContext().getDatabaseNames().stream().findFirst().orElse(currentDatabaseName);
             String schemaName = selectStatementContext.getTablesContext().getSchemaName().orElse(currentSchemaName);
             SqlToRelConverter converter = creeateSQLToRelConverter(databaseName, schemaName, selectStatementContext.getDatabaseType(), processor.getConvention());
+            schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
+            processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, databaseName, schemaName,
                     federationContext.getMetaData(), selectStatementContext, queryContext.getSql(), processor.getConvention());
-            schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
-            processor.registerExecutor(prepareEngine, callback, databaseName, schemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             resultSet = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, schemaPlus);
             return resultSet;
             // CHECKSTYLE:OFF
@@ -245,7 +245,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         closeResultSet().ifPresent(result::add);
-        unregisterExecutor();
+        release();
         if (result.isEmpty()) {
             return;
         }
@@ -265,9 +265,9 @@ public final class SQLFederationEngine implements AutoCloseable {
         return Optional.empty();
     }
     
-    private void unregisterExecutor() {
+    private void release() {
         if (null != queryContext && null != schemaPlus) {
-            processor.unregisterExecutor(queryContext, schemaPlus);
+            processor.release(queryContext, schemaPlus);
         }
     }
 }

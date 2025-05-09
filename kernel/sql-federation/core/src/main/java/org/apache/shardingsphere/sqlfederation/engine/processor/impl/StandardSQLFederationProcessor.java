@@ -70,9 +70,9 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     private final JDBCExecutor jdbcExecutor;
     
     @Override
-    public void registerExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                 final String databaseName, final String schemaName, final SQLFederationContext federationContext, final OptimizerContext optimizerContext,
-                                 final SchemaPlus schemaPlus) {
+    public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
+                        final String databaseName, final String schemaName, final SQLFederationContext federationContext, final OptimizerContext optimizerContext,
+                        final SchemaPlus schemaPlus) {
         if (null == schemaPlus) {
             return;
         }
@@ -91,7 +91,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     }
     
     @Override
-    public void unregisterExecutor(final QueryContext queryContext, final SchemaPlus schemaPlus) {
+    public void release(final QueryContext queryContext, final SchemaPlus schemaPlus) {
         Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext() instanceof TableAvailable
                 ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getSimpleTables()
                 : Collections.emptyList();
