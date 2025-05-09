@@ -37,6 +37,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -59,7 +60,7 @@ class ClusterProcessPersistServiceTest {
     
     @Test
     void assertGetCompletedProcessList() {
-        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), any())).thenReturn(true);
+        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), anyInt(), any())).thenReturn(true);
         assertGetProcessList();
         verify(repository, times(0)).delete(contains("/nodes/compute_nodes/show_process_list_trigger/abc:"));
     }
@@ -93,7 +94,7 @@ class ClusterProcessPersistServiceTest {
     
     @Test
     void assertKillCompletedProcess() {
-        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), any())).thenReturn(true);
+        when(ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(any(), anyInt(), any())).thenReturn(true);
         assertKillProcess();
         verify(repository, times(0)).delete("/nodes/compute_nodes/kill_process_trigger/abc:foo_process_id");
     }
