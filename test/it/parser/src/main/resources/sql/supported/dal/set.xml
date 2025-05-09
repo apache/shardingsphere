@@ -28,6 +28,7 @@
     <sql-case id="set_parameter_for_session_scope" value="SET SESSION configuration_parameter TO 'value'" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_for_local_scope" value="SET LOCAL configuration_parameter TO 'value'" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_for_default_scope" value="SET configuration_parameter TO DEFAULT" db-types="PostgreSQL,openGauss" />
+    <sql-case id="set_parameter_for_init_connect" value="SET GLOBAL init_connect='CREATE PROCEDURE p1(x INT) BEGIN SELECT COUNT(*) FROM t1; SELECT * FROM t1; SET @x = x; END'" db-types="MySQL" />
     <sql-case id="set_timezone_with_zero_value" value="SET TIME ZONE 0" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_timezone_with_positive_value" value="SET TIME ZONE 8" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_timezone_with_negative_value" value="SET TIME ZONE -2" db-types="PostgreSQL,openGauss" />
