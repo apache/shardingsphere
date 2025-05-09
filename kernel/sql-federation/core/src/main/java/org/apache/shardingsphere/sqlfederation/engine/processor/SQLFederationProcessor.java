@@ -38,7 +38,7 @@ import java.sql.ResultSet;
 public interface SQLFederationProcessor {
     
     /**
-     * Register executor.
+     * Prepare.
      *
      * @param prepareEngine prepare engine
      * @param callback callback
@@ -48,18 +48,16 @@ public interface SQLFederationProcessor {
      * @param optimizerContext optimizer context
      * @param schemaPlus sql federation schema
      */
-    default void registerExecutor(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                  String databaseName, String schemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus) {
-    }
+    void prepare(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
+                 String databaseName, String schemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus);
     
     /**
-     * Unregister executor.
+     * Release.
      *
      * @param queryContext query context
      * @param schemaPlus sql federation schema
      */
-    default void unregisterExecutor(QueryContext queryContext, SchemaPlus schemaPlus) {
-    }
+    void release(QueryContext queryContext, SchemaPlus schemaPlus);
     
     /**
      * Execute plan.
