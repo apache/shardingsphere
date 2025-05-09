@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.util;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,20 +29,20 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 /**
- * SQL federation data type utility class.
+ * SQL federation data type builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLFederationDataTypeUtils {
+public final class SQLFederationDataTypeBuilder {
     
     /**
-     * Create rel data type.
+     * Build rel data type.
      *
      * @param table ShardingSphere table
      * @param protocolType protocol type
      * @param typeFactory type factory
      * @return rel data type
      */
-    public static RelDataType createRelDataType(final ShardingSphereTable table, final DatabaseType protocolType, final RelDataTypeFactory typeFactory) {
+    public static RelDataType build(final ShardingSphereTable table, final DatabaseType protocolType, final RelDataTypeFactory typeFactory) {
         Builder fieldInfoBuilder = typeFactory.builder();
         for (ShardingSphereColumn each : table.getAllColumns()) {
             fieldInfoBuilder.add(each.getName(), getRelDataType(protocolType, each, typeFactory));

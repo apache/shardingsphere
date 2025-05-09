@@ -49,7 +49,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtils.createRelDataType(table, protocolType, typeFactory);
+        return SQLFederationDataTypeBuilder.build(table, protocolType, typeFactory);
     }
     
     @Override
