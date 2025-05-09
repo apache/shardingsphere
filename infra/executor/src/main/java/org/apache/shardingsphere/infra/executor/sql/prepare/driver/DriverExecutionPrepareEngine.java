@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -41,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T> type of driver execution unit
  * @param <C> type of resource connection
  */
+@HighFrequencyInvocation
 public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
     
     @SuppressWarnings("rawtypes")
@@ -68,7 +70,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
-        sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
+        sqlExecutionUnitBuilder = getCachedSQLExecutionUnitBuilder(type);
         this.storageUnits = storageUnits;
     }
     
@@ -79,7 +81,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
      * @return sql execution unit builder
      */
     @SuppressWarnings("rawtypes")
-    private SQLExecutionUnitBuilder getCachedSqlExecutionUnitBuilder(final String type) {
+    private SQLExecutionUnitBuilder getCachedSQLExecutionUnitBuilder(final String type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
             result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPILoader.getService(SQLExecutionUnitBuilder.class, key));
