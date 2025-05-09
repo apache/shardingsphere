@@ -81,13 +81,14 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String databaseName, String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups,
-                                                     ConnectionMode connectionMode) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String databaseName, String dataSourceName,
+                                                     int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<ExecutionUnit>> aggregateExecutionUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<ExecutionUnit>> result = new TreeMap<>();
         for (ExecutionUnit each : executionUnits) {
-            result.computeIfAbsent(each.getDataSourceName(), unused -> new ArrayList<>(executionUnits.size())).add(each);
+            String dataSourceName = each.getDataSourceName();
+            result.computeIfAbsent(dataSourceName, unused -> new ArrayList<>(executionUnits.size())).add(each);
         }
         return result;
     }
