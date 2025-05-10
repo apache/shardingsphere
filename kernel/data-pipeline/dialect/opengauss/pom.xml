@@ -32,6 +32,12 @@
             <artifactId>shardingsphere-data-pipeline-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
