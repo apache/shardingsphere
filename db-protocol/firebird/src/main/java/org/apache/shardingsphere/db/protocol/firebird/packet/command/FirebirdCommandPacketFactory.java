@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -45,7 +46,7 @@ public final class FirebirdCommandPacketFactory {
      * @param payload packet payload for Firebird
      * @return created instance
      */
-    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload) {
+    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
         switch (commandPacketType) {
             case INFO_DATABASE:
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
@@ -57,7 +58,7 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdPrepareStatementPacket(payload);
             case EXECUTE:
             case EXECUTE2:
-                return new FirebirdExecuteStatementPacket(payload);
+                return new FirebirdExecuteStatementPacket(payload, protocolVersion);
             case FETCH:
                 return new FirebirdFetchStatementPacket(payload);
             case INFO_SQL:

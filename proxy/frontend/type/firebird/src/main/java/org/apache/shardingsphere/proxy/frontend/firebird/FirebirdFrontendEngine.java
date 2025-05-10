@@ -20,12 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.firebird;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.firebird.codec.FirebirdPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdStatementQueryCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
@@ -45,6 +47,8 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     public void release(final ConnectionSession connectionSession) {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdStatementQueryCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdConnectionProtocolVersion.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResultBuild
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdStatementQueryCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.util.Arrays;
@@ -61,11 +64,14 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
 
     private AuthenticationResult currentAuthResult;
     
+    private int connectionId;
+    
     @Override
     public int handshake(final ChannelHandlerContext context) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
+        connectionId = ConnectionIdGenerator.getInstance().nextId();
         FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
+        FirebirdStatementQueryCache.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     
@@ -109,6 +115,8 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdConnectPacket connectPacket = new FirebirdConnectPacket(payload);
         FirebirdAcceptPacket acceptPacket = new FirebirdAcceptPacket(connectPacket.getUserProtocols());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+        FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(connectionId, acceptPacket.getProtocol().getVersion());
+        context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(acceptPacket.getProtocol().getVersion());
         String username = connectPacket.getLogin();
 //        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(username), EmptyUsernameException::new);
         Grantee grantee = new Grantee(username, "");

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGen
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdStatementQueryCache;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,9 +44,11 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
         switch (packet.getOption()) {
             case FirebirdFreeStatementPacket.DROP:
             case FirebirdFreeStatementPacket.UNPREPARE:
+                FirebirdStatementQueryCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), packet.getStatementId());
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
+                FirebirdStatementQueryCache.getInstance().clearStatement(connectionSession.getConnectionId(), packet.getStatementId());
                 connectionSession.getConnectionContext().clearCursorContext();
                 break;
             default:

@@ -22,6 +22,7 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
@@ -80,7 +81,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
                 result.addComponents(true, pendingMessages).addComponent(true, in.copy());
                 FirebirdPacketPayload payload = new FirebirdPacketPayload(result, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-                FirebirdCommandPacketFactory.newInstance(pendingPacketType, payload);
+                FirebirdCommandPacketFactory.newInstance(pendingPacketType, payload, context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get());
                 writePendingMessages(context, in, out);
             } catch (IndexOutOfBoundsException ignored) {
                 pendingMessages.add(in.readRetainedSlice(in.readableBytes()));

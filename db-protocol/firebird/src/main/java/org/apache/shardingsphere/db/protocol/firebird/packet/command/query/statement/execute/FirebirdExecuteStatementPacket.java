@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
+import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -47,9 +48,13 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     private final int message;
     private final List<Object> parameterValues = new ArrayList<>();
     private final List<FirebirdBinaryColumnType> returnColumns = new ArrayList<>();
+    private int outputMessageNumber;
+    private int statementTimeout;
+    private int cursorFlags;
+    private int maxBlobSize;
     private final FirebirdPacketPayload payload;
     
-    public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload) {
+    public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload, FirebirdProtocolVersion protocolVersion) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
         transactionId = payload.readInt4();
@@ -79,7 +84,21 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         
         if (isStoredProcedure()) {
             returnColumns.addAll(parseBLR(payload.readBuffer()));
+            outputMessageNumber = payload.readInt4();
         }
+        
+        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
+            statementTimeout = payload.readInt4Unsigned();
+        }
+        
+        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
+            cursorFlags = payload.readInt4Unsigned();
+        }
+        
+        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
+            maxBlobSize = payload.readInt4Unsigned();
+        }
+        
         this.payload = payload;
         //        while (msgCount-- != 0) {
         //            paramsValues.add(payload.readBuffer());

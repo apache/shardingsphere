@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -40,7 +38,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import java.sql.SQLException;
 
 /**
- * Command execute engine for PostgreSQL.
+ * Command execute engine for Firebird.
  */
 public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine {
     
@@ -51,7 +49,7 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     
     @Override
     public FirebirdCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type, (FirebirdPacketPayload) payload);
+        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type, (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(connectionSession.getConnectionId()));
     }
     
     @Override
@@ -71,17 +69,18 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
         if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
             return;
         }
-        int count = 0;
-        int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+//        int count = 0;
+//        int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
-            count++;
-            databaseConnectionManager.getConnectionResourceLock().doAwait(context);
-            DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
-            context.write(dataValue);
-            if (flushThreshold == count) {
-                context.flush();
-                count = 0;
-            }
+//            count++;
+//            databaseConnectionManager.getConnectionResourceLock().doAwait(context);
+            queryCommandExecutor.getQueryRowPacket();
+//            context.write(dataValue);
+//            if (flushThreshold == count) {
+//                context.flush();
+//                count = 0;
+//            }
         }
+        context.flush();
     }
 }

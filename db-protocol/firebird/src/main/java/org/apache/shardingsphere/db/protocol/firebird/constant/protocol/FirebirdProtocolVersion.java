@@ -75,8 +75,8 @@ public enum FirebirdProtocolVersion {
     /* Since protocol 11 we must be separated from Borland Interbase.
        Therefore, always set highmost bit in protocol version to 1.
        For unsigned protocol version this does not break version's compare. */
-    static final int FB_PROTOCOL_FLAG = 0x8000;
-    static final int FB_PROTOCOL_MASK = ~FB_PROTOCOL_FLAG & 0xFFFF;
+    private static final int FB_PROTOCOL_FLAG = 0x8000;
+    private static final int FB_PROTOCOL_MASK = ~FB_PROTOCOL_FLAG & 0xFFFF;
 
     private final int code;
 

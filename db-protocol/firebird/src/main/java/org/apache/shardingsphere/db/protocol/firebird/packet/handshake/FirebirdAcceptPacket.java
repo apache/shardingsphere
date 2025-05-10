@@ -38,12 +38,12 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
     private FirebirdProtocol protocol;
     private FirebirdAcceptDataPacket acceptDataPacket;
 
-    private final static int BATCH_SEND     = 3;	// Batch sends, no asynchrony
-    private final static int OUT_OF_BAND    = 4;	// Batch sends w/ out of band notification
-    private final static int LAZY_SEND      = 5;	// Deferred packets delivery
-    private final static int MASK           = 0xFF; // Mask - up to 255 types of protocol
+    private static final int BATCH_SEND     = 3;	// Batch sends, no asynchrony
+    private static final int OUT_OF_BAND    = 4;	// Batch sends w/ out of band notification
+    private static final int LAZY_SEND      = 5;	// Deferred packets delivery
+    private static final int MASK           = 0xFF; // Mask - up to 255 types of protocol
     // upper byte is used for protocol flags
-    private final static int COMPRESS       = 0x100; // Turn on compression if possible
+    private static final int COMPRESS       = 0x100; // Turn on compression if possible
 
     public FirebirdAcceptPacket(final List<FirebirdProtocol> userProtocols) {
         opCode = FirebirdCommandPacketType.ACCEPT;
