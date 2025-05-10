@@ -85,7 +85,7 @@ Case 1: No need to use JAR with custom SPI implementation or third-party depende
 
 ```bash
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
 Case 2: Need to use JAR with custom SPI implementation or third-party dependent JAR. Add one of the following options to the `dependencies` of `distribution/proxy-native/pom.xml`:
@@ -110,7 +110,7 @@ Then build the GraalVM Native Image through the command line.
 
 ```bash
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
 3. To start Native Image through the command line, you need to bring 4 parameters.
@@ -137,7 +137,7 @@ cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-shardingsphere
 
 ```shell
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep,docker.native -DskipTests clean package
 ```
 
 Assuming that there is a conf folder called `./custom/conf` containing `global.yaml`,
