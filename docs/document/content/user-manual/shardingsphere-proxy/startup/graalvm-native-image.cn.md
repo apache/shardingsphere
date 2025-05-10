@@ -84,7 +84,7 @@ sdk use java 22.0.2-graalce
 
 ```bash
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
 情形二：需要使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR。在 `distribution/proxy-native/pom.xml` 的 `dependencies` 加入如下选项之一，
@@ -108,7 +108,7 @@ cd ./shardingsphere/
 
 ```bash
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数，
@@ -134,7 +134,7 @@ cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-shardingsphere
 
 ```shell
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep,docker.native -DskipTests clean package
 ```
 
 假设存在包含 `global.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动包含 GraalVM Native Image 的 Docker Image。

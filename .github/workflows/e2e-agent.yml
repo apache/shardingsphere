@@ -66,7 +66,7 @@ jobs:
             apache-shardingsphere-maven-third-party-e2e-cache-
             apache-shardingsphere-maven-third-party-
       - name: Build Project
-        run: ./mvnw -B clean install -DskipTests -Prelease
+        run: ./mvnw -B clean install -DskipTests -Prelease,default-dep
       - name: Build Proxy E2E Image
         run: ./mvnw clean install -DskipTests -Pit.env.proxy -f test/e2e/agent/engine/pom.xml
       - name: Save Proxy E2E Image

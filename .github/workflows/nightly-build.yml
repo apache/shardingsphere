@@ -60,7 +60,7 @@ jobs:
           java-version: 11
       - name: Build Project
         run: |
-          ./mvnw -B clean install -Prelease
+          ./mvnw -B clean install -Prelease,default-dep
       - uses: burnett01/rsync-deployments@5.2
         with:
           switches: -avzr
@@ -104,7 +104,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Push Docker Image
-        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
   
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
@@ -133,7 +133,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean package
+          ./mvnw -am -pl distribution/proxy-native -Prelease.native,default-dep,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean package
   
   build-agent-image:
     if: github.repository == 'apache/shardingsphere'
@@ -160,7 +160,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
+          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
   
   build-cache:
     if: github.repository == 'apache/shardingsphere'
