@@ -110,7 +110,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-
+                
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
@@ -123,7 +123,7 @@
                 </dependency>
             </dependencies>
         </profile>
-
+        
         <profile>
             <id>db-postgresql</id>
             <dependencies>
