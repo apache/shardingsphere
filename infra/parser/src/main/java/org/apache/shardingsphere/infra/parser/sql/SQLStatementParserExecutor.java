@@ -38,6 +38,15 @@ public final class SQLStatementParserExecutor {
     }
     
     /**
+     * Update cache option.
+     *
+     * @param parseTreeCacheOption parse tree cache option
+     */
+    public void updateCacheOption(final CacheOption parseTreeCacheOption) {
+        parserEngine.updateCacheOption(parseTreeCacheOption);
+    }
+    
+    /**
      * Parse to SQL statement.
      *
      * @param sql SQL to be parsed

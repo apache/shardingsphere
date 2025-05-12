@@ -43,6 +43,15 @@ public final class SQLParserEngine {
     }
     
     /**
+     * Update cache option.
+     *
+     * @param cacheOption cache option
+     */
+    public void updateCacheOption(final CacheOption cacheOption) {
+        parseTreeCache.policy().eviction().ifPresent(eviction -> eviction.setMaximum(cacheOption.getMaximumSize()));
+    }
+    
+    /**
      * Parse SQL.
      *
      * @param sql SQL to be parsed
