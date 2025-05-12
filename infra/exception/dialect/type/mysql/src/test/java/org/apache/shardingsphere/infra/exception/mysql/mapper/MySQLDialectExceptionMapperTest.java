@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;

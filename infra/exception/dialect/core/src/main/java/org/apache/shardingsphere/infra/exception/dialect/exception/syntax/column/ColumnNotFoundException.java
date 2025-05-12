@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.mysql.exception;
+package org.apache.shardingsphere.infra.exception.dialect.exception.syntax.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 
 /**
- * Access denied exception.
+ * Column not found exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AccessDeniedException extends SQLDialectException {
+public final class ColumnNotFoundException extends SQLDialectException {
     
-    private static final long serialVersionUID = -4573828491344359324L;
+    private static final long serialVersionUID = 1634603729199573437L;
     
-    private final String username;
+    private final String tableName;
     
-    private final String hostname;
-    
-    private final boolean usingPassword;
+    private final String columnName;
 }
