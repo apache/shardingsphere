@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.postgresql.exception.metadata;
+package org.apache.shardingsphere.infra.exception.dialect.exception.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 
 /**
- * Column not found exception.
+ * Access denied exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnNotFoundException extends SQLDialectException {
+public final class AccessDeniedException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1634603729199573437L;
+    private static final long serialVersionUID = -4573828491344359324L;
     
-    private final String tableName;
+    private final String username;
     
-    private final String columnName;
+    private final String hostname;
+    
+    private final boolean usingPassword;
 }

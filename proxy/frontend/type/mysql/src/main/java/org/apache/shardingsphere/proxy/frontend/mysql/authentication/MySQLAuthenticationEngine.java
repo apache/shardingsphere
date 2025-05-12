@@ -43,7 +43,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
