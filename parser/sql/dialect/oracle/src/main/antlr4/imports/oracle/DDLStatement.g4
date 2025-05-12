@@ -332,7 +332,7 @@ blockchainRowRetentionClause
     ;
 
 blockchainHashAndDataFormatClause
-    : HASHING USING 'sha2_512' VERSION 'v1'
+    : HASHING USING 'sha2_512' VERSION V1
     ;
 
 relationalProperty

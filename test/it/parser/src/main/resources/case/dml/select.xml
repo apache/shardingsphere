@@ -10180,4 +10180,16 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_oracle_v1_keyword">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7">
+                <actual-projections start-index="0" stop-index="0"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table alias="v1" name="dual" start-index="14" stop-index="20"/>
+        </from>
+    </select>
+
 </sql-parser-test-cases>
