@@ -57,6 +57,11 @@
             <artifactId>shardingsphere-sharding-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- TODO remove cluster mode dependency after 3 modes have equivalent features -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
