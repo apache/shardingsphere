@@ -71,13 +71,13 @@ class FrontDatabaseProtocolTypeFactoryTest {
     }
     
     @Test
-    void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
+    void assertGetDatabaseTypeFromMetaDataContextsProps() {
         ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabase()),
-                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL")));
+                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "FIXTURE")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
-        assertThat(databaseType.getType(), is("PostgreSQL"));
+        assertThat(databaseType.getType(), is("FIXTURE"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
