@@ -98,6 +98,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-postgresql</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
@@ -114,6 +120,12 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-frontend-mysql</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -146,6 +158,12 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-frontend-opengauss</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-opengauss</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -185,6 +203,12 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-postgresql</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <scope>runtime</scope>
@@ -213,8 +237,9 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-mysql</artifactId>
+                    <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -259,6 +284,12 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-frontend-opengauss</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-opengauss</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -343,11 +374,6 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -375,11 +401,6 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-frontend-mysql</artifactId>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.mariadb.jdbc</groupId>
-                    <artifactId>mariadb-java-client</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
