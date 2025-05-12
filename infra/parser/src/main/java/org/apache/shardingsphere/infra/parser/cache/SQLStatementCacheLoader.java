@@ -36,6 +36,15 @@ public final class SQLStatementCacheLoader implements CacheLoader<String, SQLSta
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption);
     }
     
+    /**
+     * Update cache option.
+     *
+     * @param parseTreeCacheOption parse tree cache option
+     */
+    public void updateCacheOption(final CacheOption parseTreeCacheOption) {
+        sqlStatementParserExecutor.updateCacheOption(parseTreeCacheOption);
+    }
+    
     @ParametersAreNonnullByDefault
     @Override
     public SQLStatement load(final String sql) {

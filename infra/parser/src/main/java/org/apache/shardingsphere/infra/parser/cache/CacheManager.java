@@ -17,18 +17,21 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.jupiter.api.Test;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class SQLStatementCacheBuilderTest {
+/**
+ * Cache manager.
+ * @param <K> the type of keys maintained by this cache
+ * @param <V> the type of mapped values
+ */
+@RequiredArgsConstructor
+@Getter
+public class CacheManager<K, V> {
     
-    @Test
-    void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build(TypedSPILoader.getService(DatabaseType.class, "SQL92"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L)), isA(CacheManager.class));
-    }
+    private final LoadingCache<K, V> cache;
+    
+    private final CacheLoader<K, V> cacheLoader;
 }
