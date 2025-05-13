@@ -10192,4 +10192,29 @@
         </from>
     </select>
 
+    
+    <select sql-case-id="select_in_literal">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7">
+                <actual-projections start-index="0" stop-index="0"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <where start-index="22" stop-index="45">
+            <expr start-index="28" stop-index="45">
+                <in-expression start-index="28" stop-index="45">
+                    <not>false</not>
+                    <left start-index="28" stop-index="35">
+                        <column name="ORDER_ID" start-index="28" stop-index="35">
+                        </column>
+                    </left>
+                    <right start-index="40" stop-index="45">
+                        <literal-expression value="test" start-index="40" stop-index="45"/>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
