@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -58,16 +57,14 @@ class FrontDatabaseProtocolTypeFactoryTest {
     void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
         ContextManager contextManager = mockContextManager(Collections.emptyList(), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
+        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("FIXTURE"));
     }
     
     @Test
     void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
         ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabase()), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
-        assertThat(databaseType, instanceOf(DatabaseType.class));
-        assertThat(databaseType.getType(), is("MySQL"));
+        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("FIXTURE"));
     }
     
     @Test
@@ -75,9 +72,7 @@ class FrontDatabaseProtocolTypeFactoryTest {
         ContextManager contextManager = mockContextManager(Collections.singleton(mockDatabase()),
                 PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "FIXTURE")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
-        assertThat(databaseType, instanceOf(DatabaseType.class));
-        assertThat(databaseType.getType(), is("FIXTURE"));
+        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("FIXTURE"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
