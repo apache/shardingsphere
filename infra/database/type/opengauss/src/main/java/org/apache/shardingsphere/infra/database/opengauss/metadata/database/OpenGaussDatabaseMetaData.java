@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.database.opengauss.metadata.database.opti
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.database.opengauss.metadata.database.option.OpenGaussSchemaOption;
 
+import java.sql.Connection;
 import java.util.Optional;
 
 /**
@@ -74,7 +75,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(true, false, false, true, false);
+        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED);
     }
     
     @Override

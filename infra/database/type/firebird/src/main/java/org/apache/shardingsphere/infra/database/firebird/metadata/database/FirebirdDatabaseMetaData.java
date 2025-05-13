@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 
+import java.sql.Connection;
+
 /**
  * Database metadata of Firebird.
  */
@@ -45,7 +47,7 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, true, false, false, true);
+        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED);
     }
     
     @Override
