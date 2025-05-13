@@ -22,13 +22,14 @@ import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMerged
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.spi.DialectSQLStatementOption;
+
+import java.util.Optional;
 
 /**
  * DAL result decorator for encrypt.
@@ -41,10 +42,14 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
+        Optional<DialectSQLStatementOption> sqlStatementOption = DatabaseTypedSPILoader.findService(DialectSQLStatementOption.class, sqlStatementContext.getDatabaseType());
+        if (!sqlStatementOption.isPresent()) {
+            return mergedResult;
+        }
+        if (sqlStatementOption.get().isShowColumns(sqlStatement)) {
             return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
         }
-        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
+        if (sqlStatementOption.get().isShowCreateTable(sqlStatement)) {
             return new EncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
         }
         return mergedResult;
