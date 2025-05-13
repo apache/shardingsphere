@@ -319,4 +319,5 @@
     <sql-case id="select_with_not_equal_comparison_with_space" value="select * from test where id &lt;  &gt; 1 and name !  = 1 and id ^ = 3 " db-types="Oracle"/>
     <sql-case id="select_match_against" value="SELECT * FROM t_order WHERE MATCH(phone) AGAINST('15111111111')" db-types="MySQL"/>
     <sql-case id="select_with_oracle_v1_keyword" value="SELECT * FROM dual v1" db-types="Oracle" />
+    <sql-case id="select_in_literal" value="select * from t_order where ORDER_ID in 'test'" db-types="Oracle" />
 </sql-cases>
