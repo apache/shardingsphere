@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -45,7 +46,16 @@ public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQ
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent()
-                && rule.findEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()).isPresent();
+                && containsEncryptTable(((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables());
+    }
+    
+    private boolean containsEncryptTable(final Collection<SimpleTableSegment> simpleTableSegments) {
+        for (SimpleTableSegment each : simpleTableSegments) {
+            if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SuppressWarnings("OptionalGetWithoutIsPresent")

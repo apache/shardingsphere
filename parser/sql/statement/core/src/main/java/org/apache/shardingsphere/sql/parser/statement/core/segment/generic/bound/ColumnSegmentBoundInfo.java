@@ -36,7 +36,7 @@ public final class ColumnSegmentBoundInfo {
     private final TableSourceType tableSourceType;
     
     public ColumnSegmentBoundInfo(final IdentifierValue originalColumn) {
-        this(null, null, originalColumn, TableSourceType.TEMPORARY_TABLE);
+        this(null, null, originalColumn, TableSourceType.PHYSICAL_TABLE);
     }
     
     public ColumnSegmentBoundInfo(final TableSegmentBoundInfo tableBoundInfo, final IdentifierValue originalTable, final IdentifierValue originalColumn, final TableSourceType tableSourceType) {
