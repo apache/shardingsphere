@@ -89,7 +89,8 @@ class EncryptAssignmentTokenGeneratorTest {
         tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), null, null);
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("columns"));
-        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("table"), new IdentifierValue("columns"), TableSourceType.PHYSICAL_TABLE));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("table"),
+                new IdentifierValue("columns"), TableSourceType.PHYSICAL_TABLE));
         when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
     }
     
