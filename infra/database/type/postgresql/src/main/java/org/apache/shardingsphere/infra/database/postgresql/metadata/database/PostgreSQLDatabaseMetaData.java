@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
+import java.sql.Connection;
+
 /**
  * Database meta data of PostgreSQL.
  */
@@ -65,7 +67,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, true, false);
+        return new DialectTransactionOption(false, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED);
     }
     
     @Override

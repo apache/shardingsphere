@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -26,10 +28,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
-
-import java.sql.Connection;
 
 /**
  * Transaction set handler.
@@ -64,9 +63,8 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
-                ? TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
-                : TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(transactionOption.getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }
