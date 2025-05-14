@@ -44,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionE
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -75,7 +74,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         Collection<ExpressionSegment> expressions = getAllExpressions(whereSegments);
         return generateSQLTokens(expressions, sqlStatementContext);
     }
-
+    
     private Collection<SQLToken> generateSQLTokens(final Collection<ExpressionSegment> expressions, final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ExpressionSegment each : expressions) {
@@ -95,7 +94,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         }
         return result;
     }
-
+    
     private Collection<ExpressionSegment> getAllExpressions(final Collection<WhereSegment> whereSegments) {
         if (1 == whereSegments.size()) {
             return ExpressionExtractor.extractAllExpressions(whereSegments.iterator().next().getExpr());
