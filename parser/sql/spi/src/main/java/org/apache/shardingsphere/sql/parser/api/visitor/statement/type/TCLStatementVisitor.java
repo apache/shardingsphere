@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.type;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 
 /**
- * RL statement visitor.
+ * TCL statement visitor.
  */
-public interface RLStatementVisitor extends SQLStatementVisitor {
+public interface TCLStatementVisitor extends SQLStatementVisitor {
 }

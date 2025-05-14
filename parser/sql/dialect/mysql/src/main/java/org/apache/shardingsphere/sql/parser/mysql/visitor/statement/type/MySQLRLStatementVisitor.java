@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeReplicationSourceToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeMasterToContext;

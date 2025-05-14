@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 
 /**

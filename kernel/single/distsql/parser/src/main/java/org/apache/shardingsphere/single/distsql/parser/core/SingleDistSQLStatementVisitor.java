@@ -44,7 +44,7 @@ import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleT
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTablesStatement;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for single DistSQL.
  */
-public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
+public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCountSingleTable(final CountSingleTableContext ctx) {

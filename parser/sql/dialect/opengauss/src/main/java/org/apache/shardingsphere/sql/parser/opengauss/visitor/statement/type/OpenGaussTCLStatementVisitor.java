@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CheckpointContext;

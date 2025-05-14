@@ -101,7 +101,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAl
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -117,7 +117,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding DistSQL statement visitor.
  */
-public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
+public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.type;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 
 /**
  * DCL statement visitor.

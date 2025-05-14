@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinaryLogFileIndexNumberContext;

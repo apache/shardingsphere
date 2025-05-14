@@ -42,7 +42,7 @@ import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for mask DistSQL.
  */
-public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
+public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateMaskRule(final CreateMaskRuleContext ctx) {
