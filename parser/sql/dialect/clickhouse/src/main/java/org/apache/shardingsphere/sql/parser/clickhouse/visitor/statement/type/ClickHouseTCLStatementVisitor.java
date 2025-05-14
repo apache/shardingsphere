@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**

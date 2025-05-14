@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -52,12 +52,11 @@ public final class DistSQLParserEngine {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final DistSQLParserFacade facade, final ParseASTNode parseASTNode) {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(sql);
         }
-        SQLVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLStatementVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
         return (SQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
 }

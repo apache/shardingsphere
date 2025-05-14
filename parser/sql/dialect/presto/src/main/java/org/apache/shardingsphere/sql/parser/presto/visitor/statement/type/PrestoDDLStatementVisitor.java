@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.presto.visitor.statement.type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.CharsetNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.CreateDefinitionClauseContext;

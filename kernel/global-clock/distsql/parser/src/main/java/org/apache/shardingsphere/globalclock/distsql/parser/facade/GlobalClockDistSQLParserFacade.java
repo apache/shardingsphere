@@ -21,10 +21,9 @@ import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
 import org.apache.shardingsphere.globalclock.distsql.parser.core.GlobalClockDistSQLLexer;
 import org.apache.shardingsphere.globalclock.distsql.parser.core.GlobalClockDistSQLParser;
 import org.apache.shardingsphere.globalclock.distsql.parser.core.GlobalClockDistSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Global clock DistSQL parser facade.
@@ -42,7 +41,7 @@ public final class GlobalClockDistSQLParserFacade implements DistSQLParserFacade
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return GlobalClockDistSQLStatementVisitor.class;
     }
 }

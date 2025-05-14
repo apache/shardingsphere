@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollbackContext;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.SQLFederationDistSQLStat
 import org.apache.shardingsphere.distsql.parser.autogen.SQLFederationDistSQLStatementParser.ShowSQLFederationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLFederationDistSQLStatementParser.SqlFederationRuleDefinitionContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.Alter
 /**
  * SQL statement visitor for SQL federation DistSQL.
  */
-public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitShowSQLFederationRule(final ShowSQLFederationRuleContext ctx) {

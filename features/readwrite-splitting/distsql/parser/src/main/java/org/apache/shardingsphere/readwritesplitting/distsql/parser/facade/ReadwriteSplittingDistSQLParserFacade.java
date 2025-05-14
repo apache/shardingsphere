@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLStatementVisitor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLLexer;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLParser;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Readwrite-splitting DistSQL parser facade.
@@ -42,7 +41,7 @@ public final class ReadwriteSplittingDistSQLParserFacade implements DistSQLParse
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return ReadwriteSplittingDistSQLStatementVisitor.class;
     }
 }

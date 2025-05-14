@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDDLStatementVisitor;

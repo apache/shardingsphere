@@ -27,13 +27,13 @@ import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * SQL statement visitor for SQL parser DistSQL.
  */
-public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {

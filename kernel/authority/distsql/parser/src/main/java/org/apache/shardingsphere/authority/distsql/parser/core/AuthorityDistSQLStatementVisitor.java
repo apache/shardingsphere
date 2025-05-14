@@ -21,12 +21,12 @@ import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleSt
 import org.apache.shardingsphere.distsql.parser.autogen.AuthorityDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.AuthorityDistSQLStatementParser.ShowAuthorityRuleContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * SQL statement visitor for authority DistSQL.
  */
-public final class AuthorityDistSQLStatementVisitor extends AuthorityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class AuthorityDistSQLStatementVisitor extends AuthorityDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitShowAuthorityRule(final ShowAuthorityRuleContext ctx) {

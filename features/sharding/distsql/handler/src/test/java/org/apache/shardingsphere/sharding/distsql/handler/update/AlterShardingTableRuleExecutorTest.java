@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableRu
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -216,11 +216,10 @@ class AlterShardingTableRuleExecutorTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("rawtypes")
     private DistSQLStatement getDistSQLStatement(final String sql) {
         ShardingDistSQLParserFacade facade = new ShardingDistSQLParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
-        SQLVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLStatementVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
         return (DistSQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
 }

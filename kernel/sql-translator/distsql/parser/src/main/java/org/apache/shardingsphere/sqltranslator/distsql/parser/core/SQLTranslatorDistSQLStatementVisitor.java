@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStat
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * SQL statement visitor for SQL translator DistSQL.
  */
-public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitShowSQLTranslatorRule(final ShowSQLTranslatorRuleContext ctx) {
