@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
@@ -84,10 +83,8 @@ public final class EncryptConditionEngine {
     public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments) {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(each.getExpr());
-            for (AndPredicate predicate : andPredicates) {
-                addEncryptConditions(result, predicate.getPredicates());
-            }
+            Collection<ExpressionSegment> expressions = ExpressionExtractor.extractAllExpressions(each.getExpr());
+            addEncryptConditions(result, expressions);
         }
         return result;
     }
