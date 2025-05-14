@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
- * ClickHouse TCL statement visitor.
+ * SQL visitor.
+ * 
+ * @param <T> type of visit return value
  */
-public final class ClickHouseTCLStatementVisitor extends ClickHouseStatementVisitor implements TCLStatementVisitor {
-    
+public interface SQLVisitor<T> extends ParseTreeVisitor<T> {
 }

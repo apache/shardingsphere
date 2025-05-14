@@ -27,18 +27,18 @@ import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatem
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.TransactionRuleDefinitionContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 import java.util.Properties;
 
 /**
  * SQL statement visitor for transaction DistSQL.
  */
-public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
+public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowTransactionRule(final ShowTransactionRuleContext ctx) {

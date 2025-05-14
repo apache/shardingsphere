@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LockContext;

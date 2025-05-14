@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.single.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.single.distsql.parser.core.SingleDistSQLLexer;
 import org.apache.shardingsphere.single.distsql.parser.core.SingleDistSQLParser;
 import org.apache.shardingsphere.single.distsql.parser.core.SingleDistSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Single DistSQL parser facade.
@@ -41,7 +42,7 @@ public final class SingleDistSQLParserFacade implements DistSQLParserFacade {
     }
     
     @Override
-    public Class<? extends SQLStatementVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return SingleDistSQLStatementVisitor.class;
     }
 }

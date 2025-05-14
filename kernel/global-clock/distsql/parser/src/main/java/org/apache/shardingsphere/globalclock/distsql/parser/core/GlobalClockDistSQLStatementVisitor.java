@@ -28,7 +28,7 @@ import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlo
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Properties;
@@ -36,7 +36,7 @@ import java.util.Properties;
 /**
  * SQL statement visitor for global clock DistSQL.
  */
-public final class GlobalClockDistSQLStatementVisitor extends GlobalClockDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
+public final class GlobalClockDistSQLStatementVisitor extends GlobalClockDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowGlobalClockRule(final ShowGlobalClockRuleContext ctx) {
