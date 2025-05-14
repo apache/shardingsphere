@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HandlerStatementContext;

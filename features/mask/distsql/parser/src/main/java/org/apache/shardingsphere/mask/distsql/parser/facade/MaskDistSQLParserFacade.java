@@ -21,10 +21,9 @@ import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
 import org.apache.shardingsphere.mask.distsql.parser.core.MaskDistSQLLexer;
 import org.apache.shardingsphere.mask.distsql.parser.core.MaskDistSQLParser;
 import org.apache.shardingsphere.mask.distsql.parser.core.MaskDistSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Mask DistSQL parser facade.
@@ -42,7 +41,7 @@ public final class MaskDistSQLParserFacade implements DistSQLParserFacade {
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return MaskDistSQLStatementVisitor.class;
     }
 }

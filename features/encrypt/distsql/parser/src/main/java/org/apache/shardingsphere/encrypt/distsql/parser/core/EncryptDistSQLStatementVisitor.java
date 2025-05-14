@@ -44,7 +44,7 @@ import org.apache.shardingsphere.encrypt.distsql.statement.DropEncryptRuleStatem
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for encrypt DistSQL.
  */
-public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitCreateEncryptRule(final CreateEncryptRuleContext ctx) {

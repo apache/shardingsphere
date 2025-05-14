@@ -23,12 +23,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementP
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * SQL statement visitor for utility DistSQL.
  */
-public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {

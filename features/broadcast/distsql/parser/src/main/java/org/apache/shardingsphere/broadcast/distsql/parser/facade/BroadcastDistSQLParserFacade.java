@@ -21,10 +21,9 @@ import org.apache.shardingsphere.broadcast.distsql.parser.core.BroadcastDistSQLL
 import org.apache.shardingsphere.broadcast.distsql.parser.core.BroadcastDistSQLParser;
 import org.apache.shardingsphere.broadcast.distsql.parser.core.BroadcastDistSQLStatementVisitor;
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Broadcast DistSQL parser facade.
@@ -42,7 +41,7 @@ public final class BroadcastDistSQLParserFacade implements DistSQLParserFacade {
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return BroadcastDistSQLStatementVisitor.class;
     }
 }

@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade;
 
+import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLStatementVisitor;
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 
 /**
  * Migration DistSQL parser facade.
@@ -42,7 +41,7 @@ public final class MigrationDistSQLParserFacade implements DistSQLParserFacade {
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return MigrationDistSQLStatementVisitor.class;
     }
 }

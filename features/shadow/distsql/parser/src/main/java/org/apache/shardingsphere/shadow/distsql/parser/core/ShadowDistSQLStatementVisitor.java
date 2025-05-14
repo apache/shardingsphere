@@ -55,7 +55,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsSt
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for shadow DistSQL.
  */
-public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
+public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementBaseVisitor<ASTNode> implements SQLStatementVisitor {
     
     @Override
     public ASTNode visitCreateShadowRule(final CreateShadowRuleContext ctx) {

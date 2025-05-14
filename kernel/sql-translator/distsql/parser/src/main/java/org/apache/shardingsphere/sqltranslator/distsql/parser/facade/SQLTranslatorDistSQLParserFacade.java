@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.sqltranslator.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.core.SQLTranslatorDistSQLLexer;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.core.SQLTranslatorDistSQLParser;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.core.SQLTranslatorDistSQLStatementVisitor;
@@ -42,7 +41,7 @@ public final class SQLTranslatorDistSQLParserFacade implements DistSQLParserFaca
     }
     
     @Override
-    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+    public Class<? extends SQLStatementVisitor> getVisitorClass() {
         return SQLTranslatorDistSQLStatementVisitor.class;
     }
 }
