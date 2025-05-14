@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -34,5 +35,45 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
     @Override
     public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
         return Optional.empty();
+    }
+    
+    @Override
+    public boolean isIntegerDataType(final int sqlType) {
+        switch (sqlType) {
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    @Override
+    public boolean isStringDataType(final int sqlType) {
+        switch (sqlType) {
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.NCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGNVARCHAR:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    @Override
+    public boolean isBinaryDataType(final int sqlType) {
+        switch (sqlType) {
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return true;
+            default:
+                return false;
+        }
     }
 }

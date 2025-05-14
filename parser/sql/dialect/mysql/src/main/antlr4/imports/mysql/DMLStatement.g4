@@ -44,7 +44,7 @@ tableWild
     ;
 
 insertSelectClause
-    : valueReference? (LP_ fields? RP_)? select
+    : valueReference? (LP_ fields? RP_)? (LP_ select RP_ | select)
     ;
 
 onDuplicateKeyClause
@@ -138,14 +138,9 @@ queryExpression
 
 queryExpressionBody
     : queryPrimary
-    | queryExpressionParens combineClause
-    | queryExpressionBody combineClause
-    ;
-
-combineClause
-    : INTERSECT combineOption? (queryPrimary | queryExpressionParens)
-    | UNION combineOption? (queryPrimary | queryExpressionParens)
-    | EXCEPT combineOption? (queryPrimary | queryExpressionParens)
+    | queryExpressionParens
+    | queryExpressionBody INTERSECT combineOption? queryExpressionBody
+    | queryExpressionBody (UNION | EXCEPT) combineOption? queryExpressionBody
     ;
 
 queryExpressionParens
@@ -159,7 +154,7 @@ queryPrimary
     ;
 
 querySpecification
-    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? lockClauseList?
     ;
 
 call

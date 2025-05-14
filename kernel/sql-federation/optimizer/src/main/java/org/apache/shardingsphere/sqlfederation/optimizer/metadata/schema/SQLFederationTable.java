@@ -41,7 +41,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
-import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -50,8 +49,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -68,13 +66,11 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     
     private final ShardingSphereTable table;
     
-    private final SQLFederationStatistic statistic;
-    
     private final DatabaseType protocolType;
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtils.createRelDataType(table, protocolType, typeFactory);
+        return SQLFederationDataTypeBuilder.build(table, protocolType, typeFactory);
     }
     
     @Override
@@ -125,11 +121,6 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     @Override
     public String toString() {
         return "SQLFederationTable";
-    }
-    
-    @Override
-    public Statistic getStatistic() {
-        return statistic;
     }
     
     @Override

@@ -82,8 +82,6 @@ import java.util.Optional;
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
-    private static final int DEFAULT_METADATA_VERSION = 0;
-    
     private static final JavaTypeFactory DEFAULT_DATA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     private final ProcessEngine processEngine = new ProcessEngine();
@@ -136,8 +134,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
-        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
+        if (!sqlFederationRule.getConfiguration().isSqlFederationEnabled() || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         boolean allQueryUseSQLFederation = sqlFederationRule.getConfiguration().isAllQueryUseSQLFederation();
@@ -168,7 +165,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
         return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
-                || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     /**
@@ -190,10 +187,10 @@ public final class SQLFederationEngine implements AutoCloseable {
             String databaseName = selectStatementContext.getTablesContext().getDatabaseNames().stream().findFirst().orElse(currentDatabaseName);
             String schemaName = selectStatementContext.getTablesContext().getSchemaName().orElse(currentSchemaName);
             SqlToRelConverter converter = creeateSQLToRelConverter(databaseName, schemaName, selectStatementContext.getDatabaseType(), processor.getConvention());
+            schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
+            processor.prepare(prepareEngine, callback, databaseName, schemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, databaseName, schemaName,
                     federationContext.getMetaData(), selectStatementContext, queryContext.getSql(), processor.getConvention());
-            schemaPlus = getSqlFederationSchema(converter, schemaName, queryContext.getSql());
-            processor.registerExecutor(prepareEngine, callback, databaseName, schemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             resultSet = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, schemaPlus);
             return resultSet;
             // CHECKSTYLE:OFF
@@ -219,7 +216,6 @@ public final class SQLFederationEngine implements AutoCloseable {
                                                     final SelectStatementContext selectStatementContext, final String sql, final Convention convention) {
         SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(converter, convention);
         SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());
-        // TODO open useCache flag when ShardingSphereTable contains version
         return compilerEngine.compile(buildCacheKey(metaData, databaseName, schemaName, selectStatementContext, sql, sqlStatementCompiler), false);
     }
     
@@ -236,8 +232,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             ShardingSphereTable table = schema.getTable(each);
             ShardingSpherePreconditions.checkNotNull(table, () -> new NoSuchTableException(each));
-            // TODO replace DEFAULT_METADATA_VERSION with actual version in ShardingSphereTable
-            result.getTableMetaDataVersions().put(new QualifiedTable(schema.getName(), table.getName()), DEFAULT_METADATA_VERSION);
+            result.getTableMetaDataVersions().put(new QualifiedTable(schema.getName(), table.getName()), 0);
         }
         return result;
     }
@@ -246,7 +241,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         closeResultSet().ifPresent(result::add);
-        unregisterExecutor();
+        release();
         if (result.isEmpty()) {
             return;
         }
@@ -266,9 +261,9 @@ public final class SQLFederationEngine implements AutoCloseable {
         return Optional.empty();
     }
     
-    private void unregisterExecutor() {
+    private void release() {
         if (null != queryContext && null != schemaPlus) {
-            processor.unregisterExecutor(queryContext, schemaPlus);
+            processor.release(queryContext, schemaPlus);
         }
     }
 }

@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Collate
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnRefContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ConvertFunctionContext;
@@ -766,39 +765,29 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
         }
-        if (null != ctx.queryExpressionBody()) {
+        if (null != ctx.queryExpressionBody() && ctx.queryExpressionBody().size() > 1) {
             DorisSelectStatement result = new DorisSelectStatement();
-            SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
-                    (DorisSelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
+            SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody(0).start.getStartIndex(), ctx.queryExpressionBody(0).stop.getStopIndex(),
+                    (DorisSelectStatement) visit(ctx.queryExpressionBody(0)), getOriginalText(ctx.queryExpressionBody(0)));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
             ((DorisSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
-        }
-        if (null != ctx.queryExpressionParens()) {
-            DorisSelectStatement result = new DorisSelectStatement();
-            SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
-                    (DorisSelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            ((DorisSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
+            result.setCombine(createCombineSegment(ctx, left));
             return result;
         }
         return visit(ctx.queryExpressionParens());
     }
     
-    private CombineSegment createCombineSegment(final CombineClauseContext ctx, final SubquerySegment left) {
+    private CombineSegment createCombineSegment(final QueryExpressionBodyContext ctx, final SubquerySegment left) {
         CombineType combineType;
         if (null != ctx.EXCEPT()) {
-            combineType = CombineType.EXCEPT;
+            combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.EXCEPT : CombineType.EXCEPT_ALL;
         } else if (null != ctx.INTERSECT()) {
-            combineType = CombineType.INTERSECT;
+            combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.INTERSECT : CombineType.INTERSECT_ALL;
         } else {
             combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
-        ParserRuleContext ruleContext = null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary();
+        ParserRuleContext ruleContext = ctx.queryExpressionBody(1);
         SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (DorisSelectStatement) visit(ruleContext), getOriginalText(ruleContext));
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }

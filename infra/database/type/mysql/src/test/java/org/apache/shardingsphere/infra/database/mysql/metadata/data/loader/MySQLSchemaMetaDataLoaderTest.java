@@ -50,6 +50,9 @@ class MySQLSchemaMetaDataLoaderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @BeforeEach
     void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
@@ -78,11 +81,11 @@ class MySQLSchemaMetaDataLoaderTest {
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource, Collections.emptyList()), is(schemaTableNames));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
     @Test
     void assertLoadSchemaNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "MySQL")), is(Collections.singletonList("public")));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaNames(dataSource.getConnection()), is(Collections.singletonList("public")));
     }
 }

@@ -127,7 +127,7 @@
         <select>
             <!-- FIXME support VALUES (1) projection parse -->
             <projections start-index="-1" stop-index="-1" />
-            <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
+            <combine combine-type="UNION_ALL" start-index="47" stop-index="107">
                 <left>
                     <projections start-index="-1" stop-index="-1" />
                 </left>

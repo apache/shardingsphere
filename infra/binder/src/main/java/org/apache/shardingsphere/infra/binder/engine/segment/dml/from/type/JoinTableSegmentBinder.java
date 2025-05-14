@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -114,7 +114,7 @@ public final class JoinTableSegmentBinder {
     private static Collection<ProjectionSegment> getDerivedJoinTableProjectionSegments(final JoinTableSegment segment, final DatabaseType databaseType,
                                                                                        final Map<String, ProjectionSegment> usingColumnsByNaturalJoin,
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
-        DialectJoinOrderOption joinOrderOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getJoinOrderOption();
+        DialectJoinOption joinOrderOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getJoinOption();
         Collection<ProjectionSegment> projectionSegments = getProjectionSegments(segment, joinOrderOption, tableBinderContexts);
         if (segment.getUsing().isEmpty() && !segment.isNatural()) {
             return projectionSegments;
@@ -129,7 +129,7 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Collection<ProjectionSegment> getProjectionSegments(final JoinTableSegment segment, final DialectJoinOrderOption joinOrderOption,
+    private static Collection<ProjectionSegment> getProjectionSegments(final JoinTableSegment segment, final DialectJoinOption joinOrderOption,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<ProjectionSegment> result = new LinkedList<>();
         if (joinOrderOption.isRightColumnsByFirstOrder() && JoinType.RIGHT.name().equalsIgnoreCase(segment.getJoinType()) && (!segment.getUsing().isEmpty() || segment.isNatural())) {

@@ -61,21 +61,20 @@ public final class DatabaseTypeRegistry {
     }
     
     /**
-     * Format table name pattern.
+     * Format identifier pattern.
      *
-     * @param tableNamePattern table name pattern
-     * @return formatted table name pattern
+     * @param identifierPattern identifier pattern
+     * @return formatted identifier pattern
      */
-    public String formatTableNamePattern(final String tableNamePattern) {
-        DatabaseType databaseType = this.databaseType.getTrunkDatabaseType().orElse(this.databaseType);
-        switch (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getTableNamePatternType()) {
+    public String formatIdentifierPattern(final String identifierPattern) {
+        switch (DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getIdentifierPatternType()) {
             case UPPER_CASE:
-                return tableNamePattern.toUpperCase();
+                return identifierPattern.toUpperCase();
             case LOWER_CASE:
-                return tableNamePattern.toLowerCase();
+                return identifierPattern.toLowerCase();
             case KEEP_ORIGIN:
             default:
-                return tableNamePattern;
+                return identifierPattern;
         }
     }
 }

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -39,7 +38,6 @@ import java.util.Map;
 /**
  * Schema meta data loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
@@ -56,24 +54,31 @@ public final class SchemaMetaDataLoader {
     
     private static final String TABLE_SCHEME = "TABLE_SCHEM";
     
+    private final DatabaseType databaseType;
+    
+    private final DialectSchemaOption schemaOption;
+    
+    public SchemaMetaDataLoader(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        schemaOption = dialectDatabaseMetaData.getSchemaOption();
+    }
+    
     /**
      * Load schema table names.
      *
      * @param databaseName database name
-     * @param databaseType database type
      * @param dataSource data source
      * @param excludedTables excluded tables
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource,
-                                                                       final Collection<String> excludedTables) throws SQLException {
+    public Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DataSource dataSource, final Collection<String> excludedTables) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
-            Collection<String> schemaNames = loadSchemaNames(connection, databaseType);
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            Collection<String> schemaNames = loadSchemaNames(connection);
             Map<String, Collection<String>> result = new CaseInsensitiveMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
-                String schemaName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? each : databaseName;
+                String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : databaseName;
                 result.put(schemaName, loadTableNames(connection, each, excludedTables));
             }
             return result;
@@ -84,13 +89,11 @@ public final class SchemaMetaDataLoader {
      * Load schema names.
      *
      * @param connection connection
-     * @param databaseType database type
      * @return schema names collection
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (!dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+    public Collection<String> loadSchemaNames(final Connection connection) throws SQLException {
+        if (!schemaOption.getDefaultSchema().isPresent()) {
             return Collections.singletonList(connection.getSchema());
         }
         Collection<String> result = new LinkedList<>();
@@ -106,11 +109,10 @@ public final class SchemaMetaDataLoader {
         return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
     }
     
-    private static Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
+    private Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
         Collection<String> result = new CaseInsensitiveSet<>();
-        try (
-                ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null,
-                        new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})) {
+        String[] tableTypes = new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE};
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, tableTypes)) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table) && !excludedTables.contains(table)) {
@@ -121,7 +123,7 @@ public final class SchemaMetaDataLoader {
         return result;
     }
     
-    private static boolean isSystemTable(final String table) {
+    private boolean isSystemTable(final String table) {
         return table.contains("$") || table.contains("/") || table.contains("##");
     }
 }

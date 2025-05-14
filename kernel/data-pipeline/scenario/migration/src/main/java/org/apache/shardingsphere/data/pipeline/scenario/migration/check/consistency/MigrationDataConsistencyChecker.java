@@ -84,7 +84,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     @Override
     public Map<String, TableDataConsistencyCheckResult> check(final String algorithmType, final Properties algorithmProps) {
         List<String> sourceTableNames = new LinkedList<>();
-        jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTableNames.add(dataNode.format()))));
+        jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
+                .forEach(dataNode -> sourceTableNames.add(new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName()).format()))));
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
@@ -94,11 +95,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
                 if (checkTableInventoryDataUnmatchedAndBreak(each, tableChecker, result, dataSourceManager)) {
-                    return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));
+                    return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
                 }
             }
         }
-        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));
+        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
     }
     
     private long getRecordsCount() {
@@ -112,7 +113,13 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResultMap.put(new QualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
+                QualifiedTable sourceTable = new QualifiedTable(each.getSchemaName(), each.getTableName());
+                checkResultMap.put(sourceTable, checkResult);
+                if (checkResult.isIgnored()) {
+                    progressContext.getIgnoredTableNames().add(sourceTable.format());
+                    log.info("Table '{}' is ignored, ignore type: {}", each.format(), checkResult.getIgnoredType());
+                    continue;
+                }
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", each.format());
                     return true;
@@ -138,15 +145,15 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
         TableInventoryChecker tableInventoryChecker = tableChecker.buildTableInventoryChecker(param);
         currentTableInventoryChecker.set(tableInventoryChecker);
-        TableDataConsistencyCheckResult result = tableInventoryChecker.checkSingleTableInventoryData();
-        currentTableInventoryChecker.set(null);
-        return result;
+        Optional<TableDataConsistencyCheckResult> preCheckResult = tableInventoryChecker.preCheck();
+        return preCheckResult.orElseGet(tableInventoryChecker::checkSingleTableInventoryData);
     }
     
     @Override
     public void cancel() {
         canceling.set(true);
         Optional.ofNullable(currentTableInventoryChecker.get()).ifPresent(TableInventoryChecker::cancel);
+        currentTableInventoryChecker.set(null);
     }
     
     @Override

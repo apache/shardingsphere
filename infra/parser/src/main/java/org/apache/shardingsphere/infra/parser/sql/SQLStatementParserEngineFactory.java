@@ -46,8 +46,7 @@ public final class SQLStatementParserEngineFactory {
         if (null == result) {
             result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption));
         } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)) {
-            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
-            ENGINES.put(databaseType, result);
+            result.updateCacheOption(sqlStatementCacheOption, parseTreeCacheOption);
         }
         return result;
     }

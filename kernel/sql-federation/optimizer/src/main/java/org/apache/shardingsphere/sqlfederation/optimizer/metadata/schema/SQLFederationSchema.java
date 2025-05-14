@@ -29,8 +29,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.util.Collections;
 import java.util.Map;
@@ -56,15 +55,14 @@ public final class SQLFederationSchema extends AbstractSchema {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
             } else {
-                // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new SQLFederationTable(each, new SQLFederationStatistic(), protocolType));
+                result.put(each.getName(), new SQLFederationTable(each, protocolType));
             }
         }
         return result;
     }
     
     private ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        RelDataType relDataType = SQLFederationDataTypeUtils.createRelDataType(table, protocolType, javaTypeFactory);
+        RelDataType relDataType = SQLFederationDataTypeBuilder.build(table, protocolType, javaTypeFactory);
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }

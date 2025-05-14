@@ -5229,4 +5229,30 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_json_object_function">
+        <projections start-index="7" stop-index="67">
+            <expression-projection text="JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30)" alias="json_data" start-index="7" stop-index="67">
+                <expr start-index="7" stop-index="54">
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30)" start-index="7" stop-index="54">
+                        <parameter start-index="19" stop-index="24">
+                            <literal-expression value="name" start-index="19" stop-index="24"/>
+                        </parameter>
+                        <parameter start-index="32" stop-index="37">
+                            <literal-expression value="John" start-index="32" stop-index="37"/>
+                        </parameter>
+                        <parameter start-index="40" stop-index="44">
+                            <literal-expression value="age" start-index="40" stop-index="44"/>
+                        </parameter>
+                        <parameter start-index="52" stop-index="53">
+                            <literal-expression value="30" start-index="52" stop-index="53"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="74" stop-index="77">
+            <simple-table name="DUAL" start-index="74" stop-index="77"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

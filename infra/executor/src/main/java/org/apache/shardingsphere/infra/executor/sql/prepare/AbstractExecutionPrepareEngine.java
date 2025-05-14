@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,6 +43,7 @@ import java.util.TreeMap;
  * 
  * @param <T> type of input value
  */
+@HighFrequencyInvocation
 public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrepareEngine<T> {
     
     private final int maxConnectionsSizePerQuery;
@@ -65,8 +68,9 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<ExecutionUnit>> entry : aggregateExecutionUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
-            List<List<ExecutionUnit>> executionUnitGroups = group(entry.getValue());
-            ConnectionMode connectionMode = maxConnectionsSizePerQuery < entry.getValue().size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+            List<ExecutionUnit> groupedExecutionUnits = entry.getValue();
+            List<List<ExecutionUnit>> executionUnitGroups = group(groupedExecutionUnits);
+            ConnectionMode connectionMode = maxConnectionsSizePerQuery < groupedExecutionUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
             result.addAll(group(databaseName, dataSourceName, connectionOffsets.getOrDefault(dataSourceName, 0), executionUnitGroups, connectionMode));
         }
         return decorate(routeContext, result, reportContext);
@@ -77,13 +81,14 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String databaseName, String dataSourceName, int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups,
-                                                     ConnectionMode connectionMode) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String databaseName, String dataSourceName,
+                                                     int connectionOffset, List<List<ExecutionUnit>> executionUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<ExecutionUnit>> aggregateExecutionUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<ExecutionUnit>> result = new TreeMap<>();
         for (ExecutionUnit each : executionUnits) {
-            result.computeIfAbsent(each.getDataSourceName(), unused -> new LinkedList<>()).add(each);
+            String dataSourceName = each.getDataSourceName();
+            result.computeIfAbsent(dataSourceName, unused -> new ArrayList<>(executionUnits.size())).add(each);
         }
         return result;
     }

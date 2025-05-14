@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+ABSENT
+    : A B S E N T
+    ;
+
 BEQUEATH
     : B E Q U E A T H
     ;
@@ -8002,4 +8006,8 @@ APP
 
 EXCEPTION_INIT
     : E X C E P T I O N UL_ I N I T
+    ;
+
+V1
+    : V '1'
     ;

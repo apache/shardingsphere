@@ -37,6 +37,8 @@ public final class ConsistencyCheckJobItemInfo {
     
     private String checkFailedTableNames;
     
+    private String ignoredTableNames;
+    
     private int inventoryFinishedPercentage;
     
     private long inventoryRemainingSeconds;

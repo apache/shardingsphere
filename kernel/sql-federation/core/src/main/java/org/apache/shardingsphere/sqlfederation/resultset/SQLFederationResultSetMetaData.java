@@ -66,7 +66,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnCount() {
-        return resultColumnType.getFieldCount();
+        return indexAndColumnLabels.size();
     }
     
     @Override
@@ -76,7 +76,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public boolean isCaseSensitive(final int column) {
-        return true;
+        return false;
     }
     
     @Override

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationDataTypeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public final class EnumeratorUtils {
     
     private static Optional<Class<?>> getSQLTypeClass(final List<ShardingSphereColumn> columns, final DatabaseType databaseType, final int index) {
         try {
-            return Optional.of(SQLFederationDataTypeUtils.getSqlTypeClass(databaseType, columns.get(index)));
+            return Optional.of(SQLFederationDataTypeBuilder.getSqlTypeClass(databaseType, columns.get(index)));
         } catch (final IllegalArgumentException ex) {
             return Optional.empty();
         }

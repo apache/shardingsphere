@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.opengauss.metadata.database.option;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.infra.database.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 
-import java.sql.Types;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,23 +28,30 @@ import java.util.Optional;
  */
 public final class OpenGaussDataTypeOption implements DialectDataTypeOption {
     
+    private final DialectDataTypeOption delegate = new PostgreSQLDataTypeOption();
+    
     @Override
     public Map<String, Integer> getExtraDataTypes() {
-        Map<String, Integer> result = new CaseInsensitiveMap<>();
-        result.put("SMALLINT", Types.SMALLINT);
-        result.put("INT", Types.INTEGER);
-        result.put("INTEGER", Types.INTEGER);
-        result.put("BIGINT", Types.BIGINT);
-        result.put("DECIMAL", Types.DECIMAL);
-        result.put("NUMERIC", Types.NUMERIC);
-        result.put("REAL", Types.REAL);
-        result.put("BOOL", Types.BOOLEAN);
-        result.put("CHARACTER VARYING", Types.VARCHAR);
-        return result;
+        return delegate.getExtraDataTypes();
     }
     
     @Override
     public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
         return Optional.empty();
+    }
+    
+    @Override
+    public boolean isIntegerDataType(final int sqlType) {
+        return delegate.isIntegerDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isStringDataType(final int sqlType) {
+        return delegate.isStringDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isBinaryDataType(final int sqlType) {
+        return delegate.isBinaryDataType(sqlType);
     }
 }

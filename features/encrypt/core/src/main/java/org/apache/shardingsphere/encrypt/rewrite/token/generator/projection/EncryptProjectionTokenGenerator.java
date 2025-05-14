@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -64,6 +65,15 @@ public final class EncryptProjectionTokenGenerator {
     private final DatabaseType databaseType;
     
     private final EncryptRule rule;
+    
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    public EncryptProjectionTokenGenerator(final List<SQLToken> previousSQLTokens, final DatabaseType databaseType, final EncryptRule rule) {
+        this.previousSQLTokens = previousSQLTokens;
+        this.databaseType = databaseType;
+        this.rule = rule;
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+    }
     
     /**
      * Generate SQL tokens.
@@ -151,8 +161,7 @@ public final class EncryptProjectionTokenGenerator {
                 segment.getColumn().getLeftParentheses().orElse(null), segment.getColumn().getRightParentheses().orElse(null), segment.getColumn().getColumnBoundInfo());
     }
     
-    private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection,
-                                                       final SubqueryType subqueryType) {
+    private Collection<Projection> generateProjections(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final SubqueryType subqueryType) {
         if (null == subqueryType || SubqueryType.PROJECTION == subqueryType) {
             return Collections.singleton(generateProjection(encryptColumn, columnProjection));
         }
@@ -179,8 +188,9 @@ public final class EncryptProjectionTokenGenerator {
     }
     
     private QuoteCharacter getQuoteCharacter(final ColumnProjection columnProjection) {
-        QuoteCharacter databaseQuoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
-        return TableSourceType.PHYSICAL_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType() ? databaseQuoteCharacter : columnProjection.getName().getQuoteCharacter();
+        return TableSourceType.PHYSICAL_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
+                ? dialectDatabaseMetaData.getQuoteCharacter()
+                : columnProjection.getName().getQuoteCharacter();
     }
     
     private String getEncryptColumnName(final ColumnProjection columnProjection, final EncryptColumn encryptColumn) {

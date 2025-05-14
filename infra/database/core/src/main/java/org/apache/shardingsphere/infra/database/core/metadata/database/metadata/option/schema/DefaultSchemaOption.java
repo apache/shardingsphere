@@ -49,4 +49,9 @@ public final class DefaultSchemaOption implements DialectSchemaOption {
     public Optional<String> getDefaultSchema() {
         return Optional.ofNullable(defaultSchema);
     }
+    
+    @Override
+    public Optional<String> getDefaultSystemSchema() {
+        return Optional.empty();
+    }
 }

@@ -19,18 +19,23 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.metadata
 
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOrderOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.TableNamePatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import java.sql.Connection;
+import java.util.Optional;
 
 /**
  * Dialect database meta data.
@@ -44,6 +49,13 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return quote character
      */
     QuoteCharacter getQuoteCharacter();
+    
+    /**
+     * Get identifier pattern type.
+     *
+     * @return identifier pattern type
+     */
+    IdentifierPatternType getIdentifierPatternType();
     
     /**
      * Get default nulls order type.
@@ -60,6 +72,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectDataTypeOption getDataTypeOption() {
         return new DefaultDataTypeOption();
+    }
+    
+    /**
+     * Get driver query system catalog option.
+     *
+     * @return driver query system catalog option
+     */
+    default Optional<DialectDriverQuerySystemCatalogOption> getDriverQuerySystemCatalogOption() {
+        return Optional.empty();
     }
     
     /**
@@ -90,15 +111,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get table name pattern type.
-     *
-     * @return table name pattern type
-     */
-    default TableNamePatternType getTableNamePatternType() {
-        return TableNamePatternType.KEEP_ORIGIN;
-    }
-    
-    /**
      * Get connection option.
      *
      * @return connection option
@@ -113,15 +125,24 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return transaction option
      */
     default DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true);
+        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED);
     }
     
     /**
-     * Get join order option.
+     * Get join option.
      *
-     * @return join order option
+     * @return join option
      */
-    default DialectJoinOrderOption getJoinOrderOption() {
-        return new DialectJoinOrderOption(false, false);
+    default DialectJoinOption getJoinOption() {
+        return new DialectJoinOption(false, false);
+    }
+    
+    /**
+     * Get alter table option.
+     *
+     * @return alter table option
+     */
+    default Optional<DialectAlterTableOption> getAlterTableOption() {
+        return Optional.empty();
     }
 }

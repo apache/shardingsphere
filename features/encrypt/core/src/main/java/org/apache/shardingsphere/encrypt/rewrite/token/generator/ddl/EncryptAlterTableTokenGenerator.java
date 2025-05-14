@@ -31,6 +31,8 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -73,11 +75,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         result.addAll(getModifyColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getModifyColumnDefinitions()));
         result.addAll(getChangeColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getChangeColumnDefinitions()));
         List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getDropColumnDefinitions());
-        String databaseName = sqlStatementContext.getDatabaseType().getType();
-        if ("SQLServer".equals(databaseName)) {
-            result.addAll(mergeDropColumnStatement(dropColumnTokens, "", ""));
-        } else if ("Oracle".equals(databaseName)) {
-            result.addAll(mergeDropColumnStatement(dropColumnTokens, "(", ")"));
+        Optional<DialectAlterTableOption> alterTableOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getAlterTableOption();
+        if (alterTableOption.isPresent() && alterTableOption.get().isSupportMergeDropColumns()) {
+            result.addAll(mergeDropColumnStatement(dropColumnTokens, alterTableOption.get().isContainsParenthesesOnMergeDropColumns()));
         } else {
             result.addAll(dropColumnTokens);
         }
@@ -236,7 +236,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    private Collection<SQLToken> mergeDropColumnStatement(final List<SQLToken> dropSQLTokens, final String leftJoiner, final String rightJoiner) {
+    private Collection<SQLToken> mergeDropColumnStatement(final List<SQLToken> dropSQLTokens, final boolean containsParentheses) {
         Collection<SQLToken> result = new LinkedList<>();
         Collection<String> dropColumns = new LinkedList<>();
         int lastStartIndex = -1;
@@ -248,7 +248,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
                 EncryptAlterTableToken encryptAlterTableToken = (EncryptAlterTableToken) token;
                 dropColumns.add(encryptAlterTableToken.getColumnName());
                 if (i == dropSQLTokens.size() - 1) {
-                    result.add(new EncryptAlterTableToken(token.getStartIndex(), encryptAlterTableToken.getStopIndex(), leftJoiner + String.join(",", dropColumns) + rightJoiner, "DROP COLUMN"));
+                    result.add(new EncryptAlterTableToken(token.getStartIndex(), encryptAlterTableToken.getStopIndex(),
+                            containsParentheses ? String.format("(%s)", String.join(",", dropColumns)) : String.join(",", dropColumns), "DROP COLUMN"));
                 }
             }
             lastStartIndex = ((Substitutable) token).getStartIndex();
