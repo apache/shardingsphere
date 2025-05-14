@@ -11,6 +11,8 @@
 
 ### API Changes
 
+1. Remove SQL formatting feature [#35390](https://github.com/apache/shardingsphere/pull/35390)
+
 ### New Features
 
 ### Enhancements

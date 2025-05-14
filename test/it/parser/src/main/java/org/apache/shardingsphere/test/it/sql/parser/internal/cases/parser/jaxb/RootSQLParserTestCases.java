@@ -431,7 +431,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.storage.unit.ShowRulesUsedStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.storage.unit.ShowStorageUnitsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table.ShowTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.BeginTransactionStatementTestCase;
@@ -1070,9 +1069,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "parse-sql")
     private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
-    
-    @XmlElement(name = "format-sql")
-    private final List<FormatSQLStatementTestCase> formatSQLStatementAsserts = new LinkedList<>();
     
     @XmlElement(name = "show-dist-variable")
     private final List<ShowDistVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
