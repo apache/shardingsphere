@@ -333,12 +333,6 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
                 
                 <dependency>
                     <groupId>org.postgresql</groupId>
