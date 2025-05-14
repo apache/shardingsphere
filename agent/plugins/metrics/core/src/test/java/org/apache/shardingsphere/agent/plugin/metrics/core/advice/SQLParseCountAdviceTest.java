@@ -21,12 +21,12 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.queryable.ShowMigrationListStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.queryable.ShowMigrationListStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -112,7 +112,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRUL() {
-        assertParse(new FormatStatement("SELECT * FROM tbl"), "RUL=1");
+        assertParse(new ParseStatement("SELECT * FROM tbl"), "RUL=1");
     }
     
     private void assertParse(final SQLStatement sqlStatement, final String expected) {
