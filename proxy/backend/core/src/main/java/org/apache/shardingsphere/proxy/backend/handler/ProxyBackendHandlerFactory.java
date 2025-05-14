@@ -53,12 +53,12 @@ import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.SQLException;
@@ -111,13 +111,13 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
-        checkUnsupportedSQLStatement(sqlStatement);
+        checkSupportedSQLStatement(sqlStatement);
         checkClusterState(sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
         if (sqlStatement instanceof DistSQLStatement) {
-            checkUnsupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
+            checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
         String sql = queryContext.getSql();
@@ -159,7 +159,24 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static void checkSupportedSQLStatement(final SQLStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(isSupportedSQLStatement(sqlStatement),
+                () -> new UnsupportedSQLOperationException(String.format("unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName())));
+    }
+    
+    private static boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
+        return !(sqlStatement instanceof DCLStatement) && !(sqlStatement instanceof FlushStatement)
+                && !(sqlStatement instanceof ShowCreateUserStatement) && !(sqlStatement instanceof RenameTableStatement);
+    }
+    
+    private static void checkClusterState(final SQLStatement sqlStatement) {
+        ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
+        if (ShardingSphereState.OK != currentState) {
+            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement);
+        }
+    }
+    
+    private static void checkSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction() || isSupportedDistSQLStatementInTransaction(sqlStatement),
                 () -> new UnsupportedSQLOperationException("Non-query DistSQL is not supported within a transaction"));
     }
@@ -175,22 +192,8 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static Optional<ProxyBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession));
-        }
-        return Optional.empty();
-    }
-    
-    private static void checkUnsupportedSQLStatement(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DCLStatement || sqlStatement instanceof FlushStatement || sqlStatement instanceof MySQLShowCreateUserStatement || sqlStatement instanceof RenameTableStatement) {
-            throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
-        }
-    }
-    
-    private static void checkClusterState(final SQLStatement sqlStatement) {
-        ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
-        if (ShardingSphereState.OK != currentState) {
-            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement);
-        }
+        return sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement
+                ? Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession))
+                : Optional.empty();
     }
 }
