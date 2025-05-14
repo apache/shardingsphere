@@ -111,6 +111,74 @@ class ExpressionExtractorTest {
     }
     
     @Test
+    void assertExtractAllExpressionsWithAndOperation() {
+        BinaryOperationExpression expression1 =
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), new LiteralExpressionSegment(10, 11, "1"), "=", "order_id=1");
+        BinaryOperationExpression expression2 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")), new LiteralExpressionSegment(22, 23, "2"), "=", "status=2");
+        BinaryOperationExpression andExpression = new BinaryOperationExpression(0, 0, expression1, expression2, "AND", "order_id=1 AND status=2");
+        Collection<ExpressionSegment> actual = ExpressionExtractor.extractAllExpressions(andExpression);
+        assertThat(actual.size(), is(2));
+        Iterator<ExpressionSegment> iterator = actual.iterator();
+        assertThat(iterator.next(), is(expression1));
+        assertThat(iterator.next(), is(expression2));
+    }
+    
+    @Test
+    void assertExtractAllExpressionsWithOrOperation() {
+        BinaryOperationExpression expression1 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("age")),
+                new LiteralExpressionSegment(8, 9, "5"), ">", "age>5");
+        BinaryOperationExpression expression2 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("score")),
+                new LiteralExpressionSegment(19, 21, "10"), "<", "score<10");
+        BinaryOperationExpression orExpression = new BinaryOperationExpression(0, 0, expression1, expression2, "OR", "age>5 OR score<10");
+        Collection<ExpressionSegment> actual = ExpressionExtractor.extractAllExpressions(orExpression);
+        assertThat(actual.size(), is(2));
+        Iterator<ExpressionSegment> iterator = actual.iterator();
+        assertThat(iterator.next(), is(expression1));
+        assertThat(iterator.next(), is(expression2));
+    }
+    
+    @Test
+    void assertExtractAllExpressionsWithNestedOperations() {
+        BinaryOperationExpression expression1 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("A")),
+                new LiteralExpressionSegment(0, 0, "1"), "=", "A=1");
+        BinaryOperationExpression expression2 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("B")),
+                new LiteralExpressionSegment(0, 0, "2"), "=", "B=2");
+        BinaryOperationExpression andExpression = new BinaryOperationExpression(0, 0, expression1, expression2, "AND", "A=1 AND B=2");
+        BinaryOperationExpression expression3 = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("C")),
+                new LiteralExpressionSegment(0, 0, "3"), "=", "C=3");
+        BinaryOperationExpression fullExpression = new BinaryOperationExpression(0, 0, andExpression, expression3, "OR", "A=1 AND B=2 OR C=3");
+        Collection<ExpressionSegment> actual = ExpressionExtractor.extractAllExpressions(fullExpression);
+        assertThat(actual.size(), is(3));
+        Iterator<ExpressionSegment> iterator = actual.iterator();
+        assertThat(iterator.next(), is(expression1));
+        assertThat(iterator.next(), is(expression2));
+        assertThat(iterator.next(), is(expression3));
+    }
+    
+    @Test
+    void assertExtractAllExpressionsWithComplexNestedExpressions() {
+        BinaryOperationExpression expression1 = new BinaryOperationExpression(0, 0, new ColumnSegment(21, 22, new IdentifierValue("A")),
+                new LiteralExpressionSegment(0, 0, "1"), "=", "A=1");
+        BinaryOperationExpression expression2 = new BinaryOperationExpression(0, 0, new ColumnSegment(14, 15, new IdentifierValue("B")),
+                new LiteralExpressionSegment(0, 0, "2"), "=", "B=2");
+        BinaryOperationExpression expression3 = new BinaryOperationExpression(0, 0, new ColumnSegment(7, 8, new IdentifierValue("C")),
+                new LiteralExpressionSegment(0, 0, "3"), "=", "C=3");
+        BinaryOperationExpression expression4 = new BinaryOperationExpression(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("D")),
+                new LiteralExpressionSegment(0, 0, "4"), "=", "D=4");
+        BinaryOperationExpression orExpression = new BinaryOperationExpression(0, 0, expression2, expression3, "OR", "B=2 OR C=3");
+        BinaryOperationExpression innerAndExpression = new BinaryOperationExpression(0, 0, expression1, orExpression, "AND", "A=1 AND (B=2 OR C=3)");
+        BinaryOperationExpression topLevelExpression = new BinaryOperationExpression(0, 0, innerAndExpression, expression4, "AND", "(A=1 AND (B=2 OR C=3)) AND D=4");
+        Collection<ExpressionSegment> actual = ExpressionExtractor.extractAllExpressions(topLevelExpression);
+        assertThat(actual.size(), is(4));
+        Iterator<ExpressionSegment> iterator = actual.iterator();
+        assertThat(iterator.next(), is(expression1));
+        assertThat(iterator.next(), is(expression2));
+        assertThat(iterator.next(), is(expression3));
+        assertThat(iterator.next(), is(expression4));
+    }
+    
+    @Test
     void assertExtractGetParameterMarkerExpressions() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "IF", "IF(number + 1 <= ?, 1, -1)");
         BinaryOperationExpression param1 = new BinaryOperationExpression(0, 0,

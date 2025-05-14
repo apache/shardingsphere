@@ -72,16 +72,14 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
-        Collection<AndPredicate> andPredicates = getAndPredicates(whereSegments);
-        return generateSQLTokens(andPredicates, sqlStatementContext);
+        Collection<ExpressionSegment> expressions = getAllExpressions(whereSegments);
+        return generateSQLTokens(expressions, sqlStatementContext);
     }
-    
-    private Collection<SQLToken> generateSQLTokens(final Collection<AndPredicate> andPredicates, final SQLStatementContext sqlStatementContext) {
+
+    private Collection<SQLToken> generateSQLTokens(final Collection<ExpressionSegment> expressions, final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            for (ExpressionSegment expression : each.getPredicates()) {
-                result.addAll(generateSQLTokens(sqlStatementContext, expression));
-            }
+        for (ExpressionSegment each : expressions) {
+            result.addAll(generateSQLTokens(sqlStatementContext, each));
         }
         return result;
     }
@@ -97,11 +95,15 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         }
         return result;
     }
-    
-    private Collection<AndPredicate> getAndPredicates(final Collection<WhereSegment> whereSegments) {
-        Collection<AndPredicate> result = new LinkedList<>();
+
+    private Collection<ExpressionSegment> getAllExpressions(final Collection<WhereSegment> whereSegments) {
+        if (1 == whereSegments.size()) {
+            return ExpressionExtractor.extractAllExpressions(whereSegments.iterator().next().getExpr());
+        }
+        Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
-            result.addAll(ExpressionExtractor.extractAndPredicates(each.getExpr()));
+            Collection<ExpressionSegment> expressions = ExpressionExtractor.extractAllExpressions(each.getExpr());
+            result.addAll(expressions);
         }
         return result;
     }
