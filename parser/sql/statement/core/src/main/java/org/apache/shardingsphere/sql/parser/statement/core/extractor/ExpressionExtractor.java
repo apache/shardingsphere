@@ -114,9 +114,6 @@ public final class ExpressionExtractor {
      */
     public static Collection<ExpressionSegment> extractAllExpressions(final ExpressionSegment expression) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null == expression) {
-            return result;
-        }
         Deque<ExpressionSegment> stack = new LinkedList<>();
         stack.push(expression);
         while (!stack.isEmpty()) {
