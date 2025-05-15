@@ -30,11 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -135,31 +131,8 @@ class PaginationContextTest {
     }
     
     @Test
-    void assertGetRevisedRowCountForMySQL() {
-        getRevisedRowCount(new MySQLSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountForOracle() {
-        getRevisedRowCount(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountForPostgreSQL() {
-        getRevisedRowCount(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountForSQL92() {
-        getRevisedRowCount(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountForSQLServer() {
-        getRevisedRowCount(new SQLServerSelectStatement());
-    }
-    
-    private void getRevisedRowCount(final SelectStatement selectStatement) {
+    void getRevisedRowCount() {
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
@@ -168,31 +141,8 @@ class PaginationContextTest {
     }
     
     @Test
-    void assertGetRevisedRowCountWithMaxForMySQL() {
-        getRevisedRowCountWithMax(new MySQLSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountWithMaxForOracle() {
-        getRevisedRowCountWithMax(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountWithMaxForPostgreSQL() {
-        getRevisedRowCountWithMax(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountWithMaxForSQL92() {
-        getRevisedRowCountWithMax(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertGetRevisedRowCountWithMaxForSQLServer() {
-        getRevisedRowCountWithMax(new SQLServerSelectStatement());
-    }
-    
-    private void getRevisedRowCountWithMax(final SelectStatement selectStatement) {
+    void getRevisedRowCountWithMax() {
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
