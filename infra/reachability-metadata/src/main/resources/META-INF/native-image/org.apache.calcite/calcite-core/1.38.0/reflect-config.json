@@ -1351,5 +1351,10 @@
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.ReflectiveRelMetadataProvider"},
   "name":"org.apache.calcite.rel.metadata.RelMdPercentageOriginalRows",
   "allPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.calcite.linq4j.tree.Types"},
+  "name":"org.apache.calcite.runtime.variant.VariantValue",
+  "allPublicMethods":true
 }
 ]
