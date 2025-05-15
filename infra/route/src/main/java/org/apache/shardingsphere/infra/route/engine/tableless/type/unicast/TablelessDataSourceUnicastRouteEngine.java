@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Tableless datasource unicast route engine.
@@ -48,6 +48,6 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return new ArrayList<>(dataSourceNames).get(new SecureRandom().nextInt(dataSourceNames.size()));
+        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }
