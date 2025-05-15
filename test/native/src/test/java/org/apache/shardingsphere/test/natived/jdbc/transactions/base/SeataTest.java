@@ -77,6 +77,7 @@ class SeataTest {
     @AfterEach
     void afterEach() throws SQLException {
         Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
+        System.clearProperty(serviceDefaultGroupListKey);
         try (Connection connection = logicDataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
             for (StorageUnit each : contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values()) {
@@ -85,7 +86,6 @@ class SeataTest {
             contextManager.close();
         }
         ContainerDatabaseDriver.killContainers();
-        System.clearProperty(serviceDefaultGroupListKey);
     }
     
     @Test

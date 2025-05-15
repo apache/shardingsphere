@@ -16,6 +16,10 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+  "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.connection.DriverDatabaseConnectionManager$$Lambda/0x0000027a3d907cd8"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
@@ -76,10 +80,6 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
@@ -93,6 +93,10 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
+  "name":"[Ljava.lang.String;"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
   "name":"[Ljava.lang.String;"
 },
 {
@@ -116,7 +120,7 @@
   "name":"[Ljava.sql.Statement;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
   "name":"[Ljava.sql.Statement;"
 },
 {
@@ -228,6 +232,10 @@
   "queryAllPublicMethods":true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
+  "name":"java.lang.BaseVirtualThread"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.lang.Boolean"
 },
@@ -250,6 +258,10 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.lang.ClassLoader",
   "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+  "name":"java.lang.ClassLoader"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -430,7 +442,7 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
   "name":"java.lang.Thread",
-  "methods":[{"name":"ofVirtual","parameterTypes":[] }]
+  "methods":[{"name":"isVirtual","parameterTypes":[] }, {"name":"ofVirtual","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
@@ -532,6 +544,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
+  "name":"java.security.AccessController",
+  "methods":[{"name":"doPrivileged","parameterTypes":["java.security.PrivilegedExceptionAction"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
   "name":"java.security.AccessController",
   "methods":[{"name":"doPrivileged","parameterTypes":["java.security.PrivilegedExceptionAction"] }]
 },
@@ -761,6 +778,10 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.util.function.ToLongFunction",
   "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
+  "name":"java.util.logging.Logger"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -1096,7 +1117,7 @@
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"},
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
 },
 {
@@ -1466,10 +1487,6 @@
   "name":"org.apache.shardingsphere.infra.database.hive.type.HiveDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.mariadb.type.MariaDBDatabaseType"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"
 },
@@ -1564,38 +1581,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
   "name":"org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcClickHouseDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcFirebirdDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcMariaDBDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcMySQLDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcOracleDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcPostgreSQLDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcSQLServerDatabaseType"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
-  "name":"org.apache.shardingsphere.infra.database.testcontainers.type.TcTiDBDatabaseType"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer"},
@@ -2584,7 +2569,7 @@
   "name":"org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAuthority","parameterTypes":["org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration"] }, {"name":"setMode","parameterTypes":["org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setTransaction","parameterTypes":["org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAuthority","parameterTypes":["org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration"] }, {"name":"setMode","parameterTypes":["org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -3612,6 +3597,11 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -3791,32 +3781,56 @@
   "name":"org.apache.shardingsphere.sqlfederation.distsql.parser.facade.SQLFederationDistSQLParserFacade"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.H2ConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.MySQLOptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.MySQLConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.OpenGaussOptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OpenGaussConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.OracleOptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OracleConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.PostgreSQLOptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.PostgreSQLConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.SQL92OptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQL92ConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.SQLServerOptimizerBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQLServerConnectionConfigBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.schema.CalciteSchemaBuilder"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.schema.CalciteSchemaBuilder$$Lambda/0x0000027d0c57d148"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.impl.OpenGaussSystemFunction"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.impl.PostgreSQLSystemFunction"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.PostgreSQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.impl.PostgreSQLSystemFunction"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},

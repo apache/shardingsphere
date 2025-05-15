@@ -116,7 +116,7 @@ rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -154,7 +154,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("alter table t_order delete where order_id=1");
+            statement.execute("alter table t_order delete where user_id=1");
         }
     }
 }
