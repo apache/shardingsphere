@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -216,8 +216,7 @@ class SingleSQLRouterTest {
     }
     
     private QueryContext createQueryContext() {
-        CreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setIfNotExists(false);
+        CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));

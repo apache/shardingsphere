@@ -17,58 +17,36 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLTruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleTruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLTruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TruncateStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLTruncateStatement());
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLTruncateStatement());
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(new OracleTruncateStatement());
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(new SQLServerTruncateStatement());
-    }
-    
-    private void assertNewInstance(final TruncateStatement truncateStatement) {
-        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
-        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
-        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
-        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
-        truncateStatement.getTables().addAll(Arrays.asList(table1, table2));
+    void assertNewInstance() {
+        TruncateStatement truncateStatement = mock(TruncateStatement.class);
+        when(truncateStatement.getTables()).thenReturn(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
         TruncateStatementContext actual = new TruncateStatementContext(truncateStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(truncateStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));
+    }
+    
+    private TableNameSegment createTableNameSegment(final String tableName) {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

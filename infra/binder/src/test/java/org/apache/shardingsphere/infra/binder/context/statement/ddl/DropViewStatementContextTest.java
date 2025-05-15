@@ -17,44 +17,33 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropViewStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DropViewStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLDropViewStatement());
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLDropViewStatement());
-    }
-    
-    private void assertNewInstance(final DropViewStatement dropViewStatement) {
-        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
-        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
-        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
-        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
-        dropViewStatement.getViews().addAll(Arrays.asList(table1, table2));
+    void assertNewInstance() {
+        DropViewStatement dropViewStatement = mock(DropViewStatement.class);
+        when(dropViewStatement.getViews()).thenReturn(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
         DropViewStatementContext actual = new DropViewStatementContext(dropViewStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(dropViewStatement));
+    }
+    
+    private static TableNameSegment createTableNameSegment(final String tableName) {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

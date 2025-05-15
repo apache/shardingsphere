@@ -34,18 +34,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussFetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussMoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -61,7 +59,7 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(selectStatement, Collections.emptyList());
@@ -69,26 +67,8 @@ class SQLStatementContextFactoryTest {
     }
     
     @Test
-    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfOracleInsertStatement() {
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new OracleInsertStatement());
-    }
-    
-    @Test
-    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfPostgreSQLInsertStatement() {
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new PostgreSQLInsertStatement());
-    }
-    
-    @Test
-    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQL92InsertStatement() {
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQL92InsertStatement());
-    }
-    
-    @Test
-    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQLServerInsertStatement() {
-        assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQLServerInsertStatement());
-    }
-    
-    private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
@@ -96,14 +76,14 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(new MySQLAlterDatabaseStatement(), Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(mock(AlterDatabaseStatement.class), Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCursorStatement() {
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
         when(selectStatement.getProjections().getProjections()).thenReturn(Collections.emptyList());
         when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());

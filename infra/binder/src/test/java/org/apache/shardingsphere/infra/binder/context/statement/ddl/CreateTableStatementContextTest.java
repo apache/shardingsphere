@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -28,11 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -48,46 +43,22 @@ import static org.mockito.Mockito.when;
 class CreateTableStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLCreateTableStatement.class));
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLCreateTableStatement.class));
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(mock(OracleCreateTableStatement.class));
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(mock(SQLServerCreateTableStatement.class));
-    }
-    
-    @Test
-    void assertSQL92NewInstance() {
-        assertNewInstance(mock(SQL92CreateTableStatement.class));
-    }
-    
-    private void assertNewInstance(final CreateTableStatement createTableStatement) {
-        CreateTableStatementContext actual = new CreateTableStatementContext(createTableStatement);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        when(createTableStatement.getTable()).thenReturn(table);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
+    void assertNewInstance() {
+        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        CreateTableStatementContext actual = new CreateTableStatementContext(sqlStatement);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        sqlStatement.setTable(table);
         assertThat(actual, instanceOf(ConstraintAvailable.class));
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(Collections.singletonList(table));
-        when(createTableStatement.getColumnDefinitions()).thenReturn(Collections.singletonList(columnDefinition));
+        sqlStatement.getColumnDefinitions().add(columnDefinition);
         ConstraintDefinitionSegment constraintDefinition = mock(ConstraintDefinitionSegment.class);
-        when(constraintDefinition.getConstraintName()).thenReturn(Optional.of(new ConstraintSegment(0, 0, new IdentifierValue("fk_1"))));
+        when(constraintDefinition.getConstraintName()).thenReturn(Optional.of(new ConstraintSegment(0, 0, new IdentifierValue("foo_fk"))));
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
-        when(createTableStatement.getConstraintDefinitions()).thenReturn(Collections.singletonList(constraintDefinition));
-        assertThat(actual.getSqlStatement(), is(createTableStatement));
-        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_1")))));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));
-        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("fk_1")));
+        sqlStatement.getConstraintDefinitions().add(constraintDefinition);
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
+        when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")))));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_idx")));
+        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_fk")));
     }
 }

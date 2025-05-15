@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOp
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,16 +42,16 @@ class ShardingLoadDataSupportedCheckerTest {
     
     @Test
     void assertCheckWithSingleTable() {
-        MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement();
-        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        LoadDataStatement sqlStatement = mock(LoadDataStatement.class);
+        when(sqlStatement.getTableSegment()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         assertDoesNotThrow(() -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new LoadDataStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithShardingTable() {
-        MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement();
-        sqlStatement.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        when(rule.isShardingTable("t_order")).thenReturn(true);
+        LoadDataStatement sqlStatement = mock(LoadDataStatement.class);
+        when(sqlStatement.getTableSegment()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        when(rule.isShardingTable("foo_tbl")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new LoadDataStatementContext(sqlStatement)));
     }
 }

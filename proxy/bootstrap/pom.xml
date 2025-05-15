@@ -97,6 +97,7 @@
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
     </dependencies>
+    
     <build>
         <plugins>
             <plugin>

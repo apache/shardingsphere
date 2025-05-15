@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -68,7 +68,7 @@ class EncryptResultDecoratorEngineTest {
     @Test
     void assertNewInstanceWithDALStatement() {
         SQLStatementContext sqlStatementContext = mock(ExplainStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(ExplainStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         Optional<ResultDecorator<EncryptRule>> actual = engine.newInstance(mock(ShardingSphereMetaData.class), database, mock(ConfigurationProperties.class), sqlStatementContext);
         assertTrue(actual.isPresent());

@@ -33,8 +33,9 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -94,8 +95,7 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
-        sqlStatement.setIfNotExists(false);
+        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -111,11 +111,9 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
-        sqlStatement.setIfNotExists(false);
+        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
-        SingleRule singleRule =
-                new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -139,22 +137,20 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteDuplicateSingleTable() {
-        SingleRouteEngine engine =
-                new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(false), mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(false), mock(HintValueContext.class));
         assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     @Test
     void assertRouteIfNotExistsDuplicateSingleTable() {
-        SingleRouteEngine engine =
-                new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(true), mock(HintValueContext.class));
+        SingleRouteEngine engine = new SingleRouteEngine(Collections.singleton(new QualifiedTable("foo_db", "t_order")), mockStatement(true), mock(HintValueContext.class));
         assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     private SQLStatement mockStatement(final boolean ifNotExists) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
-        result.setIfNotExists(ifNotExists);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        CreateTableStatement result = mock(CreateTableStatement.class);
+        when(result.isIfNotExists()).thenReturn(ifNotExists);
+        when(result.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
     }
     

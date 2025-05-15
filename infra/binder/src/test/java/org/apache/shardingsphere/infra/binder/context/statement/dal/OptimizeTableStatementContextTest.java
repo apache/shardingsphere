@@ -17,33 +17,36 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OptimizeTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLOptimizeTableStatement sqlStatement = new MySQLOptimizeTableStatement();
-        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
-        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        sqlStatement.getTables().add(new SimpleTableSegment(tableNameSegment));
+        OptimizeTableStatement sqlStatement = mock(OptimizeTableStatement.class);
+        when(sqlStatement.getTables()).thenReturn(Collections.singleton(new SimpleTableSegment(createTableNameSegment())));
         OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Collections.singletonList("tbl_1")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_tbl")));
+    }
+    
+    private TableNameSegment createTableNameSegment() {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

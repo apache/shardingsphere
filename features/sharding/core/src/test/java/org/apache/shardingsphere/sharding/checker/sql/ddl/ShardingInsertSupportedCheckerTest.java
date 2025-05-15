@@ -120,7 +120,7 @@ class ShardingInsertSupportedCheckerTest {
     }
     
     private InsertStatement createInsertStatement() {
-        MySQLInsertStatement result = new MySQLInsertStatement();
+        InsertStatement result = new MySQLInsertStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         List<ColumnSegment> columnSegments = new LinkedList<>();

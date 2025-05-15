@@ -17,35 +17,35 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShowColumnsStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowColumnsStatement sqlStatement = new MySQLShowColumnsStatement();
+        ShowColumnsStatement sqlStatement = mock(ShowColumnsStatement.class);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        sqlStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(tableNameSegment));
         FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db")));
-        sqlStatement.setFromDatabase(fromDatabase);
+        when(sqlStatement.getFromDatabase()).thenReturn(Optional.of(fromDatabase));
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(sqlStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("foo_tbl")));

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -28,13 +27,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateViewStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -44,29 +40,20 @@ import static org.mockito.Mockito.when;
 class CreateViewStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLCreateViewStatement());
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLCreateViewStatement());
-    }
-    
-    private void assertNewInstance(final CreateViewStatement createViewStatement) {
+    void assertNewInstance() {
+        CreateViewStatement createViewStatement = mock(CreateViewStatement.class);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("view"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         SimpleTableSegment view = new SimpleTableSegment(tableNameSegment);
-        createViewStatement.setView(view);
+        when(createViewStatement.getView()).thenReturn(view);
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        createViewStatement.setSelect(selectStatement);
+        when(createViewStatement.getSelect()).thenReturn(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         CreateViewStatementContext actual = new CreateViewStatementContext(metaData, Collections.emptyList(), createViewStatement, "foo_db");
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }
 }
