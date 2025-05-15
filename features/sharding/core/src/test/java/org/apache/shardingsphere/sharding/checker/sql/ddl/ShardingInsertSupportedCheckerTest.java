@@ -63,7 +63,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingInsertSupportedCheckerTest {
     
-    private final DatabaseType databaseType  = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Mock
     private ShardingRule rule;

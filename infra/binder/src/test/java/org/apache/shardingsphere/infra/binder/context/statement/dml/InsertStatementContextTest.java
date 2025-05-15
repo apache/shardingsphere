@@ -157,8 +157,7 @@ class InsertStatementContextTest {
                 new InsertValuesSegment(0, 0, Arrays.asList(
                         new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2), new LiteralExpressionSegment(0, 0, "init"))),
                 new InsertValuesSegment(0, 0, Arrays.asList(
-                        new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init")))
-        ));
+                        new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init")))));
     }
     
     private void setUpOnDuplicateValues(final InsertStatement insertStatement) {
