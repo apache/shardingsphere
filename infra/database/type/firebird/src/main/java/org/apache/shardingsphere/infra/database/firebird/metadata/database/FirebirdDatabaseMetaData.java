@@ -46,12 +46,12 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.LOW;
     }
-
+    
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new FirebirdSchemaOption();
     }
-
+    
     @Override
     public DialectTransactionOption getTransactionOption() {
         return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED);

@@ -27,7 +27,7 @@ import java.util.Optional;
  * Schema option for Firebird.
  */
 public final class FirebirdSchemaOption implements DialectSchemaOption {
-
+    
     private final DialectSchemaOption delegate = new DefaultSchemaOption(false, null);
     
     @Override
