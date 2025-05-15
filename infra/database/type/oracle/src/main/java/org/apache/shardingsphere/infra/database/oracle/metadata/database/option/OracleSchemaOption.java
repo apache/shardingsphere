@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 public final class OracleSchemaOption implements DialectSchemaOption {
     
-    private final DialectSchemaOption delegate = new DefaultSchemaOption(true, null);
+    private final DialectSchemaOption delegate = new DefaultSchemaOption(false, null);
     
     @Override
     public boolean isSchemaAvailable() {
