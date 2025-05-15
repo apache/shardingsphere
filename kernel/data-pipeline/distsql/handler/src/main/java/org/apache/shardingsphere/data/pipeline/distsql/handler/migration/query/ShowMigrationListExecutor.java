@@ -58,7 +58,6 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     }
     
     private String getJobShardingNodes(final PipelineContextKey contextKey, final String jobId) {
-        // SPEX CHANGED: BEGIN
         Collection<ShardingInfo> shardingInfos;
         try {
             shardingInfos = pipelineJobManager.getJobShardingInfos(contextKey, jobId);
@@ -67,7 +66,6 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
             // CHECKSTYLE:ON
             return "";
         }
-        // SPEX CHANGED: END
         return shardingInfos.isEmpty() ? "" : getJobShardingNodes(shardingInfos);
     }
     
