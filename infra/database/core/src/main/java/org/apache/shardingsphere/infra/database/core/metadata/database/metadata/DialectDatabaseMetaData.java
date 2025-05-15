@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.join.DialectJoinOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
@@ -135,6 +136,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectJoinOption getJoinOption() {
         return new DialectJoinOption(false, false);
+    }
+    
+    /**
+     * Get generated key option.
+     *
+     * @return generated key option
+     */
+    default DialectGeneratedKeyOption getGeneratedKeyOption() {
+        return new DialectGeneratedKeyOption(false);
     }
     
     /**
