@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -135,7 +135,7 @@ class ShardingInsertSupportedCheckerTest {
     
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
         return result;
