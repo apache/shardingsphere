@@ -140,7 +140,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     
     /**
      * Get generated key option.
-     * 
+     *
      * @return generated key option
      */
     default DialectGeneratedKeyOption getGeneratedKeyOption() {

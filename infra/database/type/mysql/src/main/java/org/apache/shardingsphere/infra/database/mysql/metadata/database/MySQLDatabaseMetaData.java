@@ -77,7 +77,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
-    public  DialectGeneratedKeyOption getGeneratedKeyOption() {
+    public DialectGeneratedKeyOption getGeneratedKeyOption() {
         return new DialectGeneratedKeyOption(true);
     }
     
