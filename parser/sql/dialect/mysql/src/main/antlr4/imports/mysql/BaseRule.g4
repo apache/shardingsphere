@@ -860,8 +860,8 @@ charsetWithOptBinary
     : ascii
     | unicode
     | BYTE
-    | charset charsetName BINARY?
-    | BINARY (charset charsetName)?
+    | charset charsetName collateClause? BINARY?
+    | BINARY (charset charsetName collateClause?)?
     ;
 
 ascii
