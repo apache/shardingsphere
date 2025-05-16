@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLLockStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.LockStatementTestCase;
@@ -46,15 +44,11 @@ public final class LockStatementAssert {
      * @param expected expected lock statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockStatement actual, final LockStatementTestCase expected) {
-        if (actual instanceof MySQLLockStatement) {
-            assertIs(assertContext, ((MySQLLockStatement) actual).getTables(), expected);
-        } else if (actual instanceof PostgreSQLLockStatement) {
-            assertIs(assertContext, ((PostgreSQLLockStatement) actual).getTables(), expected);
-        }
+        assertIs(assertContext, actual.getTables(), expected);
     }
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final Collection<SimpleTableSegment> actual, final LockStatementTestCase expected) {
-        if (null == expected.getTables() || expected.getTables().isEmpty()) {
+        if (expected.getTables().isEmpty()) {
             assertTrue(actual.isEmpty(), assertContext.getText("Actual lock statement should not exist."));
             return;
         }
