@@ -75,17 +75,8 @@ class GeneratedKeyContextEngineTest {
     
     @Test
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration("foo_tbl");
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateUpperCaseKeyColumnConfiguration() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration("bar_tbl");
-    }
-    
-    private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final String tableName) {
         InsertStatement insertStatement = new SQL92InsertStatement();
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName))));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);

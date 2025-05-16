@@ -212,7 +212,6 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubquery() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
         SelectStatement subSelectStatement = new SQL92SelectStatement();
         WhereSegment whereSegment = new WhereSegment(0, 0, mock(BinaryOperationExpression.class, RETURNS_DEEP_STUBS));
         subSelectStatement.setWhere(whereSegment);
@@ -223,6 +222,7 @@ class SelectStatementContextTest {
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
         projectionsSegment.getProjections().add(subqueryProjectionSegment);
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
         assertTrue(new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList()).isContainsSubquery());

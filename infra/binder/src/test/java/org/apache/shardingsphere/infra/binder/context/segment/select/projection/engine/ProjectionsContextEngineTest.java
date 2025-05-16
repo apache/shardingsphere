@@ -203,12 +203,12 @@ class ProjectionsContextEngineTest {
     @Test
     void assertCreateProjectionsContextWithTemporaryTable() {
         SelectStatement selectStatement = new SQL92SelectStatement();
-        SelectStatement subquerySelectStatement = new SQL92SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("d")));
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
+        SelectStatement subquerySelectStatement = new SQL92SelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, subquerySelectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("d")));
@@ -226,12 +226,12 @@ class ProjectionsContextEngineTest {
     @Test
     void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase() {
         SelectStatement selectStatement = new SQL92SelectStatement();
-        SelectStatement subquerySelectStatement = new SQL92SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
+        SelectStatement subquerySelectStatement = new SQL92SelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, subquerySelectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("TABLE")));
