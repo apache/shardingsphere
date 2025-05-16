@@ -68,7 +68,7 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ);
+        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false);
     }
     
     @Override

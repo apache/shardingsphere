@@ -67,7 +67,7 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED);
+        return new DialectTransactionOption(false, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true);
     }
     
     @Override
