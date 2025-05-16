@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDoStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.dostatement.ExpectedDoParameter;
@@ -48,15 +47,12 @@ public final class DoStatementAssert {
      * @param expected expected do statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DoStatement actual, final DoStatementTestCase expected) {
-        if (actual instanceof MySQLDoStatement) {
-            MySQLDoStatement actualStatement = (MySQLDoStatement) actual;
-            if (null != actualStatement.getParameters() && !expected.getDoParameters().isEmpty()) {
-                assertThat(assertContext.getText("Do parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getDoParameters().size()));
-                int count = 0;
-                for (ExpressionSegment each : actualStatement.getParameters()) {
-                    assertParameter(assertContext, each, expected.getDoParameters().get(count));
-                    count++;
-                }
+        if (null != actual.getParameters() && !expected.getDoParameters().isEmpty()) {
+            assertThat(assertContext.getText("Do parameters assertion error: "), actual.getParameters().size(), is(expected.getDoParameters().size()));
+            int count = 0;
+            for (ExpressionSegment each : actual.getParameters()) {
+                assertParameter(assertContext, each, expected.getDoParameters().get(count));
+                count++;
             }
         }
     }
