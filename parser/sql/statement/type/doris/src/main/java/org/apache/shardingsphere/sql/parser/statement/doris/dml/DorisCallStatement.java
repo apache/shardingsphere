@@ -17,24 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.dml;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
-
-import java.util.List;
 
 /**
  * Doris call statement.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
 public final class DorisCallStatement extends CallStatement implements DorisStatement {
-    
-    private String procedureName;
-    
-    private List<ExpressionSegment> parameters;
 }

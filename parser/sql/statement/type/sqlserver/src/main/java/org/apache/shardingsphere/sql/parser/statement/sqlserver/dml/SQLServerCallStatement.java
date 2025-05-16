@@ -17,24 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dml;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
-
-import java.util.List;
 
 /**
  * SQLServer call statement.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
 public final class SQLServerCallStatement extends CallStatement implements SQLServerStatement {
-    
-    private String procedureName;
-    
-    private List<ExpressionSegment> parameters;
 }
