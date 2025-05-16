@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -44,13 +44,13 @@ class OptimizerContextTest {
     @Test
     void assertGetParserContext() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getParserContext("foo_db"), instanceOf(OptimizerParserContext.class));
+        assertThat(actual.getCalciteSchema(), instanceOf(CalciteSchema.class));
     }
     
     @Test
     void assertGetOptimizerMetaData() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getMetaData("foo_db"), instanceOf(OptimizerMetaData.class));
+        assertThat(actual.getConnectionConfig(), instanceOf(CalciteConnectionConfig.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {

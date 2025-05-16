@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl;
+package org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for SQLServer.
+ * Connection config builder for PostgreSQL.
  */
-public final class SQLServerOptimizerBuilder implements OptimizerSQLDialectBuilder {
+public final class PostgreSQLConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
-    public Properties build() {
+    public CalciteConnectionConfig build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.SQL_SERVER.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.SQL_SERVER_2008.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.SQL_SERVER.caseSensitive));
-        return result;
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(false));
+        return new CalciteConnectionConfigImpl(result);
     }
     
     @Override
     public String getDatabaseType() {
-        return "SQLServer";
+        return "PostgreSQL";
     }
 }

@@ -19,18 +19,19 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContextFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaDataFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.schema.CalciteSchemaBuilder;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -46,10 +47,15 @@ public final class OptimizerContextFactory {
      * @return created optimizer context
      */
     public static OptimizerContext create(final Collection<ShardingSphereDatabase> databases) {
-        Map<String, OptimizerParserContext> parserContexts = OptimizerParserContextFactory.create(databases);
         // TODO consider to use sqlParserRule in global rule
         SQLParserRule sqlParserRule = new SQLParserRuleBuilder().build(new DefaultSQLParserRuleConfigurationBuilder().build(), databases, new ConfigurationProperties(new Properties()));
-        Map<String, OptimizerMetaData> optimizerMetaData = OptimizerMetaDataFactory.create(databases);
-        return new OptimizerContext(sqlParserRule, parserContexts, optimizerMetaData);
+        CalciteConnectionConfig connectionConfig = buildConnectionConfig(databases);
+        CalciteSchema calciteSchema = CalciteSchemaBuilder.build(databases);
+        return new OptimizerContext(sqlParserRule, calciteSchema, connectionConfig);
+    }
+    
+    private static CalciteConnectionConfig buildConnectionConfig(final Collection<ShardingSphereDatabase> databases) {
+        DatabaseType databaseType = databases.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : databases.iterator().next().getProtocolType();
+        return new ConnectionConfigBuilderFactory(databaseType).build();
     }
 }

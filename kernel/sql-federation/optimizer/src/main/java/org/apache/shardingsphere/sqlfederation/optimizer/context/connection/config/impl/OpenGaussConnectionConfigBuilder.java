@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl;
+package org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for Oracle.
+ * Connection config builder for openGauss.
  */
-public final class OracleOptimizerBuilder implements OptimizerSQLDialectBuilder {
+public final class OpenGaussConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
-    public Properties build() {
+    public CalciteConnectionConfig build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.ORACLE.caseSensitive));
-        return result;
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(false));
+        return new CalciteConnectionConfigImpl(result);
     }
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "openGauss";
     }
 }

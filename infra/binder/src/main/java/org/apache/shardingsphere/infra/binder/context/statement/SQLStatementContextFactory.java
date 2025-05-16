@@ -137,7 +137,7 @@ public final class SQLStatementContextFactory {
             return getDCLStatementContext((DCLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALStatementContext((DALStatement) sqlStatement);
+            return getDALStatementContext(metaData, (DALStatement) sqlStatement, params, currentDatabaseName);
         }
         return new UnknownSQLStatementContext(sqlStatement);
     }
@@ -247,9 +247,9 @@ public final class SQLStatementContextFactory {
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement) {
+    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
-            return new ExplainStatementContext((ExplainStatement) sqlStatement);
+            return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowCreateTableStatement) {
             return new ShowCreateTableStatementContext((ShowCreateTableStatement) sqlStatement);

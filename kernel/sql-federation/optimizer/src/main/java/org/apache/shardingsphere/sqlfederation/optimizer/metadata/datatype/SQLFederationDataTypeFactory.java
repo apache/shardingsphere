@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.schema.Schema;
-
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 
 /**
- * Optimize meta data.
+ * SQL federation data type factory.
  */
-@RequiredArgsConstructor
-public final class OptimizerMetaData {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLFederationDataTypeFactory {
     
-    private final Map<String, Schema> schemas;
+    private static final JavaTypeFactory DATA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     /**
-     * Get schema.
+     * Get instance.
      *
-     * @param schemaName schema name
-     * @return schema
+     * @return instance
      */
-    public Schema getSchema(final String schemaName) {
-        return schemas.get(schemaName);
+    public static JavaTypeFactory getInstance() {
+        return DATA_TYPE_FACTORY;
     }
 }

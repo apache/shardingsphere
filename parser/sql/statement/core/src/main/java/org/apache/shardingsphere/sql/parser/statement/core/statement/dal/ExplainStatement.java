@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -28,19 +29,11 @@ import java.util.Optional;
 /**
  * Explain statement.
  */
+@Getter
 @Setter
 public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
     private SQLStatement sqlStatement;
-    
-    /**
-     * Get SQL statement.
-     *
-     * @return SQL statement
-     */
-    public Optional<SQLStatement> getSqlStatement() {
-        return Optional.ofNullable(sqlStatement);
-    }
     
     /**
      * Get simple table.

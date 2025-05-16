@@ -42,22 +42,24 @@ public interface SQLFederationProcessor {
      *
      * @param prepareEngine prepare engine
      * @param callback callback
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
      * @param federationContext federation context
      * @param optimizerContext optimizer context
      * @param schemaPlus sql federation schema
      */
     void prepare(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                 String databaseName, String schemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus);
+                 String currentDatabaseName, String currentSchemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus);
     
     /**
      * Release.
      *
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
      * @param queryContext query context
      * @param schemaPlus sql federation schema
      */
-    void release(QueryContext queryContext, SchemaPlus schemaPlus);
+    void release(String currentDatabaseName, String currentSchemaName, QueryContext queryContext, SchemaPlus schemaPlus);
     
     /**
      * Execute plan.

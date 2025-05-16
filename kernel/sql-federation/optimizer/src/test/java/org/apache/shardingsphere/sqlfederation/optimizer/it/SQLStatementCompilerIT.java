@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationValidatorUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.builder.SQLFederationPlannerBuilder;
@@ -235,7 +236,7 @@ class SQLStatementCompilerIT {
     
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
-        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
+        RelDataTypeFactory relDataTypeFactory = SQLFederationDataTypeFactory.getInstance();
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
         SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl());
         CalciteCatalogReader catalogReader =

@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.sharding.decider;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -38,8 +42,20 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
+    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
                           final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule, final Collection<DataNode> includedDataNodes) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return decide0((SelectStatementContext) sqlStatementContext, database, rule, includedDataNodes);
+        } else if (sqlStatementContext instanceof ExplainStatementContext) {
+            ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
+            ShardingSpherePreconditions.checkState(explainStatementContext.getSqlStatementContext() instanceof SelectStatementContext,
+                    () -> new UnsupportedSQLOperationException(String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getSqlStatement())));
+            return decide0((SelectStatementContext) explainStatementContext.getSqlStatementContext(), database, rule, includedDataNodes);
+        }
+        throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));
+    }
+    
+    private boolean decide0(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase database, final ShardingRule rule, final Collection<DataNode> includedDataNodes) {
         Collection<String> tableNames = rule.getShardingLogicTableNames(selectStatementContext.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
             return false;
