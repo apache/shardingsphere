@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
@@ -139,16 +138,10 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     }
     
     private void handleSetAutoCommit() throws SQLException {
-        if (tclStatement instanceof MySQLSetAutoCommitStatement) {
-            handleMySQLSetAutoCommit();
-        }
-        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
-    }
-    
-    private void handleMySQLSetAutoCommit() throws SQLException {
-        MySQLSetAutoCommitStatement statement = (MySQLSetAutoCommitStatement) tclStatement;
-        if (statement.isAutoCommit() && connectionSession.getTransactionStatus().isInTransaction()) {
+        if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction() && connectionSession.getTransactionStatus().isInTransaction()
+                && ((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
             backendTransactionManager.commit();
         }
+        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
     }
 }
