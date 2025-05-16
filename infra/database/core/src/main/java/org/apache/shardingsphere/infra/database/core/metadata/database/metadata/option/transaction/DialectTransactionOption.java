@@ -39,4 +39,6 @@ public final class DialectTransactionOption {
     private final boolean isSupportMetaDataRefreshInTransaction;
     
     private final int defaultIsolationLevel;
+    
+    private final boolean isReturnRollbackStatementWhenCommitFailed;
 }

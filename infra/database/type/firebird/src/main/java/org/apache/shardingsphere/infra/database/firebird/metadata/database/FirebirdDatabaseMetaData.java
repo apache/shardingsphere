@@ -47,7 +47,7 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED);
+        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false);
     }
     
     @Override
