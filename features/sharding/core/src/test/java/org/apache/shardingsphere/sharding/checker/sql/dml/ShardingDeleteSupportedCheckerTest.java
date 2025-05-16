@@ -39,11 +39,11 @@ class ShardingDeleteSupportedCheckerTest {
     
     @Test
     void assertCheckWhenDeleteMultiTables() {
-        DeleteStatement sqlStatement = new SQL92DeleteStatement();
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
+        DeleteStatement sqlStatement = new SQL92DeleteStatement();
         sqlStatement.setTable(tableSegment);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.containsShardingTable(new HashSet<>(Arrays.asList("user", "order", "order_item")))).thenReturn(true);
