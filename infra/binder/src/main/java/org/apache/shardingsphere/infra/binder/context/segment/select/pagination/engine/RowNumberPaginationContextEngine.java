@@ -74,18 +74,16 @@ public final class RowNumberPaginationContextEngine {
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, params);
         }
-        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.extractAndPredicates(each).stream()).collect(Collectors.toList());
-        Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
-        return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, params) : createPaginationWithRowNumber(rowNumberPredicates, params);
+        Collection<ExpressionSegment> allExpressions = expressions.stream().flatMap(each -> ExpressionExtractor.extractAllExpressions(each).stream()).collect(Collectors.toList());
+        Collection<BinaryOperationExpression> rowNumberExpressions = getRowNumberExpressions(allExpressions, rowNumberAlias.get());
+        return rowNumberExpressions.isEmpty() ? new PaginationContext(null, null, params) : createPaginationWithRowNumber(rowNumberExpressions, params);
     }
-    
-    private Collection<BinaryOperationExpression> getRowNumberPredicates(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
+
+    private Collection<BinaryOperationExpression> getRowNumberExpressions(final Collection<ExpressionSegment> allExpressions, final String rowNumberAlias) {
         List<BinaryOperationExpression> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            for (ExpressionSegment expression : each.getPredicates()) {
-                if (isRowNumberColumn(expression, rowNumberAlias) && isCompareCondition(expression)) {
-                    result.add((BinaryOperationExpression) expression);
-                }
+        for (ExpressionSegment each : allExpressions) {
+            if (isRowNumberColumn(each, rowNumberAlias) && isCompareCondition(each)) {
+                result.add((BinaryOperationExpression) each);
             }
         }
         return result;
