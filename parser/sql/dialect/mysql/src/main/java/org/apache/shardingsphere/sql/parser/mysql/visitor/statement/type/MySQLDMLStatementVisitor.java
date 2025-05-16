@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DML statement visitor for MySQL.
@@ -67,13 +68,12 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        List<ExpressionSegment> params = new ArrayList<>(ctx.expr().size());
-        ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        String procedureName = ctx.identifier().getText();
-        if (null != ctx.owner()) {
-            procedureName = ctx.owner().getText() + "." + procedureName;
-        }
-        return new MySQLCallStatement(procedureName, params);
+        MySQLCallStatement result = new MySQLCallStatement();
+        String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
+        result.setProcedureName(procedureName);
+        List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(params);
+        return result;
     }
     
     @Override
