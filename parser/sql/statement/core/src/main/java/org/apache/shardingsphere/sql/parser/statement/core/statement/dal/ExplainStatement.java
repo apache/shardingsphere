@@ -45,11 +45,27 @@ public abstract class ExplainStatement extends AbstractSQLStatement implements D
     }
     
     /**
+     * Set simple table.
+     *
+     * @param simpleTable simple table
+     */
+    public void setSimpleTable(final SimpleTableSegment simpleTable) {
+    }
+    
+    /**
      * Get column segment.
      *
      * @return column segment
      */
     public Optional<ColumnSegment> getColumnWild() {
         return Optional.empty();
+    }
+    
+    /**
+     * Set column wild.
+     *
+     * @param columnWild column wild
+     */
+    public void setColumnWild(final ColumnSegment columnWild) {
     }
 }
