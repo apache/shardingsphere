@@ -19,42 +19,20 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerMetaData;
-
-import java.util.Map;
 
 /**
  * Optimizer context.
  */
 @RequiredArgsConstructor
+@Getter
 public final class OptimizerContext {
     
-    @Getter
     private final SQLParserRule sqlParserRule;
     
-    private final Map<String, OptimizerParserContext> parserContexts;
+    private final CalciteSchema calciteSchema;
     
-    private final Map<String, OptimizerMetaData> optimizerMetaData;
-    
-    /**
-     * Get parser context.
-     *
-     * @param databaseName database name
-     * @return parser context
-     */
-    public OptimizerParserContext getParserContext(final String databaseName) {
-        return parserContexts.get(databaseName);
-    }
-    
-    /**
-     * Get meta data.
-     *
-     * @param databaseName database name
-     * @return optimizer meta data
-     */
-    public OptimizerMetaData getMetaData(final String databaseName) {
-        return optimizerMetaData.get(databaseName);
-    }
+    private final CalciteConnectionConfig connectionConfig;
 }

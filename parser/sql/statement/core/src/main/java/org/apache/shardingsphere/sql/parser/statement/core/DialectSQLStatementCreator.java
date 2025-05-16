@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser;
+package org.apache.shardingsphere.sql.parser.statement.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 
 /**
- * Optimizer parser context.
+ * Dialect SQL statement creator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class OptimizerParserContext {
+@SingletonSPI
+public interface DialectSQLStatementCreator extends DatabaseTypedSPI {
     
-    private final DatabaseType databaseType;
-    
-    private final Properties dialectProps;
+    /**
+     * Create rollback statement.
+     *
+     * @return created SQL statement
+     */
+    RollbackStatement createRollbackStatement();
 }

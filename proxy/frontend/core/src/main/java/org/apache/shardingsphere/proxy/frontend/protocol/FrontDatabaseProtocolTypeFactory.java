@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -37,6 +38,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrontDatabaseProtocolTypeFactory {
     
+    private static final String DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE = "MySQL";
+    
     /**
      * Get front database protocol type.
      *
@@ -47,16 +50,18 @@ public final class FrontDatabaseProtocolTypeFactory {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DatabaseProtocolFrontendEngine> databaseProtocolFrontendEngine = ShardingSphereServiceLoader.getServiceInstances(DatabaseProtocolFrontendEngine.class);
-        ShardingSpherePreconditions.checkNotEmpty(databaseProtocolFrontendEngine,
+        Collection<DatabaseProtocolFrontendEngine> databaseProtocolFrontendEngines = ShardingSphereServiceLoader.getServiceInstances(DatabaseProtocolFrontendEngine.class);
+        ShardingSpherePreconditions.checkNotEmpty(databaseProtocolFrontendEngines,
                 () -> new IllegalArgumentException(String.format("Can not find any SPI implementation of `%s`.", DatabaseProtocolFrontendEngine.class.getName())));
-        DatabaseProtocolFrontendEngine defaultDatabaseProtocolFrontendEngine = databaseProtocolFrontendEngine.iterator().next();
+        DatabaseType defaultDatabaseType = 1 == databaseProtocolFrontendEngines.size()
+                ? databaseProtocolFrontendEngines.iterator().next().getType()
+                : TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         if (metaDataContexts.getMetaData().getAllDatabases().isEmpty()) {
-            return defaultDatabaseProtocolFrontendEngine.getType();
+            return defaultDatabaseType;
         }
         Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getAllDatabases().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
-        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType() : defaultDatabaseProtocolFrontendEngine.getType();
+        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType() : defaultDatabaseType;
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

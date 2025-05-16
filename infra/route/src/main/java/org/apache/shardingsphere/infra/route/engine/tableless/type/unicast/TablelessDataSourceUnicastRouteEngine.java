@@ -18,21 +18,23 @@
 package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Tableless datasource unicast route engine.
  */
 @RequiredArgsConstructor
+@HighFrequencyInvocation
 public final class TablelessDataSourceUnicastRouteEngine implements TablelessRouteEngine {
     
     @Override
@@ -48,6 +50,6 @@ public final class TablelessDataSourceUnicastRouteEngine implements TablelessRou
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return new ArrayList<>(dataSourceNames).get(new SecureRandom().nextInt(dataSourceNames.size()));
+        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }

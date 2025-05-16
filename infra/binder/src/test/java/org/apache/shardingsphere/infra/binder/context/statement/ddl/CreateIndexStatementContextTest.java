@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,28 +35,9 @@ import static org.mockito.Mockito.when;
 class CreateIndexStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLCreateIndexStatement.class));
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLCreateIndexStatement.class));
-    }
-    
-    @Test
-    void assertOracleSQLNewInstance() {
-        assertNewInstance(mock(OracleCreateIndexStatement.class));
-    }
-    
-    @Test
-    void assertSQLServerSQLNewInstance() {
-        assertNewInstance(mock(SQLServerCreateIndexStatement.class));
-    }
-    
-    private void assertNewInstance(final CreateIndexStatement createIndexStatement) {
+    void assertNewInstance() {
+        CreateIndexStatement createIndexStatement = mock(CreateIndexStatement.class);
         CreateIndexStatementContext actual = new CreateIndexStatementContext(createIndexStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(createIndexStatement));
         assertTrue(actual.isGeneratedIndex());
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));

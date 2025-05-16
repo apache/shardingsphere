@@ -15,33 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl;
+package org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer properties builder for SQL92.
+ * Connection config builder for MySQL.
  */
-public final class SQL92OptimizerBuilder implements OptimizerSQLDialectBuilder {
+public final class MySQLConnectionConfigBuilder implements ConnectionConfigBuilder {
     
     @Override
-    public Properties build() {
+    public CalciteConnectionConfig build() {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
-        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.STRICT_92.name());
-        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
+        result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.MYSQL.fun);
         result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.MYSQL.caseSensitive));
-        return result;
+        return new CalciteConnectionConfigImpl(result);
     }
     
     @Override
     public String getDatabaseType() {
-        return "SQL92";
+        return "MySQL";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

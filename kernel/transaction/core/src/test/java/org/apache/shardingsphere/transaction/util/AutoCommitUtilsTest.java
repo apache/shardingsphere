@@ -19,10 +19,11 @@ package org.apache.shardingsphere.transaction.util;
 
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,7 +34,7 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForSelectStatement() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SQL92SelectStatement();
         assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
         selectStatement.setFrom(mock(SimpleTableSegment.class));
         assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
@@ -41,10 +42,10 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForDDLOrDMLStatement() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         sqlStatement.setIfNotExists(true);
         assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLInsertStatement()));
+        assertTrue(AutoCommitUtils.needOpenTransaction(new SQL92InsertStatement()));
     }
     
     @Test

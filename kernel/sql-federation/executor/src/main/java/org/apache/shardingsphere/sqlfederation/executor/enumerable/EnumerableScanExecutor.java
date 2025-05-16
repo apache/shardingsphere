@@ -104,8 +104,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     @Override
     public Enumerable<Object> execute(final ShardingSphereTable table, final ScanExecutorContext scanContext) {
         String databaseName = executorContext.getCurrentDatabaseName();
-        String schemaName = executorContext.getSchemaName();
-        DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
+        String schemaName = executorContext.getCurrentSchemaName();
+        DatabaseType databaseType = federationContext.getQueryContext().getSqlStatementContext().getDatabaseType();
         if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
             return createMemoryEnumerable(databaseName, schemaName, table, databaseType);
         }

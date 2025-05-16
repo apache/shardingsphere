@@ -37,10 +37,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -93,51 +89,27 @@ class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
-        assertExecuteCreateDatabaseContext(new MySQLCreateDatabaseStatement());
-    }
-    
-    @Test
-    void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
-        assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
-    }
-    
-    private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        sqlStatement.setDatabaseName("new_db");
+    void assertExecuteCreateDatabaseContext() throws SQLException {
+        CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
+        when(sqlStatement.getDatabaseName()).thenReturn("new_db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    void assertExecuteMySQLDropDatabaseContext() throws SQLException {
-        assertExecuteDropDatabaseContext(new MySQLDropDatabaseStatement());
-    }
-    
-    @Test
-    void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
-        assertExecuteDropDatabaseContext(new PostgreSQLDropDatabaseStatement());
-    }
-    
-    private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
-        sqlStatement.setDatabaseName("foo_db");
+    void assertExecuteDropDatabaseContext() throws SQLException {
+        DropDatabaseStatement sqlStatement = mock(DropDatabaseStatement.class);
+        when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
-    void assertExecuteMySQLCreateDatabaseContextWithException() {
-        assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
-    }
-    
-    @Test
-    void assertExecutePostgreSQLCreateDatabaseContextWithException() {
-        assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
-    }
-    
-    private void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
-        sqlStatement.setDatabaseName("foo_db");
+    void assertExecuteCreateDatabaseContextWithException() {
+        CreateDatabaseStatement sqlStatement = mock(CreateDatabaseStatement.class);
+        when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         setGovernanceMetaDataContexts(true);
         try {
             DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);

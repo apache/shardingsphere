@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
+package org.apache.shardingsphere.sql.parser.statement.opengauss;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.schema.Schema;
-
-import java.util.Map;
+import org.apache.shardingsphere.sql.parser.statement.core.DialectSQLStatementCreator;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
 
 /**
- * Optimize meta data.
+ * Statement creator for openGauss.
  */
-@RequiredArgsConstructor
-public final class OptimizerMetaData {
+public final class OpenGaussStatementCreator implements DialectSQLStatementCreator {
     
-    private final Map<String, Schema> schemas;
-    
-    /**
-     * Get schema.
-     *
-     * @param schemaName schema name
-     * @return schema
-     */
-    public Schema getSchema(final String schemaName) {
-        return schemas.get(schemaName);
+    @Override
+    public RollbackStatement createRollbackStatement() {
+        return new OpenGaussRollbackStatement();
     }
 }

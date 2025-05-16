@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -31,18 +27,9 @@ import static org.mockito.Mockito.mock;
 class CreateProcedureStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLCreateProcedureStatement.class));
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLCreateProcedureStatement.class));
-    }
-    
-    private void assertNewInstance(final CreateProcedureStatement createProcedureStatement) {
-        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(createProcedureStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(createProcedureStatement));
+    void assertNewInstance() {
+        CreateProcedureStatement sqlStatement = mock(CreateProcedureStatement.class);
+        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(sqlStatement);
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
     }
 }

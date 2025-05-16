@@ -17,24 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
-
-import java.util.List;
 
 /**
  * MySQL call statement.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
 public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
-    
-    private String procedureName;
-    
-    private List<ExpressionSegment> parameters;
 }

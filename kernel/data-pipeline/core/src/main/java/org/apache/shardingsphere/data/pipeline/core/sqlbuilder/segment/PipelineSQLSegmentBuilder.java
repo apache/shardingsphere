@@ -28,10 +28,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
  */
 public final class PipelineSQLSegmentBuilder {
     
+    private final DatabaseTypeRegistry databaseTypeRegistry;
+    
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     public PipelineSQLSegmentBuilder(final DatabaseType databaseType) {
-        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
     }
     
     /**
@@ -41,7 +44,7 @@ public final class PipelineSQLSegmentBuilder {
      * @return escaped identifier
      */
     public String getEscapedIdentifier(final String identifier) {
-        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier);
+        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(databaseTypeRegistry.formatIdentifierPattern(identifier));
     }
     
     /**

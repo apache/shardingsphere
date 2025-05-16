@@ -47,14 +47,14 @@ class EncryptInsertDefaultColumnsTokenGeneratorTest {
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
-                is("(`id`, `name`, `status`, `pwd_cipher`, `pwd_assist`, `pwd_like`)"));
+                is("(\"id\", \"name\", \"status\", \"pwd_cipher\", \"pwd_assist\", \"pwd_like\")"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
-                is("(`id`, `name`, `status`, `pwd_cipher`, `pwd_assist`, `pwd_like`)"));
+                is("(\"id\", \"name\", \"status\", \"pwd_cipher\", \"pwd_assist\", \"pwd_like\")"));
     }
     
     @Test

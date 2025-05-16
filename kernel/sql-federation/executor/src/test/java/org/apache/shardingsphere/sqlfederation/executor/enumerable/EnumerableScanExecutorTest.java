@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
@@ -39,7 +40,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,10 +49,9 @@ class EnumerableScanExecutorTest {
     @Test
     void assertExecuteWithStatistics() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
-        when(optimizerContext.getParserContext(any()).getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         SQLFederationExecutorContext executorContext = mock(SQLFederationExecutorContext.class);
         when(executorContext.getCurrentDatabaseName()).thenReturn("db");
-        when(executorContext.getSchemaName()).thenReturn("pg_catalog");
+        when(executorContext.getCurrentSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         DatabaseStatistics databaseStatistics = mock(DatabaseStatistics.class, RETURNS_DEEP_STUBS);
         when(statistics.getDatabaseStatistics("db")).thenReturn(databaseStatistics);
@@ -64,8 +63,10 @@ class EnumerableScanExecutorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
         when(table.getName()).thenReturn("test");
         when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
-        Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, executorContext, null, null, statistics)
-                .execute(table, mock(ScanExecutorContext.class));
+        SQLFederationContext federationContext = mock(SQLFederationContext.class, RETURNS_DEEP_STUBS);
+        when(federationContext.getQueryContext().getSqlStatementContext().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        Enumerable<Object> enumerable =
+                new EnumerableScanExecutor(null, null, null, optimizerContext, executorContext, federationContext, null, statistics).execute(table, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object row = actual.current();
