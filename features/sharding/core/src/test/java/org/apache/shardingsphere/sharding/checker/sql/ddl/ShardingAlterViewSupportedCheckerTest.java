@@ -26,16 +26,19 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,11 +53,11 @@ class ShardingAlterViewSupportedCheckerTest {
     private ShardingRule rule;
     
     @Test
-    void assertPreValidateAlterViewForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+    void assertPreValidateAlterView() {
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
+        AlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -67,13 +70,13 @@ class ShardingAlterViewSupportedCheckerTest {
     }
     
     @Test
-    void assertPreValidateAlterViewWithShardingTableForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+    void assertPreValidateAlterViewWithShardingTable() {
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
-        sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
-        sqlStatement.setSelect(selectStatement);
+        AlterViewStatement sqlStatement = mock(AlterViewStatement.class);
+        when(sqlStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
+        when(sqlStatement.getSelect()).thenReturn(Optional.of(selectStatement));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
@@ -85,7 +88,7 @@ class ShardingAlterViewSupportedCheckerTest {
     
     @Test
     void assertPreValidateAlterRenamedView() {
-        OpenGaussAlterViewStatement sqlStatement = new OpenGaussAlterViewStatement();
+        AlterViewStatement sqlStatement = new OpenGaussAlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(mock(ShardingSphereMetaData.class), Collections.emptyList(), sqlStatement, "foo_db");

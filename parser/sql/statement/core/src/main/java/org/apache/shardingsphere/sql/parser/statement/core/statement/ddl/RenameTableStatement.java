@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
@@ -29,7 +28,6 @@ import java.util.LinkedList;
  * Rename table statement.
  */
 @Getter
-@Setter
 public abstract class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();

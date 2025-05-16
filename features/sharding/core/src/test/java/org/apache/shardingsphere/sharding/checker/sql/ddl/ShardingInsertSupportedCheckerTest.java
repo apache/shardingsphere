@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingInsertSupportedChecker;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.InsertSelectTableViolationException;
@@ -28,7 +30,6 @@ import org.apache.shardingsphere.sharding.exception.syntax.MissingGenerateKeyCol
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -38,13 +39,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,7 +60,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingInsertSupportedCheckerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Mock
     private ShardingRule rule;
@@ -120,24 +125,22 @@ class ShardingInsertSupportedCheckerTest {
     }
     
     private InsertStatement createInsertStatement() {
-        MySQLInsertStatement result = new MySQLInsertStatement();
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        InsertStatement result = mock(InsertStatement.class);
+        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user")))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(columnSegment);
+        List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
         ColumnAssignmentSegment assignmentSegment = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
-        result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
-        Collection<ColumnSegment> columns = new LinkedList<>();
-        columns.add(columnSegment);
-        result.setInsertColumns(new InsertColumnsSegment(0, 0, columns));
+        when(result.getOnDuplicateKeyColumns()).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment))));
+        when(result.getColumns()).thenReturn(Collections.singleton(columnSegment));
         return result;
     }
     
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
+        when(result.getInsertSelect()).thenReturn(Optional.of(new SubquerySegment(0, 0, selectStatement, "")));
         return result;
     }
     

@@ -29,12 +29,12 @@ import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedRe
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,37 +62,37 @@ class ShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowDatabasesStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowDatabasesStatement());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowDatabasesStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(LocalDataMergedResult.class));
     }
     
     @Test
     void assertMergeForShowShowTablesStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTablesStatement());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTablesStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(LogicTablesMergedResult.class));
     }
     
     @Test
     void assertMergeForShowTableStatusStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTableStatusStatement());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTableStatusStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowTableStatusMergedResult.class));
     }
     
     @Test
     void assertMergeForShowIndexStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowIndexStatement());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowIndexStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowIndexMergedResult.class));
     }
     
     @Test
     void assertMergeForShowCreateTableStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowCreateTableStatement());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowCreateTableStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowCreateTableMergedResult.class));
     }
     
     @Test
-    void assertMergeForDescribeStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLExplainStatement());
+    void assertMergeForExplainStatement() throws SQLException {
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ExplainStatement.class));
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(TransparentMergedResult.class));
     }
     

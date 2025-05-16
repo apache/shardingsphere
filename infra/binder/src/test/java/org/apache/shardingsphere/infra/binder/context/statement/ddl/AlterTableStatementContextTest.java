@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
@@ -34,11 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -47,7 +42,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -56,39 +50,11 @@ import static org.mockito.Mockito.when;
 class AlterTableStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLAlterTableStatement());
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLAlterTableStatement());
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(new OracleAlterTableStatement());
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(new SQLServerAlterTableStatement());
-    }
-    
-    @Test
-    void assertSQL92NewInstance() {
-        assertNewInstance(new SQL92AlterTableStatement());
-    }
-    
-    private void assertNewInstance(final AlterTableStatement alterTableStatement) {
-        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
-        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("rename_tbl_1"));
-        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SimpleTableSegment table = new SimpleTableSegment(tableNameSegment1);
-        SimpleTableSegment renameTable = new SimpleTableSegment(tableNameSegment2);
+    void assertNewInstance() {
+        AlterTableStatement alterTableStatement = new SQL92AlterTableStatement();
+        SimpleTableSegment table = new SimpleTableSegment(createTableNameSegment("foo_tbl"));
         alterTableStatement.setTable(table);
-        alterTableStatement.setRenameTable(renameTable);
+        alterTableStatement.setRenameTable(new SimpleTableSegment(createTableNameSegment("rename_foo_tbl")));
         Collection<SimpleTableSegment> referencedTables = Collections.singletonList(table);
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(referencedTables);
@@ -116,12 +82,17 @@ class AlterTableStatementContextTest {
         when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("drop_index"))));
         alterTableStatement.getDropIndexDefinitions().add(dropIndexDefinitionSegment);
         AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("tbl_1", "rename_tbl_1", "tbl_1", "tbl_1", "tbl_1")));
+                is(Arrays.asList("foo_tbl", "rename_foo_tbl", "foo_tbl", "foo_tbl", "foo_tbl")));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index", "drop_index")));
         assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("constraint", "constraint", "constraint")));
+    }
+    
+    private TableNameSegment createTableNameSegment(final String tableName) {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

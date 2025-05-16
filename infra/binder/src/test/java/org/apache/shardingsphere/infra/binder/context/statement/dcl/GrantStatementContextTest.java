@@ -17,65 +17,35 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class GrantStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLGrantStatement());
+    void assertNewInstance() {
+        GrantStatement sqlStatement = new SQL92GrantStatement();
+        sqlStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
+        GrantStatementContext actual = new GrantStatementContext(sqlStatement);
+        assertThat(actual.getSqlStatement(), is(sqlStatement));
+        assertThat(actual.getTablesContext().getSimpleTables().stream()
+                .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
     
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLGrantStatement());
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(new OracleGrantStatement());
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(new SQLServerGrantStatement());
-    }
-    
-    @Test
-    void assertSQL92NewInstance() {
-        assertNewInstance(new SQL92GrantStatement());
-    }
-    
-    private void assertNewInstance(final GrantStatement grantStatement) {
-        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
-        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"));
-        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
-        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
-        grantStatement.getTables().addAll(Arrays.asList(table1, table2));
-        GrantStatementContext actual = new GrantStatementContext(grantStatement);
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(grantStatement));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("foo_tbl", "bar_tbl")));
+    private TableNameSegment createTableNameSegment(final String tableName) {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

@@ -37,14 +37,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -58,34 +54,11 @@ import static org.mockito.Mockito.when;
 
 class ShardingResultMergerEngineTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertNewInstanceWithSelectStatementForMySQL() {
-        assertNewInstanceWithSelectStatement(new MySQLSelectStatement());
-    }
-    
-    @Test
-    void assertNewInstanceWithSelectStatementForOracle() {
-        assertNewInstanceWithSelectStatement(new OracleSelectStatement());
-    }
-    
-    @Test
-    void assertNewInstanceWithSelectStatementForPostgreSQL() {
-        assertNewInstanceWithSelectStatement(new PostgreSQLSelectStatement());
-    }
-    
-    @Test
-    void assertNewInstanceWithSelectStatementForSQL92() {
-        assertNewInstanceWithSelectStatement(new SQL92SelectStatement());
-    }
-    
-    @Test
-    void assertNewInstanceWithSelectStatementForSQLServer() {
-        assertNewInstanceWithSelectStatement(new SQLServerSelectStatement());
-    }
-    
-    private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
+    void assertNewInstanceWithSelectStatement() {
+        SelectStatement selectStatement = new SQL92SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -104,7 +77,7 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithOtherStatement() {
-        InsertStatement insertStatement = new MySQLInsertStatement();
+        InsertStatement insertStatement = new SQL92InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         insertStatement.setInsertColumns(insertColumnsSegment);

@@ -25,15 +25,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,53 +38,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class DeleteStatementContextTest {
     
-    @Mock
-    private WhereSegment whereSegment;
-    
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(new MySQLDeleteStatement());
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(new OracleDeleteStatement());
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(new PostgreSQLDeleteStatement());
-    }
-    
-    @Test
-    void assertSQL92NewInstance() {
-        assertNewInstance(new SQL92DeleteStatement());
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(new SQLServerDeleteStatement());
-    }
-    
-    private void assertNewInstance(final DeleteStatement deleteStatement) {
+    void assertNewInstance() {
+        DeleteStatement deleteStatement = new SQL92DeleteStatement();
+        WhereSegment whereSegment = mock(WhereSegment.class);
         when(whereSegment.getExpr()).thenReturn(mock(ExpressionSegment.class));
-        TableNameSegment tableNameSegment1 = new TableNameSegment(0, 0, new IdentifierValue("tbl_1"));
-        tableNameSegment1.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        TableNameSegment tableNameSegment2 = new TableNameSegment(0, 0, new IdentifierValue("tbl_2"));
-        tableNameSegment2.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        SimpleTableSegment table1 = new SimpleTableSegment(tableNameSegment1);
-        SimpleTableSegment table2 = new SimpleTableSegment(tableNameSegment2);
-        JoinTableSegment tableSegment = new JoinTableSegment();
-        tableSegment.setLeft(table1);
-        tableSegment.setRight(table2);
         deleteStatement.setWhere(whereSegment);
+        JoinTableSegment tableSegment = new JoinTableSegment();
+        tableSegment.setLeft(new SimpleTableSegment(createTableNameSegment("foo_tbl")));
+        tableSegment.setRight(new SimpleTableSegment(createTableNameSegment("bar_tbl")));
         deleteStatement.setTable(tableSegment);
         DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
-        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
-        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("foo_tbl", "bar_tbl")));
+    }
+    
+    private static TableNameSegment createTableNameSegment(final String tableName) {
+        TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
+        result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        return result;
     }
 }

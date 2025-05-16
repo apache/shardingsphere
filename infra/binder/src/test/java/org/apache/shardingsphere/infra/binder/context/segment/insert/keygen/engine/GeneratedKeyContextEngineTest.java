@@ -34,11 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -69,31 +65,8 @@ class GeneratedKeyContextEngineTest {
     }
     
     @Test
-    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForMySQL() {
-        assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new MySQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForOracle() {
-        assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new OracleInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForPostgreSQL() {
-        assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new PostgreSQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForSQL92() {
-        assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new SQL92InsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForSQLServer() {
-        assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
-    }
-    
-    private void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
+    void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl1"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyMap(),
@@ -101,41 +74,9 @@ class GeneratedKeyContextEngineTest {
     }
     
     @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForMySQL() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateUpperCaseKeyColumnConfigurationForMySQL2() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement(), "bar_tbl");
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForOracle() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new OracleInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForPostgreSQL() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new PostgreSQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQL92() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQL92InsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQLServer() {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
-    }
-    
-    private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
-        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(insertStatement, "foo_tbl");
-    }
-    
-    private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement, final String tableName) {
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName))));
+    void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+        InsertStatement insertStatement = new SQL92InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);
@@ -147,31 +88,8 @@ class GeneratedKeyContextEngineTest {
     }
     
     @Test
-    void assertCreateGenerateKeyContextWhenFindForMySQL() {
-        assertCreateGenerateKeyContextWhenFind(new MySQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenFindForOracle() {
-        assertCreateGenerateKeyContextWhenFind(new OracleInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenFindForPostgreSQL() {
-        assertCreateGenerateKeyContextWhenFind(new PostgreSQLInsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenFindForSQL92() {
-        assertCreateGenerateKeyContextWhenFind(new SQL92InsertStatement());
-    }
-    
-    @Test
-    void assertCreateGenerateKeyContextWhenFindForSQLServer() {
-        assertCreateGenerateKeyContextWhenFind(new SQLServerInsertStatement());
-    }
-    
-    private void assertCreateGenerateKeyContextWhenFind(final InsertStatement insertStatement) {
+    void assertCreateGenerateKeyContextWhenFind() {
+        InsertStatement insertStatement = new SQL92InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));

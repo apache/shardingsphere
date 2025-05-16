@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -69,7 +69,7 @@ class UpdateStatementContextTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(table1);
         joinTableSegment.setRight(table2);
-        UpdateStatement updateStatement = new MySQLUpdateStatement();
+        UpdateStatement updateStatement = new SQL92UpdateStatement();
         updateStatement.setWhere(whereSegment);
         updateStatement.setTable(joinTableSegment);
         updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));

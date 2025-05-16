@@ -17,59 +17,24 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DropTableStatementContextTest {
     
     @Test
-    void assertMySQLNewInstance() {
-        assertNewInstance(mock(MySQLDropTableStatement.class));
-    }
-    
-    @Test
-    void assertPostgreSQLNewInstance() {
-        assertNewInstance(mock(PostgreSQLDropTableStatement.class));
-    }
-    
-    @Test
-    void assertOracleNewInstance() {
-        assertNewInstance(mock(OracleDropTableStatement.class));
-    }
-    
-    @Test
-    void assertSQLServerNewInstance() {
-        assertNewInstance(mock(SQLServerDropTableStatement.class));
-    }
-    
-    @Test
-    void assertSQL92NewInstance() {
-        assertNewInstance(mock(SQL92DropTableStatement.class));
-    }
-    
-    private void assertNewInstance(final DropTableStatement dropTableStatement) {
+    void assertNewInstance() {
+        DropTableStatement dropTableStatement = new SQL92DropTableStatement();
         DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement);
-        SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
-        when(dropTableStatement.getTables()).thenReturn(Arrays.asList(table1, table2));
-        assertThat(actual, instanceOf(CommonSQLStatementContext.class));
+        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
         assertThat(actual.getSqlStatement(), is(dropTableStatement));
     }
 }

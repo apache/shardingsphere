@@ -29,14 +29,14 @@ import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnits
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,42 +57,42 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseInsertSQL() {
-        assertParse(new MySQLInsertStatement(), "INSERT=1");
+        assertParse(mock(InsertStatement.class), "INSERT=1");
     }
     
     @Test
     void assertParseUpdateSQL() {
-        assertParse(new MySQLUpdateStatement(), "UPDATE=1");
+        assertParse(mock(UpdateStatement.class), "UPDATE=1");
     }
     
     @Test
     void assertParseDeleteSQL() {
-        assertParse(new MySQLDeleteStatement(), "DELETE=1");
+        assertParse(mock(DeleteStatement.class), "DELETE=1");
     }
     
     @Test
     void assertParseSelectSQL() {
-        assertParse(new MySQLSelectStatement(), "SELECT=1");
+        assertParse(mock(SelectStatement.class), "SELECT=1");
     }
     
     @Test
     void assertParseDDL() {
-        assertParse(new MySQLCreateDatabaseStatement(), "DDL=1");
+        assertParse(mock(CreateDatabaseStatement.class), "DDL=1");
     }
     
     @Test
     void assertParseDCL() {
-        assertParse(new MySQLCreateUserStatement(), "DCL=1");
+        assertParse(mock(CreateUserStatement.class), "DCL=1");
     }
     
     @Test
     void assertParseDAL() {
-        assertParse(new MySQLShowDatabasesStatement(), "DAL=1");
+        assertParse(mock(ShowDatabasesStatement.class), "DAL=1");
     }
     
     @Test
     void assertParseTCL() {
-        assertParse(new MySQLCommitStatement(), "TCL=1");
+        assertParse(mock(CommitStatement.class), "TCL=1");
     }
     
     @Test

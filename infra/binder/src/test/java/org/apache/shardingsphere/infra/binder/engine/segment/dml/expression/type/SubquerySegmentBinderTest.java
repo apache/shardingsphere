@@ -40,8 +40,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -61,15 +62,15 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        MySQLSelectStatement mysqlSelectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SQL92SelectStatement();
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        mysqlSelectStatement.setProjections(projectionsSegment);
-        mysqlSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
+        selectStatement.setProjections(projectionsSegment);
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
-        mysqlSelectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
-        SubquerySegment subquerySegment = new SubquerySegment(39, 103, mysqlSelectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
+        selectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
+        SubquerySegment subquerySegment = new SubquerySegment(39, 103, selectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
         SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mock(SQLStatement.class));
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
         boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(
