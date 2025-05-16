@@ -18,18 +18,25 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Simple table segment binder context.
@@ -38,6 +45,8 @@ import java.util.Optional;
 @Getter
 @Setter
 public final class SimpleTableSegmentBinderContext implements TableSegmentBinderContext {
+    
+    private static final String PG_CATALOG = "pg_catalog";
     
     @Getter(AccessLevel.NONE)
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
@@ -68,5 +77,25 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     @Override
     public Collection<ProjectionSegment> getProjectionSegments() {
         return columnLabelProjectionSegments.values();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param segment simple table segment
+     * @param binderContext statement binder context
+     * @return schema identifier value
+     */
+    public static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
+        if (segment.getOwner().isPresent()) {
+            return segment.getOwner().get().getIdentifier();
+        }
+        // TODO getSchemaName according to search path
+        DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
+        if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
+                && SystemSchemaManager.isSystemTable(databaseType.getType(), PG_CATALOG, segment.getTableName().getIdentifier().getValue())) {
+            return new IdentifierValue(PG_CATALOG);
+        }
+        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
     }
 }
