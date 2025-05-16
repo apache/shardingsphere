@@ -22,7 +22,6 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -79,20 +78,19 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<?> enumerator, final Schema sqlFederationSchema, final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
+    public SQLFederationResultSet(final Enumerator<?> enumerator, final Schema sqlFederationSchema, final List<Projection> expandProjections, final DatabaseType databaseType,
+                                  final RelDataType resultColumnType) {
         this.enumerator = enumerator;
-        DatabaseType databaseType = selectStatementContext.getDatabaseType().getTrunkDatabaseType().orElse(selectStatementContext.getDatabaseType());
         columnTypeConverter = DatabaseTypedSPILoader.getService(SQLFederationColumnTypeConverter.class, databaseType);
-        columnLabelAndIndexes = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
-        Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
-        handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels, columnTypeConverter);
+        columnLabelAndIndexes = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
+        Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
+        handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, expandProjections);
+        resultSetMetaData = new SQLFederationResultSetMetaData(sqlFederationSchema, expandProjections, databaseType, resultColumnType, indexAndColumnLabels, columnTypeConverter);
     }
     
-    private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {
-        List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
-            Projection projection = projections.get(columnIndex - 1);
+    private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final List<Projection> expandProjections) {
+        for (int columnIndex = 1; columnIndex <= expandProjections.size(); columnIndex++) {
+            Projection projection = expandProjections.get(columnIndex - 1);
             String columnLabel = projection.getColumnLabel();
             columnLabelAndIndexes.put(columnLabel, columnIndex);
             indexAndColumnLabels.put(columnIndex, columnLabel);

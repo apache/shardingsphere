@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dal;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,10 +35,10 @@ class ExplainStatementContextTest {
     void assertNewInstance() {
         ExplainStatement explainStatement = mock(ExplainStatement.class);
         SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(explainStatement.getSqlStatement()).thenReturn(Optional.of(sqlStatement));
-        ExplainStatementContext actual = new ExplainStatementContext(explainStatement);
+        when(explainStatement.getSqlStatement()).thenReturn(sqlStatement);
+        ExplainStatementContext actual = new ExplainStatementContext(mock(ShardingSphereMetaData.class), explainStatement, Collections.emptyList(), "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
-        assertThat(actual.getSqlStatement().getSqlStatement().orElse(null), is(sqlStatement));
+        assertThat(actual.getSqlStatement().getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
     }
 }

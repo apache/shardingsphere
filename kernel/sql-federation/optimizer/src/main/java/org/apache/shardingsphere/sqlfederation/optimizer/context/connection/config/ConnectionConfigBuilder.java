@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect;
+package org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.util.Properties;
-
 /**
- * Optimizer SQL dialect properties builder.
+ * Connection config builder.
  */
 @SingletonSPI
-public interface OptimizerSQLDialectBuilder extends DatabaseTypedSPI {
+public interface ConnectionConfigBuilder extends DatabaseTypedSPI {
     
     /**
-     * Build optimizer SQL dialect properties.
+     * Build connection config.
      *
-     * @return built properties
+     * @return built connection config
      */
-    Properties build();
+    CalciteConnectionConfig build();
 }

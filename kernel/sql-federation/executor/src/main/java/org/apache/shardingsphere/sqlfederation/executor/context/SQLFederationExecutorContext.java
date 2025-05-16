@@ -33,7 +33,7 @@ public final class SQLFederationExecutorContext {
     
     private final String currentDatabaseName;
     
-    private final String schemaName;
+    private final String currentSchemaName;
     
     private final ConfigurationProperties props;
     

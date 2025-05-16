@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.MySQLOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.PostgreSQLOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.OpenGaussOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.SQLServerOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.OracleOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.SQL92OptimizerBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.H2ConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.MySQLConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.PostgreSQLConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OpenGaussConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQLServerConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OracleConnectionConfigBuilder
+org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQL92ConnectionConfigBuilder

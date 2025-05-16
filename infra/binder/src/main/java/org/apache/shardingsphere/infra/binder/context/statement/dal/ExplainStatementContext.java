@@ -20,7 +20,10 @@ package org.apache.shardingsphere.infra.binder.context.statement.dal;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -28,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.Explain
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Explain statement context.
@@ -37,15 +41,18 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public ExplainStatementContext(final ExplainStatement sqlStatement) {
+    private final SQLStatementContext sqlStatementContext;
+    
+    public ExplainStatementContext(final ShardingSphereMetaData metaData, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement.getSqlStatement(), params, currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         sqlStatement.getSimpleTable().ifPresent(result::add);
-        SQLStatement explainableStatement = sqlStatement.getSqlStatement().orElse(null);
+        SQLStatement explainableStatement = sqlStatement.getSqlStatement();
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
         extractor.extractTablesFromSQLStatement(explainableStatement);

@@ -15,43 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect;
+package org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilder;
 
 import java.util.Properties;
 
 /**
- * Optimizer SQL properties builder.
+ * Connection config builder for H2.
  */
-public final class OptimizerSQLPropertiesBuilder {
+public final class H2ConnectionConfigBuilder implements ConnectionConfigBuilder {
     
-    private final OptimizerSQLDialectBuilder dialectBuilder;
-    
-    public OptimizerSQLPropertiesBuilder(final DatabaseType databaseType) {
-        dialectBuilder = DatabaseTypedSPILoader.findService(OptimizerSQLDialectBuilder.class, databaseType).orElse(null);
-    }
-    
-    /**
-     * Build optimizer SQL properties.
-     *
-     * @return built properties
-     */
-    public Properties build() {
-        return null == dialectBuilder ? buildStandardProperties() : dialectBuilder.build();
-    }
-    
-    private Properties buildStandardProperties() {
+    @Override
+    public CalciteConnectionConfig build() {
         Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
+        // TODO No suitable type of Lex
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.JAVA.caseSensitive));
-        return result;
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.MYSQL.caseSensitive));
+        return new CalciteConnectionConfigImpl(result);
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }
