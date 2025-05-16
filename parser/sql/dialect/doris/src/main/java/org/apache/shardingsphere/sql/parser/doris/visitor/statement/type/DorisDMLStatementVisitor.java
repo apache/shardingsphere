@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisImportState
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadXMLStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,9 +71,9 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        List<ExpressionSegment> params = new ArrayList<>(ctx.expr().size());
-        ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        return new DorisDoStatement(params);
+        DorisDoStatement result = new DorisDoStatement();
+        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
+        return result;
     }
     
     @Override

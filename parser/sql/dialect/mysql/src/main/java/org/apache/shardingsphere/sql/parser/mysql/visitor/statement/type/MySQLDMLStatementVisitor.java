@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Returni
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TargetListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -55,7 +55,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportState
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,9 +77,9 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        List<ExpressionSegment> params = new ArrayList<>(ctx.expr().size());
-        ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        return new MySQLDoStatement(params);
+        MySQLDoStatement result = new MySQLDoStatement();
+        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
+        return result;
     }
     
     @Override
