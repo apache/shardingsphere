@@ -230,7 +230,6 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubqueryWhereEmpty() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
         SelectStatement subSelectStatement = new SQL92SelectStatement();
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue("id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 20);
@@ -243,6 +242,7 @@ class SelectStatementContextTest {
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement, ""));
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
+        SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setWhere(whereSegment);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
