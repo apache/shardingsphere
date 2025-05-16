@@ -17,21 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.doris.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.DorisStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Doris lock statement.
  */
-@Getter
-@Setter
 public final class DorisLockStatement extends LockStatement implements DorisStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
