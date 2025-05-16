@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -28,8 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,19 +49,17 @@ public final class TopPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<ExpressionSegment> expressions, final List<Object> params) {
-        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractor.extractAndPredicates(each).stream()).collect(Collectors.toList());
-        Optional<ExpressionSegment> rowNumberPredicate = expressions.isEmpty() ? Optional.empty() : getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias());
-        Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.empty();
+        Collection<ExpressionSegment> allExpressions = expressions.stream().flatMap(each -> ExpressionExtractor.extractAllExpressions(each).stream()).collect(Collectors.toList());
+        Optional<ExpressionSegment> rowNumberExpression = expressions.isEmpty() ? Optional.empty() : getRowNumberExpression(allExpressions, topProjectionSegment.getAlias());
+        Optional<PaginationValueSegment> offset = rowNumberExpression.isPresent() ? createOffsetWithRowNumber(rowNumberExpression.get()) : Optional.empty();
         PaginationValueSegment rowCount = topProjectionSegment.getTop();
         return new PaginationContext(offset.orElse(null), rowCount, params);
     }
     
-    private Optional<ExpressionSegment> getRowNumberPredicate(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
-        for (AndPredicate each : andPredicates) {
-            for (ExpressionSegment expression : each.getPredicates()) {
-                if (isRowNumberColumn(expression, rowNumberAlias) && isCompareCondition(expression)) {
-                    return Optional.of(expression);
-                }
+    private Optional<ExpressionSegment> getRowNumberExpression(final Collection<ExpressionSegment> allExpressions, final String rowNumberAlias) {
+        for (ExpressionSegment each : allExpressions) {
+            if (isRowNumberColumn(each, rowNumberAlias) && isCompareCondition(each)) {
+                return Optional.of(each);
             }
         }
         return Optional.empty();
