@@ -41,7 +41,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-mysql</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
         
         <dependency>
