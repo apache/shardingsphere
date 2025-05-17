@@ -233,4 +233,5 @@
     <revoke sql-case-id="revoke_alter_execute_on_procedure_from_role" />
     <revoke sql-case-id="revoke_grant_option_on_procedure_from_user" />
     <revoke sql-case-id="revoke_alter_execute_on_procedure_from_user" />
+    <revoke sql-case-id="revoke_grant_option_on_procedure_from_role" />
 </sql-parser-test-cases>

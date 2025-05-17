@@ -34,7 +34,7 @@
 1. DistSQL: Add job sharding nodes to the result set of `SHOW MIGRATION LIST` - [#35053](https://github.com/apache/shardingsphere/pull/35053)
 1. SQL Parser: Enhance combineType in Oracle to support EXCEPT ALL and INTERSECT ALL - [#35099](https://github.com/apache/shardingsphere/pull/35099)
 1. DistSQL: Add InUsedStorageUnitRetriever for single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
-1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35137](https://github.com/apache/shardingsphere/pull/35137)
+1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35137](https://github.com/apache/shardingsphere/pull/35137), [#35441](https://github.com/apache/shardingsphere/pull/35441)
 1. SQL Parser: Support Oracle SQL parsing V1 keywords as identifiers - [#35373](https://github.com/apache/shardingsphere/pull/35373)
 1. SQL Parser: Support Oracle in literal sql parsing - [#35384](https://github.com/apache/shardingsphere/pull/35384)
 1. SQL Bind: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
