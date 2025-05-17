@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
@@ -50,6 +51,11 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "dbo");
+    }
+    
+    @Override
+    public DialectPaginationOption getPaginationOption() {
+        return new DialectPaginationOption(true);
     }
     
     @Override

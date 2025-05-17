@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
@@ -67,14 +68,10 @@ public final class PaginationContextEngine {
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
-        if (!expressions.isEmpty() && containsRowNumberPagination(selectStatement)) {
+        if (!expressions.isEmpty() && new DatabaseTypeRegistry(selectStatement.getDatabaseType()).getDialectDatabaseMetaData().getPaginationOption().isContainsRowNumber()) {
             return new RowNumberPaginationContextEngine(databaseType).createPaginationContext(expressions, projectionsContext, params);
         }
         return new PaginationContext(null, null, params);
-    }
-    
-    private boolean containsRowNumberPagination(final SelectStatement selectStatement) {
-        return "Oracle".equals(selectStatement.getDatabaseType().getType()) || "SQLServer".equals(selectStatement.getDatabaseType().getType());
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
