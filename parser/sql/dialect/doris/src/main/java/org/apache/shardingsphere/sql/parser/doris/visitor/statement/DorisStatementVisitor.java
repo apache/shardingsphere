@@ -771,7 +771,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
                     (DorisSelectStatement) visit(ctx.queryExpressionBody(0)), getOriginalText(ctx.queryExpressionBody(0)));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
-            ((DorisSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx, left));
             return result;
         }
