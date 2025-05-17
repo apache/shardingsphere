@@ -1,0 +1,125 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: RDB$PROCEDURE_PARAMETERS
+columns:
+  RDB$PARAMETER_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$PARAMETER_NAME
+    primaryKey: false
+    visible: true
+  RDB$PROCEDURE_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$PROCEDURE_NAME
+    primaryKey: false
+    visible: true
+  RDB$PARAMETER_NUMBER:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$PARAMETER_NUMBER
+    primaryKey: false
+    visible: true
+  RDB$PARAMETER_TYPE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$PARAMETER_TYPE
+    primaryKey: false
+    visible: true
+  RDB$FIELD_SOURCE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$FIELD_SOURCE
+    primaryKey: false
+    visible: true
+  RDB$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DESCRIPTION
+    primaryKey: false
+    visible: true
+  RDB$SYSTEM_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$SYSTEM_FLAG
+    primaryKey: false
+    visible: true
+  RDB$DEFAULT_VALUE:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DEFAULT_VALUE
+    primaryKey: false
+    visible: true
+  RDB$DEFAULT_SOURCE:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DEFAULT_SOURCE
+    primaryKey: false
+    visible: true
+  RDB$COLLATION_ID:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$COLLATION_ID
+    primaryKey: false
+    visible: true
+  RDB$NULL_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$NULL_FLAG
+    primaryKey: false
+    visible: true
+  RDB$PARAMETER_MECHANISM:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$PARAMETER_MECHANISM
+    primaryKey: false
+    visible: true
+  RDB$FIELD_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$FIELD_NAME
+    primaryKey: false
+    visible: true
+  RDB$RELATION_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$RELATION_NAME
+    primaryKey: false
+    visible: true
+  RDB$PACKAGE_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$PACKAGE_NAME
+    primaryKey: false
+    visible: true
+
