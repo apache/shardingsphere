@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -238,7 +237,7 @@ class SQLStatementCompilerIT {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = SQLFederationDataTypeFactory.getInstance();
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, new JavaTypeFactoryImpl());
+        SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, SQLFederationDataTypeFactory.getInstance());
         CalciteCatalogReader catalogReader =
                 SQLFederationValidatorUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig, databaseType);
         SqlValidator validator = SQLFederationValidatorUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
