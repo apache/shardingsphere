@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,11 +52,11 @@ class EnumerableScanExecutorTest {
     void assertExecuteWithStatistics() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         SQLFederationExecutorContext executorContext = mock(SQLFederationExecutorContext.class);
-        when(executorContext.getCurrentDatabaseName()).thenReturn("db");
+        when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
         when(executorContext.getCurrentSchemaName()).thenReturn("pg_catalog");
         ShardingSphereStatistics statistics = mock(ShardingSphereStatistics.class, RETURNS_DEEP_STUBS);
         DatabaseStatistics databaseStatistics = mock(DatabaseStatistics.class, RETURNS_DEEP_STUBS);
-        when(statistics.getDatabaseStatistics("db")).thenReturn(databaseStatistics);
+        when(statistics.getDatabaseStatistics("foo_db")).thenReturn(databaseStatistics);
         SchemaStatistics schemaStatistics = mock(SchemaStatistics.class, RETURNS_DEEP_STUBS);
         when(databaseStatistics.getSchemaStatistics("pg_catalog")).thenReturn(schemaStatistics);
         TableStatistics tableStatistics = mock(TableStatistics.class);
@@ -64,7 +66,8 @@ class EnumerableScanExecutorTest {
         when(table.getName()).thenReturn("test");
         when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
         SQLFederationContext federationContext = mock(SQLFederationContext.class, RETURNS_DEEP_STUBS);
-        when(federationContext.getQueryContext().getSqlStatementContext().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        SelectStatementContext selectStatementContext = mockSelectStatementContext();
+        when(federationContext.getQueryContext().getSqlStatementContext()).thenReturn(selectStatementContext);
         Enumerable<Object> enumerable =
                 new EnumerableScanExecutor(null, null, null, optimizerContext, executorContext, federationContext, null, statistics).execute(table, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
@@ -73,5 +76,14 @@ class EnumerableScanExecutorTest {
             assertThat(row, instanceOf(Object[].class));
             assertThat(((Object[]) row)[0], is(1));
         }
+    }
+    
+    private SelectStatementContext mockSelectStatementContext() {
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("pg_catalog"));
+        when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
+        when(result.getTablesContext().getSchemaName()).thenReturn(Optional.of("pg_catalog"));
+        return result;
     }
 }
