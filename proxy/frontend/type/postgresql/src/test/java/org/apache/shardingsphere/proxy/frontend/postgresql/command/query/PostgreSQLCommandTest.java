@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateF
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
@@ -50,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
@@ -75,8 +75,8 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLS
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PostgreSQLCommandTest {
     
@@ -342,7 +342,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfCursorStatement() {
-        assertThat(PostgreSQLCommand.valueOf(OpenGaussCursorStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
+        assertThat(PostgreSQLCommand.valueOf(CursorStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
         assertThat(PostgreSQLCommand.valueOf(DeclareStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
         assertThat(PostgreSQLCommand.DECLARE_CURSOR.getTag(), is("DECLARE CURSOR"));
     }
