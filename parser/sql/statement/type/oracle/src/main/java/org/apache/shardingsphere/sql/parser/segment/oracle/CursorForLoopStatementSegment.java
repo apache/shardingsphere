@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.oracle.plsql;
+package org.apache.shardingsphere.sql.parser.segment.oracle;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
+import java.util.Collection;
+
 /**
- * SQL statement segment.
+ * Cursor for loop statement segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLStatementSegment implements SQLSegment {
+public final class CursorForLoopStatementSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final SQLStatement sqlStatement;
+    private final String record;
+    
+    private final String cursor;
+    
+    private final SQLStatement cursorRelatedStatement;
+    
+    private final Collection<SQLStatement> statements;
 }
