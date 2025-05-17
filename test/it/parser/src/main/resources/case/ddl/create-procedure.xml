@@ -91,4 +91,21 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_if_not_exists" />
+    <create-procedure sql-case-id="create_procedure_with_batch_insert">
+        <procedure-name name="BatchInsert" />
+        <sql-statements>
+            <sql-statement start-index="72" stop-index="82" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="91" stop-index="136" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="190" stop-index="205" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_test_if_commit">
+        <procedure-name name="test_if_commit" />
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_innodb_deadlock">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="666" stop-index="691" statement-class-simple-name="MySQLSetStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>
