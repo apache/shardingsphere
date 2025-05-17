@@ -173,10 +173,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.SQLStatementSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -351,10 +351,10 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSwitchSta
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSystemActionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleTruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.segment.oracle.SQLStatementSegment;
 
 import java.util.Collection;
 import java.util.Collections;
