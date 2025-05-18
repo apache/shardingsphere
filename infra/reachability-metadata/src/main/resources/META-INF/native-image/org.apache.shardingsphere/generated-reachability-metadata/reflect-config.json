@@ -1403,19 +1403,19 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine"},
-  "name":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.MySQLProjectionIdentifierExtractor"
+  "name":"org.apache.shardingsphere.infra.binder.mysql.MySQLProjectionIdentifierExtractor"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine"},
-  "name":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.OpenGaussProjectionIdentifierExtractor"
+  "name":"org.apache.shardingsphere.infra.binder.opengauss.OpenGaussProjectionIdentifierExtractor"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine"},
-  "name":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.OracleProjectionIdentifierExtractor"
+  "name":"org.apache.shardingsphere.infra.binder.oracle.OracleProjectionIdentifierExtractor"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine"},
-  "name":"org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect.PostgreSQLProjectionIdentifierExtractor"
+  "name":"org.apache.shardingsphere.infra.binder.postgresql.PostgreSQLProjectionIdentifierExtractor"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"},
