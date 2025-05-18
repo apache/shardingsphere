@@ -50,7 +50,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-binder-postgresql</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -75,7 +75,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-binder-mysql</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -100,7 +100,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-binder-oracle</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         
         <dependency>
@@ -120,7 +120,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-binder-opengauss</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
