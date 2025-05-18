@@ -383,7 +383,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(connectionSession.getUsedDatabaseName()).thenReturn(DATABASE_NAME);
         when(connectionSession.getCurrentDatabaseName()).thenReturn(DATABASE_NAME);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton((new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
