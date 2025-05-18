@@ -269,7 +269,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                     (HiveSelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
-            ((HiveSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
@@ -279,7 +278,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                     (HiveSelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
-            ((HiveSelectStatement) left.getSelect()).getTable().ifPresent(result::setTable);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
@@ -358,7 +356,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                     new IdentifierValue(ctx.tableName().getText()))));
         } else {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.setFrom((SimpleTableSegment) visit(ctx.tableName()));
         }
         return result;
     }

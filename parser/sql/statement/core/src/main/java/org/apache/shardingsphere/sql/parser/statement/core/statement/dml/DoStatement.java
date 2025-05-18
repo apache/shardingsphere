@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Do statement.
  */
+@Getter
 public abstract class DoStatement extends AbstractSQLStatement implements DMLStatement {
+    
+    private final List<ExpressionSegment> parameters = new ArrayList<>();
 }

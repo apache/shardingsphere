@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
@@ -68,7 +69,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -127,7 +127,7 @@ public enum PostgreSQLCommand {
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
     RESET(ResetParameterStatement.class),
-    DECLARE_CURSOR(OpenGaussCursorStatement.class, DeclareStatement.class),
+    DECLARE_CURSOR(CursorStatement.class, DeclareStatement.class),
     MOVE(MoveStatement.class),
     CLOSE_CURSOR(CloseStatement.class),
     SUCCESS(DistSQLStatement.class);
