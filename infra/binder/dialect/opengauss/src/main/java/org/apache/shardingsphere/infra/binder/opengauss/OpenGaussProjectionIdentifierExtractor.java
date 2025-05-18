@@ -15,40 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect;
+package org.apache.shardingsphere.infra.binder.opengauss;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Projection identifier extractor or Oracle.
+ * Projection identifier extractor for openGauss.
  */
-public final class OracleProjectionIdentifierExtractor implements DialectProjectionIdentifierExtractor {
+public final class OpenGaussProjectionIdentifierExtractor implements DialectProjectionIdentifierExtractor {
     
     @Override
     public String getIdentifierValue(final IdentifierValue identifierValue) {
-        return identifierValue.getValue().toUpperCase();
+        return identifierValue.getValue().toLowerCase();
     }
     
     @Override
     public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
-        return functionExpression.replace(" ", "").toUpperCase();
+        return functionName.toLowerCase();
     }
     
     @Override
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
-        return expressionSegment.getText().replace(" ", "").toUpperCase();
+        return expressionSegment instanceof ExpressionProjectionSegment && ((ExpressionProjectionSegment) expressionSegment).getExpr() instanceof FunctionSegment
+                ? ((FunctionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr()).getFunctionName()
+                : "?column?";
     }
     
     @Override
     public String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment) {
-        return subquerySegment.getText().replace(" ", "").toUpperCase();
+        // TODO support subquery projection
+        return subquerySegment.getText();
     }
     
     @Override
     public String getDatabaseType() {
-        return "Oracle";
+        return "openGauss";
     }
 }
