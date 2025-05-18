@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.dialect;
+package org.apache.shardingsphere.infra.binder.oracle;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
@@ -33,34 +32,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
-class PostgreSQLProjectionIdentifierExtractorTest {
+class OracleProjectionIdentifierExtractorTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
     private final DialectProjectionIdentifierExtractor extractor = DatabaseTypedSPILoader.getService(DialectProjectionIdentifierExtractor.class, databaseType);
     
     @Test
     void assertGetIdentifierValue() {
-        assertThat(extractor.getIdentifierValue(new IdentifierValue("Data", QuoteCharacter.NONE)), is("data"));
+        assertThat(extractor.getIdentifierValue(new IdentifierValue("Data", QuoteCharacter.NONE)), is("DATA"));
     }
     
     @Test
     void assertGetColumnNameFromFunction() {
-        assertThat(extractor.getColumnNameFromFunction("Function", "FunctionExpression"), is("function"));
+        assertThat(extractor.getColumnNameFromFunction("Function", "FunctionExpression"), is("FUNCTIONEXPRESSION"));
     }
     
     @Test
     void assertGetColumnNameFromExpression() {
-        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "expression")), is("?column?"));
-    }
-    
-    @Test
-    void assertGetColumnNameFromFunctionExpression() {
-        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "SUM(ID)", new FunctionSegment(0, 0, "SUM", "SUM(ID)"))), is("SUM"));
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "expression")), is("EXPRESSION"));
     }
     
     @Test
     void assertGetColumnNameFromSubquery() {
-        assertThat(extractor.getColumnNameFromSubquery(new SubqueryProjectionSegment(mock(SubquerySegment.class), "text")), is("text"));
+        assertThat(extractor.getColumnNameFromSubquery(new SubqueryProjectionSegment(mock(SubquerySegment.class), "text")), is("TEXT"));
     }
 }
