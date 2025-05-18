@@ -191,7 +191,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         queryContext = federationContext.getQueryContext();
         try {
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-            SqlToRelConverter converter = creeateSQLToRelConverter(sqlStatementContext.getDatabaseType(), processor.getConvention());
+            SqlToRelConverter converter = creeateSQLToRelConverter(sqlStatementContext, processor.getConvention());
             schemaPlus = converter.validator.getCatalogReader().getRootSchema().plus();
             processor.prepare(prepareEngine, callback, currentDatabaseName, currentSchemaName, federationContext, sqlFederationRule.getOptimizerContext(), schemaPlus);
             SQLFederationExecutionPlan executionPlan =
@@ -207,17 +207,27 @@ public final class SQLFederationEngine implements AutoCloseable {
         }
     }
     
-    private SqlToRelConverter creeateSQLToRelConverter(final DatabaseType databaseType, final Convention convention) {
+    private SqlToRelConverter creeateSQLToRelConverter(final SQLStatementContext sqlStatementContext, final Convention convention) {
         OptimizerContext optimizerContext = sqlFederationRule.getOptimizerContext();
         JavaTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
         CalciteConnectionConfig connectionConfig = optimizerContext.getConnectionConfig();
+        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        List<String> schemaPath =
-                dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? Arrays.asList(currentDatabaseName, currentSchemaName) : Collections.singletonList(currentDatabaseName);
+        List<String> schemaPath = getSchemaPath(dialectDatabaseMetaData, sqlStatementContext);
         CalciteCatalogReader catalogReader = new CalciteCatalogReader(optimizerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
         SqlValidator validator = SQLFederationValidatorUtils.createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
         RelOptCluster relOptCluster = SQLFederationValidatorUtils.createRelOptCluster(typeFactory, convention);
         return SQLFederationValidatorUtils.createSqlToRelConverter(catalogReader, validator, relOptCluster, optimizerContext.getSqlParserRule(), databaseType, true);
+    }
+    
+    private List<String> getSchemaPath(final DialectDatabaseMetaData dialectDatabaseMetaData, final SQLStatementContext sqlStatementContext) {
+        // TODO set default schema according to search path result
+        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+            return sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
+                    ? Collections.singletonList(currentDatabaseName)
+                    : Arrays.asList(currentDatabaseName, currentSchemaName);
+        }
+        return Collections.singletonList(currentDatabaseName);
     }
     
     private SQLFederationExecutionPlan compileQuery(final SqlToRelConverter converter, final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,

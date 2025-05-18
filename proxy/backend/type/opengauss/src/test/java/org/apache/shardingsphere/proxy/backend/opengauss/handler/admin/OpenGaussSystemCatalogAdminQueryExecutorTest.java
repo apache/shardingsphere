@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -83,7 +84,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(props);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
-        ConnectionContext connectionContext = mockConnectionContext();
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         Collection<ShardingSphereDatabase> databases = Collections.singleton(createDatabase());
         SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, new CacheOption(1, 1L)), databases);
@@ -111,7 +112,9 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datname"))));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datcompatibility"))));
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("pg_database"))));
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("pg_database"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("sharding_db"), new IdentifierValue("pg_catalog")));
+        result.setFrom(new SimpleTableSegment(tableNameSegment));
         result.setWhere(new WhereSegment(0, 0,
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("datname")), new LiteralExpressionSegment(0, 0, "sharding_db"), "=", "datname = 'sharding_db'")));
         return result;
