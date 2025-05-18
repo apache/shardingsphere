@@ -69,8 +69,6 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final String PG_CATALOG = "pg_catalog";
-    
     /**
      * Bind simple table segment.
      *
