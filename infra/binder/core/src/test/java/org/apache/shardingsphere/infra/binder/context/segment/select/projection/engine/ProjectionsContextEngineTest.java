@@ -71,7 +71,7 @@ class ProjectionsContextEngineTest {
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresent() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresent() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         owner.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
