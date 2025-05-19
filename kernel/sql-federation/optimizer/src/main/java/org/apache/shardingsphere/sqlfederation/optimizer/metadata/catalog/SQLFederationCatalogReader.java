@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.testcontainers;
+package org.apache.shardingsphere.sqlfederation.optimizer.metadata.catalog;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.prepare.CalciteCatalogReader;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.sql.validate.SqlNameMatchers;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 /**
- * Database type of PostgreSQL in testcontainers.
+ * SQL federation catalog reader.
  */
-public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseType {
+public final class SQLFederationCatalogReader extends CalciteCatalogReader {
     
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:postgresql:");
-    }
-    
-    @Override
-    public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-    }
-    
-    @Override
-    public String getType() {
-        return "TC-PostgreSQL";
+    public SQLFederationCatalogReader(final CalciteSchema rootSchema, final List<String> schemaPaths, final RelDataTypeFactory typeFactory, final CalciteConnectionConfig config) {
+        super(rootSchema, SqlNameMatchers.withCaseSensitive(config.caseSensitive()), Arrays.asList(Collections.emptyList(), schemaPaths), typeFactory, config);
     }
 }

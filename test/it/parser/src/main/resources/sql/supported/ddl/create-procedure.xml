@@ -54,4 +54,8 @@
     <sql-case id="create_procedure_with_transaction_read_only_and_isolation" value="CREATE PROCEDURE p1() SET SESSION TRANSACTION READ ONLY, ISOLATION LEVEL SERIALIZABLE" db-types="MySQL" />
     <sql-case id="create_procedure_with_transaction_read_only" value="CREATE PROCEDURE p1() SET SESSION TRANSACTION READ ONLY" db-types="MySQL" />
     <sql-case id="create_procedure_if_not_exists" value="CREATE PROCEDURE IF NOT EXISTS sp1() BEGIN END" db-types="MySQL" />
+    <sql-case id="create_procedure_with_transaction" value="CREATE PROCEDURE proc1() BEGIN START TRANSACTION; CREATE TABLE t1 (f1 INT); ROLLBACK; START TRANSACTION; CREATE TABLE t1 (f1 INT); COMMIT; END;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_charset_parameters_and_insert" value="CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind); END;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_table_and_show_create_table_schema" value="CREATE PROCEDURE mysqltest2.p2() BEGIN CREATE TABLE t2(col1 VARCHAR(10)); SHOW CREATE TABLE t2; END;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_show_create_table_in_default_schema" value="CREATE PROCEDURE p1() BEGIN CREATE TABLE t1(col1 VARCHAR(10)); SHOW CREATE TABLE t1; END;" db-types="MySQL" />
 </sql-cases>

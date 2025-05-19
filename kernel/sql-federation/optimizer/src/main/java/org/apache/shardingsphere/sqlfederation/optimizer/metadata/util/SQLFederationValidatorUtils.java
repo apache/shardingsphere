@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.SQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLOperatorTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.catalog.SQLFederationCatalogReader;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.builder.SQLFederationPlannerBuilder;
 
@@ -81,7 +82,7 @@ public final class SQLFederationValidatorUtils {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, schema);
         DatabaseTypedSPILoader.findService(SQLFederationFunctionRegister.class, databaseType).ifPresent(optional -> optional.registerFunction(rootSchema.plus(), schemaName));
-        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
+        return new SQLFederationCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
     /**

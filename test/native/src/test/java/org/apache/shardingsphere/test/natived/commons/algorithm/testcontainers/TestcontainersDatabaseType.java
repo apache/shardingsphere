@@ -15,32 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.testcontainers;
+package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
- * Database type of MSSQL Server in testcontainers.
+ * Database type for Testcontainers.
+ * All jdbcUrl prefixes supported by testcontainers should extend this class.
  */
-public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:tc:sqlserver:");
-    }
-    
-    @Override
-    public Optional<DatabaseType> getTrunkDatabaseType() {
-        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
-    }
-    
-    @Override
-    public String getType() {
-        return "TC-SQLServer";
-    }
+public interface TestcontainersDatabaseType extends DatabaseType {
 }

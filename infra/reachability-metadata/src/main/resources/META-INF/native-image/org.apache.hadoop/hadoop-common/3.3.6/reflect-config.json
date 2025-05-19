@@ -8,5 +8,9 @@
 {
   "condition":{"typeReachable":"org.apache.hadoop.security.UserGroupInformation"},
   "name":"com.sun.security.auth.NTUserPrincipal"
+},
+{
+  "condition":{"typeReachable":"org.apache.hadoop.security.UserGroupInformation"},
+  "name":"com.sun.security.auth.UnixPrincipal"
 }
 ]

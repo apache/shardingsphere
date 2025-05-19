@@ -834,5 +834,13 @@
 {
   "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader"},
   "name":"io.seata.config.file.FileConfig"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader"},
+  "name":"org.apache.seata.rm.datasource.exec.oscar.OscarInsertExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.seata.common.loader.EnhancedServiceLoader"},
+  "name":"org.apache.seata.rm.datasource.exec.kingbase.KingbaseInsertExecutor"
 }
 ]
