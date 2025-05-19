@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import java.util.Arrays;
 
 /**
- * Accept data packet for Firebird.
+ * Generic response data packet for Firebird.
  */
 @Getter
 @NoArgsConstructor

@@ -32,13 +32,13 @@ import org.firebirdsql.gds.ISCConstants;
  * SQL fetch packet for Firebird.
  */
 @Getter
-public final class FirebirdFetchPacket extends FirebirdPacket {
+public final class FirebirdFetchResponsePacket extends FirebirdPacket {
 
     private final int status;
     private final int count;
     private final ByteBuf data;
     
-    public FirebirdFetchPacket(BinaryRow row, FirebirdPacketPayload payload) {
+    public FirebirdFetchResponsePacket(BinaryRow row, FirebirdPacketPayload payload) {
         status = ISCConstants.FETCH_OK;
         count = 1;
         ByteBuf writeBuffer = payload.getByteBuf().alloc().buffer();
@@ -61,7 +61,7 @@ public final class FirebirdFetchPacket extends FirebirdPacket {
         data = writeBuffer;
     }
     
-    public FirebirdFetchPacket() {
+    public FirebirdFetchResponsePacket() {
         status = ISCConstants.FETCH_NO_MORE_ROWS;
         count = 0;
         data = null;

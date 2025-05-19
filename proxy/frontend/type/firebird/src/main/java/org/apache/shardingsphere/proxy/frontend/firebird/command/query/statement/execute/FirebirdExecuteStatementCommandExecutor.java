@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -123,7 +123,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     public FirebirdPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
         BinaryRow row = createBinaryRow(queryResponseRow);
-        FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchPacket(row, packet.getPayload()));
+        FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchResponsePacket(row, packet.getPayload()));
         //we send packets back only if fetch statement packet is sent
         return null;
     }

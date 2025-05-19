@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public final class FirebirdStatementQueryCache {
     
     private static final FirebirdStatementQueryCache INSTANCE = new FirebirdStatementQueryCache();
     
-    private final Map<Integer, Map<Integer, List<FirebirdFetchPacket>>> queryStatementsCache = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Integer, List<FirebirdFetchResponsePacket>>> queryStatementsCache = new ConcurrentHashMap<>();
     
     /**
      * Get proxy backend handler statement cache instance.
@@ -70,7 +70,7 @@ public final class FirebirdStatementQueryCache {
      * @param statementId statement ID
      * @param packet Firebird fetch packet
      */
-    public void add(final int connectionId, final int statementId, final FirebirdFetchPacket packet) {
+    public void add(final int connectionId, final int statementId, final FirebirdFetchResponsePacket packet) {
         queryStatementsCache.get(connectionId).get(statementId).add(packet);
     }
     
@@ -80,7 +80,7 @@ public final class FirebirdStatementQueryCache {
      * @param statementId statement ID
      * @return Firebird fetch statement packet for statement
      */
-    public List<FirebirdFetchPacket> get(final int connectionId, final int statementId) {
+    public List<FirebirdFetchResponsePacket> get(final int connectionId, final int statementId) {
         return queryStatementsCache.get(connectionId).get(statementId);
     }
     
