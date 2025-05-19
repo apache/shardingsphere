@@ -61,11 +61,11 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
         }
         return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConnectionSize(variableName)));
     }
-
+    
     private boolean isConfigurationKey(final String variableName) {
         return ConfigurationPropertyKey.getKeyNames().contains(variableName);
     }
-
+    
     private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
         return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
