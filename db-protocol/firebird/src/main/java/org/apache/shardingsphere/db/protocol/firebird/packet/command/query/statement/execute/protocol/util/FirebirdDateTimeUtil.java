@@ -138,10 +138,15 @@ public final class FirebirdDateTimeUtil {
     }
     
     public static int getEncodedTime(LocalDateTime localDateTime) {
-        return new FirebirdDateTimeUtil(localDateTime).getEncodedDate();
+        return new FirebirdDateTimeUtil(localDateTime).getEncodedTime();
     }
     
     public static Timestamp getDateTime(int encodedDate, int encodedTime) {
+        return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
+    }
+    
+    public static Timestamp getDateTimeWithOffset(int encodedDate, int encodedTime, int offset) {
+        //TODO add time zone support
         return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
     }
 }

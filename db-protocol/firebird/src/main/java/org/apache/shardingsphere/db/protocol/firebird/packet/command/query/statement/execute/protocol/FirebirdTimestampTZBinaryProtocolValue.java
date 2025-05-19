@@ -20,24 +20,25 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
- * Binary protocol value for timestamp for Firebird.
+ * Binary protocol value for timestamp with timezone for Firebird.
  */
-public final class FirebirdTimestampBinaryProtocolValue implements FirebirdBinaryProtocolValue {
+public final class FirebirdTimestampTZBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        return FirebirdDateTimeUtil.getDateTime(payload.readInt4(), payload.readInt4());
+        return FirebirdDateTimeUtil.getDateTimeWithOffset(payload.readInt4(), payload.readInt4(), payload.readInt4());
     }
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        LocalDateTime localDateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        LocalDateTime localDateTime = ((OffsetDateTime) value).atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedDate(localDateTime));
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedTime(localDateTime));
+        payload.writeInt4(((OffsetDateTime) value).getOffset().getTotalSeconds() / 60);
     }
 }

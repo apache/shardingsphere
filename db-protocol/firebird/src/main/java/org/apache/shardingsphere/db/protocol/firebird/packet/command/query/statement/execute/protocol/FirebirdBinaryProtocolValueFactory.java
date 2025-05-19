@@ -48,6 +48,7 @@ public final class FirebirdBinaryProtocolValueFactory {
         setDateBinaryProtocolValue();
         setTimeBinaryProtocolValue();
         setTimestampBinaryProtocolValue();
+        setTimestampTZBinaryProtocolValue();
         setNullBinaryProtocolValue();
     }
     
@@ -108,9 +109,6 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setDateBinaryProtocolValue() {
         FirebirdDateBinaryProtocolValue binaryProtocolValue = new FirebirdDateBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.DATE, binaryProtocolValue);
-//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIME_TZ, binaryProtocolValue);
-//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP_TZ_EX, binaryProtocolValue);
-//        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP, binaryProtocolValue);
     }
     
     private static void setTimeBinaryProtocolValue() {
@@ -121,6 +119,11 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setTimestampBinaryProtocolValue() {
         FirebirdTimestampBinaryProtocolValue binaryProtocolValue = new FirebirdTimestampBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP, binaryProtocolValue);
+    }
+    
+    private static void setTimestampTZBinaryProtocolValue() {
+        FirebirdTimestampTZBinaryProtocolValue binaryProtocolValue = new FirebirdTimestampTZBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.TIMESTAMP_TZ, binaryProtocolValue);
     }
     
     private static void setNullBinaryProtocolValue() {
