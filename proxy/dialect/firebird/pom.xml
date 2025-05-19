@@ -24,7 +24,6 @@
         <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
-    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <dependencies>
