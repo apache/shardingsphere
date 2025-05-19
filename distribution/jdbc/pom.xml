@@ -112,59 +112,31 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-postgresql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-postgresql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-mysql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-oracle</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-oracle</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-oracle</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-sqlserver</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-opengauss</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-opengauss</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -195,13 +167,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-postgresql</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-postgresql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -212,13 +178,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-mysql</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -229,13 +189,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-oracle</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-oracle</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-oracle</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -246,7 +200,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-sqlserver</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -257,13 +211,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-opengauss</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-opengauss</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -274,7 +222,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-firebird</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-firebird</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -285,7 +233,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-hive</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -296,7 +244,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-presto</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -307,7 +255,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -318,7 +266,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-doris</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-doris</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -329,19 +277,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-database-mariadb</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-infra-binder-mysql</artifactId>
+                    <artifactId>shardingsphere-jdbc-dialect-mariadb</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

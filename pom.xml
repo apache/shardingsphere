@@ -38,6 +38,7 @@
         <module>kernel</module>
         
         <module>jdbc</module>
+        <module>jdbc-dialect</module>
         <module>proxy</module>
         
         <module>features</module>

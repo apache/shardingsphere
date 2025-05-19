@@ -23,14 +23,21 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy</artifactId>
+    <artifactId>shardingsphere-jdbc-dialect</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>frontend</module>
-        <module>backend</module>
-        <module>bootstrap</module>
-        <module>dialect</module>
+        <module>postgresql</module>
+        <module>mysql</module>
+        <module>oracle</module>
+        <module>sqlserver</module>
+        <module>opengauss</module>
+        <module>firebird</module>
+        <module>hive</module>
+        <module>presto</module>
+        <module>clickhouse</module>
+        <module>doris</module>
+        <module>mariadb</module>
     </modules>
 </project>
