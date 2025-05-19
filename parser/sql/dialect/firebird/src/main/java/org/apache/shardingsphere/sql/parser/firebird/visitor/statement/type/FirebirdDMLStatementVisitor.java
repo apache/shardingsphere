@@ -198,7 +198,6 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
         ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
         return result;
     }
     

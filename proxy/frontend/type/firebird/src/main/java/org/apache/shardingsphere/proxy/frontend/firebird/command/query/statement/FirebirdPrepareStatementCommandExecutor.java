@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -326,7 +328,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (sqlStatementContext instanceof InsertStatementContext) {
             return processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, buffer, requestedItems);
         }
-        List<ColumnSegment> affectedColumns = findWhereParametersColumns(sqlStatementContext);
+        List<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments().size();
         String databaseName = connectionSession.getCurrentDatabaseName();
         String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
@@ -379,14 +381,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return Collections.emptyList();
     }
 
-    private List<ColumnSegment> findWhereParametersColumns(SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
-            return Collections.emptyList();
+    private List<ColumnSegment> findAffectedColumns(SQLStatementContext sqlStatementContext) {
+        List<ColumnSegment> affectedColumns = new ArrayList<>(sqlStatementContext.getSqlStatement().getParameterCount());
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            for (ColumnAssignmentSegment segment : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
+                if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
+                    affectedColumns.add(segment.getColumns().get(0));
+                }
+            }
         }
-        List<ColumnSegment> affectedColumns = new ArrayList<>();
-        Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
-        for (WhereSegment each : whereSegments) {
-            processExpr(each.getExpr(), affectedColumns);
+        if (sqlStatementContext instanceof WhereAvailable) {
+            Collection<WhereSegment> whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
+            for (WhereSegment each : whereSegments) {
+                processExpr(each.getExpr(), affectedColumns);
+            }
         }
         return affectedColumns;
     }
@@ -446,6 +454,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return Types.VARCHAR;
             case "gen_id":
                 return Types.BIGINT;
+            case "current_timestamp":
+                return Types.TIMESTAMP;
             default:
                 return Types.INTEGER;
         }
