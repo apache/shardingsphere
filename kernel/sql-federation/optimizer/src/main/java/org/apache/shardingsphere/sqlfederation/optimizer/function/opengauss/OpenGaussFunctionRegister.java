@@ -32,15 +32,12 @@ public final class OpenGaussFunctionRegister implements SQLFederationFunctionReg
     
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {
-        schemaPlus.add("version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "version"));
-        schemaPlus.add("opengauss_version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "openGaussVersion"));
-        schemaPlus.add("gs_password_deadline", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordDeadline"));
-        schemaPlus.add("intervaltonum", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "intervalToNum"));
-        schemaPlus.add("gs_password_notifyTime", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordNotifyTime"));
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
-            schemaPlus.add("pg_catalog.gs_password_deadline", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordDeadline"));
-            schemaPlus.add("pg_catalog.intervaltonum", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "intervalToNum"));
-            schemaPlus.add("pg_catalog.gs_password_notifyTime", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordNotifyTime"));
+            schemaPlus.add("gs_password_deadline", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordDeadline"));
+            schemaPlus.add("intervaltonum", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "intervalToNum"));
+            schemaPlus.add("gs_password_notifyTime", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "gsPasswordNotifyTime"));
+            schemaPlus.add("version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "version"));
+            schemaPlus.add("opengauss_version", ScalarFunctionImpl.create(OpenGaussSystemFunction.class, "openGaussVersion"));
         }
         delegate.registerFunction(schemaPlus, schemaName);
     }
