@@ -30,8 +30,8 @@ public final class PostgreSQLFunctionRegister implements SQLFederationFunctionRe
     @Override
     public void registerFunction(final SchemaPlus schemaPlus, final String schemaName) {
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
-            schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
-            schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
+            schemaPlus.add("pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
+            schemaPlus.add("pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
         }
     }
     

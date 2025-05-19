@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Fr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncApplicationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionExprCommonSubexprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupClauseContext;
@@ -447,15 +448,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
-        // TODO replace aggregation segment
-        String aggregationType = ctx.funcApplication().funcName().getText();
-        if (AggregationType.isAggregationType(aggregationType)) {
-            return createAggregationSegment(ctx.funcApplication(), aggregationType, expressionSegments);
-        }
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
-        result.getParameters().addAll(expressionSegments);
-        return result;
+        return visit(ctx.funcApplication());
     }
     
     @Override
@@ -1247,17 +1240,27 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitFuncApplication(final FuncApplicationContext ctx) {
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
-        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.funcName().getText(), getOriginalText(ctx));
+        FuncNameContext funcNameContext = ctx.funcName();
+        String functionName = null == funcNameContext.typeFunctionName() ? funcNameContext.indirection().indirectionEl().attrName().getText() : funcNameContext.typeFunctionName().getText();
+        if (AggregationType.isAggregationType(functionName)) {
+            return createAggregationSegment(ctx, functionName, expressionSegments);
+        }
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionName, getOriginalText(ctx));
+        if (null != funcNameContext.colId()) {
+            result.setOwner(new OwnerSegment(funcNameContext.colId().start.getStartIndex(), funcNameContext.colId().stop.getStopIndex(), new IdentifierValue(funcNameContext.colId().getText())));
+        }
         result.getParameters().addAll(expressionSegments);
         return result;
     }
     
-    private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
+    private void visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
         TableSegment right = (TableSegment) visit(ctx.tableReference());
         tableSegment.setRight(right);
         tableSegment.setJoinType(getJoinType(ctx));
         tableSegment.setNatural(null != ctx.naturalJoinType());
-        return null == ctx.joinQual() ? tableSegment : visitJoinQual(ctx.joinQual(), tableSegment);
+        if (null != ctx.joinQual()) {
+            visitJoinQual(ctx.joinQual(), tableSegment);
+        }
     }
     
     private String getJoinType(final JoinedTableContext ctx) {
@@ -1299,7 +1302,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return JoinType.FULL.name();
     }
     
-    private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {
+    private void visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.aExpr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.aExpr());
             joinTableSource.setCondition(condition);
@@ -1307,7 +1310,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.USING()) {
             joinTableSource.setUsing(generateUsingColumn(ctx.nameList()));
         }
-        return joinTableSource;
     }
     
     private List<ColumnSegment> generateUsingColumn(final NameListContext ctx) {

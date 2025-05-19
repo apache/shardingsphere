@@ -61,6 +61,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationCompilerEn
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationUnsupportedSQLException;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.catalog.SQLFederationCatalogReader;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.util.SQLFederationValidatorUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
@@ -214,7 +215,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         List<String> schemaPath = getSchemaPath(dialectDatabaseMetaData, sqlStatementContext);
-        CalciteCatalogReader catalogReader = new CalciteCatalogReader(optimizerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(optimizerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
         SqlValidator validator = SQLFederationValidatorUtils.createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
         RelOptCluster relOptCluster = SQLFederationValidatorUtils.createRelOptCluster(typeFactory, convention);
         return SQLFederationValidatorUtils.createSqlToRelConverter(catalogReader, validator, relOptCluster, optimizerContext.getSqlParserRule(), databaseType, true);
