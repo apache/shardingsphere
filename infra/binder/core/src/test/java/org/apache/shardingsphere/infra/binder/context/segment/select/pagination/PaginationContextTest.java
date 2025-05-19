@@ -131,7 +131,7 @@ class PaginationContextTest {
     }
     
     @Test
-    void getRevisedRowCount() {
+    void assertGetRevisedRowCount() {
         SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList());
@@ -141,7 +141,7 @@ class PaginationContextTest {
     }
     
     @Test
-    void getRevisedRowCountWithMax() {
+    void assertGetRevisedRowCountWithMax() {
         SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
