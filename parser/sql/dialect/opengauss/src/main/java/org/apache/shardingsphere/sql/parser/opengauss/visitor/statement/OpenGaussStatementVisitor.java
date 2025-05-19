@@ -447,15 +447,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
-        // TODO replace aggregation segment
-        String aggregationType = ctx.funcApplication().funcName().getText();
-        if (AggregationType.isAggregationType(aggregationType) && null == ctx.funcApplication().sortClause()) {
-            return createAggregationSegment(ctx.funcApplication(), aggregationType, expressionSegments);
-        }
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
-        result.getParameters().addAll(expressionSegments);
-        return result;
+        return visit(ctx.funcApplication());
     }
     
     @Override
