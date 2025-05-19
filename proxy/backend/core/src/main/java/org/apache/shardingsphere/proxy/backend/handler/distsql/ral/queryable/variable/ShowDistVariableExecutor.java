@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnection
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
@@ -52,10 +53,21 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariableStatement sqlStatement, final ContextManager contextManager) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         String variableName = sqlStatement.getName();
+        if (isConfigurationKey(variableName)) {
+            return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConfigurationValue(metaData, variableName)));
+        }
         if (isTemporaryConfigurationKey(variableName)) {
             return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getTemporaryConfigurationValue(metaData, variableName)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConnectionSize(variableName)));
+    }
+
+    private boolean isConfigurationKey(final String variableName) {
+        return ConfigurationPropertyKey.getKeyNames().contains(variableName);
+    }
+
+    private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
+        return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
     
     private boolean isTemporaryConfigurationKey(final String variableName) {
