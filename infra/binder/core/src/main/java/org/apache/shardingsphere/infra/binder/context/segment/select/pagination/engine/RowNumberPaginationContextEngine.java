@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
-import com.cedarsoftware.util.CaseInsensitiveSet;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -37,27 +37,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Pagination context engine for row number.
  */
-@RequiredArgsConstructor
 public final class RowNumberPaginationContextEngine {
     
-    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new CaseInsensitiveSet<>(2, 1F);
+    private final DialectPaginationOption paginationOption;
     
-    private static final Map<String, String> DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS = new CaseInsensitiveMap<>(2, 1F);
-    
-    private final DatabaseType databaseType;
-    
-    static {
-        ROW_NUMBER_IDENTIFIERS.add("ROWNUM");
-        ROW_NUMBER_IDENTIFIERS.add("ROW_NUMBER");
-        DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.put("Oracle", "ROWNUM");
-        DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.put("SQLServer", "ROW_NUMBER");
+    public RowNumberPaginationContextEngine(final DatabaseType databaseType) {
+        paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
     }
     
     /**
@@ -89,13 +80,12 @@ public final class RowNumberPaginationContextEngine {
     }
     
     private Optional<String> findRowNumberAlias(final ProjectionsContext projectionsContext) {
-        for (String each : ROW_NUMBER_IDENTIFIERS) {
-            Optional<String> result = projectionsContext.findAlias(each);
-            if (result.isPresent()) {
-                return result;
-            }
+        String rowNumberColumnName = paginationOption.getRowNumberColumnName();
+        if (Strings.isNullOrEmpty(rowNumberColumnName)) {
+            return Optional.empty();
         }
-        return Optional.ofNullable(DATABASE_TYPE_ROW_NUMBER_IDENTIFIERS.get(databaseType.getType()));
+        Optional<String> result = projectionsContext.findAlias(rowNumberColumnName);
+        return result.isPresent() ? result : Optional.of(rowNumberColumnName);
     }
     
     private boolean isRowNumberColumn(final ExpressionSegment predicate, final String rowNumberAlias) {
@@ -103,7 +93,7 @@ public final class RowNumberPaginationContextEngine {
             ExpressionSegment left = ((BinaryOperationExpression) predicate).getLeft();
             if (left instanceof ColumnSegment) {
                 String leftColumnValue = ((ColumnSegment) left).getIdentifier().getValue();
-                return ROW_NUMBER_IDENTIFIERS.contains(leftColumnValue) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
+                return leftColumnValue.equalsIgnoreCase(paginationOption.getRowNumberColumnName()) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
             }
             return false;
         }
