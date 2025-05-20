@@ -56,6 +56,7 @@ public final class Bootstrap {
      * @throws SQLException SQL exception
      */
     public static void main(final String[] args) throws IOException, SQLException {
+        // Main entrance.
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
