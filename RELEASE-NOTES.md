@@ -38,6 +38,7 @@
 1. SQL Parser: Support Oracle SQL parsing V1 keywords as identifiers - [#35373](https://github.com/apache/shardingsphere/pull/35373)
 1. SQL Parser: Support Oracle in literal sql parsing - [#35384](https://github.com/apache/shardingsphere/pull/35384)
 1. SQL Bind: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
+1. SQL Parser: Add MySQL interval expression sql parsing - [#35468](https://github.com/apache/shardingsphere/pull/35468)
 
 ### Bug Fixes
 

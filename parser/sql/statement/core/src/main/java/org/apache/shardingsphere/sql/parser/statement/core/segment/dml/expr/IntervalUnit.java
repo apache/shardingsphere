@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr;
 
 /**
- * Expected expression.
+ * Interval unit.
  */
-@Getter
-@Setter
-@XmlRootElement
-public final class ExpectedIntervalExpression extends AbstractExpectedSQLSegment {
-    
-    @XmlElement(name = "value")
-    private ExpectedExpression value;
-    
-    @XmlElement(name = "interval-unit")
-    private IntervalUnit intervalUnit;
+public enum IntervalUnit {
+    YEAR, QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, MICROSECOND, YEAR_MONTH, DAY_HOUR, DAY_MINUTE, DAY_SECOND, DAY_MICROSECOND, HOUR_MINUTE, HOUR_SECOND, MINUTE_SECOND, SECOND_MICROSECOND,
+    MINUTE_MICROSECOND, HOUR_MICROSECOND
 }
