@@ -266,7 +266,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         int maxConnectionsSizePerQuery = metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) databaseConnectionManager.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(driverType, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager,
-                new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+                new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), metaData.getMetaData());
     }
     
     private ResponseHeader processExecuteFederation(final ResultSet resultSet) throws SQLException {
