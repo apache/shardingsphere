@@ -23,11 +23,6 @@ The possible Maven dependencies are as follows.
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-database-hive</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-parser-sql-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
@@ -67,11 +62,6 @@ The following is an example of a possible configuration,
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-database-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>

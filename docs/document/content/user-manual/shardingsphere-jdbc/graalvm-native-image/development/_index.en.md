@@ -29,7 +29,7 @@ Developer must have installed on their devices,
 
 1. GraalVM CE 22.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 22.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
 2. The native toolchain required to compile the GraalVM Native Image. Refer to https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites .
-3. Docker Engine that can run Linux Containers, or a Container Runtime compatible with testcontainer-java. Refer to https://java.testcontainers.org/supported_docker_environment/ .
+3. Docker Engine that can run Linux Containers, or a Container Runtime compatible with testcontainers-java. Refer to https://java.testcontainers.org/supported_docker_environment/ .
 
 This article does not discuss `LLVM Backend for Native Image`. The following sections discuss the possible required operations under Ubuntu, Windows, and Windows Server.
 
@@ -141,7 +141,7 @@ Developer can use the following commands to compile the GraalVM Native Image req
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -e -T 1C clean test
+./mvnw -PnativeTestInShardingSphere -e -T 1C clean test
 ```
 
 When Windows pops up a window asking developer to allow an app with a path like `C:\users\shard\shardingsphere\test\native\target\native-tests.exe.exe` to pass through Windows Firewall, 
