@@ -159,15 +159,17 @@ public final class ColumnExtractor {
     /**
      * Extract column segments.
      *
-     * @param columnSegments column segments
      * @param whereSegments where segments
+     * @return column segments
      */
-    public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
+    public static Collection<ColumnSegment> extractColumnSegments(final Collection<WhereSegment> whereSegments) {
+        Collection<ColumnSegment> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
             for (ExpressionSegment expression : ExpressionExtractor.extractAllExpressions(each.getExpr())) {
-                columnSegments.addAll(extract(expression));
+                result.addAll(extract(expression));
             }
         }
+        return result;
     }
     
     /**
