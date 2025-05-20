@@ -47,22 +47,24 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     private final TablesContext tablesContext;
     
-    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    private final Collection<WhereSegment> whereSegments;
     
-    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+    private final Collection<ColumnSegment> columnSegments;
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        extractWhereSegments(whereSegments, sqlStatement);
-        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        whereSegments = createWhereSegments(sqlStatement);
+        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
     }
     
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final DeleteStatement deleteStatement) {
-        deleteStatement.getWhere().ifPresent(whereSegments::add);
+    private Collection<WhereSegment> createWhereSegments(final DeleteStatement deleteStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        deleteStatement.getWhere().ifPresent(result::add);
+        return result;
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

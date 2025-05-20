@@ -101,9 +101,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
-    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    private final Collection<WhereSegment> whereSegments;
     
-    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+    private final Collection<ColumnSegment> columnSegments;
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
@@ -118,8 +118,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement,
                                   final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
         super(sqlStatement);
-        extractWhereSegments(whereSegments, sqlStatement);
-        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        whereSegments = createWhereSegments(sqlStatement);
+        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, currentDatabaseName, tableSegments);
@@ -131,10 +131,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);
     }
     
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
-        selectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractor.extractSubqueryWhereSegments(selectStatement));
-        whereSegments.addAll(WhereExtractor.extractJoinWhereSegments(selectStatement));
+    private Collection<WhereSegment> createWhereSegments(final SelectStatement selectStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        selectStatement.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractor.extractSubqueryWhereSegments(selectStatement));
+        result.addAll(WhereExtractor.extractJoinWhereSegments(selectStatement));
+        return result;
     }
     
     private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {

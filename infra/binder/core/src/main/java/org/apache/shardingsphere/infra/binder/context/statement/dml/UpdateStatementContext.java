@@ -45,22 +45,24 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     private final TablesContext tablesContext;
     
-    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    private final Collection<WhereSegment> whereSegments;
     
-    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+    private final Collection<ColumnSegment> columnSegments;
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        extractWhereSegments(whereSegments, sqlStatement);
-        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        whereSegments = createWhereSegments(sqlStatement);
+        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
     }
     
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final UpdateStatement updateStatement) {
-        updateStatement.getWhere().ifPresent(whereSegments::add);
+    private Collection<WhereSegment> createWhereSegments(final UpdateStatement updateStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        updateStatement.getWhere().ifPresent(result::add);
+        return result;
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
