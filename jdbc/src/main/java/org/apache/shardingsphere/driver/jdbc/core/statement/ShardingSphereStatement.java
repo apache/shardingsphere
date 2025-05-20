@@ -115,7 +115,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             prepareExecute(queryContext);
             ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
-            currentResultSet = driverExecutorFacade.executeQuery(usedDatabase, queryContext, this, null,
+            currentResultSet = driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, null,
                     (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
             return currentResultSet;
             // CHECKSTYLE:OFF
@@ -186,7 +186,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
-        return driverExecutorFacade.executeUpdate(usedDatabase, queryContext,
+        return driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
                 updateCallback, (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     
@@ -248,7 +248,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
         ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
-        return driverExecutorFacade.execute(usedDatabase, queryContext, statementExecuteCallback,
+        return driverExecutorFacade.execute(usedDatabase, metaData, queryContext, statementExecuteCallback,
                 (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     

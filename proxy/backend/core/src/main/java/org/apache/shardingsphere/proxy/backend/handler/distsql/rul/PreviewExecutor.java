@@ -159,7 +159,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final ShardingSphereMetaData metaData) {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionContext.getDatabaseConnectionManager(),
-                connectionContext.getExecutorStatementManager(), new StatementOption(false), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+                connectionContext.getExecutorStatementManager(), new StatementOption(false), database.getRuleMetaData().getRules(), metaData);
     }
     
     @Override
