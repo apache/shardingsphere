@@ -40,7 +40,6 @@
 1. SQL Bind: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
 
 ### Bug Fixes
-
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
 1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
