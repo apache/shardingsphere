@@ -32,8 +32,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.CaseWhenExpressionConverter;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expre
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ExtractArgExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.FunctionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.InExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.IntervalExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ListExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.LiteralExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.MatchExpressionConverter;
@@ -151,6 +153,9 @@ public final class ExpressionConverter {
         }
         if (segment instanceof UnaryOperationExpression) {
             return UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment);
+        }
+        if (segment instanceof IntervalExpression) {
+            return IntervalExpressionConverter.convert((IntervalExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

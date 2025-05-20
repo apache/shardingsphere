@@ -19,23 +19,30 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Expected expression.
+ * Expected match expression.
  */
 @Getter
 @Setter
-@XmlRootElement
-public final class ExpectedIntervalExpression extends AbstractExpectedSQLSegment {
+public class ExpectedIntervalExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "value")
-    private ExpectedExpression value;
+    @XmlElement
+    private ExpectedExpression left;
     
-    @XmlElement(name = "interval-unit")
-    private IntervalUnit intervalUnit;
+    @XmlElement
+    private ExpectedExpression right;
+    
+    @XmlElement
+    private ExpectedExpression operator;
+    
+    @XmlElement(name = "interval-day-to-second-expr")
+    private ExpectedIntervalDayToSecondExpression dayToSecondExpression;
+    
+    @XmlElement(name = "interval-year-to-month-expr")
+    private ExpectedIntervalYearToMonthExpression yearToMonthExpression;
+    
 }

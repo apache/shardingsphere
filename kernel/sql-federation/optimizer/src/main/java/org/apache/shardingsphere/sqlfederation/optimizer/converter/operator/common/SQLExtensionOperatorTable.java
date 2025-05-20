@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.com
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlPrefixOperator;
 import org.apache.calcite.sql.type.InferTypes;
@@ -66,4 +68,7 @@ public final class SQLExtensionOperatorTable {
     public static final SqlPrefixOperator NOT = new SqlPrefixOperator("NOT", SqlKind.NOT, 26, ReturnTypes.BIGINT, InferTypes.BOOLEAN, OperandTypes.ANY);
     
     public static final MySQLMatchAgainstOperator MATCH_AGAINST = new MySQLMatchAgainstOperator();
+    
+    public static final SqlFunction INTERVAL_OPERATOR =
+            new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING);
 }

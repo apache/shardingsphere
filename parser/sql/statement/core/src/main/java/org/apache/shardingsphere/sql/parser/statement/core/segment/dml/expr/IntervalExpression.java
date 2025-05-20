@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Expected expression.
+ * Interval expression.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@XmlRootElement
-public final class ExpectedIntervalExpression extends AbstractExpectedSQLSegment {
+public final class IntervalExpression implements ExpressionSegment {
     
-    @XmlElement(name = "value")
-    private ExpectedExpression value;
+    private final int startIndex;
     
-    @XmlElement(name = "interval-unit")
-    private IntervalUnit intervalUnit;
+    private final int stopIndex;
+    
+    private final ExpressionSegment value;
+    
+    private final IntervalUnit intervalUnit;
+    
+    private final String text;
 }

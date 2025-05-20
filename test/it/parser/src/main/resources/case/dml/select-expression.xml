@@ -1604,14 +1604,12 @@
                     </left>
                     <operator>+</operator>
                     <right>
-                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
-                            <parameter>
+                        <interval-expression value="interval" start-index="47" stop-index="54" >
+                            <value>
                                 <literal-expression value="1" start-index="56" stop-index="56" />
-                            </parameter>
-                            <parameter>
-                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
-                            </parameter>
-                        </function>
+                            </value>
+                            <interval-unit>SECOND</interval-unit>
+                        </interval-expression>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1635,14 +1633,12 @@
                     </left>
                     <operator>-</operator>
                     <right>
-                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
-                            <parameter>
-                                <literal-expression value="1" start-index="56" stop-index="56" />
-                            </parameter>
-                            <parameter>
-                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
-                            </parameter>
-                        </function>
+                        <interval-expression value="interval" start-index="47" stop-index="54" >
+                            <value start-index="56" stop-index="56">
+                                <literal-expression value="1" start-index="56" stop-index="56"/>
+                            </value>
+                            <interval-unit>SECOND</interval-unit>
+                        </interval-expression>
                     </right>
                 </binary-operation-expression>
             </expr>

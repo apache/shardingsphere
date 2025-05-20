@@ -1626,15 +1626,13 @@
                             <function function-name="now" text="now()" start-index="70" stop-index="74" />
                         </parameter>
                         <parameter>
-                            <function function-name="interval" text="interval" start-index="76" stop-index="83" >
-                                <parameter>
+                            <interval-expression value="interval" text="interval" start-index="77" stop-index="84" >
+                                <value start-index="85" stop-index="85">
                                     <parameter-marker-expression parameter-index="0" start-index="85" stop-index="85" />
-                                    <literal-expression value="1" start-index="85" stop-index="85" />
-                                </parameter>
-                                <parameter>
-                                    <literal-expression value="second" start-index="87" stop-index="92" />
-                                </parameter>
-                            </function>
+                                    <literal-expression value="1" start-index="85" stop-index="85"/>
+                                </value>
+                                <interval-unit>SECOND</interval-unit>
+                            </interval-expression>
                         </parameter>
                     </function>
                 </assignment-value>
