@@ -54,7 +54,7 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        whereSegments = createWhereSegments(sqlStatement); 
+        whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
     }
