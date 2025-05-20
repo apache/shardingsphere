@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr;
 
 /**
- * Interval unit
+ * Interval unit.
  */
 public enum IntervalUnit {
     YEAR, QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, MICROSECOND, YEAR_MONTH, DAY_HOUR, DAY_MINUTE, DAY_SECOND, DAY_MICROSECOND, HOUR_MINUTE, HOUR_SECOND, MINUTE_SECOND, SECOND_MICROSECOND,
