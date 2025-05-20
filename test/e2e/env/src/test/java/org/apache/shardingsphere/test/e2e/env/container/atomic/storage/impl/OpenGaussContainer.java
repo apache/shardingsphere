@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,12 +62,12 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Map.Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Map.Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
@@ -48,7 +48,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final ShardingSphereProxyClusterContainer proxyContainer;
     
-    private final ShardingSphereJdbcContainer jdbcContainer;
+    private final ShardingSphereJdbcEmbeddedContainer jdbcContainer;
     
     private final DockerStorageContainer storageContainer;
     
@@ -66,7 +66,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             getContainers().registerContainer(proxyContainer);
         } else {
             proxyContainer = null;
-            ShardingSphereJdbcContainer jdbcContainer = new ShardingSphereJdbcContainer(storageContainer,
+            ShardingSphereJdbcEmbeddedContainer jdbcContainer = new ShardingSphereJdbcEmbeddedContainer(storageContainer,
                     Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }

@@ -34,9 +34,12 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContain
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.Base58;
@@ -53,16 +56,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere proxy internal container.
+ * ShardingSphere proxy embedded container.
  * todo Reset static properties when closing the class., like PipelineAPIFactory#GOVERNANCE_FACADE_MAP
  */
 @Slf4j
-public final class ShardingSphereProxyContainer implements AdapterContainer, EmbeddedITContainer {
+public final class ShardingSphereProxyEmbeddedContainer implements AdapterContainer, EmbeddedITContainer {
     
     private static final String OS_MAC_TMP_DIR = "/tmp";
     
@@ -81,7 +84,7 @@ public final class ShardingSphereProxyContainer implements AdapterContainer, Emb
     
     private ShardingSphereProxy proxy;
     
-    public ShardingSphereProxyContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
+    public ShardingSphereProxyEmbeddedContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         this.databaseType = databaseType;
         this.config = config;
     }
@@ -139,33 +142,77 @@ public final class ShardingSphereProxyContainer implements AdapterContainer, Emb
     }
     
     private Path getTempConfigDirectory() throws IOException {
-        Map<String, String> aliasAndHostLinkMap = getAliasAndHostLinkMap();
-        Path tempDirectory = createTempDirectory().toPath();
-        for (Map.Entry<String, String> each : config.getMountedResources().entrySet()) {
-            String content = IOUtils.toString(Objects.requireNonNull(ShardingSphereProxyContainer.class.getClassLoader().getResourceAsStream(each.getKey())), StandardCharsets.UTF_8);
-            for (Map.Entry<String, String> entry : aliasAndHostLinkMap.entrySet()) {
-                content = content.replace(entry.getKey(), entry.getValue());
-            }
-            File tempFile = tempDirectory.resolve(Paths.get(each.getKey()).getFileName()).toFile();
-            tempFile.deleteOnExit();
-            try (FileWriter writer = new FileWriter(tempFile)) {
-                writer.write(content);
-            }
-        }
-        return tempDirectory;
-    }
-    
-    private Map<String, String> getAliasAndHostLinkMap() {
-        Map<String, String> result = new HashMap<>();
-        for (Startable each : dependencies) {
-            if (each instanceof GenericContainer) {
-                result.putAll(getAliasAndHostLinkMap((GenericContainer<?>) each));
+        Map<String, String> networkAliasAndHostLinkMap = getNetworkAliasAndHostLinkMap();
+        Map<String, String> storageConnectionInfoMap = getStorageConnectionInfoMap();
+        Path result = createTempDirectory().toPath();
+        for (Entry<String, String> each : config.getMountedResources().entrySet()) {
+            File file = new File(ShardingSphereProxyEmbeddedContainer.class.getResource(each.getKey()).getFile());
+            if (file.isDirectory()) {
+                writeDirectoryToTempFile(each.getKey(), file, networkAliasAndHostLinkMap, storageConnectionInfoMap, result);
+            } else {
+                String content = IOUtils.toString(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
+                content = replaceContent(networkAliasAndHostLinkMap, storageConnectionInfoMap, content);
+                writeToTempFile(each.getKey(), file, result, content);
             }
         }
         return result;
     }
     
-    private Map<String, String> getAliasAndHostLinkMap(final GenericContainer<?> genericContainer) {
+    private void writeDirectoryToTempFile(final String originalKey, final File file, final Map<String, String> aliasAndHostLinkMap, final Map<String, String> storageConnectionInfoMap,
+                                          final Path tempDirectory) throws IOException {
+        for (File each : file.listFiles()) {
+            String content = IOUtils.toString(Files.newInputStream(each.toPath()), StandardCharsets.UTF_8);
+            content = replaceContent(aliasAndHostLinkMap, storageConnectionInfoMap, content);
+            writeToTempFile(originalKey, each, tempDirectory, content);
+        }
+    }
+    
+    private String replaceContent(final Map<String, String> aliasAndHostLinkMap, final Map<String, String> storageConnectionInfoMap, final String content) {
+        String result = content;
+        for (Entry<String, String> entry : aliasAndHostLinkMap.entrySet()) {
+            result = result.replace(entry.getKey(), entry.getValue());
+        }
+        for (Entry<String, String> entry : storageConnectionInfoMap.entrySet()) {
+            result = result.replace(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+    
+    private void writeToTempFile(final String originalKey, final File file, final Path tempDirectory, final String content) throws IOException {
+        File tempFile = tempDirectory.resolve(Paths.get(originalKey + "/" + file.getName()).getFileName()).toFile();
+        tempFile.deleteOnExit();
+        try (FileWriter writer = new FileWriter(tempFile)) {
+            writer.write(content);
+        }
+    }
+    
+    private Map<String, String> getStorageConnectionInfoMap() {
+        Map<String, String> result = new HashMap<>();
+        for (Startable each : dependencies) {
+            if (!(each instanceof NativeStorageContainer)) {
+                continue;
+            }
+            NativeStorageContainer storageContainer = (NativeStorageContainer) each;
+            for (String network : storageContainer.getNetworkAliases()) {
+                result.put(network + ":" + storageContainer.getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
+            }
+        }
+        result.put("username: " + StorageContainerConstants.USERNAME, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put("password: " + StorageContainerConstants.PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        return result;
+    }
+    
+    private Map<String, String> getNetworkAliasAndHostLinkMap() {
+        Map<String, String> result = new HashMap<>();
+        for (Startable each : dependencies) {
+            if (each instanceof GenericContainer) {
+                result.putAll(getNetworkAliasAndHostLinkMap((GenericContainer<?>) each));
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, String> getNetworkAliasAndHostLinkMap(final GenericContainer<?> genericContainer) {
         Map<String, String> result = new HashMap<>();
         for (String each : genericContainer.getNetworkAliases()) {
             for (Integer exposedPort : genericContainer.getExposedPorts()) {
