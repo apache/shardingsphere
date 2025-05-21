@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +40,7 @@ public final class SQLStatementCompilerEngineFactory {
      * @param cacheOption execution plan cache option
      * @return SQL statement compiler engine
      */
-    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String databaseName, final String schemaName, final CacheOption cacheOption) {
+    public static SQLStatementCompilerEngine getSQLStatementCompilerEngine(final String databaseName, final String schemaName, final SQLFederationCacheOption cacheOption) {
         String cacheKey = databaseName + "." + schemaName;
         SQLStatementCompilerEngine result = COMPILER_ENGINES.get(cacheKey);
         if (null == result) {

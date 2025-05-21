@@ -21,7 +21,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 
 /**
@@ -36,7 +36,7 @@ public final class ExecutionPlanCacheBuilder {
      * @param executionPlanCache execution plan cache option
      * @return built execution plan cache
      */
-    public static LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> build(final CacheOption executionPlanCache) {
+    public static LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> build(final SQLFederationCacheOption executionPlanCache) {
         return Caffeine.newBuilder().softValues().initialCapacity(executionPlanCache.getInitialCapacity()).maximumSize(executionPlanCache.getMaximumSize()).build(new ExecutionPlanCacheLoader());
     }
 }

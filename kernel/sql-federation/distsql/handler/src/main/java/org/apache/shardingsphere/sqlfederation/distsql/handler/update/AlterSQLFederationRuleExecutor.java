@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
@@ -37,16 +37,16 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     public SQLFederationRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
         boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? rule.getConfiguration().isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
         boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? rule.getConfiguration().isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
-        CacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
+        SQLFederationCacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
                 ? rule.getConfiguration().getExecutionPlanCache()
                 : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
         return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
     }
     
-    private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
+    private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
-        return new CacheOption(initialCapacity, maximumSize);
+        return new SQLFederationCacheOption(initialCapacity, maximumSize);
     }
     
     @Override

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
@@ -59,15 +59,15 @@ class AlterSQLFederationRuleExecutorTest extends GlobalRuleDefinitionExecutorTes
                     Arguments.arguments("normal",
                             new DefaultSQLFederationRuleConfigurationBuilder().build(),
                             new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L)),
-                            new SQLFederationRuleConfiguration(true, true, new CacheOption(64, 512L)), null),
+                            new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(64, 512L)), null),
                     Arguments.arguments("withNotExistedDistributedTransactionType",
                             new DefaultSQLFederationRuleConfigurationBuilder().build(),
                             new AlterSQLFederationRuleStatement(null, null, null),
-                            new SQLFederationRuleConfiguration(false, false, new CacheOption(2000, 65535L)), null),
+                            new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(2000, 65535L)), null),
                     Arguments.arguments("withNotExistedXATransactionProvider",
                             new DefaultSQLFederationRuleConfigurationBuilder().build(),
                             new AlterSQLFederationRuleStatement(null, null, new CacheOptionSegment(null, null)),
-                            new SQLFederationRuleConfiguration(false, false, new CacheOption(2000, 65535L)), null));
+                            new SQLFederationRuleConfiguration(false, false, new SQLFederationCacheOption(2000, 65535L)), null));
         }
     }
 }

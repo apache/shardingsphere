@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.optimizer.statement.SQLStatementCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.statement.SQLStatementCompilerEngineFactory;
@@ -29,7 +29,7 @@ public final class SQLFederationCompilerEngine {
     
     private final SQLStatementCompilerEngine sqlStatementCompilerEngine;
     
-    public SQLFederationCompilerEngine(final String databaseName, final String schemaName, final CacheOption cacheOption) {
+    public SQLFederationCompilerEngine(final String databaseName, final String schemaName, final SQLFederationCacheOption cacheOption) {
         sqlStatementCompilerEngine = SQLStatementCompilerEngineFactory.getSQLStatementCompilerEngine(databaseName, schemaName, cacheOption);
     }
     
