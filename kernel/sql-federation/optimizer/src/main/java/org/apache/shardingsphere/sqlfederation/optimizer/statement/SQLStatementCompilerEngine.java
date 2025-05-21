@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.statement;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.cache.ExecutionPlanCacheKey;
@@ -30,7 +30,7 @@ public final class SQLStatementCompilerEngine {
     
     private final LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> executionPlanCache;
     
-    public SQLStatementCompilerEngine(final CacheOption cacheOption) {
+    public SQLStatementCompilerEngine(final SQLFederationCacheOption cacheOption) {
         executionPlanCache = ExecutionPlanCacheBuilder.build(cacheOption);
     }
     

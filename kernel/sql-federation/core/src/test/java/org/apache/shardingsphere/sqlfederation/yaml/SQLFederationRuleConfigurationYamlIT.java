@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 class SQLFederationRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     SQLFederationRuleConfigurationYamlIT() {
-        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new CacheOption(128, 1024)));
+        super("yaml/sql-federation-rule.yaml", new SQLFederationRuleConfiguration(true, true, new SQLFederationCacheOption(128, 1024)));
     }
 }

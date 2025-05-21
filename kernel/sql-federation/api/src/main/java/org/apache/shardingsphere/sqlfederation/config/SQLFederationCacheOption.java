@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.sqlfederation.config;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 /**
- * SQL federation rule configuration.
+ * SQL federation cache option.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
+@EqualsAndHashCode
+public final class SQLFederationCacheOption {
     
-    private final boolean sqlFederationEnabled;
+    private final int initialCapacity;
     
-    private final boolean allQueryUseSQLFederation;
+    private final long maximumSize;
     
-    private final SQLFederationCacheOption executionPlanCache;
+    @Override
+    public String toString() {
+        return String.format("initialCapacity: %d, maximumSize: %d", initialCapacity, maximumSize);
+    }
 }

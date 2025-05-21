@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.engine.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 
 import static org.mockito.Mockito.mock;
@@ -28,7 +28,7 @@ public final class SQLFederationDeciderRuleNotMatchFixture implements ShardingSp
     
     @Override
     public RuleConfiguration getConfiguration() {
-        return new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class));
+        return new SQLFederationRuleConfiguration(false, false, mock(SQLFederationCacheOption.class));
     }
     
     @Override
