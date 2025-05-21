@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
@@ -72,6 +73,9 @@ public final class ITContainers implements Startable {
             ((ComboITContainer) container).getContainers().forEach(this::registerContainer);
         } else if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
+        } else if (container instanceof NativeStorageContainer) {
+            String networkAlias = getNetworkAlias(container);
+            ((NativeStorageContainer) container).setNetworkAliases(Collections.singletonList(networkAlias));
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;
             dockerContainer.setNetwork(network);

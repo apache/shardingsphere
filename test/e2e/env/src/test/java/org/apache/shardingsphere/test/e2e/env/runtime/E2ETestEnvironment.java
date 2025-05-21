@@ -46,6 +46,14 @@ public final class E2ETestEnvironment {
     
     private final boolean smoke;
     
+    private final String nativeStorageHost;
+    
+    private final String nativeStoragePort;
+    
+    private final String nativeStorageUsername;
+    
+    private final String nativeStoragePassword;
+    
     private E2ETestEnvironment() {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
@@ -54,6 +62,10 @@ public final class E2ETestEnvironment {
         scenarios = getScenarios(props);
         smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
         clusterEnvironment = new ClusterEnvironment(props);
+        nativeStorageHost = props.getProperty("it.native.storage.host");
+        nativeStoragePort = props.getProperty("it.native.storage.port");
+        nativeStorageUsername = props.getProperty("it.native.storage.username");
+        nativeStoragePassword = props.getProperty("it.native.storage.password");
     }
     
     @SuppressWarnings("AccessOfSystemProperties")

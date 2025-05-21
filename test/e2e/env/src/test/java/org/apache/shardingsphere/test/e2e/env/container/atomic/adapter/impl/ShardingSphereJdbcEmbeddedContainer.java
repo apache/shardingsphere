@@ -31,12 +31,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere JDBC container.
+ * ShardingSphere JDBC embedded container.
  */
-public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, AdapterContainer {
+public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
     
@@ -44,7 +45,7 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     
     private final String configPath;
     
-    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String configPath) {
+    public ShardingSphereJdbcEmbeddedContainer(final StorageContainer storageContainer, final String configPath) {
         this.configPath = configPath;
         this.storageContainer = storageContainer;
     }
@@ -78,7 +79,7 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     private String processFile(final String filePath, final Map<String, String> replacements) throws IOException {
         Path path = Paths.get(filePath);
         String content = new String(Files.readAllBytes(path));
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+        for (Entry<String, String> entry : replacements.entrySet()) {
             content = content.replace(entry.getKey(), entry.getValue());
         }
         File tempFile = File.createTempFile("shardingsphere_e2e_jdbc_tmp_config_", null);

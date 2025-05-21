@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +50,7 @@ public final class PrestoMetaDataLoader implements DialectMetaDataLoader {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         try (Connection connection = material.getDataSource().getConnection()) {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames());
-            for (Map.Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
+            for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), Collections.emptyList(), Collections.emptyList()));
             }
         }
