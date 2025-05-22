@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,11 +45,11 @@ public interface SQLFederationProcessor {
      * @param currentDatabaseName current database name
      * @param currentSchemaName current schema name
      * @param federationContext federation context
-     * @param optimizerContext optimizer context
+     * @param compilerContext compiler context
      * @param schemaPlus sql federation schema
      */
     void prepare(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                 String currentDatabaseName, String currentSchemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus);
+                 String currentDatabaseName, String currentSchemaName, SQLFederationContext federationContext, CompilerContext compilerContext, SchemaPlus schemaPlus);
     
     /**
      * Release.
