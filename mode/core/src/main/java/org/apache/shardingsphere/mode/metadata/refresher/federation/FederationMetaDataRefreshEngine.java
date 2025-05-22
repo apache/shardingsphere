@@ -53,7 +53,7 @@ public final class FederationMetaDataRefreshEngine {
     @SuppressWarnings("unchecked")
     public void refresh(final SQLStatementContext sqlStatementContext) {
         Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(
-                optional -> optional.refresh(metaDataManagerPersistService, database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
+        TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(optional -> optional.refresh(metaDataManagerPersistService,
+                sqlStatementContext.getDatabaseType(), database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
 }
