@@ -23,7 +23,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
 
 import java.util.Map;
 
@@ -33,14 +33,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class SQLFederationBindContext implements DataContext {
     
-    private final SqlToRelConverter converter;
+    private final SQLFederationRelConverter converter;
     
     @Getter
     private final Map<String, Object> parameters;
     
     @Override
     public SchemaPlus getRootSchema() {
-        return converter.validator.getCatalogReader().getRootSchema().plus();
+        return converter.getSchemaPlus();
     }
     
     @Override

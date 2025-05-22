@@ -25,14 +25,12 @@ import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQueryBase;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.util.LogicalScanRelShuttle;
-
-import java.util.Objects;
 
 /**
  * SQL statement compiler.
@@ -40,7 +38,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class SQLStatementCompiler {
     
-    private final SqlToRelConverter converter;
+    private final SQLFederationRelConverter converter;
     
     private final Convention convention;
     
@@ -55,7 +53,7 @@ public final class SQLStatementCompiler {
         RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
-        RelDataType resultColumnType = Objects.requireNonNull(converter.validator).getValidatedNodeType(sqlNode);
+        RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
         RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
         RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerBuilder.buildHepPlanner());
         RelNode physicalPlan = optimize(rewritePlan, converter);
@@ -68,7 +66,7 @@ public final class SQLStatementCompiler {
         return hepPlanner.findBestExp();
     }
     
-    private RelNode optimize(final RelNode rewritePlan, final SqlToRelConverter converter) {
+    private RelNode optimize(final RelNode rewritePlan, final SQLFederationRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
         if (rewritePlan.getTraitSet().equals(converter.getCluster().traitSet().replace(convention))) {
             planner.setRoot(rewritePlan);
