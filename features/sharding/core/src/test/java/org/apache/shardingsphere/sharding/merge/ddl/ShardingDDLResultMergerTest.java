@@ -97,7 +97,6 @@ class ShardingDDLResultMergerTest {
         SelectStatement result = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")))));
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
     
