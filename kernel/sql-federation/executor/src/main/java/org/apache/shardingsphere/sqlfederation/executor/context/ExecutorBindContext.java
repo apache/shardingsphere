@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederat
 import java.util.Map;
 
 /**
- * SQL federation bind context.
+ * Executor bind context.
  */
 @RequiredArgsConstructor
-public final class SQLFederationBindContext implements DataContext {
+public final class ExecutorBindContext implements DataContext {
     
     private final SQLFederationRelConverter converter;
     

@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.context;
+package org.apache.shardingsphere.sqlfederation.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * SQL federation executor context.
+ * SQL federation context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLFederationExecutorContext {
+public final class SQLFederationContext {
     
-    private final String currentDatabaseName;
+    private final Collection<ExecutionUnit> previewExecutionUnits = new LinkedList<>();
     
-    private final String currentSchemaName;
+    private final boolean preview;
     
-    private final ConfigurationProperties props;
+    private final QueryContext queryContext;
     
-    private final Map<String, Integer> connectionOffsets = new LinkedHashMap<>();
+    private final ShardingSphereMetaData metaData;
+    
+    private final String processId;
 }

@@ -56,7 +56,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionP
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -104,7 +104,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        processor = SQLFederationProcessorFactory.getInstance().newInstance(metaData, statistics, jdbcExecutor);
+        processor = SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor);
     }
     
     /**
