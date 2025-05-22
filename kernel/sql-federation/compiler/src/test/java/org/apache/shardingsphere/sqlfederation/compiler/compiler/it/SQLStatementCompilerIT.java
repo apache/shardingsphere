@@ -82,7 +82,7 @@ class SQLStatementCompilerIT {
         calciteSchema.add(SCHEMA_NAME,
                 new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType, SQLFederationDataTypeFactory.getInstance()));
         sqlStatementCompiler = new SQLStatementCompiler(new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties())),
-                Collections.emptyList(), databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
+                Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {

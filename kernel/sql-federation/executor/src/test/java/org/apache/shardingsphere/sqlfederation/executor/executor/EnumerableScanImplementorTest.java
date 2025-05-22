@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.enumerable;
+package org.apache.shardingsphere.sqlfederation.executor.executor;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
@@ -31,8 +31,9 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementorContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor.EnumerableScanImplementor;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -46,10 +47,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EnumerableScanExecutorTest {
+class EnumerableScanImplementorTest {
     
     @Test
-    void assertExecuteWithStatistics() {
+    void assertImplementWithStatistics() {
         CompilerContext compilerContext = mock(CompilerContext.class, RETURNS_DEEP_STUBS);
         ExecutorContext executorContext = mock(ExecutorContext.class);
         when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
@@ -62,7 +63,7 @@ class EnumerableScanExecutorTest {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = mockSelectStatementContext();
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
-        Enumerable<Object> enumerable = new EnumerableScanExecutor(queryContext, compilerContext, executorContext).execute(table, mock(ScanExecutorContext.class));
+        Enumerable<Object> enumerable = new EnumerableScanImplementor(queryContext, compilerContext, executorContext).implement(table, mock(ScanImplementorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object row = actual.current();

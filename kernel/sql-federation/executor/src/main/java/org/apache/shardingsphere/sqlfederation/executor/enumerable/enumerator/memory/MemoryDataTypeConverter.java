@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.utils;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,7 +35,7 @@ import java.util.Optional;
  * Enumerator utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnumeratorUtils {
+public final class MemoryDataTypeConverter {
     
     /**
      * Create column types.

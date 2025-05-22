@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table;
+package org.apache.shardingsphere.sqlfederation.compiler.implementor;
 
-import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 /**
- * Empty row enumerator.
+ * Scan implementor interface.
  */
-public final class EmptyRowEnumerator implements Enumerator<Object> {
+public interface ScanImplementor {
     
-    @Override
-    public Object current() {
-        return new Object();
-    }
-    
-    @Override
-    public boolean moveNext() {
-        return false;
-    }
-    
-    @Override
-    public void reset() {
-    }
-    
-    @Override
-    public void close() {
-    }
+    /**
+     * Implement.
+     *
+     * @param table table meta data
+     * @param scanContext push down table scan context
+     * @return query results
+     */
+    Enumerable<Object> implement(ShardingSphereTable table, ScanImplementorContext scanContext);
 }

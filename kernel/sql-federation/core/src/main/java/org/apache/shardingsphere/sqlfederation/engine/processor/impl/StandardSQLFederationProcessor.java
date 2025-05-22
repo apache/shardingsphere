@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor.EnumerableScanImplementor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 
 import java.sql.Connection;
@@ -73,6 +73,8 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     
     private final JDBCExecutor jdbcExecutor;
     
+    private ExecutorContext executorContext;
+    
     @Override
     public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                         final String currentDatabaseName, final String currentSchemaName, final SQLFederationContext federationContext, final CompilerContext compilerContext,
@@ -80,9 +82,8 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         if (null == schemaPlus) {
             return;
         }
-        ExecutorContext executorContext =
-                new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
-        EnumerableScanExecutor scanExecutor = new EnumerableScanExecutor(federationContext.getQueryContext(), compilerContext, executorContext);
+        executorContext = new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
+        EnumerableScanImplementor scanExecutor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()
@@ -139,7 +140,11 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        return new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType());
+        SQLFederationResultSet result = new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType());
+        if (federationContext.isPreview()) {
+            federationContext.getPreviewExecutionUnits().addAll(executorContext.getPreviewExecutionUnits());
+        }
+        return result;
     }
     
     private Map<String, Object> createParameters(final List<Object> params) {

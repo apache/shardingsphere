@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.enumerable;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -51,13 +51,13 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutor;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementor;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.enumerator.EmptyDataRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.enumerator.JDBCRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.executor.enumerator.MemoryRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.executor.utils.StatisticsAssembleUtils;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.jdbc.JDBCDataRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory.MemoryDataRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory.MemoryTableStatisticsBuilder;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -71,10 +71,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Enumerable scan executor.
+ * Enumerable scan implementor.
  */
 @RequiredArgsConstructor
-public final class EnumerableScanExecutor implements ScanExecutor {
+public final class EnumerableScanImplementor implements ScanImplementor {
     
     private final QueryContext queryContext;
     
@@ -85,7 +85,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     private final ProcessEngine processEngine = new ProcessEngine();
     
     @Override
-    public Enumerable<Object> execute(final ShardingSphereTable table, final ScanExecutorContext scanContext) {
+    public Enumerable<Object> implement(final ShardingSphereTable table, final ScanImplementorContext scanContext) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (containsSystemSchema(sqlStatementContext)) {
             return createMemoryEnumerable(sqlStatementContext, table);
@@ -126,7 +126,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 MergeEngine mergeEngine = new MergeEngine(queryContext.getMetaData(), database, queryContext.getMetaData().getProps(), queryContext.getConnectionContext());
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
                 Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
-                return new JDBCRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
+                return new JDBCDataRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
             }
         };
     }
@@ -152,7 +152,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
         if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
-            return createMemoryEnumerator(StatisticsAssembleUtils.assembleTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
+            return createMemoryEnumerator(MemoryTableStatisticsBuilder.buildTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
         }
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable,
                 () -> new IllegalStateException(String.format("Can not support %s in sql federation", sqlStatementContext.getSqlStatement().getClass().getSimpleName())));
@@ -168,7 +168,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryRowEnumerator(tableStatistics.getRows(), table.getAllColumns(), databaseType);
+                return new MemoryDataRowEnumerator(tableStatistics.getRows(), table.getAllColumns(), databaseType);
             }
         };
     }
@@ -201,7 +201,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         }
     }
     
-    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanExecutorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
+    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanImplementorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
         String sql = sqlString.getSql().replace(System.lineSeparator(), " ");
         SQLStatement sqlStatement = compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
@@ -226,7 +226,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyDataRowEnumerator();
             }
         };
     }

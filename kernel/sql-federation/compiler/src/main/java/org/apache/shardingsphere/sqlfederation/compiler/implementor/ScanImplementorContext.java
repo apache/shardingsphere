@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table;
+package org.apache.shardingsphere.sqlfederation.compiler.implementor;
 
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.calcite.DataContext;
 
 /**
- * Scan executor interface.
+ * Scan implementor context.
  */
-public interface ScanExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class ScanImplementorContext {
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext push down table scan context
-     * @return query results
-     */
-    Enumerable<Object> execute(ShardingSphereTable table, ScanExecutorContext scanContext);
+    private final DataContext root;
+    
+    private final String sql;
+    
+    private final int[] paramIndexes;
 }

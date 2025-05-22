@@ -46,9 +46,9 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutor;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementor;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.implementor.enumerator.EmptyDataRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.lang.reflect.Type;
@@ -62,7 +62,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLFederationTable extends AbstractTable implements ModifiableTable, TranslatableTable {
     
-    private static final TransmittableThreadLocal<ScanExecutor> SCAN_EXECUTOR_HOLDER = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<ScanImplementor> SCAN_EXECUTOR_HOLDER = new TransmittableThreadLocal<>();
     
     private final ShardingSphereTable table;
     
@@ -94,18 +94,18 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     }
     
     /**
-     * Execute.
+     * Implement.
      *
      * @param root data context
      * @param sql sql
      * @param paramIndexes param indexes
      * @return enumerable result
      */
-    public Enumerable<Object> execute(final DataContext root, final String sql, final int[] paramIndexes) {
+    public Enumerable<Object> implement(final DataContext root, final String sql, final int[] paramIndexes) {
         if (null == SCAN_EXECUTOR_HOLDER.get()) {
             return createEmptyEnumerable();
         }
-        return SCAN_EXECUTOR_HOLDER.get().execute(table, new ScanExecutorContext(root, sql, paramIndexes));
+        return SCAN_EXECUTOR_HOLDER.get().implement(table, new ScanImplementorContext(root, sql, paramIndexes));
     }
     
     private AbstractEnumerable<Object> createEmptyEnumerable() {
@@ -113,7 +113,7 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyDataRowEnumerator();
             }
         };
     }
@@ -138,10 +138,10 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     /**
      * Set scan executor.
      *
-     * @param scanExecutor scan executor
+     * @param scanImplementor scan executor
      */
-    public void setScanExecutor(final ScanExecutor scanExecutor) {
-        SCAN_EXECUTOR_HOLDER.set(scanExecutor);
+    public void setScanExecutor(final ScanImplementor scanImplementor) {
+        SCAN_EXECUTOR_HOLDER.set(scanImplementor);
     }
     
     /**
