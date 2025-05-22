@@ -310,8 +310,8 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilder\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider\\E"
@@ -412,7 +412,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Qregistry.conf\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
     "pattern":"\\Qsaffron.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"},

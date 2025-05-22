@@ -3781,56 +3781,56 @@
   "name":"org.apache.shardingsphere.sqlfederation.distsql.parser.facade.SQLFederationDistSQLParserFacade"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.H2ConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.H2ConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.MySQLConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.MySQLConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OpenGaussConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OpenGaussConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.OracleConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.OracleConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.PostgreSQLConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.PostgreSQLConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQL92ConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQL92ConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.ConnectionConfigBuilderFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.context.connection.config.impl.SQLServerConnectionConfigBuilder"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.impl.SQLServerConnectionConfigBuilder"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.schema.CalciteSchemaBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.impl.MySQLBinFunction"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.schema.CalciteSchemaBuilder$$Lambda/0x0000027d0c57d148"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.schema.CalciteSchemaBuilder$$Lambda/0x0000027d0c57d148"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.impl.MySQLBinFunction"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.MySQLFunctionRegister"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.mysql.impl.MySQLBinFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.OpenGaussFunctionRegister"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.impl.OpenGaussSystemFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.opengauss.OpenGaussFunctionRegister"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.impl.PostgreSQLSystemFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.PostgreSQLFunctionRegister"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.function.postgresql.impl.PostgreSQLSystemFunction"
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},

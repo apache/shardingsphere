@@ -61,10 +61,10 @@ import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExe
 import org.apache.shardingsphere.sqlfederation.executor.enumerator.JDBCRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.executor.enumerator.MemoryRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.executor.utils.StatisticsAssembleUtils;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.EmptyRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutor;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutorContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,7 +90,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    private final OptimizerContext optimizerContext;
+    private final CompilerContext compilerContext;
     
     private final SQLFederationExecutorContext executorContext;
     
@@ -217,7 +217,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanExecutorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
         String sql = sqlString.getSql().replace(System.lineSeparator(), " ");
-        SQLStatement sqlStatement = optimizerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
+        SQLStatement sqlStatement = compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, params);

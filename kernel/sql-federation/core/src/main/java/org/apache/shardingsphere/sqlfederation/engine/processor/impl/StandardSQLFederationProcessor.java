@@ -49,10 +49,10 @@ import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationBin
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.exception.SQLFederationSchemaNotFoundException;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationSchemaNotFoundException;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 
 import java.sql.Connection;
@@ -77,14 +77,14 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     
     @Override
     public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                        final String currentDatabaseName, final String currentSchemaName, final SQLFederationContext federationContext, final OptimizerContext optimizerContext,
+                        final String currentDatabaseName, final String currentSchemaName, final SQLFederationContext federationContext, final CompilerContext compilerContext,
                         final SchemaPlus schemaPlus) {
         if (null == schemaPlus) {
             return;
         }
         SQLFederationExecutorContext executorContext = new SQLFederationExecutorContext(currentDatabaseName, currentSchemaName, metaData.getProps());
         EnumerableScanExecutor scanExecutor =
-                new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext, federationContext, metaData.getGlobalRuleMetaData(), statistics);
+                new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, compilerContext, executorContext, federationContext, metaData.getGlobalRuleMetaData(), statistics);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()

@@ -77,9 +77,8 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         if (!selectStatement.getFrom().isPresent() || !(selectStatement.getFrom().get() instanceof JoinTableSegment)) {
             return true;
         }
-        return selectStatement.getFrom().isPresent() && selectStatement.getFrom().get() instanceof JoinTableSegment
-                && (JoinType.INNER.name().equalsIgnoreCase(((JoinTableSegment) selectStatement.getFrom().get()).getJoinType())
-                        || JoinType.COMMA.name().equalsIgnoreCase(((JoinTableSegment) selectStatement.getFrom().get()).getJoinType()));
+        JoinTableSegment joinTableSegment = (JoinTableSegment) selectStatement.getFrom().get();
+        return JoinType.INNER.name().equalsIgnoreCase(joinTableSegment.getJoinType()) || JoinType.COMMA.name().equalsIgnoreCase(joinTableSegment.getJoinType());
     }
     
     private Collection<QualifiedTable> getSingleTables(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {

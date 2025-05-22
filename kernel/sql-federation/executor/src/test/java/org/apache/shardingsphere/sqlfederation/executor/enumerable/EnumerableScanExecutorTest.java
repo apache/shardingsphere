@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table.ScanExecutorContext;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -50,7 +50,7 @@ class EnumerableScanExecutorTest {
     
     @Test
     void assertExecuteWithStatistics() {
-        OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
+        CompilerContext compilerContext = mock(CompilerContext.class, RETURNS_DEEP_STUBS);
         SQLFederationExecutorContext executorContext = mock(SQLFederationExecutorContext.class);
         when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
         when(executorContext.getCurrentSchemaName()).thenReturn("pg_catalog");
@@ -69,7 +69,7 @@ class EnumerableScanExecutorTest {
         SelectStatementContext selectStatementContext = mockSelectStatementContext();
         when(federationContext.getQueryContext().getSqlStatementContext()).thenReturn(selectStatementContext);
         Enumerable<Object> enumerable =
-                new EnumerableScanExecutor(null, null, null, optimizerContext, executorContext, federationContext, null, statistics).execute(table, mock(ScanExecutorContext.class));
+                new EnumerableScanExecutor(null, null, null, compilerContext, executorContext, federationContext, null, statistics).execute(table, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object row = actual.current();

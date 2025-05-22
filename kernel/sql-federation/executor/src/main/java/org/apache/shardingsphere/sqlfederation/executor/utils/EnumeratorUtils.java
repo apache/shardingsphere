@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.datatype.SQLFederationDataTypeBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeBuilder;
 
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
