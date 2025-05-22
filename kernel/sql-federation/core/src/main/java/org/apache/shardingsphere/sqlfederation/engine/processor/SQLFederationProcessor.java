@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sqlfederation.engine.processor;
 
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -73,7 +73,7 @@ public interface SQLFederationProcessor {
      * @return resultset
      */
     ResultSet executePlan(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                          SQLFederationExecutionPlan executionPlan, SqlToRelConverter converter, SQLFederationContext federationContext, SchemaPlus schemaPlus);
+                          SQLFederationExecutionPlan executionPlan, SQLFederationRelConverter converter, SQLFederationContext federationContext, SchemaPlus schemaPlus);
     
     /**
      * Get conversion.

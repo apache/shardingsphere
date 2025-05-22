@@ -19,20 +19,13 @@ package org.apache.shardingsphere.sqlfederation.engine;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.plan.Convention;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -54,18 +47,16 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationUnsupportedSQLException;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.catalog.SQLFederationCatalogReader;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederationValidatorUtils;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
+import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -113,7 +104,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        processor = SQLFederationProcessorFactory.getInstance().newInstance(metaData, statistics, jdbcExecutor);
+        processor = SQLFederationProcessorFactory.getInstance().newInstance(statistics, jdbcExecutor);
     }
     
     /**
@@ -193,11 +184,13 @@ public final class SQLFederationEngine implements AutoCloseable {
         queryContext = federationContext.getQueryContext();
         try {
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-            SqlToRelConverter converter = creeateSQLToRelConverter(sqlStatementContext, processor.getConvention());
-            schemaPlus = converter.validator.getCatalogReader().getRootSchema().plus();
-            processor.prepare(prepareEngine, callback, currentDatabaseName, currentSchemaName, federationContext, sqlFederationRule.getCompilerContext(), schemaPlus);
-            SQLFederationExecutionPlan executionPlan =
-                    compileQuery(converter, currentDatabaseName, currentSchemaName, federationContext.getMetaData(), sqlStatementContext, queryContext.getSql(), processor.getConvention());
+            CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
+            SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext,
+                    getSchemaPath(sqlStatementContext), sqlStatementContext.getDatabaseType(), processor.getConvention());
+            schemaPlus = converter.getSchemaPlus();
+            processor.prepare(prepareEngine, callback, currentDatabaseName, currentSchemaName, federationContext, compilerContext, schemaPlus);
+            SQLFederationExecutionPlan executionPlan = compileQuery(converter, currentDatabaseName,
+                    currentSchemaName, federationContext.getMetaData(), sqlStatementContext, queryContext.getSql(), processor.getConvention());
             resultSet = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, schemaPlus);
             return resultSet;
             // CHECKSTYLE:OFF
@@ -209,20 +202,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         }
     }
     
-    private SqlToRelConverter creeateSQLToRelConverter(final SQLStatementContext sqlStatementContext, final Convention convention) {
-        CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
-        JavaTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
-        CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
-        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        List<String> schemaPath = getSchemaPath(dialectDatabaseMetaData, sqlStatementContext);
-        CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
-        SqlValidator validator = SQLFederationValidatorUtils.createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
-        RelOptCluster relOptCluster = SQLFederationValidatorUtils.createRelOptCluster(typeFactory, convention);
-        return SQLFederationValidatorUtils.createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
-    }
-    
-    private List<String> getSchemaPath(final DialectDatabaseMetaData dialectDatabaseMetaData, final SQLStatementContext sqlStatementContext) {
+    private List<String> getSchemaPath(final SQLStatementContext sqlStatementContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
         // TODO set default schema according to search path result
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             return sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
@@ -232,7 +213,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         return Collections.singletonList(currentDatabaseName);
     }
     
-    private SQLFederationExecutionPlan compileQuery(final SqlToRelConverter converter, final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
+    private SQLFederationExecutionPlan compileQuery(final SQLFederationRelConverter converter, final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
                                                     final SQLStatementContext sqlStatementContext, final String sql, final Convention convention) {
         SQLStatementCompiler sqlStatementCompiler = new SQLStatementCompiler(converter, convention);
         SQLFederationCompilerEngine compilerEngine = new SQLFederationCompilerEngine(databaseName, schemaName, sqlFederationRule.getConfiguration().getExecutionPlanCache());

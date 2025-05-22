@@ -27,7 +27,7 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
@@ -40,19 +40,19 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationBindContext;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationSchemaNotFoundException;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
+import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
+import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.enumerable.implementor.EnumerableScanImplementor;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 
 import java.sql.Connection;
@@ -69,11 +69,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class StandardSQLFederationProcessor implements SQLFederationProcessor {
     
-    private final ShardingSphereMetaData metaData;
-    
     private final ShardingSphereStatistics statistics;
     
     private final JDBCExecutor jdbcExecutor;
+    
+    private ExecutorContext executorContext;
     
     @Override
     public void prepare(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
@@ -82,9 +82,9 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         if (null == schemaPlus) {
             return;
         }
-        SQLFederationExecutorContext executorContext = new SQLFederationExecutorContext(currentDatabaseName, currentSchemaName, metaData.getProps());
-        EnumerableScanExecutor scanExecutor =
-                new EnumerableScanExecutor(prepareEngine, jdbcExecutor, callback, compilerContext, executorContext, federationContext, metaData.getGlobalRuleMetaData(), statistics);
+        executorContext =
+                new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
+        EnumerableScanImplementor scanExecutor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()
@@ -134,14 +134,18 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     @SuppressWarnings("unchecked")
     @Override
     public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                 final SQLFederationExecutionPlan executionPlan, final SqlToRelConverter converter, final SQLFederationContext federationContext,
+                                 final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext,
                                  final SchemaPlus schemaPlus) {
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), Prefer.ARRAY);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationBindContext(converter, params)).enumerator();
+        Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
-        return new SQLFederationResultSet(enumerator, schemaPlus, selectStatementContext.getProjectionsContext().getExpandProjections(), selectStatementContext.getDatabaseType(),
-                executionPlan.getResultColumnType());
+        List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        SQLFederationResultSet result = new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType());
+        if (federationContext.isPreview()) {
+            federationContext.getPreviewExecutionUnits().addAll(executorContext.getPreviewExecutionUnits());
+        }
+        return result;
     }
     
     private Map<String, Object> createParameters(final List<Object> params) {

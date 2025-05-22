@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.enumerator;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
-import org.apache.shardingsphere.sqlfederation.executor.utils.EnumeratorUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,9 +28,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Memory row enumerator.
+ * Memory data row enumerator.
  */
-public final class MemoryRowEnumerator implements Enumerator<Object> {
+public final class MemoryDataRowEnumerator implements Enumerator<Object> {
     
     private final Collection<RowStatistics> rows;
     
@@ -41,9 +40,9 @@ public final class MemoryRowEnumerator implements Enumerator<Object> {
     
     private Object current;
     
-    public MemoryRowEnumerator(final Collection<RowStatistics> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
+    public MemoryDataRowEnumerator(final Collection<RowStatistics> rows, final Collection<ShardingSphereColumn> columns, final DatabaseType databaseType) {
         this.rows = rows;
-        columnTypes = EnumeratorUtils.createColumnTypes(new ArrayList<>(columns), databaseType);
+        columnTypes = MemoryDataTypeConverter.createColumnTypes(new ArrayList<>(columns), databaseType);
         iterator = rows.iterator();
     }
     
@@ -55,7 +54,7 @@ public final class MemoryRowEnumerator implements Enumerator<Object> {
     @Override
     public boolean moveNext() {
         if (iterator.hasNext()) {
-            current = EnumeratorUtils.convertToTargetType(columnTypes, iterator.next().getRows().toArray());
+            current = MemoryDataTypeConverter.convertToTargetType(columnTypes, iterator.next().getRows().toArray());
             return true;
         }
         current = null;

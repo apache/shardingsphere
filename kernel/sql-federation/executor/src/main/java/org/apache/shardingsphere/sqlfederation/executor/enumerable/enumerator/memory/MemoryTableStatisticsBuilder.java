@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.utils;
+package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,61 +31,75 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Statistics assemble utils.
+ * Memory table statistics builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatisticsAssembleUtils {
+public final class MemoryTableStatisticsBuilder {
     
     /**
-     * Assemble table statistics.
+     * Build table statistics.
      *
      * @param table table
      * @param metaData meta data
      * @param driverQuerySystemCatalogOption driver query system catalog option
      * @return table statistics
      */
-    public static TableStatistics assembleTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData,
-                                                          final DialectDriverQuerySystemCatalogOption driverQuerySystemCatalogOption) {
-        TableStatistics result = new TableStatistics(table.getName());
+    public static TableStatistics buildTableStatistics(final ShardingSphereTable table, final ShardingSphereMetaData metaData,
+                                                       final DialectDriverQuerySystemCatalogOption driverQuerySystemCatalogOption) {
         if (driverQuerySystemCatalogOption.isDatabaseDataTable(table.getName())) {
-            assembleDatabaseData(result, metaData.getAllDatabases(), driverQuerySystemCatalogOption.getDatCompatibility());
-        } else if (driverQuerySystemCatalogOption.isTableDataTable(table.getName())) {
-            for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
-                assembleTableData(result, each.getAllSchemas());
-            }
-        } else if (driverQuerySystemCatalogOption.isRoleDataTable(table.getName())) {
-            assembleRoleData(result, metaData);
+            return buildDatabaseData(table.getName(), metaData.getAllDatabases(), driverQuerySystemCatalogOption.getDatCompatibility());
         }
-        return result;
+        if (driverQuerySystemCatalogOption.isTableDataTable(table.getName())) {
+            return buildTableData(table.getName(), metaData);
+        }
+        if (driverQuerySystemCatalogOption.isRoleDataTable(table.getName())) {
+            return buildRoleData(table.getName(), metaData);
+        }
+        return new TableStatistics(table.getName());
     }
     
-    private static void assembleDatabaseData(final TableStatistics tableStatistics, final Collection<ShardingSphereDatabase> databases, final String datCompatibility) {
+    private static TableStatistics buildDatabaseData(final String tableName, final Collection<ShardingSphereDatabase> databases, final String datCompatibility) {
+        TableStatistics result = new TableStatistics(tableName);
         for (ShardingSphereDatabase each : databases) {
             Object[] rows = new Object[15];
             rows[0] = each.getName();
             rows[11] = datCompatibility;
-            tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
+            result.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
+        return result;
     }
     
-    private static void assembleTableData(final TableStatistics tableStatistics, final Collection<ShardingSphereSchema> schemas) {
+    private static TableStatistics buildTableData(final String tableName, final ShardingSphereMetaData metaData) {
+        TableStatistics result = new TableStatistics(tableName);
+        for (ShardingSphereDatabase each : metaData.getAllDatabases()) {
+            result.getRows().addAll(buildTableData(each.getAllSchemas()));
+        }
+        return result;
+    }
+    
+    private static Collection<RowStatistics> buildTableData(final Collection<ShardingSphereSchema> schemas) {
+        Collection<RowStatistics> result = new LinkedList<>();
         for (ShardingSphereSchema schema : schemas) {
             for (ShardingSphereTable each : schema.getAllTables()) {
                 Object[] rows = new Object[10];
                 rows[0] = schema.getName();
                 rows[1] = each.getName();
-                tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
+                result.add(new RowStatistics(Arrays.asList(rows)));
             }
         }
+        return result;
     }
     
-    private static void assembleRoleData(final TableStatistics tableStatistics, final ShardingSphereMetaData metaData) {
+    private static TableStatistics buildRoleData(final String tableName, final ShardingSphereMetaData metaData) {
+        TableStatistics result = new TableStatistics(tableName);
         for (Grantee each : metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class).getGrantees()) {
             Object[] rows = new Object[27];
             rows[0] = each.getUsername();
-            tableStatistics.getRows().add(new RowStatistics(Arrays.asList(rows)));
+            result.getRows().add(new RowStatistics(Arrays.asList(rows)));
         }
+        return result;
     }
 }

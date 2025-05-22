@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.executor.context;
+package org.apache.shardingsphere.sqlfederation.compiler.implementor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 /**
- * SQL federation context.
+ * Scan implementor interface.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLFederationContext {
+public interface ScanImplementor {
     
-    private final Collection<ExecutionUnit> previewExecutionUnits = new LinkedList<>();
-    
-    private final boolean preview;
-    
-    private final QueryContext queryContext;
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String processId;
+    /**
+     * Implement.
+     *
+     * @param table table meta data
+     * @param scanContext push down table scan context
+     * @return query results
+     */
+    Enumerable<Object> implement(ShardingSphereTable table, ScanImplementorContext scanContext);
 }

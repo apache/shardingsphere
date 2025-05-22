@@ -24,7 +24,7 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalTableScan;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.util.LogicalScanPushDownRelBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.builder.LogicalScanPushDownRelBuilder;
 
 import java.util.Collections;
 import java.util.Objects;

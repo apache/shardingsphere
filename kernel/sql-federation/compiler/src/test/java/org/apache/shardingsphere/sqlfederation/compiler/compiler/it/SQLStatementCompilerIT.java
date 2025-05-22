@@ -19,14 +19,8 @@ package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
 import lombok.SneakyThrows;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.prepare.CalciteCatalogReader;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -36,10 +30,10 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederationValidatorUtils;
-import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -83,8 +77,12 @@ class SQLStatementCompilerIT {
         tables.add(createTProductDetailMetaData());
         tables.add(createMultiTypesFirstTableMetaData());
         tables.add(createMultiTypesSecondTableMetaData());
-        sqlStatementCompiler =
-                new SQLStatementCompiler(createSqlToRelConverter(new ShardingSphereSchema("foo_db", tables, Collections.emptyList())), EnumerableConvention.INSTANCE);
+        CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
+        calciteSchema.add(SCHEMA_NAME,
+                new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType, SQLFederationDataTypeFactory.getInstance()));
+        sqlStatementCompiler = new SQLStatementCompiler(new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties())),
+                Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -231,18 +229,6 @@ class SQLStatementCompilerIT {
                 realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
                 varBinaryColumn, longVarbinaryColumn),
                 Collections.emptyList(), Collections.emptyList());
-    }
-    
-    private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
-        RelDataTypeFactory relDataTypeFactory = SQLFederationDataTypeFactory.getInstance();
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        SQLFederationSchema sqlFederationSchema = new SQLFederationSchema(SCHEMA_NAME, schema, databaseType, SQLFederationDataTypeFactory.getInstance());
-        CalciteCatalogReader catalogReader =
-                SQLFederationValidatorUtils.createCatalogReader(SCHEMA_NAME, sqlFederationSchema, relDataTypeFactory, connectionConfig, databaseType);
-        SqlValidator validator = SQLFederationValidatorUtils.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
-        RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerBuilder.buildVolcanoPlanner(EnumerableConvention.INSTANCE), new RexBuilder(relDataTypeFactory));
-        return SQLFederationValidatorUtils.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
     @ParameterizedTest(name = "{0}")

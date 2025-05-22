@@ -19,23 +19,42 @@ package org.apache.shardingsphere.sqlfederation.executor.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.linq4j.QueryProvider;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * SQL federation executor context.
+ * Executor bind context.
  */
 @RequiredArgsConstructor
-@Getter
-public final class SQLFederationExecutorContext {
+public final class ExecutorBindContext implements DataContext {
     
-    private final String currentDatabaseName;
+    private final SQLFederationRelConverter converter;
     
-    private final String currentSchemaName;
+    @Getter
+    private final Map<String, Object> parameters;
     
-    private final ConfigurationProperties props;
+    @Override
+    public SchemaPlus getRootSchema() {
+        return converter.getSchemaPlus();
+    }
     
-    private final Map<String, Integer> connectionOffsets = new LinkedHashMap<>();
+    @Override
+    public JavaTypeFactory getTypeFactory() {
+        return (JavaTypeFactory) converter.getCluster().getTypeFactory();
+    }
+    
+    @Override
+    public QueryProvider getQueryProvider() {
+        return null;
+    }
+    
+    @Override
+    public Object get(final String name) {
+        return parameters.get(name);
+    }
 }

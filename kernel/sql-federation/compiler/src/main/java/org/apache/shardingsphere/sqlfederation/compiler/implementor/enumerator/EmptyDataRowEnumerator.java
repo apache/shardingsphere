@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table;
+package org.apache.shardingsphere.sqlfederation.compiler.implementor.enumerator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Scan executor context.
+ * Empty data row enumerator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ScanExecutorContext {
+public final class EmptyDataRowEnumerator implements Enumerator<Object> {
     
-    private final DataContext root;
+    @Override
+    public Object current() {
+        return new Object();
+    }
     
-    private final String sql;
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
     
-    private final int[] paramIndexes;
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
+    }
 }

@@ -1,0 +1,150 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.sqlfederation.compiler.rel.converter;
+
+import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.plan.Convention;
+import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptTable.ViewExpander;
+import org.apache.calcite.prepare.CalciteCatalogReader;
+import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.fun.SqlLibrary;
+import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
+import org.apache.calcite.sql.util.SqlOperatorTables;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
+import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.catalog.SQLFederationCatalogReader;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
+import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * SQL federation rel converter.
+ */
+public final class SQLFederationRelConverter {
+    
+    private static final Map<String, SqlLibrary> DATABASE_TYPE_SQL_LIBRARIES = new HashMap<>();
+    
+    static {
+        DATABASE_TYPE_SQL_LIBRARIES.put("MySQL", SqlLibrary.MYSQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put("PostgreSQL", SqlLibrary.POSTGRESQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put("openGauss", SqlLibrary.POSTGRESQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put("Oracle", SqlLibrary.ORACLE);
+    }
+    
+    private final SqlToRelConverter sqlToRelConverter;
+    
+    public SQLFederationRelConverter(final CompilerContext compilerContext, final List<String> schemaPath, final DatabaseType databaseType, final Convention convention) {
+        JavaTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
+        CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
+        CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
+        SqlValidator validator = createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
+        RelOptCluster relOptCluster = createRelOptCluster(typeFactory, convention);
+        sqlToRelConverter = createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
+    }
+    
+    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final DatabaseType databaseType,
+                                            final CalciteConnectionConfig connectionConfig) {
+        SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT.withLenientOperatorLookup(connectionConfig.lenientOperatorLookup()).withConformance(connectionConfig.conformance())
+                .withDefaultNullCollation(connectionConfig.defaultNullCollation()).withIdentifierExpansion(true);
+        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType.getTrunkDatabaseType().orElse(databaseType));
+        return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, relDataTypeFactory, validatorConfig);
+    }
+    
+    private static SqlOperatorTable getSQLOperatorTable(final CalciteCatalogReader catalogReader, final DatabaseType databaseType) {
+        SqlOperatorTable operatorTable =
+                SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL)));
+        return SqlOperatorTables.chain(Arrays.asList(new MySQLOperatorTable(), operatorTable, catalogReader));
+    }
+    
+    private SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelOptCluster cluster, final SQLParserRule sqlParserRule,
+                                                      final DatabaseType databaseType, final boolean needsViewExpand) {
+        ViewExpander expander = needsViewExpand
+                ? new ShardingSphereViewExpander(sqlParserRule, databaseType, createSqlToRelConverter(catalogReader, validator, cluster, sqlParserRule, databaseType, false))
+                : (rowType, queryString, schemaPath, viewPath) -> null;
+        // TODO remove withRemoveSortInSubQuery when calcite can expand view which contains order by correctly
+        Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true).withRemoveSortInSubQuery(false).withExpand(true);
+        return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
+    }
+    
+    private RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory, final Convention convention) {
+        RelOptPlanner volcanoPlanner = SQLFederationPlannerBuilder.buildVolcanoPlanner(convention);
+        return RelOptCluster.create(volcanoPlanner, new RexBuilder(relDataTypeFactory));
+    }
+    
+    /**
+     * Get schema plus.
+     *
+     * @return schema plus
+     */
+    public SchemaPlus getSchemaPlus() {
+        return sqlToRelConverter.validator.getCatalogReader().getRootSchema().plus();
+    }
+    
+    /**
+     * Convert query.
+     *
+     * @param sqlNode sql node
+     * @param needsValidation need validation
+     * @param top top
+     * @return rel root
+     */
+    public RelRoot convertQuery(final SqlNode sqlNode, final boolean needsValidation, final boolean top) {
+        return sqlToRelConverter.convertQuery(sqlNode, needsValidation, top);
+    }
+    
+    /**
+     * Get validated node type.
+     *
+     * @param sqlNode sql node
+     * @return rel data type
+     */
+    public RelDataType getValidatedNodeType(final SqlNode sqlNode) {
+        return Objects.requireNonNull(sqlToRelConverter.validator).getValidatedNodeType(sqlNode);
+    }
+    
+    /**
+     * Get cluster.
+     *
+     * @return cluster
+     */
+    public RelOptCluster getCluster() {
+        return sqlToRelConverter.getCluster();
+    }
+}

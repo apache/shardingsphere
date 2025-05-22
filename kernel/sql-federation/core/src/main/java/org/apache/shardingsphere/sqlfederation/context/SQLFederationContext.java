@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.table;
+package org.apache.shardingsphere.sqlfederation.context;
 
-import org.apache.calcite.linq4j.Enumerator;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Empty row enumerator.
+ * SQL federation context.
  */
-public final class EmptyRowEnumerator implements Enumerator<Object> {
+@RequiredArgsConstructor
+@Getter
+public final class SQLFederationContext {
     
-    @Override
-    public Object current() {
-        return new Object();
-    }
+    private final Collection<ExecutionUnit> previewExecutionUnits = new LinkedList<>();
     
-    @Override
-    public boolean moveNext() {
-        return false;
-    }
+    private final boolean preview;
     
-    @Override
-    public void reset() {
-    }
+    private final QueryContext queryContext;
     
-    @Override
-    public void close() {
-    }
+    private final ShardingSphereMetaData metaData;
+    
+    private final String processId;
 }
