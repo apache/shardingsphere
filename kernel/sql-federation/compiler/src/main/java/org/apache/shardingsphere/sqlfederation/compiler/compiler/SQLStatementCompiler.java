@@ -28,9 +28,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
-import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.rewriter.LogicalScanRelRewriter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.SQLNodeConverterEngine;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.util.LogicalScanRelShuttle;
 
 /**
  * SQL statement compiler.
@@ -54,15 +54,16 @@ public final class SQLStatementCompiler {
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
-        RelNode replacePlan = LogicalScanRelShuttle.replace(logicalPlan, databaseType);
-        RelNode rewritePlan = rewrite(replacePlan, SQLFederationPlannerBuilder.buildHepPlanner());
+        RelNode rewritePlan = rewrite(logicalPlan, databaseType);
         RelNode physicalPlan = optimize(rewritePlan, converter);
         RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
-    private RelNode rewrite(final RelNode logicalPlan, final RelOptPlanner hepPlanner) {
-        hepPlanner.setRoot(logicalPlan);
+    private RelNode rewrite(final RelNode logicalPlan, final String databaseType) {
+        RelNode rewrittenPlan = LogicalScanRelRewriter.rewrite(logicalPlan, databaseType);
+        RelOptPlanner hepPlanner = SQLFederationPlannerBuilder.buildHepPlanner();
+        hepPlanner.setRoot(rewrittenPlan);
         return hepPlanner.findBestExp();
     }
     

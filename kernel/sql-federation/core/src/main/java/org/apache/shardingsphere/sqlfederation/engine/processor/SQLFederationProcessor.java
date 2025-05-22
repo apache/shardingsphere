@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.operator.util;
+package org.apache.shardingsphere.sqlfederation.compiler.rel.builder;
 
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;

@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCom
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationUnsupportedSQLException;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
-import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;

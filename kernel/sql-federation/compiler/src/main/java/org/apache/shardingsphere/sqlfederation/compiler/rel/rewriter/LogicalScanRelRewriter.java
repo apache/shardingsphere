@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.operator.util;
+package org.apache.shardingsphere.sqlfederation.compiler.rel.rewriter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.logical.LogicalScan;
 
 /**
- * Logical scan rel shuttle.
+ * Logical scan rel rewriter.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogicalScanRelShuttle extends RelShuttleImpl {
+public final class LogicalScanRelRewriter extends RelShuttleImpl {
     
     private final String databaseType;
     
@@ -38,13 +38,13 @@ public final class LogicalScanRelShuttle extends RelShuttleImpl {
     }
     
     /**
-     * Replace table scan with logical scan.
+     * Rewrite table scan to logical scan.
      *
      * @param relNode rel node
      * @param databaseType database type
-     * @return replaced rel node
+     * @return rewritten rel node
      */
-    public static RelNode replace(final RelNode relNode, final String databaseType) {
-        return relNode.accept(new LogicalScanRelShuttle(databaseType));
+    public static RelNode rewrite(final RelNode relNode, final String databaseType) {
+        return relNode.accept(new LogicalScanRelRewriter(databaseType));
     }
 }

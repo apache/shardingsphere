@@ -48,7 +48,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPl
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationSchemaNotFoundException;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
-import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationBindContext;
 import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;

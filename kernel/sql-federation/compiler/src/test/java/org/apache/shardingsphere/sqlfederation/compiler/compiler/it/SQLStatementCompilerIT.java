@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCom
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.rel.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
