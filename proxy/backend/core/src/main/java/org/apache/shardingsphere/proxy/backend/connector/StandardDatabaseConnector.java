@@ -250,12 +250,12 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private ResultSet doExecuteFederation() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDialectDatabaseMetaData();
+        boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
+                && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
-                sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
+                queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, contextManager.getMetaDataContexts());
         SQLFederationContext context = new SQLFederationContext(
                 false, queryContext, contextManager.getMetaDataContexts().getMetaData(), databaseConnectionManager.getConnectionSession().getProcessId());
