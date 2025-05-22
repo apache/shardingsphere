@@ -33,7 +33,8 @@ import java.util.Collections;
 public final class CreateViewFederationMetaDataRefresher implements FederationMetaDataRefresher<CreateViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final CreateViewStatement sqlStatement) {
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
+                        final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final CreateViewStatement sqlStatement) {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
         metaDataManagerPersistService.alterViews(database, schemaName, Collections.singleton(new ShardingSphereView(viewName, sqlStatement.getViewDefinition())));
     }

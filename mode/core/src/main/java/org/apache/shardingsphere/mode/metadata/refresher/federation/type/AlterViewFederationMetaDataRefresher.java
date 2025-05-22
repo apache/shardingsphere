@@ -36,7 +36,8 @@ import java.util.Optional;
 public final class AlterViewFederationMetaDataRefresher implements FederationMetaDataRefresher<AlterViewStatement> {
     
     @Override
-    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
+    public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
+                        final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         Collection<ShardingSphereView> alteredViews = new LinkedList<>();
