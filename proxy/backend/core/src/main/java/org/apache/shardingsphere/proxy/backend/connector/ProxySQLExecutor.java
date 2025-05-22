@@ -133,7 +133,8 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isValidExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
-        return !(sqlStatementContext.getSqlStatement() instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatementContext.getDatabaseType(), (DDLStatement) sqlStatementContext.getSqlStatement());
+        return !(sqlStatementContext.getSqlStatement() instanceof DDLStatement)
+                || isSupportDDLInTransaction(sqlStatementContext.getDatabaseType(), (DDLStatement) sqlStatementContext.getSqlStatement());
     }
     
     private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
