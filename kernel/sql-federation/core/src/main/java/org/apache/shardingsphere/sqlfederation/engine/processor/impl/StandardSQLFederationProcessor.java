@@ -82,7 +82,8 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         if (null == schemaPlus) {
             return;
         }
-        executorContext = new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
+        executorContext =
+                new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
         EnumerableScanImplementor scanExecutor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableAvailable
